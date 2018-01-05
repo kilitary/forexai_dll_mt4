@@ -13,33 +13,40 @@ namespace forexAI
     {
         public static void log(String lines)
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(@"d:\temp\forexAI\mt4.log", true);
+            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
             file.WriteLine(lines);
             file.Close();
         }
 
         public static void info(String lines)
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(@"d:\temp\forexAI\mt4.log", true);
+            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
             file.WriteLine("info: " + lines);
             file.Close();
         }
 
         public static void warning(String lines)
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(@"d:\temp\forexAI\mt4.log", true);
+            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
             file.WriteLine("warning: " + lines);
             file.Close();
         }
 
         public static void error(String lines)
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(@"d:\temp\forexAI\mt4.log", true);
+            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
             file.WriteLine("error: " + lines);
             file.Close();
         }
 
-        public static string dump(object value, string name = "unknown", int depth = 5, bool show = false)
+        public static void debug(String lines)
+        {
+            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
+            file.WriteLine("debug: " + lines);
+            file.Close();
+        }
+
+        public static string dump(object value, string name = "unknown", int depth = 0, bool show = false)
         {
             StringBuilder result = new StringBuilder();
 
@@ -54,6 +61,8 @@ namespace forexAI
                     Type type = value.GetType();
 
                     displayValue = value.ToString();
+
+                    log($"type={type.ToString()} dv={displayValue}");
 
                     if (value is Boolean)
                     {

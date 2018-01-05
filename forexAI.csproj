@@ -7,8 +7,8 @@
     <ProjectGuid>{B6F386BF-52F9-4B04-A68E-F98A55CEDCFF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MovingAverageExpert</RootNamespace>
-    <AssemblyName>MovingAverageExpert</AssemblyName>
+    <RootNamespace>forexAI</RootNamespace>
+    <AssemblyName>forexAI</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -37,6 +37,9 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Conari, Version=1.2.0.3594, Culture=neutral, PublicKeyToken=4bbd2ef743db151e, processorArchitecture=MSIL">
+      <HintPath>packages\regXwild.1.1.0\lib\net40\Conari.dll</HintPath>
+    </Reference>
     <Reference Include="FANNCSharp, Version=0.2.0.0, Culture=neutral, processorArchitecture=x86">
       <HintPath>packages\FANNCSharp-x86.0.1.8\lib\FANNCSharp.dll</HintPath>
     </Reference>
@@ -50,6 +53,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
+    <Compile Include="Data.cs" />
     <Compile Include="forexAI.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -65,7 +70,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\FANNCSharp-x86.0.1.8\build\FANNCSharp-x86.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\FANNCSharp-x86.0.1.8\build\FANNCSharp-x86.targets'))" />
+    <Error Condition="!Exists('packages\regXwild.1.1.0\build\net40\regXwild.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\regXwild.1.1.0\build\net40\regXwild.targets'))" />
   </Target>
+  <Import Project="packages\regXwild.1.1.0\build\net40\regXwild.targets" Condition="Exists('packages\regXwild.1.1.0\build\net40\regXwild.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
