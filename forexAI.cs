@@ -14,17 +14,27 @@ namespace forexAI
 {
     public class ForexAI : MqlApi
     {
-        private const int MAGICMA = 20050610;
-
-        //private double DecreaseFactor = 3;
-        //private double MaximumRisk = 0.02;
-        //private int MovingPeriod = 12;
-        //private int MovingShift = 6;
-        private int previousBars = 0;
-
-        private string inputLayerActivationFunction, middleLayerActivationFunction;
-        private int inputDimension = 0;
         public Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
+        private int inputDimension = 0;
+        private string inputLayerActivationFunction, middleLayerActivationFunction;
+        private int previousBars = 0;
+        public override int deinit()
+        {
+            log("Deinitializing ...");
+            log("Balance " + AccountBalance());
+            log("done");
+            return 0;
+        }
+
+        public override int init()
+        {
+            log("Initializing .... ");
+
+            LoadNetworks();
+
+            log("done");
+            return 0;
+        }
 
         public void LoadNetwork(string dirName)
         {
@@ -32,7 +42,7 @@ namespace forexAI
 
             NeuralNet ai = new NeuralNet($"d:\\temp\\forexAI\\{dirName}\\FANN.net");
 
-            log($"network: hash={ai.GetHashCode()} inputs={ai.InputCount} outputs={ai.OutputCount} neurons={ai.TotalNeurons}");
+            info($"network: hash={ai.GetHashCode()} inputs={ai.InputCount} outputs={ai.OutputCount} neurons={ai.TotalNeurons}");
 
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
             Regex regex = new Regex(@"\[([^ \r\n\[\]]{1,10}?)\s+?", RegexOptions.Multiline | RegexOptions.Singleline);
@@ -42,7 +52,7 @@ namespace forexAI
                     continue;
 
                 string funcName = match.Groups[0].Value.Trim('[', ' ');
-                log($" function [{funcName}]");
+                info($" function [{funcName}]");
 
                 Dictionary<string, string> data = new Dictionary<string, string>();
 
@@ -56,13 +66,12 @@ namespace forexAI
             Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
             int.TryParse(match2.Groups[1].Value, out inputDimension);
 
-            log($"inputDimension = {inputDimension}");
+            info($"inputDimension = {inputDimension}");
 
-            //InputActFunc:
-            //SIGMOID_SYMMETRIC LayerActFunc: ELLIOT_SYMMETRIC
-            Match match3 = Regex.Match(fileTextData, "InputActFunc:\\s+([^ ]{1,30}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,30}?)",
+            Match match3 = Regex.Match(fileTextData, "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
                  RegexOptions.Singleline);
-            log($"functions: input [{match3.Groups[1].Value}] layer [{match3.Groups[2].Value}]");
+            info($"activation functions: input [{match3.Groups[1].Value}] layer [{match3.Groups[2].Value}]");
+
             inputLayerActivationFunction = match3.Groups[1].Value;
             middleLayerActivationFunction = match3.Groups[2].Value;
         }
@@ -82,25 +91,6 @@ namespace forexAI
                 }
             }
         }
-
-        public override int deinit()
-        {
-            log("Deinitializing ...");
-            log("Balance " + AccountBalance());
-            log("done");
-            return 0;
-        }
-
-        public override int init()
-        {
-            info("Initializing .... ");
-
-            LoadNetworks();
-
-            info("done");
-            return 0;
-        }
-
         //+------------------------------------------------------------------+
         //| Start function                                                   |
         //+------------------------------------------------------------------+
