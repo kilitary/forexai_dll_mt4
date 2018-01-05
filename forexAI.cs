@@ -40,7 +40,7 @@ namespace forexAI
             int num = 0;
             foreach (DirectoryInfo file in Files)
             {
-                info($"network #{num} {file.Name}");
+                info($"network #{num}  {file.Name}");
                 num++;
             }
 
