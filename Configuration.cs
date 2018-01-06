@@ -16,5 +16,7 @@ namespace forexAI
         public static string mysql_uid = "homestead";
         public static bool useMemcached = false;
         public static bool useMysql = true;
+        public static string MemcachedIP = "192.168.10.10";
+        public static int MemcachedPort = 11211;
     }
 }

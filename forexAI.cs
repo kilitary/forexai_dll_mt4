@@ -102,11 +102,13 @@ namespace forexAI
         public override int init()
         {
             startTime = GetTickCount();
-            symbol = Symbol();
-            this["runNum"] += 1;
 
             ClearLogs();
             Banner();
+
+            symbol = Symbol();
+            this["runNum"] += 1;
+
             DumpInfo();
             ListGlobalVariables();
             InitStorages();
@@ -123,21 +125,20 @@ namespace forexAI
         {
             log($"*** Automatic TradingExpert for MT4 with neural networks and auto-created strategy based on code mutation.");
             log($"*** (c) 2018 Sergey Efimov. (kilitary@gmail.com, telegram/phone: +79500426692, skype: serjnah, icq: 401112)");
-            log("Initializing ...");
 
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             DateTime buildDate = new DateTime(2018, 1, 6)
                                     .AddDays(version.Build).AddSeconds(version.Revision * 2);
 
-            log($"Version: {version}");
+            log($"Initializing version: {version} ... ");
         }
 
         private void TestNetworkHitRatio()
         {
-            log($"Calculating hit ratio on train & test data ...");
+            info($"Calculating hit ratio on train & test data ...");
             trainHitRatio = CalculateHitRatio(trainData.Input, trainData.Output);
             testHitRatio = CalculateHitRatio(testData.Input, testData.Output);
-            log($"trainHitRatio={trainHitRatio.ToString("0.00")}% testHitRatio={testHitRatio.ToString("0.00")}%");
+            info($"TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
         }
 
         public double CalculateHitRatio(double[][] inputs, double[][] desiredOutputs)
@@ -191,7 +192,8 @@ namespace forexAI
 
         public void LoadNetwork(string dirName)
         {
-            log($"Loading FANN network {dirName} ...");
+            long fileLength = new System.IO.FileInfo($"{Configuration.DataDirectory}\\{dirName}\\FANN.net").Length;
+            log($"Loading FANN network {dirName} ({(fileLength / 1024.0).ToString("0.00")} KB) ...");
 
             aiName = dirName;
             this.dirName = dirName;
@@ -251,17 +253,17 @@ namespace forexAI
 
         public void TestNetworkMSE()
         {
-            log($"Doing network test of {dirName} ...");
+            debug($"Doing neural network MSE test of {dirName} ...");
 
             trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
             testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
 
-            log($"TrainLength: trainData={trainData.TrainDataLength} testData={testData.TrainDataLength}");
+            debug($"Train Data: trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
             train_mse = aiNetwork.TestDataParallel(trainData, 4);
             test_mse = aiNetwork.TestDataParallel(testData, 3);
 
-            log($"MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")}");
+            debug($"MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")} bitfail={aiNetwork.BitFail}");
         }
 
         private void AddText(string text)
