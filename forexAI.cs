@@ -30,6 +30,7 @@ namespace forexAI
         private string l_name_8, type = "";
         private int startTime = 0;
         private string aiName;
+        private int previousDay = 0;
         private int totalNeurons;
 
         public double this[string name]
@@ -53,6 +54,13 @@ namespace forexAI
                 return 0;
 
             DrawStats();
+
+            if (previousDay != Day())
+            {
+                previousDay = Day();
+                log($"Day {previousDay} opnum {opnum}");
+                opnum = 0;
+            }
 
             AddText("SDF SD F");
             previousBars = Bars;
@@ -89,22 +97,20 @@ namespace forexAI
                                     .AddDays(version.Build).AddSeconds(version.Revision * 2);
 
             string displayableVersion = $"{version} ({buildDate})";
-            log($"[ Automatic Trading Extension for MT4. (c) 2018 Sergey Efimov (deconf@ya.ru). ]");
+            log($"* Automatic Trading Extension for MT4 based on neural networks. (c) 2018 Sergey Efimov (deconf@ya.ru). ");
             log("Initializing ...");
             log($"Version: {displayableVersion}");
             log($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
-            debug($"AccNumber={AccountNumber()} AccName=[{AccountName()}] balance={AccountBalance()} currency={AccountCurrency()} " +
-                $"equity={AccountEquity()} marginMode={AccountFreeMarginMode()}");
+            log($"AccNumber={AccountNumber()} AccName=[{AccountName()}] Balance={AccountBalance()} Currency={AccountCurrency()} ");
+            debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
             debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
-            debug($"expert={WindowExpertName()}");
-            debug($"libs used: [ta-lib, fann4net]");
 
             symbol = Symbol();
             int runNum = (int) this["runNum"];
             debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()} runNum={runNum}");
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
-            debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}");
-            debug($"lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
+            debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
+                $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
 
             int var_total = GlobalVariablesTotal();
             string name;
@@ -118,7 +124,8 @@ namespace forexAI
 
             Data.db = new DB();
 
-            //storage.UpMemcache();
+            if (Configuration.useMemcached)
+                storage.UpMemcache();
 
             storage["random"] = random.Next(int.MaxValue);
 
@@ -174,10 +181,10 @@ namespace forexAI
 
         public void LoadNetworks()
         {
-            DirectoryInfo d = new DirectoryInfo(Data.DataDirectory);
+            DirectoryInfo d = new DirectoryInfo(Configuration.DataDirectory);
             DirectoryInfo[] Dirs = d.GetDirectories("*");
 
-            log($"Looking for networks [{Data.DataDirectory}]: found {Dirs.Length} networks.");
+            log($"Looking for networks [{Configuration.DataDirectory}]: found {Dirs.Length} networks.");
 
             //foreach (DirectoryInfo dir in Dirs)
             //    storage[num++.ToString()] = $"{dir.Name}";

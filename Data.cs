@@ -11,8 +11,7 @@ namespace forexAI
         public static Dictionary<string, Dictionary<string, string>> nnFunctions =
             new Dictionary<string, Dictionary<string, string>>();
 
-        static public DB db = null;
-
-        public static string DataDirectory = @"D:\temp\forexAI";
+        public static DB db = null;
+       
     }
 }

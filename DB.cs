@@ -13,15 +13,12 @@ namespace forexAI
     internal class DB
     {
         private MySqlConnection connection = null;
-        private string server = "192.168.10.10";
-        private string database = "forex";
-        private string uid = "homestead";
-        private string password = "secret";
 
         public DB()
         {
             string connectionString;
-            connectionString = "SERVER=" + server + ";" + "DATABASE=" + database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
+            connectionString = "SERVER=" + Configuration.mysql_server + ";" + "DATABASE=" + Configuration.mysql_database +
+                ";" + "UID=" + Configuration.mysql_uid + ";" + "PASSWORD=" + Configuration.mysql_password + ";";
 
             connection = new MySqlConnection(connectionString);
 

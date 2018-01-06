@@ -36,7 +36,8 @@ namespace forexAI
             set
             {
                 properties[name] = value;
-               // mc.Store(StoreMode.Set, name, value);
+                if (Configuration.useMemcached)
+                    mc.Store(StoreMode.Set, name, value);
             }
         }
 
@@ -61,13 +62,14 @@ namespace forexAI
             foreach (KeyValuePair<string, object> o in properties)
             {
                 Data.db.StoreSetting(o.Key, o.Value);
-            //    mc.Store(StoreMode.Set, o.Key, o.Value);
+                if (Configuration.useMemcached)
+                    mc.Store(StoreMode.Set, o.Key, o.Value);
             }
         }
 
         ~Storage()
         {
-            log("DESTROY CALLED!");
+            log("Storage DESTROY CALLED!");
             SyncData();
         }
     }
