@@ -41,6 +41,7 @@ namespace forexAI
         private TrainingData testData;
         private double trainHitRatio;
         private double testHitRatio;
+        private int ordersTotal;
 
         public double this[string name]
         {
@@ -119,6 +120,10 @@ namespace forexAI
 
         private void Banner()
         {
+            string logFileName = Configuration.DataDirectory + "\\mt4.log";
+            if (File.Exists(logFileName))
+                File.Delete(logFileName);
+
             log($"*** Automatic Trading Expert for MT4, based on neural networks with auto-created strategy.");
             log($"*** (c) 2018 Sergey Efimov (deconf@ya.ru). ");
             log("Initializing ...");
@@ -201,7 +206,7 @@ namespace forexAI
 
             aiNetwork.ResetMSE();
 
-            info($"Network: hash={aiNetwork.GetHashCode()} inputs={aiNetwork.InputCount} outputs={aiNetwork.OutputCount} neurons={aiNetwork.TotalNeurons} mse={aiNetwork.MSE}");
+            info($"Network: hash={aiNetwork.GetHashCode()} inputs={aiNetwork.InputCount} outputs={aiNetwork.OutputCount} neurons={aiNetwork.TotalNeurons} ");
 
             totalNeurons = (int) aiNetwork.TotalNeurons;
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
@@ -291,48 +296,47 @@ namespace forexAI
 
         private double GetActiveIncome()
         {
-            double total = 0.0;
-            double spends;
-            double profit;
+            total = 0.0;
 
-            spends = GetActiveSpend();
-            profit = GetActiveProfit();
+            double spends = GetActiveSpend();
+            double profit = GetActiveProfit();
             if (profit > spends)
                 total = profit + (spends);
             else
                 total = 0.0;
+
             return (total);
         }
 
         private double GetActiveProfit()
         {
-            int orders = OrdersTotal();
-            double total = 0.0;
-            //Print("total orders: "+orders);
-            for (int pos = 0; pos < orders; pos++)
+            ordersTotal = OrdersTotal();
+            total = 0.0;
+
+            for (int pos = 0; pos < ordersTotal; pos++)
             {
                 if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
                     continue;
                 if (OrderProfit() > 0.0)
                     total = total + OrderProfit();
             }
-            //   return (160);
+
             return (total);
         }
 
         private double GetActiveSpend()
         {
-            int orders = OrdersTotal();
-            double total = 0.0;
-            //  Print("total orders: "+orders);
-            for (int pos = 0; pos < orders; pos++)
+            ordersTotal = OrdersTotal();
+            total = 0.0;
+
+            for (int pos = 0; pos < ordersTotal; pos++)
             {
                 if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
                     continue;
                 if (OrderProfit() < 0.0)
                     total = total + OrderProfit();
             }
-            // return (170);
+
             return (total);
         }
 
