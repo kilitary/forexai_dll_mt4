@@ -21,6 +21,7 @@ namespace forexAI
         private double total;
         private double spends;
         private double profit;
+        private string symbol = "";
         private int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
         private int ticket = 0, opnum = 0;
         private string l_name_8, type = "";
@@ -74,31 +75,36 @@ namespace forexAI
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             DateTime buildDate = new DateTime(2018, 1, 6)
                                     .AddDays(version.Build).AddSeconds(version.Revision * 2);
+
             string displayableVersion = $"{version} ({buildDate})";
             log($"Software version: {displayableVersion}");
-
             log($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
+            log($"AccNumber={AccountNumber()} name=[{AccountName()}] balance={AccountBalance()} currency={AccountCurrency()} " +
+                $"equity={AccountEquity()} marginMode={AccountFreeMarginMode()}");
+            log($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
+            log($"expert={WindowExpertName()}");
+
+            symbol = Symbol();
+            int runNum = (int) this["runNum"];
+            log($"IsOptimization={IsOptimization()} IsTesting={IsTesting()} runNum={runNum}");
+            log($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
+            log($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}");
+            log($"lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
 
             int var_total = GlobalVariablesTotal();
             string name;
             for (int i = 0; i < var_total; i++)
             {
                 name = GlobalVariableName(i);
-                log($"* global var {name}={GlobalVariableGet(name)}");
+                log($"global var {name}={GlobalVariableGet(name)}");
             }
 
-            log($"AccNumber={AccountNumber()} name=[{AccountName()}] balance={AccountBalance()} currency={AccountCurrency()} " +
-                $"equity={AccountEquity()} marginMode={AccountFreeMarginMode()}");
-            log($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
-
-            int runNum = (int) GlobalVariableGet("runNum");
-            log($"optimization={IsOptimization()} testing={IsTesting()} run={runNum}");
-            log($"orders={OrdersTotal()}");
-            GlobalVariableSet("runNum", runNum + 1);
+            this["runNum"] = runNum + 1;
 
             LoadNetworks();
 
             log("initialized.");
+
             return 0;
         }
 
@@ -407,7 +413,7 @@ namespace forexAI
         public void LoadNetworks()
         {
             DirectoryInfo d = new DirectoryInfo(Data.DataDirectory);
-            DirectoryInfo[] Dirs = d.GetDirectories("*"); 
+            DirectoryInfo[] Dirs = d.GetDirectories("*");
             int num = 0;
 
             log($"scanning networks: found {Dirs.Length} networks.");
@@ -417,6 +423,7 @@ namespace forexAI
 
             LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
         }
+
         //+------------------------------------------------------------------+
         //| Calculate open positions                                         |
         //+------------------------------------------------------------------+
