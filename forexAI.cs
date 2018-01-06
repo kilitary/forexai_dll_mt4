@@ -36,6 +36,10 @@ namespace forexAI
         private double total;
         private int totalNeurons;
         private float train_mse;
+        private TrainingData trainData;
+        private TrainingData testData;
+        private double trainHitRatio;
+        private double testHitRatio;
 
         public double this[string name]
         {
@@ -101,7 +105,7 @@ namespace forexAI
                                     .AddDays(version.Build).AddSeconds(version.Revision * 2);
 
             string displayableVersion = $"{version}";
-            log($"*** Automatic Trading Extension for MT4 based on neural networks. (c) 2018 Sergey Efimov (deconf@ya.ru). ");
+            log($"*** Automatic Trading Extension for MT4, based on neural networks. (c) 2018 Sergey Efimov (deconf@ya.ru). ");
             log("Initializing ...");
             log($"Version: {displayableVersion}");
 
@@ -113,10 +117,45 @@ namespace forexAI
             InitStorages();
             LoadNetworks();
             TestNetworkOnData();
+            TestNetworkHitRatio();
 
             log($"... initialized in {(GetTickCount() - startTime) / 1000.0} sec.");
 
             return 0;
+        }
+
+        private void TestNetworkHitRatio()
+        {
+            log($"calculating hit ratio ...");
+            trainHitRatio = CalculateHitRatio(ai, trainData.Input, trainData.Output);
+            testHitRatio = CalculateHitRatio(ai, testData.Input, testData.Output);
+            log($"trainHitRatio={trainHitRatio.ToString("0.00")}% testHitRatio={testHitRatio.ToString("0.00")}%");
+        }
+
+        public double CalculateHitRatio(NeuralNet net, double[][] inputs, double[][] desiredOutputs)
+        {
+            int hits = 0, curX = 0;
+            foreach (double[] input in inputs)
+            {
+                var output = net.Run(input);
+
+                double output0 = 0;
+                if (output[0] >= 0.0)
+                    output0 = 1.0;
+                else if (output[0] < -0.0)
+                    output0 = -1.0;
+
+                double output1 = 0;
+                if (output[1] >= 0.0)
+                    output1 = 1.0;
+                else if (output[1] < -0.0)
+                    output1 = -1.0;
+
+                if (output0 == desiredOutputs[curX][0] && output1 == desiredOutputs[curX][1])
+                    hits++;
+                curX++;
+            }
+            return ((double) hits / (double) inputs.Length) * 100.0d;
         }
 
         private void ListGlobalVariables()
@@ -203,12 +242,12 @@ namespace forexAI
         public void TestNetworkOnData()
         {
             log($"Doing network test of {dirName} ...");
-            TrainingData trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
-            TrainingData testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
-            log($"Length: trainData={trainData.TrainDataLength} testData={testData.TrainDataLength}");
+            trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
+            testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
+            log($"trainLength: trainData={trainData.TrainDataLength} testData={testData.TrainDataLength}");
             train_mse = ai.TestDataParallel(trainData, 4);
             test_mse = ai.TestDataParallel(testData, 3);
-            log($"MSE: train={train_mse.ToString("0.000")} test={test_mse.ToString("0.000")}");
+            log($"MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")}");
         }
 
         private void AddText(string text)
@@ -445,7 +484,7 @@ namespace forexAI
               + "tot_profits: " + DoubleToStr(tot_profits, 0) + "\r\n" +
                "tot_spends:  " + DoubleToStr(tot_spends, 0) + "\r\n" +
                "КПД: " + d + "%" + "\r\n----------------------------------------\r\n" +
-               "[Network " + aiName + "]\r\n" +
+               "-=[Network " + aiName + "]=-\r\n" +
                "Functions: " + funcsString + "\r\n" +
                "InputDimension: " + inputDimension + "\r\n" +
                "TotalNeurons: " + totalNeurons + "\r\n" +
@@ -456,7 +495,9 @@ namespace forexAI
                "Connections: " + ai.TotalConnections + "\r\n" +
                "LayerCount: " + ai.LayerCount + "\r\n" +
                "MSE: " + ai.MSE + "\r\n" +
-               "LearningRate: " + ai.LearningRate);
+               "LearningRate: " + ai.LearningRate + "\r\n" +
+               "testHitRatio: " + testHitRatio.ToString("0.00") + "%\r\n" +
+               "trainHitRatio: " + trainHitRatio.ToString("0.00") + "%\r\n");
 
             if (ObjectFind("statyys") == -1)
             {
