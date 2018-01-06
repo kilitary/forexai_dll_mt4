@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,15 +10,15 @@ using static forexAI.Logger;
 
 namespace forexAI
 {
-    internal static class DB
+    internal class DB
     {
-        static private MySqlConnection connection = null;
-        static private string server = "192.168.10.10";
-        static private string database = "forex";
-        static private string uid = "homestead";
-        static private string password = "secret";
+        private MySqlConnection connection = null;
+        private string server = "192.168.10.10";
+        private string database = "forex";
+        private string uid = "homestead";
+        private string password = "secret";
 
-        public static void Init()
+        public DB()
         {
             string connectionString;
             connectionString = "SERVER=" + server + ";" + "DATABASE=" + database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
@@ -27,7 +28,8 @@ namespace forexAI
             try
             {
                 connection.Open();
-                debug($"opened mysql connection: version={connection.ServerVersion} id={connection.ServerThread} db={connection.Database}");
+                debug($"opened mysql connection: version={connection.ServerVersion} id={connection.ServerThread} db={connection.Database}" +
+                    $" connection={connection.GetHashCode()}");
                 return;
             }
             catch (MySqlException ex)
@@ -54,7 +56,28 @@ namespace forexAI
             }
         }
 
-        static public bool CloseConnection()
+        internal void StoreSetting(string key, object value)
+        {
+            string myInsertQuery = $"INSERT INTO settings SET name = '{key}', value = '{value}' " +
+                $"ON DUPLICATE KEY UPDATE value = '{value}'";
+
+            var command = new MySqlCommand(myInsertQuery, connection);
+            command.Connection = connection;
+            command.ExecuteNonQuery();
+        }
+
+        internal object GetSetting(string key)
+        {
+            string myInsertQuery = $"SELECT value FROM settings WHERE name = '{key}'";
+            var command = new MySqlCommand(myInsertQuery, connection);
+            MySqlDataReader dataReader = command.ExecuteReader();
+            command.Connection = connection;
+            dataReader.Read();
+            string value = (string) dataReader["value"];
+            return value;
+        }
+
+        public bool CloseConnection()
         {
             try
             {

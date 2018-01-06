@@ -9,18 +9,20 @@ using System.Threading.Tasks;
 using static forexAI.Logger;
 using FANNCSharp.Double;
 using System.Text.RegularExpressions;
+using TicTacTec.TA.Library;
 
 namespace forexAI
 {
     public class ForexAI : MqlApi
     {
-        public Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
+        private Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
         private int inputDimension = 0;
         private string inputLayerActivationFunction, middleLayerActivationFunction;
         private int previousBars = 0;
         private double total;
         private double spends;
         private NeuralNet ai;
+        private Storage storage = new Storage();
         private double profit;
         private string symbol = "";
         private int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
@@ -28,6 +30,7 @@ namespace forexAI
         private string l_name_8, type = "";
         private int startTime = 0;
         private string aiName;
+        private int totalNeurons;
 
         public double this[string name]
         {
@@ -67,9 +70,12 @@ namespace forexAI
         public override int deinit()
         {
             log("Deinitializing ...");
-            log($"Balance={AccountBalance()} Orders={OrdersTotal()}");
+            debug($"Balance={AccountBalance()} Orders={OrdersTotal()}");
+
+            storage.SyncData();
+
             string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
-            log($"Uptime {mins} mins");
+            debug($"Uptime {mins} mins");
             log("... done");
             return 0;
         }
@@ -77,38 +83,44 @@ namespace forexAI
         public override int init()
         {
             startTime = GetTickCount();
-            log("Initializing ...");
 
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             DateTime buildDate = new DateTime(2018, 1, 6)
                                     .AddDays(version.Build).AddSeconds(version.Revision * 2);
 
             string displayableVersion = $"{version} ({buildDate})";
-            log($"Software version: {displayableVersion}");
+            log($"[ Automatic Trading Extension for MT4. (c) 2018 Sergey Efimov (deconf@ya.ru). ]");
+            log("Initializing ...");
+            log($"Version: {displayableVersion}");
             log($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
-            log($"AccNumber={AccountNumber()} name=[{AccountName()}] balance={AccountBalance()} currency={AccountCurrency()} " +
+            debug($"AccNumber={AccountNumber()} AccName=[{AccountName()}] balance={AccountBalance()} currency={AccountCurrency()} " +
                 $"equity={AccountEquity()} marginMode={AccountFreeMarginMode()}");
-            log($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
-            log($"expert={WindowExpertName()}");
+            debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
+            debug($"expert={WindowExpertName()}");
+            debug($"libs used: [ta-lib, fann4net]");
 
             symbol = Symbol();
             int runNum = (int) this["runNum"];
-            log($"IsOptimization={IsOptimization()} IsTesting={IsTesting()} runNum={runNum}");
-            log($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
-            log($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}");
-            log($"lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
+            debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()} runNum={runNum}");
+            debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
+            debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}");
+            debug($"lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
 
             int var_total = GlobalVariablesTotal();
             string name;
             for (int i = 0; i < var_total; i++)
             {
                 name = GlobalVariableName(i);
-                log($"global var {name}={GlobalVariableGet(name)}");
+                debug($"global var {name}={GlobalVariableGet(name)}");
             }
 
             this["runNum"] = runNum + 1;
 
-            DB.Init();
+            Data.db = new DB();
+
+            //storage.UpMemcache();
+
+            storage["random"] = random.Next(int.MaxValue);
 
             LoadNetworks();
 
@@ -127,6 +139,7 @@ namespace forexAI
 
             info($"Network: hash={ai.GetHashCode()} inputs={ai.InputCount} outputs={ai.OutputCount} neurons={ai.TotalNeurons}");
 
+            totalNeurons = (int) ai.TotalNeurons;
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
             Regex regex = new Regex(@"\[([^ \r\n\[\]]{1,10}?)\s+?", RegexOptions.Multiline | RegexOptions.Singleline);
             foreach (Match match in regex.Matches(fileTextData))
@@ -163,12 +176,11 @@ namespace forexAI
         {
             DirectoryInfo d = new DirectoryInfo(Data.DataDirectory);
             DirectoryInfo[] Dirs = d.GetDirectories("*");
-            int num = 0;
 
-            log($"scanning networks: found {Dirs.Length} networks.");
+            log($"Looking for networks [{Data.DataDirectory}]: found {Dirs.Length} networks.");
 
-            foreach (DirectoryInfo dir in Dirs)
-                debug($"> FANN network #{num++} {dir.Name}");
+            //foreach (DirectoryInfo dir in Dirs)
+            //    storage[num++.ToString()] = $"{dir.Name}";
 
             LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
         }
@@ -421,10 +433,16 @@ namespace forexAI
 
             tot_spends = spend_sells + spend_buys;
             tot_profits = profitsells + profitbuys;
-            string d = "";
+            string d = "0";
 
             if (tot_spends > 0 && tot_profits > 0)
                 d = DoubleToStr(100 - ((100.0 / tot_profits) * tot_spends), 2);
+
+            string funcsString = "";
+            foreach (var func in Data.nnFunctions)
+            {
+                funcsString += $"|{func.Key}";
+            }
             Comment(
                "profitsells: " + profitsells + "\r\n" +
                "spend_sells:  " + spend_sells + "\r\n"
@@ -432,8 +450,14 @@ namespace forexAI
               + "spend_buys:    " + spend_buys + "\r\n"
               + "tot_profits: " + DoubleToStr(tot_profits, 0) + "\r\n" +
                "tot_spends:  " + DoubleToStr(tot_spends, 0) + "\r\n" +
-               "КПД: " + d + "%" + "\r\n" +
-               "Network: " + aiName);
+               "КПД: " + d + "%" + "\r\n---------------\r\n" +
+               "Network: " + aiName + "\r\n" +
+               "Functions: " + funcsString + "\r\n" +
+               "InputDimension: " + inputDimension + "\r\n" +
+               "Neurons: " + totalNeurons + "\r\n" +
+               "Input: " + ai.InputCount + "\r\n" +
+               "InputActFunc: " + inputLayerActivationFunction + "\r\n" +
+               "LayerActFunc: " + middleLayerActivationFunction);
 
             if (ObjectFind("statyys") == -1)
             {
