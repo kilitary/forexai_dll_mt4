@@ -105,6 +105,7 @@ namespace forexAI
             symbol = Symbol();
             this["runNum"] += 1;
 
+            ClearLogs();
             Banner();
             DumpInfo();
             ListGlobalVariables();
@@ -120,12 +121,8 @@ namespace forexAI
 
         private void Banner()
         {
-            string logFileName = Configuration.DataDirectory + "\\mt4.log";
-            if (File.Exists(logFileName))
-                File.Delete(logFileName);
-
             log($"*** Automatic Trading Expert for MT4, based on neural networks with auto-created strategy.");
-            log($"*** (c) 2018 Sergey Efimov (deconf@ya.ru). ");
+            log($"*** (c) 2018 Sergey Efimov (deconf@ya.ru, telegram/phone: +79500426692). ");
             log("Initializing ...");
 
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
@@ -189,21 +186,17 @@ namespace forexAI
             if (Configuration.useMysql)
                 Data.db = new DB();
 
-            if (Configuration.useMemcached)
-                storage.InitMemcached();
-
             storage["random"] = random.Next(int.MaxValue);
         }
 
         public void LoadNetwork(string dirName)
         {
-            log($"Loading fann network [{dirName}]");
+            log($"Loading FANN network {dirName} ...");
 
             aiName = dirName;
             this.dirName = dirName;
 
             aiNetwork = new NeuralNet($"{Configuration.DataDirectory}\\{dirName}\\FANN.net");
-
             aiNetwork.ResetMSE();
 
             info($"Network: hash={aiNetwork.GetHashCode()} inputs={aiNetwork.InputCount} outputs={aiNetwork.OutputCount} neurons={aiNetwork.TotalNeurons} ");
@@ -235,6 +228,7 @@ namespace forexAI
 
             Match matchls = Regex.Match(fileTextData, "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
                  RegexOptions.Singleline);
+
             info($"* activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
 
             inputLayerActivationFunction = matchls.Groups[1].Value;
@@ -246,7 +240,7 @@ namespace forexAI
             DirectoryInfo d = new DirectoryInfo(Configuration.DataDirectory);
             DirectoryInfo[] Dirs = d.GetDirectories("*");
 
-            log($"Looking for networks [{Configuration.DataDirectory}]: found {Dirs.Length} networks.");
+            log($"Looking for networks in {Configuration.DataDirectory}: found {Dirs.Length} networks.");
 
             //foreach (DirectoryInfo dir in Dirs)
             //    storage[num++.ToString()] = $"{dir.Name}";

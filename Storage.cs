@@ -23,6 +23,8 @@ namespace forexAI
 
         public Storage()
         {
+            if (Configuration.useMemcached)
+                InitMemcached();
         }
 
         ~Storage()
@@ -56,6 +58,9 @@ namespace forexAI
 
         public void SyncData()
         {
+            if (properties.Count <= 0)
+                return;
+
             debug($"storage: storing {properties.Count} key-value pairs.");
             foreach (KeyValuePair<string, object> o in properties)
             {

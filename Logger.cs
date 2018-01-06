@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -11,6 +12,12 @@ namespace forexAI
 {
     internal static class Logger
     {
+        public static void ClearLogs()
+        {
+            if (File.Exists(Configuration.LogFileName))
+                File.Delete(Configuration.LogFileName);
+        }
+
         public static void debug(String lines)
         {
             System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
@@ -140,6 +147,7 @@ namespace forexAI
             file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " " + lines);
             file.Close();
         }
+
         public static void warning(String lines)
         {
             System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
