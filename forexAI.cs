@@ -102,13 +102,15 @@ namespace forexAI
         {
             startTime = GetTickCount();
 
+            log($"*** Automatic Trading Extension for MT4, based on neural networks. (c) 2018 Sergey Efimov (deconf@ya.ru). ");
+            log("Initializing ...");
+
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             DateTime buildDate = new DateTime(2018, 1, 6)
                                     .AddDays(version.Build).AddSeconds(version.Revision * 2);
 
             string displayableVersion = $"{version}";
-            log($"*** Automatic Trading Extension for MT4, based on neural networks. (c) 2018 Sergey Efimov (deconf@ya.ru). ");
-            log("Initializing ...");
+
             log($"Version: {displayableVersion}");
 
             DumpInfo();
