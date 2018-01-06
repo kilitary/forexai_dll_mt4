@@ -108,6 +108,8 @@ namespace forexAI
 
             this["runNum"] = runNum + 1;
 
+            DB.Init();
+
             LoadNetworks();
 
             log($"... initialized in {(GetTickCount() - startTime) / 1000.0} sec.");
@@ -430,7 +432,7 @@ namespace forexAI
               + "spend_buys:    " + spend_buys + "\r\n"
               + "tot_profits: " + DoubleToStr(tot_profits, 0) + "\r\n" +
                "tot_spends:  " + DoubleToStr(tot_spends, 0) + "\r\n" +
-               "КПД: " + d + "%" + "\r\n"+
+               "КПД: " + d + "%" + "\r\n" +
                "Network: " + aiName);
 
             if (ObjectFind("statyys") == -1)
