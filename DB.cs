@@ -14,28 +14,38 @@ namespace forexAI
     {
         private MySqlConnection connection = null;
 
-        public DB()
+        public DB ()
         {
             string connectionString;
-            connectionString = "SERVER=" + Configuration.mysql_server + ";" + "DATABASE=" + Configuration.mysql_database +
-                ";" + "UID=" + Configuration.mysql_uid + ";" + "PASSWORD=" + Configuration.mysql_password + ";";
+            connectionString = "SERVER=" +
+                Configuration.mysql_server +
+                ";" +
+                "DATABASE=" +
+                Configuration.mysql_database +
+                ";" +
+                "UID=" +
+                Configuration.mysql_uid +
+                ";" +
+                "PASSWORD=" +
+                Configuration.mysql_password +
+                ";";
 
-            connection = new MySqlConnection(connectionString);
+            this.connection = new MySqlConnection(connectionString);
 
             try
             {
-                connection.Open();
-                debug($"opened mysql connection: version={connection.ServerVersion} id={connection.ServerThread} db={connection.Database}" +
-                    $" connection={connection.GetHashCode()}");
+                this.connection.Open();
+                debug($"opened mysql connection: version={this.connection.ServerVersion} id={this.connection.ServerThread} db={this.connection.Database}" +
+                    $" connection={this.connection.GetHashCode()}");
                 return;
             }
-            catch (MySqlException ex)
+            catch(MySqlException ex)
             {
                 //When handling errors, you can your application's response based on the error number.
                 //The two most common error numbers when connecting are as follows:
                 //0: Cannot connect to server.
                 //1045: Invalid user name and/or password.
-                switch (ex.Number)
+                switch(ex.Number)
                 {
                     case 0:
                         error($"Cannot connect to server.  Contact administrator [{ex.Message}]");
@@ -53,37 +63,37 @@ namespace forexAI
             }
         }
 
-        public bool CloseConnection()
+        public bool CloseConnection ()
         {
             try
             {
-                connection.Close();
+                this.connection.Close();
                 return true;
             }
-            catch (MySqlException ex)
+            catch(MySqlException ex)
             {
                 error(ex.Message);
                 return false;
             }
         }
 
-        internal object GetSetting(string key)
+        internal object GetSetting (string key)
         {
             string myInsertQuery = $"SELECT value FROM settings WHERE name = '{key}'";
-            var command = new MySqlCommand(myInsertQuery, connection);
+            var command = new MySqlCommand(myInsertQuery, this.connection);
             MySqlDataReader dataReader = command.ExecuteReader();
-            command.Connection = connection;
+            command.Connection = this.connection;
             dataReader.Read();
             return (string) dataReader["value"];
         }
 
-        internal void SetSetting(string key, object value)
+        internal void SetSetting (string key, object value)
         {
             string myInsertQuery = $"INSERT INTO settings SET name = '{key}', value = '{value}' " +
                 $"ON DUPLICATE KEY UPDATE value = '{value}'";
 
-            var command = new MySqlCommand(myInsertQuery, connection);
-            command.Connection = connection;
+            var command = new MySqlCommand(myInsertQuery, this.connection);
+            command.Connection = this.connection;
             command.ExecuteNonQuery();
         }
     }
