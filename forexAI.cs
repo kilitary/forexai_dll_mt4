@@ -18,22 +18,315 @@ namespace forexAI
         private int inputDimension = 0;
         private string inputLayerActivationFunction, middleLayerActivationFunction;
         private int previousBars = 0;
+
         public override int deinit()
         {
             log("Deinitializing ...");
-            log("Balance " + AccountBalance());
+            log($"Balance {AccountBalance()} Orders {OrdersTotal()}");
             log("done");
             return 0;
         }
 
         public override int init()
         {
-            log("Initializing .... ");
+            log("Initializing ...");
+
+            Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            DateTime buildDate = new DateTime(2018, 1, 6)
+                                    .AddDays(version.Build).AddSeconds(version.Revision * 2);
+            string displayableVersion = $"{version} ({buildDate})";
+            log($"Software version: {displayableVersion}");
+
+            log($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
+
+            int var_total = GlobalVariablesTotal();
+            string name;
+            for (int i = 0; i < var_total; i++)
+            {
+                name = GlobalVariableName(i);
+                log($"* global var {name}={GlobalVariableGet(name)}");
+            }
+
+            log($"AccNumber={AccountNumber()} name=[{AccountName()}] balance={AccountBalance()} currency={AccountCurrency()} " +
+                $"equity={AccountEquity()} marginMode={AccountFreeMarginMode()}");
+            log($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
+
+            int runNum = (int) GlobalVariableGet("runNum");
+            log($"optimization={IsOptimization()} testing={IsTesting()} run={runNum}");
+            log($"orders={OrdersTotal()}");
+            GlobalVariableSet("runNum", runNum + 1);
 
             LoadNetworks();
 
-            log("done");
+            log("initialized.");
             return 0;
+        }
+
+        public void DrawStats()
+        {
+            int ticket = 0, opnum = 0;
+            string l_name_8, type = "";
+            int i;
+
+            for (i = 0; i < 9; i++)
+            {
+                l_name_8 = "order" + i;
+                if (ObjectFind(l_name_8) == -1)
+                {
+                    ObjectCreate(l_name_8, OBJ_LABEL, 0, DateTime.Now, 0);
+                    ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                    ObjectSet(l_name_8, OBJPROP_XDISTANCE, 300);
+                    ObjectSet(l_name_8, OBJPROP_YDISTANCE, i * 10);
+                }
+
+                ObjectSetText(l_name_8, "                                    ", 8, "consolas", Color.White);
+            }
+
+            for (i = 0; i < OrdersTotal(); i++)
+            {
+                OrderSelect(i, SELECT_BY_POS, MODE_TRADES);
+                if (OrderSymbol() == Symbol())
+                {
+                    if (OrderType() == OP_BUY)
+                    {
+                        type = "BUY";
+                    }
+                    if (OrderType() == OP_SELL)
+                    {
+                        ticket = OrderTicket();
+                        type = "SELL";
+                    }
+                    if (OrderType() == OP_BUYLIMIT)
+                    {
+                        type = "BUY_LIMIT";
+                    }
+                    if (OrderType() == OP_SELLLIMIT)
+                    {
+                        type = "SELL_LIMIT";
+                    }
+                    if (OrderType() == OP_BUYSTOP)
+                    {
+                        type = "BUY_STOP";
+                    }
+                    if (OrderType() == OP_SELLSTOP)
+                    {
+                        type = "SELL_STOP";
+                    }
+
+                    l_name_8 = "order" + i;
+
+                    ObjectSetText(l_name_8, "îðäåð " + type + " #" + i + " ïðîôèò " + DoubleToStr(OrderProfit(), 2), 8, "consolas", Color.White);
+                }
+            }
+
+            string gs_80 = "text";
+            // double ld_0 = GetProfitForDay(0);
+            l_name_8 = gs_80 + "1";
+            /* if (ObjectFind(l_name_8) == -1) {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, 0, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 15);
+             }
+             ObjectSetText(l_name_8, "Çàðàáîòîê ñåãîäíÿ: " + DoubleToStr(ld_0, 2), 8, "consolas", Yellow);
+             ld_0 = GetProfitForDay(1);
+             l_name_8 = gs_80 + "2";
+             if (ObjectFind(l_name_8) == -1) {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, 0, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 30);
+             }
+             ObjectSetText(l_name_8, "Çàðàáîòîê â÷åðà: " + DoubleToStr(ld_0, 2), 8, "consolas", Yellow);
+             ld_0 = GetProfitForDay(2);
+             l_name_8 = gs_80 + "3";
+             if (ObjectFind(l_name_8) == -1) {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, 0, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 45);
+             }
+             ObjectSetText(l_name_8, "Çàðàáîòîê ïîçàâ÷åðà: " + DoubleToStr(ld_0, 2), 8, "consolas", Yellow);*/
+            l_name_8 = gs_80 + "4";
+            if (ObjectFind(l_name_8) == -1)
+            {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, DateTime.Now, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 0);
+            }
+            ObjectSetText(l_name_8, "AccountEquity: " + DoubleToStr(AccountEquity(), 2), 8, "consolas", Color.Yellow);
+
+            l_name_8 = gs_80 + "5";
+            if (ObjectFind(l_name_8) == -1)
+            {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, DateTime.Now, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 10);
+            }
+            double total;
+            total = GetActiveProfit();
+            ObjectSetText(l_name_8, "ActiveProfit: " + DoubleToStr(total, 2), 8, "consolas", Color.Yellow);
+
+            l_name_8 = gs_80 + "6";
+            if (ObjectFind(l_name_8) == -1)
+            {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, DateTime.Now, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 20);
+            }
+
+            total = GetActiveSpend();
+            ObjectSetText(l_name_8, "ActiveSpend: " + DoubleToStr(total, 2), 8, "consolas", Color.Yellow);
+
+            total = GetActiveIncome();
+            l_name_8 = gs_80 + "7";
+            if (ObjectFind(l_name_8) == -1)
+            {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, DateTime.Now, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 30);
+            }
+            ObjectSetText(l_name_8, "ActiveIncome: " + DoubleToStr(total, 2), 8, "consolas", Color.Yellow);
+
+            double spends;
+            double profit;
+            spends = GetActiveSpend();
+            profit = GetActiveProfit();
+            spends = (0 - (spends));
+            // Print("profit:",profit," spends:", spends);
+            if (profit > 0.0 && spends >= 0.0)
+                total = (0 - ((profit) * 100.0) / spends);
+            else
+                total = 0;
+
+            l_name_8 = gs_80 + "8";
+            if (ObjectFind(l_name_8) == -1)
+            {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, DateTime.Now, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 40);
+            }
+            ObjectSetText(l_name_8, "kpd %: " + DoubleToStr(total, 0) + "%", 8, "consolas", Color.Yellow);
+
+            l_name_8 = gs_80 + "9";
+            if (ObjectFind(l_name_8) == -1)
+            {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, DateTime.Now, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 50);
+            }
+
+            ObjectSetText(l_name_8, "opnum: " + opnum, 8, "consolas", Color.Yellow);
+
+            l_name_8 = gs_80 + "10";
+            if (ObjectFind(l_name_8) == -1)
+            {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, DateTime.Now, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 60);
+            }
+            ObjectSetText(l_name_8, "OrdersTotal: " + OrdersTotal(), 8, "consolas", Color.Yellow);
+
+            string dirtext = "", dirtext2 = "";
+            l_name_8 = gs_80 + "11";
+            if (ObjectFind(l_name_8) == -1)
+            {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, DateTime.Now, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 70);
+            }
+            ObjectSetText(l_name_8, "dirtext: " + dirtext, 8, "consolas", Color.Yellow);
+
+            l_name_8 = gs_80 + "12";
+            if (ObjectFind(l_name_8) == -1)
+            {
+                ObjectCreate(l_name_8, OBJ_LABEL, 0, DateTime.Now, 0);
+                ObjectSet(l_name_8, OBJPROP_CORNER, 1);
+                ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
+                ObjectSet(l_name_8, OBJPROP_YDISTANCE, 80);
+            }
+            ObjectSetText(l_name_8, "dirtext2: " + dirtext2, 8, "consolas", Color.Yellow);
+
+            int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
+            tot_spends = spend_sells + spend_buys;
+            tot_profits = profitsells + profitbuys;
+            string d = "";
+
+            if (tot_spends > 0 && tot_profits > 0)
+                d = DoubleToStr(100 - ((100.0 / tot_profits) * tot_spends), 2);
+            Comment(
+               "profitsells: " + profitsells + "\r\n" +
+               "spend_sells:  " + spend_sells + "\r\n"
+              + "profitbuys:   " + profitbuys + "\r\n"
+              + "spend_buys:    " + spend_buys + "\r\n"
+              + "tot_profits: " + DoubleToStr(tot_profits, 0) + "\r\n" +
+               "tot_spends:  " + DoubleToStr(tot_spends, 0) + "\r\n" +
+               "КПД: " + d + "%" + "\r\n");
+
+            if (ObjectFind("statyys") == -1)
+            {
+                ObjectCreate("statyys", OBJ_LABEL, 0, DateTime.Now, 0);
+                ObjectSet("statyys", OBJPROP_CORNER, 0);
+                ObjectSet("statyys", OBJPROP_XDISTANCE, 150);
+                ObjectSet("statyys", OBJPROP_YDISTANCE, 16);
+            }
+
+            WindowRedraw();
+        }
+
+        private double GetActiveProfit()
+        {
+            int orders = OrdersTotal();
+            double total = 0.0;
+            //Print("total orders: "+orders);
+            for (int pos = 0; pos < orders; pos++)
+            {
+                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+                if (OrderProfit() > 0.0)
+                    total = total + OrderProfit();
+            }
+            //   return (160);
+            return (total);
+        }
+
+        private double GetActiveSpend()
+        {
+            int orders = OrdersTotal();
+            double total = 0.0;
+            //  Print("total orders: "+orders);
+            for (int pos = 0; pos < orders; pos++)
+            {
+                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+                if (OrderProfit() < 0.0)
+                    total = total + OrderProfit();
+            }
+            // return (170);
+            return (total);
+        }
+
+        private double GetActiveIncome()
+        {
+            double total = 0.0;
+            double spends;
+            double profit;
+
+            spends = GetActiveSpend();
+            profit = GetActiveProfit();
+            if (profit > spends)
+                total = profit + (spends);
+            else
+                total = 0.0;
+            return (total);
         }
 
         public void LoadNetwork(string dirName)
@@ -42,7 +335,7 @@ namespace forexAI
 
             NeuralNet ai = new NeuralNet($"d:\\temp\\forexAI\\{dirName}\\FANN.net");
 
-            info($"network: hash={ai.GetHashCode()} inputs={ai.InputCount} outputs={ai.OutputCount} neurons={ai.TotalNeurons}");
+            info($"Network: hash={ai.GetHashCode()} inputs={ai.InputCount} outputs={ai.OutputCount} neurons={ai.TotalNeurons}");
 
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
             Regex regex = new Regex(@"\[([^ \r\n\[\]]{1,10}?)\s+?", RegexOptions.Multiline | RegexOptions.Singleline);
@@ -52,7 +345,7 @@ namespace forexAI
                     continue;
 
                 string funcName = match.Groups[0].Value.Trim('[', ' ');
-                info($" function [{funcName}]");
+                info($"* function [{funcName}]");
 
                 Dictionary<string, string> data = new Dictionary<string, string>();
 
@@ -66,31 +359,29 @@ namespace forexAI
             Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
             int.TryParse(match2.Groups[1].Value, out inputDimension);
 
-            info($"inputDimension = {inputDimension}");
+            info($"* inputDimension = {inputDimension}");
 
-            Match match3 = Regex.Match(fileTextData, "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
+            Match matchls = Regex.Match(fileTextData, "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
                  RegexOptions.Singleline);
-            info($"activation functions: input [{match3.Groups[1].Value}] layer [{match3.Groups[2].Value}]");
+            info($"* activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
 
-            inputLayerActivationFunction = match3.Groups[1].Value;
-            middleLayerActivationFunction = match3.Groups[2].Value;
+            inputLayerActivationFunction = matchls.Groups[1].Value;
+            middleLayerActivationFunction = matchls.Groups[2].Value;
         }
 
         public void LoadNetworks()
         {
             DirectoryInfo d = new DirectoryInfo(@"D:\temp\forexAI");//Assuming Test is your Folder
-            DirectoryInfo[] Files = d.GetDirectories("*"); //Getting Text files
+            DirectoryInfo[] Dirs = d.GetDirectories("*"); //Getting Text files
             int num = 0;
-            foreach (DirectoryInfo file in Files)
-            {
-                info($" > network #{num++} {file.Name}");
-                if (random.Next(2) == 1)
-                {
-                    LoadNetwork(file.Name);
-                    break;
-                }
-            }
+
+            log($"scanning networks: found {Dirs.Length} networks.");
+            foreach (DirectoryInfo dir in Dirs)
+                info($"> network #{num++} {dir.Name}");
+
+            LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
         }
+
         //+------------------------------------------------------------------+
         //| Start function                                                   |
         //+------------------------------------------------------------------+
@@ -98,6 +389,8 @@ namespace forexAI
         {
             if (Bars == previousBars)
                 return 0;
+
+            DrawStats();
 
             previousBars = Bars;
             ////---- calculate open orders by current symbol
