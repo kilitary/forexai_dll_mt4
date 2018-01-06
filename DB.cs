@@ -10,9 +10,9 @@ using static forexAI.Logger;
 
 namespace forexAI
 {
-    internal class DB
+    class DB
     {
-        private MySqlConnection connection = null;
+        MySqlConnection connection = null;
 
         public DB ()
         {
@@ -30,13 +30,13 @@ namespace forexAI
                 Configuration.mysql_password +
                 ";";
 
-            this.connection = new MySqlConnection(connectionString);
+            connection = new MySqlConnection(connectionString);
 
             try
             {
-                this.connection.Open();
-                debug($"opened mysql connection: version={this.connection.ServerVersion} id={this.connection.ServerThread} db={this.connection.Database}" +
-                    $" connection={this.connection.GetHashCode()}");
+                connection.Open();
+                debug($"opened mysql connection: version={connection.ServerVersion} id={connection.ServerThread} db={connection.Database}" +
+                    $" connection={connection.GetHashCode()}");
                 return;
             }
             catch(MySqlException ex)
@@ -67,7 +67,7 @@ namespace forexAI
         {
             try
             {
-                this.connection.Close();
+                connection.Close();
                 return true;
             }
             catch(MySqlException ex)
@@ -80,9 +80,9 @@ namespace forexAI
         internal object GetSetting (string key)
         {
             string myInsertQuery = $"SELECT value FROM settings WHERE name = '{key}'";
-            var command = new MySqlCommand(myInsertQuery, this.connection);
+            var command = new MySqlCommand(myInsertQuery, connection);
             MySqlDataReader dataReader = command.ExecuteReader();
-            command.Connection = this.connection;
+            command.Connection = connection;
             dataReader.Read();
             return (string) dataReader["value"];
         }
@@ -92,8 +92,8 @@ namespace forexAI
             string myInsertQuery = $"INSERT INTO settings SET name = '{key}', value = '{value}' " +
                 $"ON DUPLICATE KEY UPDATE value = '{value}'";
 
-            var command = new MySqlCommand(myInsertQuery, this.connection);
-            command.Connection = this.connection;
+            var command = new MySqlCommand(myInsertQuery, connection);
+            command.Connection = connection;
             command.ExecuteNonQuery();
         }
     }

@@ -10,32 +10,32 @@ using System.Threading.Tasks;
 
 namespace forexAI
 {
-    internal static class Logger
+    public static class Logger
     {
-        public static void ClearLogs()
+        public static void ClearLogs ()
         {
-            if (File.Exists(Configuration.LogFileName))
+            if(File.Exists(Configuration.LogFileName))
                 File.Delete(Configuration.LogFileName);
         }
 
-        public static void debug(String lines)
+        public static void debug (string lines)
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
+            StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
             file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " " + "debug: " + lines);
             file.Close();
         }
 
-        public static string dump(object value, string name = "unknown", int depth = 0, bool show = false)
+        public static string dump (object value, string name = "unknown", int depth = 0, bool show = false)
         {
             StringBuilder result = new StringBuilder();
 
             string spaces = "|   ";
             string indent = new StringBuilder().Insert(0, spaces, depth).ToString();
-            string displayValue = String.Empty;
+            string displayValue = string.Empty;
 
             try
             {
-                if (value != null)
+                if(value != null)
                 {
                     Type type = value.GetType();
 
@@ -43,83 +43,63 @@ namespace forexAI
 
                     log($"type={type.ToString()} dv={displayValue}");
 
-                    if (value is Boolean)
-                    {
-                        displayValue = String.Format("{0}({1})", type.FullName, value.Equals(true) ? "True" : "False");
-                    }
-                    else if (value is Int16 || value is UInt16 ||
-                             value is Int32 || value is UInt32 ||
-                             value is Int64 || value is UInt64 ||
-                             value is Single || value is Double ||
-                             value is Decimal)
-                    {
-                        displayValue = String.Format("{0}({1})", type.FullName, displayValue);
-                    }
-                    else if (value is Char)
-                    {
-                        displayValue = String.Format("{0} \"{1}\"", type.FullName, displayValue);
-                    }
-                    else if (value is Char[])
-                    {
-                        displayValue = String.Format("{0}(#{1}) \"{2}\"", type.FullName, (value as Char[]).Length,
-                            displayValue);
-                    }
-                    else if (value is String)
-                    {
-                        displayValue = String.Format("{0}(#{1}) \"{2}\"", type.FullName, (value as String).Length,
-                            displayValue);
-                    }
-                    else if (value is Byte || value is SByte)
-                    {
-                        displayValue = String.Format("{0} 0x{1:X}", type.FullName, value);
-                    }
-                    else if (value is Byte[] || value is SByte[])
-                    {
-                        displayValue = String.Format("{0}(#{1}) 0x{2}", type.FullName, (value as Byte[]).Length, BitConverter.ToString(value as Byte[]));
-                    }
-                    else if (value is ICollection)
+                    if(value is bool)
+                        displayValue = $"{type.FullName}({(value.Equals(true) ? "True" : "False")})";
+                    else if(value is short ||
+                        value is ushort ||
+                             value is int ||
+                        value is uint ||
+                             value is long ||
+                        value is ulong ||
+                             value is float ||
+                        value is double ||
+                             value is decimal)
+                        displayValue = $"{type.FullName}({displayValue})";
+                    else if(value is char)
+                        displayValue = $"{type.FullName} \"{displayValue}\"";
+                    else if(value is char[])
+                        displayValue = $"{type.FullName}(#{(value as char[]).Length}) \"{displayValue}\"";
+                    else if(value is string)
+                        displayValue = $"{type.FullName}(#{(value as string).Length}) \"{displayValue}\"";
+                    else if(value is byte || value is sbyte)
+                        displayValue = $"{type.FullName} 0x{value:X}";
+                    else if(value is byte[] || value is sbyte[])
+                        displayValue = $"{type.FullName}(#{(value as byte[]).Length}) 0x{BitConverter.ToString(value as byte[])}";
+                    else if(value is ICollection)
                     {
                         var i = 0;
-                        var displayValues = String.Empty;
+                        var displayValues = string.Empty;
 
                         var collection = value as ICollection;
-                        foreach (object element in collection)
+                        foreach(object element in collection)
                         {
-                            displayValues = String.Concat(displayValues, dump(element, i.ToString(), depth + 1, false));
+                            displayValues = string.Concat(displayValues, dump(element, i.ToString(), depth + 1, false));
                             i++;
                         }
 
-                        displayValue = String.Format("{0}(#{1}) {{\n{2}{3}}}", type.FullName, collection.Count, displayValues, indent);
+                        displayValue = $"{type.FullName}(#{collection.Count}) {{\n{displayValues}{indent}}}";
                     }
                     else
                     {
-                        var displayValues = String.Empty;
+                        var displayValues = string.Empty;
 
                         PropertyInfo[] properties = type.GetProperties();
-                        foreach (PropertyInfo property in properties)
-                        {
-                            displayValues = String.Concat(displayValues,
+                        foreach(PropertyInfo property in properties)
+                            displayValues = string.Concat(displayValues,
                                 dump(property.GetValue(value, null), property.Name, depth + 1, false));
-                        }
 
-                        displayValue = String.Format("{0}(#{1}) {{\n{2}{3}}}\n", type.Name, properties.Length, displayValues, indent);
+                        displayValue = $"{type.Name}(#{properties.Length}) {{\n{displayValues}{indent}}}\n";
                     }
                 }
                 else
-                {
                     displayValue = "null";
-                }
 
-                if (name != String.Empty)
-                {
+                if(name != string.Empty)
                     result.Append(indent + ' ' + name + " => " + displayValue + "\n");
-                }
                 else
-                {
                     result.Append(indent + displayValue + "\n");
-                }
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -127,30 +107,30 @@ namespace forexAI
             return result.ToString();
         }
 
-        public static void error(String lines)
+        public static void error (string lines)
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
+            StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
             file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " " + "error: " + lines);
             file.Close();
         }
 
-        public static void info(String lines)
+        public static void info (string lines)
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
+            StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
             file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " " + "info: " + lines);
             file.Close();
         }
 
-        public static void log(String lines)
+        public static void log (string lines)
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
+            StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
             file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " " + lines);
             file.Close();
         }
 
-        public static void warning(String lines)
+        public static void warning (string lines)
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
+            StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
             file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " " + "warning: " + lines);
             file.Close();
         }

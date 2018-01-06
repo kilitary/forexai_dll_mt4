@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace forexAI
 {
-    internal static class Configuration
+    public static class Configuration
     {
         public static string DataDirectory = @"D:\temp\forexAI";
         public static string LogFileName = @"d:\temp\forexAI\mt4.log";
