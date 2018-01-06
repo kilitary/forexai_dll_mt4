@@ -28,6 +28,9 @@ namespace forexAI
                 if (properties.ContainsKey(name))
                     return properties[name];
 
+                if (!Configuration.useMysql)
+                    return "";
+
                 string retrievedValue = "";
                 retrievedValue = (string) Data.db.GetSetting(name);
                 properties[name] = retrievedValue;
@@ -61,7 +64,8 @@ namespace forexAI
             debug($"storage: storing {properties.Count} key-value pairs.");
             foreach (KeyValuePair<string, object> o in properties)
             {
-                Data.db.StoreSetting(o.Key, o.Value);
+                if (Configuration.useMysql)
+                    Data.db.StoreSetting(o.Key, o.Value);
                 if (Configuration.useMemcached)
                     mc.Store(StoreMode.Set, o.Key, o.Value);
             }

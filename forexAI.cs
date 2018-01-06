@@ -15,23 +15,27 @@ namespace forexAI
 {
     public class ForexAI : MqlApi
     {
-        private Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
+        private NeuralNet ai;
+        private string aiName;
         private int inputDimension = 0;
         private string inputLayerActivationFunction, middleLayerActivationFunction;
-        private int previousBars = 0;
-        private double total;
-        private double spends;
-        private NeuralNet ai;
-        private Storage storage = new Storage();
-        private double profit;
-        private string symbol = "";
-        private int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
-        private int ticket = 0, opnum = 0;
         private string l_name_8, type = "";
-        private int startTime = 0;
-        private string aiName;
+        private int previousBars = 0;
         private int previousDay = 0;
+        private double profit;
+        private Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
+        private int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
+        private double spends;
+        private int startTime = 0;
+        private Storage storage = new Storage();
+        private string symbol = "";
+        private int runNum;
+        private int ticket = 0, opnum = 0;
+        private double total;
+        private string dirName;
         private int totalNeurons;
+        private float train_mse;
+        private float test_mse;
 
         public double this[string name]
         {
@@ -43,6 +47,19 @@ namespace forexAI
             {
                 GlobalVariableSet(name, value);
             }
+        }
+
+        public override int deinit()
+        {
+            log("Deinitializing ...");
+            debug($"Balance={AccountBalance()} Orders={OrdersTotal()}");
+
+            storage.SyncData();
+
+            string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
+            debug($"Uptime {mins} mins");
+            log("... done");
+            return 0;
         }
 
         //+------------------------------------------------------------------+
@@ -75,19 +92,6 @@ namespace forexAI
             return 0;
         }
 
-        public override int deinit()
-        {
-            log("Deinitializing ...");
-            debug($"Balance={AccountBalance()} Orders={OrdersTotal()}");
-
-            storage.SyncData();
-
-            string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
-            debug($"Uptime {mins} mins");
-            log("... done");
-            return 0;
-        }
-
         public override int init()
         {
             startTime = GetTickCount();
@@ -96,22 +100,44 @@ namespace forexAI
             DateTime buildDate = new DateTime(2018, 1, 6)
                                     .AddDays(version.Build).AddSeconds(version.Revision * 2);
 
-            string displayableVersion = $"{version} ({buildDate})";
-            log($"* Automatic Trading Extension for MT4 based on neural networks. (c) 2018 Sergey Efimov (deconf@ya.ru). ");
+            string displayableVersion = $"{version}";
+            log($"*** Automatic Trading Extension for MT4 based on neural networks. (c) 2018 Sergey Efimov (deconf@ya.ru). ");
             log("Initializing ...");
             log($"Version: {displayableVersion}");
+
+            DumpInfo();
+
+            ListGlobalVariables();
+
+            this["runNum"] = runNum + 1;
+
+            InitStorages();
+
+            log($"... initialized in {(GetTickCount() - startTime) / 1000.0} sec.");
+
+            LoadNetworks();
+            TestAIOnData();
+
+            return 0;
+        }
+
+        private void DumpInfo()
+        {
             log($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
             log($"AccNumber={AccountNumber()} AccName=[{AccountName()}] Balance={AccountBalance()} Currency={AccountCurrency()} ");
             debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
             debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
 
             symbol = Symbol();
-            int runNum = (int) this["runNum"];
+            runNum = (int) this["runNum"];
             debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()} runNum={runNum}");
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
             debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
                 $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
+        }
 
+        private void ListGlobalVariables()
+        {
             int var_total = GlobalVariablesTotal();
             string name;
             for (int i = 0; i < var_total; i++)
@@ -119,21 +145,28 @@ namespace forexAI
                 name = GlobalVariableName(i);
                 debug($"global var {name}={GlobalVariableGet(name)}");
             }
+        }
 
-            this["runNum"] = runNum + 1;
-
-            Data.db = new DB();
+        private void InitStorages()
+        {
+            if (Configuration.useMysql)
+                Data.db = new DB();
 
             if (Configuration.useMemcached)
                 storage.UpMemcache();
 
             storage["random"] = random.Next(int.MaxValue);
+        }
 
-            LoadNetworks();
-
-            log($"... initialized in {(GetTickCount() - startTime) / 1000.0} sec.");
-
-            return 0;
+        public void TestAIOnData()
+        {
+            log($"Doing network test of {dirName} ...");
+            TrainingData trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
+            TrainingData testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
+            log($"Length: trainData={trainData.TrainDataLength} testData={testData.TrainDataLength}");
+            train_mse = ai.TestDataParallel(trainData, 4);
+            test_mse = ai.TestDataParallel(testData, 3);
+            log($"MSE: train={train_mse.ToString("0.000")} test={test_mse.ToString("0.000")}");
         }
 
         public void LoadNetwork(string dirName)
@@ -141,10 +174,13 @@ namespace forexAI
             log($"Loading fann network [{dirName}]");
 
             aiName = dirName;
+            this.dirName = dirName;
 
             ai = new NeuralNet($"d:\\temp\\forexAI\\{dirName}\\FANN.net");
 
-            info($"Network: hash={ai.GetHashCode()} inputs={ai.InputCount} outputs={ai.OutputCount} neurons={ai.TotalNeurons}");
+            ai.ResetMSE();
+
+            info($"Network: hash={ai.GetHashCode()} inputs={ai.InputCount} outputs={ai.OutputCount} neurons={ai.TotalNeurons} mse={ai.MSE}");
 
             totalNeurons = (int) ai.TotalNeurons;
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
@@ -200,53 +236,6 @@ namespace forexAI
             on = (string) (pos.ToString());
             ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
             ObjectSetText(on, text, 8, "consolas", Color.Orange);
-        }
-
-        private double GetActiveProfit()
-        {
-            int orders = OrdersTotal();
-            double total = 0.0;
-            //Print("total orders: "+orders);
-            for (int pos = 0; pos < orders; pos++)
-            {
-                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
-                    continue;
-                if (OrderProfit() > 0.0)
-                    total = total + OrderProfit();
-            }
-            //   return (160);
-            return (total);
-        }
-
-        private double GetActiveSpend()
-        {
-            int orders = OrdersTotal();
-            double total = 0.0;
-            //  Print("total orders: "+orders);
-            for (int pos = 0; pos < orders; pos++)
-            {
-                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
-                    continue;
-                if (OrderProfit() < 0.0)
-                    total = total + OrderProfit();
-            }
-            // return (170);
-            return (total);
-        }
-
-        private double GetActiveIncome()
-        {
-            double total = 0.0;
-            double spends;
-            double profit;
-
-            spends = GetActiveSpend();
-            profit = GetActiveProfit();
-            if (profit > spends)
-                total = profit + (spends);
-            else
-                total = 0.0;
-            return (total);
         }
 
         public void DrawStats()
@@ -451,20 +440,25 @@ namespace forexAI
                 funcsString += $"|{func.Key}";
             }
             Comment(
-               "profitsells: " + profitsells + "\r\n" +
+               "profitsells: " + profitsells + "\r\n"
+               + "profitbuys:   " + profitbuys + "\r\n" +
                "spend_sells:  " + spend_sells + "\r\n"
-              + "profitbuys:   " + profitbuys + "\r\n"
-              + "spend_buys:    " + spend_buys + "\r\n"
+               + "spend_buys:    " + spend_buys + "\r\n"
               + "tot_profits: " + DoubleToStr(tot_profits, 0) + "\r\n" +
                "tot_spends:  " + DoubleToStr(tot_spends, 0) + "\r\n" +
                "КПД: " + d + "%" + "\r\n---------------\r\n" +
                "Network: " + aiName + "\r\n" +
                "Functions: " + funcsString + "\r\n" +
                "InputDimension: " + inputDimension + "\r\n" +
-               "Neurons: " + totalNeurons + "\r\n" +
-               "Input: " + ai.InputCount + "\r\n" +
+               "TotalNeurons: " + totalNeurons + "\r\n" +
+               "InputCount: " + ai.InputCount + "\r\n" +
                "InputActFunc: " + inputLayerActivationFunction + "\r\n" +
-               "LayerActFunc: " + middleLayerActivationFunction);
+               "LayerActFunc: " + middleLayerActivationFunction + "\r\n" +
+               "ConnRate: " + ai.ConnectionRate + "\r\n" +
+               "Connections: " + ai.TotalConnections + "\r\n" +
+               "LayerCount: " + ai.LayerCount + "\r\n" +
+               "MSE: " + ai.MSE + "\r\n" +
+               "LearningRate: " + ai.LearningRate);
 
             if (ObjectFind("statyys") == -1)
             {
@@ -475,6 +469,53 @@ namespace forexAI
             }
 
             WindowRedraw();
+        }
+
+        private double GetActiveIncome()
+        {
+            double total = 0.0;
+            double spends;
+            double profit;
+
+            spends = GetActiveSpend();
+            profit = GetActiveProfit();
+            if (profit > spends)
+                total = profit + (spends);
+            else
+                total = 0.0;
+            return (total);
+        }
+
+        private double GetActiveProfit()
+        {
+            int orders = OrdersTotal();
+            double total = 0.0;
+            //Print("total orders: "+orders);
+            for (int pos = 0; pos < orders; pos++)
+            {
+                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+                if (OrderProfit() > 0.0)
+                    total = total + OrderProfit();
+            }
+            //   return (160);
+            return (total);
+        }
+
+        private double GetActiveSpend()
+        {
+            int orders = OrdersTotal();
+            double total = 0.0;
+            //  Print("total orders: "+orders);
+            for (int pos = 0; pos < orders; pos++)
+            {
+                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+                if (OrderProfit() < 0.0)
+                    total = total + OrderProfit();
+            }
+            // return (170);
+            return (total);
         }
 
         //+------------------------------------------------------------------+
