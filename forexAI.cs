@@ -18,6 +18,46 @@ namespace forexAI
         private int inputDimension = 0;
         private string inputLayerActivationFunction, middleLayerActivationFunction;
         private int previousBars = 0;
+        private double total;
+        private double spends;
+        private double profit;
+        private int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
+        private int ticket = 0, opnum = 0;
+        private string l_name_8, type = "";
+
+        public double this[string name]
+        {
+            get
+            {
+                return GlobalVariableGet(name);
+            }
+            set
+            {
+                GlobalVariableSet(name, value);
+            }
+        }
+
+        //+------------------------------------------------------------------+
+        //| Start function                                                   |
+        //+------------------------------------------------------------------+
+        public override int start()
+        {
+            if (Bars == previousBars)
+                return 0;
+
+            DrawStats();
+
+            previousBars = Bars;
+            ////---- calculate open orders by current symbol
+            //string symbol = Symbol();
+
+            //if (CalculateCurrentOrders() == 0)
+            //    CheckForOpen(symbol);
+            //else
+            //    CheckForClose(symbol);
+
+            return 0;
+        }
 
         public override int deinit()
         {
@@ -64,8 +104,6 @@ namespace forexAI
 
         public void DrawStats()
         {
-            int ticket = 0, opnum = 0;
-            string l_name_8, type = "";
             int i;
 
             for (i = 0; i < 9; i++)
@@ -165,7 +203,7 @@ namespace forexAI
                 ObjectSet(l_name_8, OBJPROP_XDISTANCE, 10);
                 ObjectSet(l_name_8, OBJPROP_YDISTANCE, 10);
             }
-            double total;
+
             total = GetActiveProfit();
             ObjectSetText(l_name_8, "ActiveProfit: " + DoubleToStr(total, 2), 8, "consolas", Color.Yellow);
 
@@ -192,8 +230,6 @@ namespace forexAI
             }
             ObjectSetText(l_name_8, "ActiveIncome: " + DoubleToStr(total, 2), 8, "consolas", Color.Yellow);
 
-            double spends;
-            double profit;
             spends = GetActiveSpend();
             profit = GetActiveProfit();
             spends = (0 - (spends));
@@ -255,7 +291,6 @@ namespace forexAI
             }
             ObjectSetText(l_name_8, "dirtext2: " + dirtext2, 8, "consolas", Color.Yellow);
 
-            int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
             tot_spends = spend_sells + spend_buys;
             tot_profits = profitsells + profitbuys;
             string d = "";
@@ -371,39 +406,17 @@ namespace forexAI
 
         public void LoadNetworks()
         {
-            DirectoryInfo d = new DirectoryInfo(@"D:\temp\forexAI");//Assuming Test is your Folder
-            DirectoryInfo[] Dirs = d.GetDirectories("*"); //Getting Text files
+            DirectoryInfo d = new DirectoryInfo(Data.DataDirectory);
+            DirectoryInfo[] Dirs = d.GetDirectories("*"); 
             int num = 0;
 
             log($"scanning networks: found {Dirs.Length} networks.");
+
             foreach (DirectoryInfo dir in Dirs)
-                info($"> network #{num++} {dir.Name}");
+                debug($"> network #{num++} {dir.Name}");
 
             LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
         }
-
-        //+------------------------------------------------------------------+
-        //| Start function                                                   |
-        //+------------------------------------------------------------------+
-        public override int start()
-        {
-            if (Bars == previousBars)
-                return 0;
-
-            DrawStats();
-
-            previousBars = Bars;
-            ////---- calculate open orders by current symbol
-            //string symbol = Symbol();
-
-            //if (CalculateCurrentOrders() == 0)
-            //    CheckForOpen(symbol);
-            //else
-            //    CheckForClose(symbol);
-
-            return 0;
-        }
-
         //+------------------------------------------------------------------+
         //| Calculate open positions                                         |
         //+------------------------------------------------------------------+

@@ -10,5 +10,7 @@ namespace forexAI
     {
         public static Dictionary<string, Dictionary<string, string>> nnFunctions =
             new Dictionary<string, Dictionary<string, string>>();
+
+        public static string DataDirectory = @"D:\temp\forexAI";
     }
 }
