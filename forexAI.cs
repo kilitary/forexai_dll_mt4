@@ -17,6 +17,7 @@ namespace forexAI
     {
         private NeuralNet ai;
         private string aiName;
+        private string dirName;
         private int inputDimension = 0;
         private string inputLayerActivationFunction, middleLayerActivationFunction;
         private string l_name_8, type = "";
@@ -24,18 +25,17 @@ namespace forexAI
         private int previousDay = 0;
         private double profit;
         private Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
+        private int runNum;
         private int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
         private double spends;
         private int startTime = 0;
         private Storage storage = new Storage();
         private string symbol = "";
-        private int runNum;
+        private float test_mse;
         private int ticket = 0, opnum = 0;
         private double total;
-        private string dirName;
         private int totalNeurons;
         private float train_mse;
-        private float test_mse;
 
         public double this[string name]
         {
@@ -47,19 +47,6 @@ namespace forexAI
             {
                 GlobalVariableSet(name, value);
             }
-        }
-
-        public override int deinit()
-        {
-            log("Deinitializing ...");
-            debug($"Balance={AccountBalance()} Orders={OrdersTotal()}");
-
-            storage.SyncData();
-
-            string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
-            debug($"Uptime {mins} mins");
-            log("... done");
-            return 0;
         }
 
         //+------------------------------------------------------------------+
@@ -92,6 +79,19 @@ namespace forexAI
             return 0;
         }
 
+        public override int deinit()
+        {
+            log("Deinitializing ...");
+            debug($"Balance={AccountBalance()} Orders={OrdersTotal()}");
+
+            storage.SyncData();
+
+            string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
+            debug($"Uptime {mins} mins");
+            log("... done");
+            return 0;
+        }
+
         public override int init()
         {
             startTime = GetTickCount();
@@ -112,26 +112,11 @@ namespace forexAI
 
             InitStorages();
             LoadNetworks();
-            TestAIOnData();
+            TestNetworkOnData();
 
             log($"... initialized in {(GetTickCount() - startTime) / 1000.0} sec.");
 
             return 0;
-        }
-
-        private void DumpInfo()
-        {
-            log($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
-            log($"AccNumber={AccountNumber()} AccName=[{AccountName()}] Balance={AccountBalance()} Currency={AccountCurrency()} ");
-            debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
-            debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
-
-            symbol = Symbol();
-            runNum = (int) this["runNum"];
-            debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()} runNum={runNum}");
-            debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
-            debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
-                $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
         }
 
         private void ListGlobalVariables()
@@ -154,17 +139,6 @@ namespace forexAI
                 storage.UpMemcache();
 
             storage["random"] = random.Next(int.MaxValue);
-        }
-
-        public void TestAIOnData()
-        {
-            log($"Doing network test of {dirName} ...");
-            TrainingData trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
-            TrainingData testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
-            log($"Length: trainData={trainData.TrainDataLength} testData={testData.TrainDataLength}");
-            train_mse = ai.TestDataParallel(trainData, 4);
-            test_mse = ai.TestDataParallel(testData, 3);
-            log($"MSE: train={train_mse.ToString("0.000")} test={test_mse.ToString("0.000")}");
         }
 
         public void LoadNetwork(string dirName)
@@ -226,6 +200,17 @@ namespace forexAI
             LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
         }
 
+        public void TestNetworkOnData()
+        {
+            log($"Doing network test of {dirName} ...");
+            TrainingData trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
+            TrainingData testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
+            log($"Length: trainData={trainData.TrainDataLength} testData={testData.TrainDataLength}");
+            train_mse = ai.TestDataParallel(trainData, 4);
+            test_mse = ai.TestDataParallel(testData, 3);
+            log($"MSE: train={train_mse.ToString("0.000")} test={test_mse.ToString("0.000")}");
+        }
+
         private void AddText(string text)
         {
             string on;
@@ -234,6 +219,21 @@ namespace forexAI
             on = (string) (pos.ToString());
             ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
             ObjectSetText(on, text, 8, "consolas", Color.Orange);
+        }
+
+        private void DumpInfo()
+        {
+            log($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
+            log($"AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
+            debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
+            debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
+
+            symbol = Symbol();
+            runNum = (int) this["runNum"];
+            debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()} runNum={runNum}");
+            debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
+            debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
+                $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
         }
 
         public void DrawStats()

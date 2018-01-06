@@ -53,14 +53,18 @@ namespace forexAI
             }
         }
 
-        internal void StoreSetting(string key, object value)
+        public bool CloseConnection()
         {
-            string myInsertQuery = $"INSERT INTO settings SET name = '{key}', value = '{value}' " +
-                $"ON DUPLICATE KEY UPDATE value = '{value}'";
-
-            var command = new MySqlCommand(myInsertQuery, connection);
-            command.Connection = connection;
-            command.ExecuteNonQuery();
+            try
+            {
+                connection.Close();
+                return true;
+            }
+            catch (MySqlException ex)
+            {
+                error(ex.Message);
+                return false;
+            }
         }
 
         internal object GetSetting(string key)
@@ -74,18 +78,14 @@ namespace forexAI
             return value;
         }
 
-        public bool CloseConnection()
+        internal void StoreSetting(string key, object value)
         {
-            try
-            {
-                connection.Close();
-                return true;
-            }
-            catch (MySqlException ex)
-            {
-                error(ex.Message);
-                return false;
-            }
+            string myInsertQuery = $"INSERT INTO settings SET name = '{key}', value = '{value}' " +
+                $"ON DUPLICATE KEY UPDATE value = '{value}'";
+
+            var command = new MySqlCommand(myInsertQuery, connection);
+            command.Connection = connection;
+            command.ExecuteNonQuery();
         }
     }
 }

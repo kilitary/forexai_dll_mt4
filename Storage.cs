@@ -21,6 +21,16 @@ namespace forexAI
         private MemcachedClient mc = null;
         private Dictionary<string, object> properties = new Dictionary<string, object>();
 
+        public Storage()
+        {
+        }
+
+        ~Storage()
+        {
+            log("Storage DESTROY CALLED!");
+            SyncData();
+        }
+
         public object this[string name]
         {
             get
@@ -44,21 +54,6 @@ namespace forexAI
             }
         }
 
-        public void UpMemcache()
-        {
-            MemcachedClientConfiguration config = new MemcachedClientConfiguration();
-            IPEndPoint ipEndpoint = new IPEndPoint(IPAddress.Parse("192.168.10.10"), 11211);
-            config.Servers.Add(ipEndpoint);
-            config.Protocol = MemcachedProtocol.Text;
-            mc = new MemcachedClient(config);
-            if (mc != null)
-                log($"memcached up [0x{mc.GetHashCode()}]");
-        }
-
-        public Storage()
-        {
-        }
-
         public void SyncData()
         {
             debug($"storage: storing {properties.Count} key-value pairs.");
@@ -71,10 +66,15 @@ namespace forexAI
             }
         }
 
-        ~Storage()
+        public void UpMemcache()
         {
-            log("Storage DESTROY CALLED!");
-            SyncData();
+            MemcachedClientConfiguration config = new MemcachedClientConfiguration();
+            IPEndPoint ipEndpoint = new IPEndPoint(IPAddress.Parse("192.168.10.10"), 11211);
+            config.Servers.Add(ipEndpoint);
+            config.Protocol = MemcachedProtocol.Text;
+            mc = new MemcachedClient(config);
+            if (mc != null)
+                log($"memcached up [0x{mc.GetHashCode()}]");
         }
     }
 }

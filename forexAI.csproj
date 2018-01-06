@@ -44,9 +44,6 @@
     <Reference Include="CacheManager.Core, Version=1.1.2.0, Culture=neutral, PublicKeyToken=5b450b4fb65c4cdb, processorArchitecture=MSIL">
       <HintPath>packages\CacheManager.Core.1.1.2\lib\net45\CacheManager.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Conari, Version=1.2.0.3594, Culture=neutral, PublicKeyToken=4bbd2ef743db151e, processorArchitecture=MSIL">
-      <HintPath>packages\regXwild.1.1.0\lib\net40\Conari.dll</HintPath>
-    </Reference>
     <Reference Include="Enyim.Caching, Version=2.16.0.0, Culture=neutral, PublicKeyToken=cec98615db04012e, processorArchitecture=MSIL">
       <HintPath>packages\EnyimMemcached.2.16.0\lib\net35\Enyim.Caching.dll</HintPath>
     </Reference>
@@ -104,9 +101,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\FANNCSharp-x86.0.1.8\build\FANNCSharp-x86.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\FANNCSharp-x86.0.1.8\build\FANNCSharp-x86.targets'))" />
-    <Error Condition="!Exists('packages\regXwild.1.1.0\build\net40\regXwild.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\regXwild.1.1.0\build\net40\regXwild.targets'))" />
   </Target>
-  <Import Project="packages\regXwild.1.1.0\build\net40\regXwild.targets" Condition="Exists('packages\regXwild.1.1.0\build\net40\regXwild.targets')" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

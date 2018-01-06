@@ -11,34 +11,6 @@ namespace forexAI
 {
     internal static class Logger
     {
-        public static void log(String lines)
-        {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
-            file.WriteLine(DateTime.Now.ToString("h:mm:ss.ff") + " " + lines);
-            file.Close();
-        }
-
-        public static void info(String lines)
-        {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
-            file.WriteLine(DateTime.Now.ToString("h:mm:ss.ff") + " " + "info: " + lines);
-            file.Close();
-        }
-
-        public static void warning(String lines)
-        {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
-            file.WriteLine(DateTime.Now.ToString("h:mm:ss.ff") + " " + "warning: " + lines);
-            file.Close();
-        }
-
-        public static void error(String lines)
-        {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
-            file.WriteLine(DateTime.Now.ToString("h:mm:ss.ff") + " " + "error: " + lines);
-            file.Close();
-        }
-
         public static void debug(String lines)
         {
             System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
@@ -146,6 +118,33 @@ namespace forexAI
             }
 
             return result.ToString();
+        }
+
+        public static void error(String lines)
+        {
+            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
+            file.WriteLine(DateTime.Now.ToString("h:mm:ss.ff") + " " + "error: " + lines);
+            file.Close();
+        }
+
+        public static void info(String lines)
+        {
+            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
+            file.WriteLine(DateTime.Now.ToString("h:mm:ss.ff") + " " + "info: " + lines);
+            file.Close();
+        }
+
+        public static void log(String lines)
+        {
+            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
+            file.WriteLine(DateTime.Now.ToString("h:mm:ss.ff") + " " + lines);
+            file.Close();
+        }
+        public static void warning(String lines)
+        {
+            System.IO.StreamWriter file = new System.IO.StreamWriter(Configuration.LogFileName, true);
+            file.WriteLine(DateTime.Now.ToString("h:mm:ss.ff") + " " + "warning: " + lines);
+            file.Close();
         }
     }
 }
