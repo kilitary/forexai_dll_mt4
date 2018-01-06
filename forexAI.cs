@@ -121,8 +121,8 @@ namespace forexAI
 
         private void Banner()
         {
-            log($"*** Automatic Trading Expert for MT4, based on neural networks with auto-created strategy.");
-            log($"*** (c) 2018 Sergey Efimov (deconf@ya.ru, telegram/phone: +79500426692). ");
+            log($"*** Automatic TradingExpert for MT4 with neural networks and auto-created strategy based on code mutation.");
+            log($"*** (c) 2018 Sergey Efimov. (kilitary@gmail.com, telegram/phone: +79500426692, skype: serjnah, icq: 401112)");
             log("Initializing ...");
 
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
@@ -210,7 +210,7 @@ namespace forexAI
                     continue;
 
                 string funcName = match.Groups[0].Value.Trim('[', ' ');
-                info($"* function [{funcName}]");
+                info($"* Function <{funcName}>");
 
                 Dictionary<string, string> data = new Dictionary<string, string>();
 
@@ -224,12 +224,12 @@ namespace forexAI
             Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
             int.TryParse(match2.Groups[1].Value, out inputDimension);
 
-            info($"* inputDimension = {inputDimension}");
+            info($"InputDimension = {inputDimension}");
 
             Match matchls = Regex.Match(fileTextData, "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
                  RegexOptions.Singleline);
 
-            info($"* activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
+            info($"Activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
 
             inputLayerActivationFunction = matchls.Groups[1].Value;
             middleLayerActivationFunction = matchls.Groups[2].Value;
@@ -256,7 +256,7 @@ namespace forexAI
             trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
             testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
 
-            log($"trainLength: trainData={trainData.TrainDataLength} testData={testData.TrainDataLength}");
+            log($"TrainLength: trainData={trainData.TrainDataLength} testData={testData.TrainDataLength}");
 
             train_mse = aiNetwork.TestDataParallel(trainData, 4);
             test_mse = aiNetwork.TestDataParallel(testData, 3);
