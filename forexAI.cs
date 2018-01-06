@@ -10,6 +10,7 @@ using static forexAI.Logger;
 using FANNCSharp.Double;
 using System.Text.RegularExpressions;
 using TicTacTec.TA.Library;
+using Newtonsoft.Json;
 
 namespace forexAI
 {
@@ -53,7 +54,7 @@ namespace forexAI
             }
         }
 
-        //+------------------------------------------------------------------+
+        //+------------------------------------------------------------------+■
         //| Start function                                                   |
         //+------------------------------------------------------------------+
         public override int start()
@@ -88,6 +89,7 @@ namespace forexAI
             log("Deinitializing ...");
             debug($"Balance={AccountBalance()} Orders={OrdersTotal()}");
 
+            storage["functions"] = JsonConvert.SerializeObject(Data.nnFunctions, Formatting.Indented);
             storage.SyncData();
 
             string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
@@ -111,22 +113,21 @@ namespace forexAI
 
             DumpInfo();
             ListGlobalVariables();
+            InitStorages();
+            ScanNetworks();
+            TestNetworkMSE();
+            TestNetworkHitRatio();
 
             this["runNum"] = runNum + 1;
 
-            InitStorages();
-            LoadNetworks();
-            TestNetworkOnData();
-            TestNetworkHitRatio();
-
-            log($"... initialized in {(GetTickCount() - startTime) / 1000.0} sec.");
+            log($"... initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec.");
 
             return 0;
         }
 
         private void TestNetworkHitRatio()
         {
-            log($"calculating hit ratio ...");
+            log($"Calculating hit ratio on train & test data ...");
             trainHitRatio = CalculateHitRatio(ai, trainData.Input, trainData.Output);
             testHitRatio = CalculateHitRatio(ai, testData.Input, testData.Output);
             log($"trainHitRatio={trainHitRatio.ToString("0.00")}% testHitRatio={testHitRatio.ToString("0.00")}%");
@@ -140,16 +141,20 @@ namespace forexAI
                 var output = net.Run(input);
 
                 double output0 = 0;
-                if (output[0] >= 0.0)
+                if (output[0] > 0.0)
                     output0 = 1.0;
                 else if (output[0] < -0.0)
                     output0 = -1.0;
+                else
+                    output0 = 0.0;
 
                 double output1 = 0;
-                if (output[1] >= 0.0)
+                if (output[1] > 0.0)
                     output1 = 1.0;
                 else if (output[1] < -0.0)
                     output1 = -1.0;
+                else
+                    output1 = 0.0;
 
                 if (output0 == desiredOutputs[curX][0] && output1 == desiredOutputs[curX][1])
                     hits++;
@@ -187,7 +192,7 @@ namespace forexAI
             aiName = dirName;
             this.dirName = dirName;
 
-            ai = new NeuralNet($"d:\\temp\\forexAI\\{dirName}\\FANN.net");
+            ai = new NeuralNet(Configuration.DataDirectory + $"\\{dirName}\\FANN.net");
 
             ai.ResetMSE();
 
@@ -226,7 +231,7 @@ namespace forexAI
             middleLayerActivationFunction = matchls.Groups[2].Value;
         }
 
-        public void LoadNetworks()
+        public void ScanNetworks()
         {
             DirectoryInfo d = new DirectoryInfo(Configuration.DataDirectory);
             DirectoryInfo[] Dirs = d.GetDirectories("*");
@@ -235,11 +240,12 @@ namespace forexAI
 
             //foreach (DirectoryInfo dir in Dirs)
             //    storage[num++.ToString()] = $"{dir.Name}";
+            storage["networks"] = JsonConvert.SerializeObject(Dirs);
 
             LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
         }
 
-        public void TestNetworkOnData()
+        public void TestNetworkMSE()
         {
             log($"Doing network test of {dirName} ...");
             trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
@@ -273,6 +279,53 @@ namespace forexAI
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
             debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
                 $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
+        }
+
+        private double GetActiveIncome()
+        {
+            double total = 0.0;
+            double spends;
+            double profit;
+
+            spends = GetActiveSpend();
+            profit = GetActiveProfit();
+            if (profit > spends)
+                total = profit + (spends);
+            else
+                total = 0.0;
+            return (total);
+        }
+
+        private double GetActiveProfit()
+        {
+            int orders = OrdersTotal();
+            double total = 0.0;
+            //Print("total orders: "+orders);
+            for (int pos = 0; pos < orders; pos++)
+            {
+                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+                if (OrderProfit() > 0.0)
+                    total = total + OrderProfit();
+            }
+            //   return (160);
+            return (total);
+        }
+
+        private double GetActiveSpend()
+        {
+            int orders = OrdersTotal();
+            double total = 0.0;
+            //  Print("total orders: "+orders);
+            for (int pos = 0; pos < orders; pos++)
+            {
+                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+                if (OrderProfit() < 0.0)
+                    total = total + OrderProfit();
+            }
+            // return (170);
+            return (total);
         }
 
         public void DrawStats()
@@ -484,7 +537,7 @@ namespace forexAI
               + "tot_profits: " + DoubleToStr(tot_profits, 0) + "\r\n" +
                "tot_spends:  " + DoubleToStr(tot_spends, 0) + "\r\n" +
                "КПД: " + d + "%" + "\r\n----------------------------------------\r\n" +
-               "-=[Network " + aiName + "]=-\r\n" +
+               "---=[Network " + aiName + "]=---\r\n" +
                "Functions: " + funcsString + "\r\n" +
                "InputDimension: " + inputDimension + "\r\n" +
                "TotalNeurons: " + totalNeurons + "\r\n" +
@@ -508,53 +561,6 @@ namespace forexAI
             }
 
             WindowRedraw();
-        }
-
-        private double GetActiveIncome()
-        {
-            double total = 0.0;
-            double spends;
-            double profit;
-
-            spends = GetActiveSpend();
-            profit = GetActiveProfit();
-            if (profit > spends)
-                total = profit + (spends);
-            else
-                total = 0.0;
-            return (total);
-        }
-
-        private double GetActiveProfit()
-        {
-            int orders = OrdersTotal();
-            double total = 0.0;
-            //Print("total orders: "+orders);
-            for (int pos = 0; pos < orders; pos++)
-            {
-                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
-                    continue;
-                if (OrderProfit() > 0.0)
-                    total = total + OrderProfit();
-            }
-            //   return (160);
-            return (total);
-        }
-
-        private double GetActiveSpend()
-        {
-            int orders = OrdersTotal();
-            double total = 0.0;
-            //  Print("total orders: "+orders);
-            for (int pos = 0; pos < orders; pos++)
-            {
-                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
-                    continue;
-                if (OrderProfit() < 0.0)
-                    total = total + OrderProfit();
-            }
-            // return (170);
-            return (total);
         }
 
         //+------------------------------------------------------------------+
