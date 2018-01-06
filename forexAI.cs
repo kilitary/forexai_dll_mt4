@@ -94,25 +94,17 @@ namespace forexAI
 
             string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
             debug($"Uptime {mins} mins");
-            log("... done");
+            log("... shutting down");
             return 0;
         }
 
         public override int init()
         {
             startTime = GetTickCount();
+            symbol = Symbol();
+            this["runNum"] += 1;
 
-            log($"*** Automatic Trading Extension for MT4, based on neural networks. (c) 2018 Sergey Efimov (deconf@ya.ru). ");
-            log("Initializing ...");
-
-            Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            DateTime buildDate = new DateTime(2018, 1, 6)
-                                    .AddDays(version.Build).AddSeconds(version.Revision * 2);
-
-            string displayableVersion = $"{version}";
-
-            log($"Version: {displayableVersion}");
-
+            Banner();
             DumpInfo();
             ListGlobalVariables();
             InitStorages();
@@ -120,11 +112,22 @@ namespace forexAI
             TestNetworkMSE();
             TestNetworkHitRatio();
 
-            this["runNum"] = runNum + 1;
-
             log($"... initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec.");
 
             return 0;
+        }
+
+        private void Banner()
+        {
+            log($"*** Automatic Trading Expert for MT4, based on neural networks with auto-created strategy.");
+            log($"*** (c) 2018 Sergey Efimov (deconf@ya.ru). ");
+            log("Initializing ...");
+
+            Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            DateTime buildDate = new DateTime(2018, 1, 6)
+                                    .AddDays(version.Build).AddSeconds(version.Revision * 2);
+
+            log($"Version: {version}");
         }
 
         private void TestNetworkHitRatio()
@@ -162,7 +165,7 @@ namespace forexAI
                     hits++;
                 curX++;
             }
-            return ((double) hits / (double) inputs.Length) * 100.0d;
+            return ((double) hits / (double) inputs.Length) * 100.0;
         }
 
         private void ListGlobalVariables()
@@ -172,7 +175,7 @@ namespace forexAI
             for (int i = 0; i < var_total; i++)
             {
                 name = GlobalVariableName(i);
-                debug($"global var {name}={GlobalVariableGet(name)}");
+                debug($"global var {i} [{name}={GlobalVariableGet(name)}]");
             }
         }
 
@@ -182,7 +185,7 @@ namespace forexAI
                 Data.db = new DB();
 
             if (Configuration.useMemcached)
-                storage.UpMemcache();
+                storage.InitMemcached();
 
             storage["random"] = random.Next(int.MaxValue);
         }
@@ -194,7 +197,7 @@ namespace forexAI
             aiName = dirName;
             this.dirName = dirName;
 
-            ai = new NeuralNet(Configuration.DataDirectory + $"\\{dirName}\\FANN.net");
+            ai = new NeuralNet($"{Configuration.DataDirectory}\\{dirName}\\FANN.net");
 
             ai.ResetMSE();
 
@@ -250,11 +253,15 @@ namespace forexAI
         public void TestNetworkMSE()
         {
             log($"Doing network test of {dirName} ...");
+
             trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
             testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
+
             log($"trainLength: trainData={trainData.TrainDataLength} testData={testData.TrainDataLength}");
+
             train_mse = ai.TestDataParallel(trainData, 4);
             test_mse = ai.TestDataParallel(testData, 3);
+
             log($"MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")}");
         }
 
@@ -275,7 +282,6 @@ namespace forexAI
             debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
             debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
 
-            symbol = Symbol();
             runNum = (int) this["runNum"];
             debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()} runNum={runNum}");
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");

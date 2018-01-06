@@ -60,13 +60,13 @@ namespace forexAI
             foreach (KeyValuePair<string, object> o in properties)
             {
                 if (Configuration.useMysql)
-                    Data.db.StoreSetting(o.Key, o.Value);
+                    Data.db.SetSetting(o.Key, o.Value);
                 if (Configuration.useMemcached)
                     mc.Store(StoreMode.Set, o.Key, o.Value);
             }
         }
 
-        public void UpMemcache()
+        public void InitMemcached()
         {
             MemcachedClientConfiguration config = new MemcachedClientConfiguration();
             IPEndPoint ipEndpoint = new IPEndPoint(IPAddress.Parse("192.168.10.10"), 11211);

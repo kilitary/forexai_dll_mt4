@@ -74,11 +74,10 @@ namespace forexAI
             MySqlDataReader dataReader = command.ExecuteReader();
             command.Connection = connection;
             dataReader.Read();
-            string value = (string) dataReader["value"];
-            return value;
+            return (string) dataReader["value"];
         }
 
-        internal void StoreSetting(string key, object value)
+        internal void SetSetting(string key, object value)
         {
             string myInsertQuery = $"INSERT INTO settings SET name = '{key}', value = '{value}' " +
                 $"ON DUPLICATE KEY UPDATE value = '{value}'";
