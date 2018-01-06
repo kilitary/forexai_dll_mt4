@@ -75,7 +75,7 @@ namespace forexAI
             if (previousDay != Day())
             {
                 previousDay = Day();
-                log($"Day {previousDay} opnum {opnum}");
+                log($"> Day #{previousDay} opnum {opnum}");
                 opnum = 0;
             }
 
@@ -106,17 +106,15 @@ namespace forexAI
             log($"Version: {displayableVersion}");
 
             DumpInfo();
-
             ListGlobalVariables();
 
             this["runNum"] = runNum + 1;
 
             InitStorages();
-
-            log($"... initialized in {(GetTickCount() - startTime) / 1000.0} sec.");
-
             LoadNetworks();
             TestAIOnData();
+
+            log($"... initialized in {(GetTickCount() - startTime) / 1000.0} sec.");
 
             return 0;
         }
@@ -446,8 +444,8 @@ namespace forexAI
                + "spend_buys:    " + spend_buys + "\r\n"
               + "tot_profits: " + DoubleToStr(tot_profits, 0) + "\r\n" +
                "tot_spends:  " + DoubleToStr(tot_spends, 0) + "\r\n" +
-               "КПД: " + d + "%" + "\r\n---------------\r\n" +
-               "Network: " + aiName + "\r\n" +
+               "КПД: " + d + "%" + "\r\n----------------------------------------\r\n" +
+               "[Network " + aiName + "]\r\n" +
                "Functions: " + funcsString + "\r\n" +
                "InputDimension: " + inputDimension + "\r\n" +
                "TotalNeurons: " + totalNeurons + "\r\n" +
