@@ -100,9 +100,9 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\forexAI.csproj">
+    <ProjectReference Include="..\forexAI_MT4.csproj">
       <Project>{b6f386bf-52f9-4b04-a68e-f98a55cedcff}</Project>
-      <Name>forexAI</Name>
+      <Name>forexAI_MT4</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

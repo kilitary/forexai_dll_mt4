@@ -16,7 +16,7 @@ namespace forexAI
 {
     public class ForexAI : MqlApi
     {
-        private NeuralNet ai;
+        private NeuralNet aiNetwork;
         private string aiName;
         private string dirName;
         private int inputDimension = 0;
@@ -133,17 +133,17 @@ namespace forexAI
         private void TestNetworkHitRatio()
         {
             log($"Calculating hit ratio on train & test data ...");
-            trainHitRatio = CalculateHitRatio(ai, trainData.Input, trainData.Output);
-            testHitRatio = CalculateHitRatio(ai, testData.Input, testData.Output);
+            trainHitRatio = CalculateHitRatio(trainData.Input, trainData.Output);
+            testHitRatio = CalculateHitRatio(testData.Input, testData.Output);
             log($"trainHitRatio={trainHitRatio.ToString("0.00")}% testHitRatio={testHitRatio.ToString("0.00")}%");
         }
 
-        public double CalculateHitRatio(NeuralNet net, double[][] inputs, double[][] desiredOutputs)
+        public double CalculateHitRatio(double[][] inputs, double[][] desiredOutputs)
         {
             int hits = 0, curX = 0;
             foreach (double[] input in inputs)
             {
-                var output = net.Run(input);
+                var output = aiNetwork.Run(input);
 
                 double output0 = 0;
                 if (output[0] > 0.0)
@@ -197,13 +197,13 @@ namespace forexAI
             aiName = dirName;
             this.dirName = dirName;
 
-            ai = new NeuralNet($"{Configuration.DataDirectory}\\{dirName}\\FANN.net");
+            aiNetwork = new NeuralNet($"{Configuration.DataDirectory}\\{dirName}\\FANN.net");
 
-            ai.ResetMSE();
+            aiNetwork.ResetMSE();
 
-            info($"Network: hash={ai.GetHashCode()} inputs={ai.InputCount} outputs={ai.OutputCount} neurons={ai.TotalNeurons} mse={ai.MSE}");
+            info($"Network: hash={aiNetwork.GetHashCode()} inputs={aiNetwork.InputCount} outputs={aiNetwork.OutputCount} neurons={aiNetwork.TotalNeurons} mse={aiNetwork.MSE}");
 
-            totalNeurons = (int) ai.TotalNeurons;
+            totalNeurons = (int) aiNetwork.TotalNeurons;
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
             Regex regex = new Regex(@"\[([^ \r\n\[\]]{1,10}?)\s+?", RegexOptions.Multiline | RegexOptions.Singleline);
             foreach (Match match in regex.Matches(fileTextData))
@@ -259,8 +259,8 @@ namespace forexAI
 
             log($"trainLength: trainData={trainData.TrainDataLength} testData={testData.TrainDataLength}");
 
-            train_mse = ai.TestDataParallel(trainData, 4);
-            test_mse = ai.TestDataParallel(testData, 3);
+            train_mse = aiNetwork.TestDataParallel(trainData, 4);
+            test_mse = aiNetwork.TestDataParallel(testData, 3);
 
             log($"MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")}");
         }
@@ -544,21 +544,21 @@ namespace forexAI
                + "spend_buys:    " + spend_buys + "\r\n"
               + "tot_profits: " + DoubleToStr(tot_profits, 0) + "\r\n" +
                "tot_spends:  " + DoubleToStr(tot_spends, 0) + "\r\n" +
-               "КПД: " + d + "%" + "\r\n----------------------------------------\r\n" +
-               "---=[Network " + aiName + "]=---\r\n" +
+               "КПД: " + d + "%" + "\r\n\r\n" +
+               "[Network " + aiName + "]\r\n" +
                "Functions: " + funcsString + "\r\n" +
                "InputDimension: " + inputDimension + "\r\n" +
                "TotalNeurons: " + totalNeurons + "\r\n" +
-               "InputCount: " + ai.InputCount + "\r\n" +
+               "InputCount: " + aiNetwork.InputCount + "\r\n" +
                "InputActFunc: " + inputLayerActivationFunction + "\r\n" +
                "LayerActFunc: " + middleLayerActivationFunction + "\r\n" +
-               "ConnRate: " + ai.ConnectionRate + "\r\n" +
-               "Connections: " + ai.TotalConnections + "\r\n" +
-               "LayerCount: " + ai.LayerCount + "\r\n" +
-               "MSE: " + ai.MSE + "\r\n" +
-               "LearningRate: " + ai.LearningRate + "\r\n" +
-               "testHitRatio: " + testHitRatio.ToString("0.00") + "%\r\n" +
-               "trainHitRatio: " + trainHitRatio.ToString("0.00") + "%\r\n");
+               "ConnRate: " + aiNetwork.ConnectionRate + "\r\n" +
+               "Connections: " + aiNetwork.TotalConnections + "\r\n" +
+               "LayerCount: " + aiNetwork.LayerCount + "\r\n" +
+               "Train/Test MSE: " + train_mse + "/" + test_mse + "\r\n" +
+               "LearningRate: " + aiNetwork.LearningRate + "\r\n" +
+               "Test Hit Ratio: " + testHitRatio.ToString("0.00") + "%\r\n" +
+               "Train Hit Ratio: " + trainHitRatio.ToString("0.00") + "%\r\n");
 
             if (ObjectFind("statyys") == -1)
             {
