@@ -14,7 +14,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.0.2018.27</AssemblyVersion>
+    <AssemblyVersion>0.0.2018.46</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -74,6 +74,10 @@
     <Error Condition="!Exists('packages\regXwild.1.1.0\build\net40\regXwild.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\regXwild.1.1.0\build\net40\regXwild.targets'))" />
   </Target>
   <Import Project="packages\regXwild.1.1.0\build\net40\regXwild.targets" Condition="Exists('packages\regXwild.1.1.0\build\net40\regXwild.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

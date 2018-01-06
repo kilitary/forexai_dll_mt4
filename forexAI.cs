@@ -20,11 +20,14 @@ namespace forexAI
         private int previousBars = 0;
         private double total;
         private double spends;
+        private NeuralNet ai;
         private double profit;
         private string symbol = "";
         private int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
         private int ticket = 0, opnum = 0;
         private string l_name_8, type = "";
+        private int startTime = 0;
+        private string aiName;
 
         public double this[string name]
         {
@@ -48,6 +51,7 @@ namespace forexAI
 
             DrawStats();
 
+            AddText("SDF SD F");
             previousBars = Bars;
             ////---- calculate open orders by current symbol
             //string symbol = Symbol();
@@ -63,13 +67,16 @@ namespace forexAI
         public override int deinit()
         {
             log("Deinitializing ...");
-            log($"Balance {AccountBalance()} Orders {OrdersTotal()}");
-            log("done");
+            log($"Balance={AccountBalance()} Orders={OrdersTotal()}");
+            string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
+            log($"Uptime {mins} mins");
+            log("... done");
             return 0;
         }
 
         public override int init()
         {
+            startTime = GetTickCount();
             log("Initializing ...");
 
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
@@ -103,9 +110,122 @@ namespace forexAI
 
             LoadNetworks();
 
-            log("initialized.");
+            log($"... initialized in {(GetTickCount() - startTime) / 1000.0} sec.");
 
             return 0;
+        }
+
+        public void LoadNetwork(string dirName)
+        {
+            log($"Loading fann network [{dirName}]");
+
+            aiName = dirName;
+
+            ai = new NeuralNet($"d:\\temp\\forexAI\\{dirName}\\FANN.net");
+
+            info($"Network: hash={ai.GetHashCode()} inputs={ai.InputCount} outputs={ai.OutputCount} neurons={ai.TotalNeurons}");
+
+            string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
+            Regex regex = new Regex(@"\[([^ \r\n\[\]]{1,10}?)\s+?", RegexOptions.Multiline | RegexOptions.Singleline);
+            foreach (Match match in regex.Matches(fileTextData))
+            {
+                if (match.Groups[0].Value.Length <= 0)
+                    continue;
+
+                string funcName = match.Groups[0].Value.Trim('[', ' ');
+                info($"* function [{funcName}]");
+
+                Dictionary<string, string> data = new Dictionary<string, string>();
+
+                data["name"] = funcName;
+
+                if (Data.nnFunctions.ContainsKey(funcName))
+                    continue;
+
+                Data.nnFunctions.Add(funcName, data);
+            }
+            Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
+            int.TryParse(match2.Groups[1].Value, out inputDimension);
+
+            info($"* inputDimension = {inputDimension}");
+
+            Match matchls = Regex.Match(fileTextData, "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
+                 RegexOptions.Singleline);
+            info($"* activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
+
+            inputLayerActivationFunction = matchls.Groups[1].Value;
+            middleLayerActivationFunction = matchls.Groups[2].Value;
+        }
+
+        public void LoadNetworks()
+        {
+            DirectoryInfo d = new DirectoryInfo(Data.DataDirectory);
+            DirectoryInfo[] Dirs = d.GetDirectories("*");
+            int num = 0;
+
+            log($"scanning networks: found {Dirs.Length} networks.");
+
+            foreach (DirectoryInfo dir in Dirs)
+                debug($"> FANN network #{num++} {dir.Name}");
+
+            LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
+        }
+
+        private void AddText(string text)
+        {
+            string on;
+            double pos = Bid + (Bid - Ask) / 2;
+            pos = Open[0];
+            on = (string) (pos.ToString());
+            ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
+            ObjectSetText(on, text, 8, "consolas", Color.Orange);
+        }
+
+        private double GetActiveProfit()
+        {
+            int orders = OrdersTotal();
+            double total = 0.0;
+            //Print("total orders: "+orders);
+            for (int pos = 0; pos < orders; pos++)
+            {
+                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+                if (OrderProfit() > 0.0)
+                    total = total + OrderProfit();
+            }
+            //   return (160);
+            return (total);
+        }
+
+        private double GetActiveSpend()
+        {
+            int orders = OrdersTotal();
+            double total = 0.0;
+            //  Print("total orders: "+orders);
+            for (int pos = 0; pos < orders; pos++)
+            {
+                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+                if (OrderProfit() < 0.0)
+                    total = total + OrderProfit();
+            }
+            // return (170);
+            return (total);
+        }
+
+        private double GetActiveIncome()
+        {
+            double total = 0.0;
+            double spends;
+            double profit;
+
+            spends = GetActiveSpend();
+            profit = GetActiveProfit();
+            if (profit > spends)
+                total = profit + (spends);
+            else
+                total = 0.0;
+            return (total);
         }
 
         public void DrawStats()
@@ -310,7 +430,8 @@ namespace forexAI
               + "spend_buys:    " + spend_buys + "\r\n"
               + "tot_profits: " + DoubleToStr(tot_profits, 0) + "\r\n" +
                "tot_spends:  " + DoubleToStr(tot_spends, 0) + "\r\n" +
-               "КПД: " + d + "%" + "\r\n");
+               "КПД: " + d + "%" + "\r\n"+
+               "Network: " + aiName);
 
             if (ObjectFind("statyys") == -1)
             {
@@ -321,107 +442,6 @@ namespace forexAI
             }
 
             WindowRedraw();
-        }
-
-        private double GetActiveProfit()
-        {
-            int orders = OrdersTotal();
-            double total = 0.0;
-            //Print("total orders: "+orders);
-            for (int pos = 0; pos < orders; pos++)
-            {
-                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
-                    continue;
-                if (OrderProfit() > 0.0)
-                    total = total + OrderProfit();
-            }
-            //   return (160);
-            return (total);
-        }
-
-        private double GetActiveSpend()
-        {
-            int orders = OrdersTotal();
-            double total = 0.0;
-            //  Print("total orders: "+orders);
-            for (int pos = 0; pos < orders; pos++)
-            {
-                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
-                    continue;
-                if (OrderProfit() < 0.0)
-                    total = total + OrderProfit();
-            }
-            // return (170);
-            return (total);
-        }
-
-        private double GetActiveIncome()
-        {
-            double total = 0.0;
-            double spends;
-            double profit;
-
-            spends = GetActiveSpend();
-            profit = GetActiveProfit();
-            if (profit > spends)
-                total = profit + (spends);
-            else
-                total = 0.0;
-            return (total);
-        }
-
-        public void LoadNetwork(string dirName)
-        {
-            log($"Loading fann network [{dirName}]");
-
-            NeuralNet ai = new NeuralNet($"d:\\temp\\forexAI\\{dirName}\\FANN.net");
-
-            info($"Network: hash={ai.GetHashCode()} inputs={ai.InputCount} outputs={ai.OutputCount} neurons={ai.TotalNeurons}");
-
-            string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
-            Regex regex = new Regex(@"\[([^ \r\n\[\]]{1,10}?)\s+?", RegexOptions.Multiline | RegexOptions.Singleline);
-            foreach (Match match in regex.Matches(fileTextData))
-            {
-                if (match.Groups[0].Value.Length <= 0)
-                    continue;
-
-                string funcName = match.Groups[0].Value.Trim('[', ' ');
-                info($"* function [{funcName}]");
-
-                Dictionary<string, string> data = new Dictionary<string, string>();
-
-                data["name"] = funcName;
-
-                if (Data.nnFunctions.ContainsKey(funcName))
-                    continue;
-
-                Data.nnFunctions.Add(funcName, data);
-            }
-            Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
-            int.TryParse(match2.Groups[1].Value, out inputDimension);
-
-            info($"* inputDimension = {inputDimension}");
-
-            Match matchls = Regex.Match(fileTextData, "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
-                 RegexOptions.Singleline);
-            info($"* activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
-
-            inputLayerActivationFunction = matchls.Groups[1].Value;
-            middleLayerActivationFunction = matchls.Groups[2].Value;
-        }
-
-        public void LoadNetworks()
-        {
-            DirectoryInfo d = new DirectoryInfo(Data.DataDirectory);
-            DirectoryInfo[] Dirs = d.GetDirectories("*");
-            int num = 0;
-
-            log($"scanning networks: found {Dirs.Length} networks.");
-
-            foreach (DirectoryInfo dir in Dirs)
-                debug($"> network #{num++} {dir.Name}");
-
-            LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
         }
 
         //+------------------------------------------------------------------+
