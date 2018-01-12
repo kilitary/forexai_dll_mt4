@@ -16,31 +16,31 @@ using Color = System.Drawing.Color;
 
 namespace forexAI
 {
-    class Storage
+    internal class Storage
     {
         MemcachedClient mc = null;
-        Dictionary <string, object> properties = new Dictionary <string, object>();
+        Dictionary<string, object> properties = new Dictionary<string, object>();
 
-        public Storage ()
+        public Storage()
         {
-            if(Configuration.useMemcached)
+            if (Configuration.useMemcached)
                 InitMemcached();
         }
 
-        ~Storage ()
+        ~Storage()
         {
             log("Storage DESTROY CALLED!");
             SyncData();
         }
 
-        public object this [string name]
+        public object this[string name]
         {
             get
             {
-                if(properties.ContainsKey(name))
+                if (properties.ContainsKey(name))
                     return properties[name];
 
-                if(!Configuration.useMysql)
+                if (!Configuration.useMysql)
                     return string.Empty;
 
                 string retrievedValue = string.Empty;
@@ -53,27 +53,27 @@ namespace forexAI
             set
             {
                 properties[name] = value;
-                if(Configuration.useMemcached)
+                if (Configuration.useMemcached)
                     mc.Store(StoreMode.Set, name, value);
             }
         }
 
-        public void SyncData ()
+        public void SyncData()
         {
-            if(properties.Count <= 0)
+            if (properties.Count <= 0)
                 return;
 
             debug($"storage: storing {properties.Count} key-value pairs.");
-            foreach(KeyValuePair <string, object> o in properties)
+            foreach (KeyValuePair<string, object> o in properties)
             {
-                if(Configuration.useMysql)
+                if (Configuration.useMysql)
                     Data.db.SetSetting(o.Key, o.Value);
-                if(Configuration.useMemcached)
+                if (Configuration.useMemcached)
                     mc.Store(StoreMode.Set, o.Key, o.Value);
             }
         }
 
-        public void InitMemcached ()
+        public void InitMemcached()
         {
             MemcachedClientConfiguration config = new MemcachedClientConfiguration();
             IPEndPoint ipEndpoint = new IPEndPoint(IPAddress.Parse(Configuration.MemcachedIP),
@@ -81,7 +81,7 @@ namespace forexAI
             config.Servers.Add(ipEndpoint);
             config.Protocol = MemcachedProtocol.Text;
             mc = new MemcachedClient(config);
-            if(mc != null)
+            if (mc != null)
                 log($"memcached up [0x{mc.GetHashCode()}]");
         }
     }
