@@ -10,11 +10,11 @@ using static forexAI.Logger;
 
 namespace forexAI
 {
-    class DB
+    internal class DB
     {
         MySqlConnection connection = null;
 
-        public DB ()
+        public DB()
         {
             string connectionString;
             connectionString = "SERVER=" +
@@ -39,13 +39,13 @@ namespace forexAI
                     $" connection={connection.GetHashCode()}");
                 return;
             }
-            catch(MySqlException ex)
+            catch (MySqlException ex)
             {
                 //When handling errors, you can your application's response based on the error number.
                 //The two most common error numbers when connecting are as follows:
                 //0: Cannot connect to server.
                 //1045: Invalid user name and/or password.
-                switch(ex.Number)
+                switch (ex.Number)
                 {
                     case 0:
                         error($"Cannot connect to server.  Contact administrator [{ex.Message}]");
@@ -63,21 +63,21 @@ namespace forexAI
             }
         }
 
-        public bool CloseConnection ()
+        public bool CloseConnection()
         {
             try
             {
                 connection.Close();
                 return true;
             }
-            catch(MySqlException ex)
+            catch (MySqlException ex)
             {
                 error(ex.Message);
                 return false;
             }
         }
 
-        internal object GetSetting (string key)
+        internal object GetSetting(string key)
         {
             string myInsertQuery = $"SELECT value FROM settings WHERE name = '{key}'";
             var command = new MySqlCommand(myInsertQuery, connection);
@@ -87,7 +87,7 @@ namespace forexAI
             return (string) dataReader["value"];
         }
 
-        internal void SetSetting (string key, object value)
+        internal void SetSetting(string key, object value)
         {
             string myInsertQuery = $"INSERT INTO settings SET name = '{key}', value = '{value}' " +
                 $"ON DUPLICATE KEY UPDATE value = '{value}'";

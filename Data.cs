@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace forexAI
 {
-    static class Data
+    internal static class Data
     {
-        public static Dictionary <string, Dictionary <string, string>> nnFunctions =
-            new Dictionary <string, Dictionary <string, string>>();
+        public static Dictionary<string, Dictionary<string, string>> nnFunctions =
+            new Dictionary<string, Dictionary<string, string>>();
 
         public static DB db = null;
     }

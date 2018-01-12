@@ -118,7 +118,6 @@ namespace forexAI
             TestNetworkHitRatio();
 
             log($"... initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec.");
-
             return 0;
         }
 
@@ -245,8 +244,6 @@ namespace forexAI
 
             log($"Looking for networks in {Configuration.DataDirectory}: found {Dirs.Length} networks.");
 
-            //foreach (DirectoryInfo dir in Dirs)
-            //    storage[num++.ToString()] = $"{dir.Name}";
             storage["networks"] = JsonConvert.SerializeObject(Dirs);
 
             LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
@@ -257,7 +254,7 @@ namespace forexAI
             debug($"Doing neural network MSE test of {dirName} ...");
 
             trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
-            testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
+            testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");            
 
             debug($"Train Data: trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
