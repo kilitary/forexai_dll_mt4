@@ -147,7 +147,7 @@ namespace forexAI
         {
             trainHitRatio = CalculateHitRatio(trainData.Input, trainData.Output);
             testHitRatio = CalculateHitRatio(testData.Input, testData.Output);
-            info($"TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
+            log($"TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
         }
 
         public double CalculateHitRatio(double[][] inputs, double[][] desiredOutputs)
@@ -207,7 +207,7 @@ namespace forexAI
             aiNetwork = new NeuralNet($"{Configuration.DataDirectory}\\{dirName}\\FANN.net");
             aiNetwork.ResetMSE();
 
-            info($"Network: hash={aiNetwork.GetHashCode()} inputs={aiNetwork.InputCount} layers={aiNetwork.LayerCount}" +
+            log($"Network: hash={aiNetwork.GetHashCode()} inputs={aiNetwork.InputCount} layers={aiNetwork.LayerCount}" +
                 $" outputs={aiNetwork.OutputCount} neurons={aiNetwork.TotalNeurons} connections={aiNetwork.TotalConnections}");
 
             totalNeurons = (int) aiNetwork.TotalNeurons;
@@ -220,7 +220,7 @@ namespace forexAI
                     continue;
 
                 string funcName = match.Groups[0].Value.Trim('[', ' ');
-                info($"* Function <{funcName}>");
+                log($"* Function <{funcName}>");
 
                 Dictionary<string, string> data = new Dictionary<string, string>();
 
@@ -235,13 +235,13 @@ namespace forexAI
             Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
             int.TryParse(match2.Groups[1].Value, out inputDimension);
 
-            info($"InputDimension = {inputDimension}");
+            log($"InputDimension = {inputDimension}");
 
             Match matchls = Regex.Match(fileTextData,
                                         "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
                  RegexOptions.Singleline);
 
-            info($"Activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
+            log($"Activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
 
             inputLayerActivationFunction = matchls.Groups[1].Value;
             middleLayerActivationFunction = matchls.Groups[2].Value;
@@ -261,17 +261,15 @@ namespace forexAI
 
         public void TestNetworkMSE()
         {
-            debug($"Doing neural network MSE test of {dirName} ...");
-
             trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
             testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
 
-            debug($"Train Data: trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
+            log($"trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
             train_mse = aiNetwork.TestDataParallel(trainData, 4);
             test_mse = aiNetwork.TestDataParallel(testData, 3);
 
-            debug($"MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")} bitfail={aiNetwork.BitFail}");
+            log($"MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")} bitfail={aiNetwork.BitFail}");
         }
 
         void AddText(string text)
