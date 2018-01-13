@@ -58,7 +58,7 @@ namespace forexAI
             file.Close();
         }
 
-        public static void info(string lines)
+        public static void info(string lines) 
         {
             StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
             file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + "<" + Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "info: " + lines);
