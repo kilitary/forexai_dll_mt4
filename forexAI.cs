@@ -98,13 +98,13 @@ namespace forexAI
         public override int deinit()
         {
             log("Deinitializing ...");
-            debug($"Balance={AccountBalance()} Orders={OrdersTotal()}");
+            log($"Balance={AccountBalance()} Orders={OrdersTotal()}");
 
             storage["functions"] = JsonConvert.SerializeObject(Data.nnFunctions, Formatting.Indented);
             storage.SyncData();
 
             string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
-            debug($"Uptime {mins} mins");
+            log($"Uptime {mins} mins");
             log("... shutting down");
             return 0;
         }
