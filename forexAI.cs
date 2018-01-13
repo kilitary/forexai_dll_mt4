@@ -13,6 +13,15 @@ using TicTacTec.TA.Library;
 using static forexAI.Logger;
 using Color = System.Drawing.Color;
 
+//╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
+//╰╰╮╰╭╱▔▔▔▔╲╮╯╭╯ 
+//┏━┓┏┫╭▅╲╱▅╮┣┓╭║║║ 
+//╰┳╯╰┫┗━╭╮━┛┣╯╯╚╬╝ 
+//╭┻╮╱╰╮╰━━╯╭╯╲┊ ║ 
+//╰┳┫▔╲╰┳━━┳╯╱▔┊ ║ 
+//┈┃╰━━╲▕╲╱▏╱━━━┬╨╮ 
+//┈╰━━╮┊▕╱╲▏┊╭━━┴╥╯
+
 namespace forexAI
 {
     public class ForexAI : MqlApi
@@ -35,7 +44,7 @@ namespace forexAI
         string symbol = string.Empty;
         float test_mse;
         int ticket = 0, opnum = 0;
-        double total;
+        double total; 
         int totalNeurons;
         float train_mse;
         TrainingData trainData;
@@ -222,6 +231,7 @@ namespace forexAI
 
                 Data.nnFunctions.Add(funcName, data);
             }
+            
             Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
             int.TryParse(match2.Groups[1].Value, out inputDimension);
 
@@ -254,7 +264,7 @@ namespace forexAI
             debug($"Doing neural network MSE test of {dirName} ...");
 
             trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
-            testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");            
+            testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
 
             debug($"Train Data: trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
