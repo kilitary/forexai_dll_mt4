@@ -257,7 +257,7 @@ namespace forexAI
         {
             DirectoryInfo d = new DirectoryInfo(Configuration.DataDirectory);
             DirectoryInfo[] Dirs = d.GetDirectories("*");
-
+             
             log($"Looking for networks in {Configuration.DataDirectory}: found {Dirs.Length} networks.");
 
             storage["networks"] = JsonConvert.SerializeObject(Dirs);
