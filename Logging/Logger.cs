@@ -50,7 +50,7 @@ namespace forexAI
         }
 
         public static void error(string lines)
-        {
+        { 
             StackFrame callStack = new StackFrame(1, true);
             StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
             file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " <" + Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "error " +
