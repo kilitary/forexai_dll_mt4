@@ -19,21 +19,22 @@ namespace forexAI
                 File.Delete(Configuration.LogFileName);
         }
 
-        public static void dump(object data)
+        public static void dump(object data, string prefix = "", int maxDepth = 255)
         {
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
 
-            //jsonSettings.MaxDepth = 5;
+            jsonSettings.MaxDepth = maxDepth;
             jsonSettings.Formatting = Formatting.Indented;
-            jsonSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
+            jsonSettings.PreserveReferencesHandling = PreserveReferencesHandling.All;
 
             try
             {
-                debug(JsonConvert.SerializeObject(data, jsonSettings));
+                debug((prefix.Length > 0 ? "-- dump of " + prefix + ":\r\n" : "") +
+                    JsonConvert.SerializeObject(data, jsonSettings));
             }
             catch (Exception e)
             {
-                error($"dump(): {e.Message} [{e.StackTrace}]");
+                error($"dump(): {e.Message}");
             }
         }
 

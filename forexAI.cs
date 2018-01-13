@@ -44,7 +44,7 @@ namespace forexAI
         string symbol = string.Empty;
         float test_mse;
         int ticket = 0, opnum = 0;
-        double total; 
+        double total;
         int totalNeurons;
         float train_mse;
         TrainingData trainData;
@@ -122,6 +122,7 @@ namespace forexAI
             DumpInfo();
             ListGlobalVariables();
             InitStorages();
+
             ScanNetworks();
             TestNetworkMSE();
             TestNetworkHitRatio();
@@ -132,8 +133,8 @@ namespace forexAI
 
         void Banner()
         {
-            log($"*** Automatic TradingExpert for MT4 with neural networks and auto-created strategy based on code mutation.");
-            log($"*** (c) 2018 Sergey Efimov (kilitary@gmail.com, telegram: +79500426692, skype: serjnah, icq: 401112)");
+            log($"* Automatic TradingExpert for MT4 with neural networks and auto-created strategy based on code mutation.");
+            log($"* (c) 2018 Sergey Efimov (kilitary@gmail.com, telegram: +79500426692, skype: serjnah, icq: 401112)");
 
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             DateTime buildDate = new DateTime(2018, 1, 6).AddDays(version.Build)
@@ -144,7 +145,6 @@ namespace forexAI
 
         public void TestNetworkHitRatio()
         {
-            info($"Calculating hit ratio on train & test data ...");
             trainHitRatio = CalculateHitRatio(trainData.Input, trainData.Output);
             testHitRatio = CalculateHitRatio(testData.Input, testData.Output);
             info($"TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
@@ -231,7 +231,7 @@ namespace forexAI
 
                 Data.nnFunctions.Add(funcName, data);
             }
-            
+
             Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
             int.TryParse(match2.Groups[1].Value, out inputDimension);
 

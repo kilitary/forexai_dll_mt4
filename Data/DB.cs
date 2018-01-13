@@ -1,4 +1,12 @@
-﻿using System;
+﻿//╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭
+//╰╰╮╰╭╱▔▔▔▔╲╮╯╭╯
+//┏━┓┏┫╭▅╲╱▅╮┣┓╭║║║
+//╰┳╯╰┫┗━╭╮━┛┣╯╯╚╬╝
+//╭┻╮╱╰╮╰━━╯╭╯╲┊ ║
+//╰┳┫▔╲╰┳━━┳╯╱▔┊ ║
+//┈┃╰━━╲▕╲╱▏╱━━━┬╨╮
+//┈╰━━╮┊▕╱╲▏┊╭━━┴╥╯
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -10,7 +18,7 @@ using static forexAI.Logger;
 
 namespace forexAI
 {
-    internal class DB
+    public class DB
     {
         MySqlConnection connection = null;
 
