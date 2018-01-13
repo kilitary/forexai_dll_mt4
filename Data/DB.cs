@@ -20,7 +20,7 @@ namespace forexAI
 {
     public class DB
     {
-        MySqlConnection connection = null;
+        public MySqlConnection connection = null;
 
         public DB()
         {
@@ -43,8 +43,7 @@ namespace forexAI
             try
             {
                 connection.Open();
-                debug($"opened mysql connection: version={connection.ServerVersion} id={connection.ServerThread} db={connection.Database}" +
-                    $" connection={connection.GetHashCode()}");
+                log($"mysql: ServerVersion={connection.ServerVersion} idThread={connection.ServerThread} Database={connection.Database} State={connection.State}");
                 return;
             }
             catch (MySqlException ex)
@@ -85,24 +84,47 @@ namespace forexAI
             }
         }
 
-        internal object GetSetting(string key)
+        public object GetSetting(string key)
         {
             string myInsertQuery = $"SELECT value FROM settings WHERE name = '{key}'";
-            var command = new MySqlCommand(myInsertQuery, connection);
-            MySqlDataReader dataReader = command.ExecuteReader();
-            command.Connection = connection;
-            dataReader.Read();
-            return (string) dataReader["value"];
+            string value = "";
+
+            using (var command = new MySqlCommand(myInsertQuery, connection))
+            {
+                using (MySqlDataReader dataReader = command.ExecuteReader())
+                {
+                    try
+                    {
+                        command.Connection = connection;
+                        dataReader.Read();
+                        value = (string) dataReader["value"];
+                    }
+                    catch (Exception e)
+                    {
+                        error($"db exception: {e.Message}");
+                        return null;
+                    }
+                }
+            }
+
+            return (string) value;
         }
 
-        internal void SetSetting(string key, object value)
+        public void SetSetting(string key, object value)
         {
             string myInsertQuery = $"INSERT INTO settings SET name = '{key}', value = '{value}' " +
                 $"ON DUPLICATE KEY UPDATE value = '{value}'";
 
-            var command = new MySqlCommand(myInsertQuery, connection);
-            command.Connection = connection;
-            command.ExecuteNonQuery();
+            try
+            {
+                var command = new MySqlCommand(myInsertQuery, connection);
+                command.Connection = connection;
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                error($"db exception: {e.Message}");
+            }
         }
     }
 }
