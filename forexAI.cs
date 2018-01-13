@@ -45,7 +45,6 @@ namespace forexAI
         float test_mse;
         int ticket = 0, opnum = 0;
         double total;
-        int totalNeurons;
         float train_mse;
         TrainingData trainData;
         TrainingData testData;
@@ -53,7 +52,7 @@ namespace forexAI
         double testHitRatio;
         int ordersTotal;
 
-        public string this[string name]
+        string this[string name]
         {
             get
             {
@@ -116,6 +115,10 @@ namespace forexAI
 
             ClearLogs();
             Banner();
+
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            log($"Initializing v{version} ...");
+
             InitStorages();
 
             DumpInfo();
@@ -127,22 +130,17 @@ namespace forexAI
 
             this["runNum"] = (int.Parse(this["runNum"]) + 1).ToString();
 
-            log($"initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec.");
+            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec.");
             return 0;
         }
 
         void Banner()
         {
-            Version version = Assembly.GetExecutingAssembly().GetName().Version;
-
-            log($"* Automatic TradingExpert for MT4 with neural networks and auto-created strategy based on code mutation.");
-            log($"* (c) 2018 Sergey Efimov (kilitary@gmail.com, telegram: +79500426692, skype: serjnah, icq: 401112)");
-            log($"* v{version}");
-
-            log($"Initializing ...");
+            log($"$ Automated Expert for MT4 with neural networks and strategys created by code/data permutation.");
+            log($"$ (c) 2018 Sergey Efimov (kilitary@gmail.com telegram:@deconf skype:serjnah icq:401112)");
         }
 
-        public void TestNetworkHitRatio()
+        void TestNetworkHitRatio()
         {
             AINetwork.SetOutputScalingParams(trainData, -1.0f, 1.0f);
             AINetwork.SetInputScalingParams(trainData, -1.0f, 1.0f);
@@ -152,10 +150,10 @@ namespace forexAI
             trainHitRatio = CalculateHitRatio(trainData.Input, trainData.Output);
             testHitRatio = CalculateHitRatio(testData.Input, testData.Output);
 
-            log($"* TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
+            log($" * TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
         }
 
-        public double CalculateHitRatio(double[][] inputs, double[][] desiredOutputs)
+        double CalculateHitRatio(double[][] inputs, double[][] desiredOutputs)
         {
             int hits = 0, curX = 0;
             foreach (double[] input in inputs)
@@ -202,7 +200,7 @@ namespace forexAI
             storage["random"] = random.Next(int.MaxValue);
         }
 
-        public void LoadNetwork(string dirName)
+        void LoadNetwork(string dirName)
         {
             long fileLength = new FileInfo($"{Configuration.DataDirectory}\\{dirName}\\FANN.net").Length;
             log($"Loading network {dirName} ({(fileLength / 1024.0).ToString("0.00")} KB)");
@@ -211,12 +209,10 @@ namespace forexAI
             this.dirName = dirName;
 
             AINetwork = new NeuralNet($"{Configuration.DataDirectory}\\{dirName}\\FANN.net");
-            AINetwork.ResetMSE();
 
             log($"Network: hash={AINetwork.GetHashCode()} inputs={AINetwork.InputCount} layers={AINetwork.LayerCount}" +
                 $" outputs={AINetwork.OutputCount} neurons={AINetwork.TotalNeurons} connections={AINetwork.TotalConnections}");
 
-            totalNeurons = (int) AINetwork.TotalNeurons;
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
             Regex regex = new Regex(@"\[([^ \r\n\[\]]{1,10}?)\s+?", RegexOptions.Multiline | RegexOptions.Singleline);
 
@@ -226,7 +222,7 @@ namespace forexAI
                     continue;
 
                 string funcName = match.Groups[0].Value.Trim('[', ' ');
-                log($"* Function <{funcName}>");
+                log($" * Function <{funcName}>");
 
                 Dictionary<string, string> data = new Dictionary<string, string>();
 
@@ -241,19 +237,19 @@ namespace forexAI
             Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
             int.TryParse(match2.Groups[1].Value, out inputDimension);
 
-            log($"* InputDimension = {inputDimension}");
+            log($" * InputDimension = {inputDimension}");
 
             Match matchls = Regex.Match(fileTextData,
                                         "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
                  RegexOptions.Singleline);
 
-            log($"* Activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
+            log($" * Activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
 
             inputLayerActivationFunction = matchls.Groups[1].Value;
             middleLayerActivationFunction = matchls.Groups[2].Value;
         }
 
-        public void ScanNetworks()
+        void ScanNetworks()
         {
             DirectoryInfo d = new DirectoryInfo(Configuration.DataDirectory);
             DirectoryInfo[] Dirs = d.GetDirectories("*");
@@ -265,17 +261,17 @@ namespace forexAI
             LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
         }
 
-        public void TestNetworkMSE()
+        void TestNetworkMSE()
         {
             trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
             testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
 
-            log($"* trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
+            log($" * trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
             train_mse = AINetwork.TestDataParallel(trainData, 4);
             test_mse = AINetwork.TestDataParallel(testData, 3);
 
-            log($"* MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")} bitfail={AINetwork.BitFail}");
+            log($" * MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")} bitfail={AINetwork.BitFail}");
         }
 
         void AddText(string text)
@@ -348,7 +344,7 @@ namespace forexAI
             return (total);
         }
 
-        public void DrawStats()
+        void DrawStats()
         {
             int i;
 
@@ -573,7 +569,7 @@ namespace forexAI
                 inputDimension +
                 "\r\n" +
                "TotalNeurons: " +
-                totalNeurons +
+                AINetwork.TotalNeurons +
                 "\r\n" +
                "InputCount: " +
                 AINetwork.InputCount +

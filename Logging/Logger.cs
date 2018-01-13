@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -13,6 +14,9 @@ namespace forexAI
 {
     public static class Logger
     {
+        [DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
+        private static extern int GetCurrentThreadId();
+
         public static void ClearLogs()
         {
             if (File.Exists(Configuration.LogFileName))
@@ -41,7 +45,7 @@ namespace forexAI
         public static void debug(string lines)
         {
             StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
-            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " " + "debug: " + lines);
+            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " <" + Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "debug: " + lines);
             file.Close();
         }
 
@@ -49,7 +53,7 @@ namespace forexAI
         {
             StackFrame callStack = new StackFrame(1, true);
             StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
-            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " " + "error " +
+            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " <" + Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "error " +
                 callStack.GetFileName() + ":" + callStack.GetFileLineNumber() + "# " + lines);
             file.Close();
         }
@@ -57,21 +61,21 @@ namespace forexAI
         public static void info(string lines)
         {
             StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
-            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " " + "info: " + lines);
+            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + "<" + Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "info: " + lines);
             file.Close();
         }
 
         public static void log(string lines)
         {
             StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
-            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " " + lines);
+            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " <" + Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
             file.Close();
         }
 
         public static void warning(string lines)
         {
             StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
-            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " " + "warning: " + lines);
+            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " <" + Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + " " + "warning: " + lines);
             file.Close();
         }
     }
