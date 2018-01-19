@@ -1,4 +1,13 @@
-﻿using System;
+﻿//╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
+//╰╰╮╰╭╱▔▔▔▔╲╮╯╭╯ 
+//┏━┓┏┫╭▅╲╱▅╮┣┓╭║║║ 
+//╰┳╯╰┫┗━╭╮━┛┣╯╯╚╬╝ 
+//╭┻╮╱╰╮╰━━╯╭╯╲┊ ║ 
+//╰┳┫▔╲╰┳━━┳╯╱▔┊ ║ 
+//┈┃╰━━╲▕╲╱▏╱━━━┬╨╮ 
+//┈╰━━╮┊▕╱╲▏┊╭━━┴╥╯
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,15 +21,6 @@ using NQuotes;
 using TicTacTec.TA.Library;
 using static forexAI.Logger;
 using Color = System.Drawing.Color;
-
-//╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
-//╰╰╮╰╭╱▔▔▔▔╲╮╯╭╯ 
-//┏━┓┏┫╭▅╲╱▅╮┣┓╭║║║ 
-//╰┳╯╰┫┗━╭╮━┛┣╯╯╚╬╝ 
-//╭┻╮╱╰╮╰━━╯╭╯╲┊ ║ 
-//╰┳┫▔╲╰┳━━┳╯╱▔┊ ║ 
-//┈┃╰━━╲▕╲╱▏╱━━━┬╨╮ 
-//┈╰━━╮┊▕╱╲▏┊╭━━┴╥╯
 
 namespace forexAI
 {
@@ -136,8 +136,8 @@ namespace forexAI
 
         void Banner()
         {
-            log($"$ Automated Expert for MT4 with neural networks and strategys created by code/data permutation.");
-            log($"$ (c) 2018 Sergey Efimov (kilitary@gmail.com telegram:@deconf skype:serjnah icq:401112)");
+            log($"# Automated Expert for MT4 with neural networks and strategys created by code/data permutation.");
+            log($"# (c) 2018 Deconf (kilitary@gmail.com telegram:@deconf skype:serjnah icq:401112)");
         }
 
         void TestNetworkHitRatio()
@@ -150,7 +150,7 @@ namespace forexAI
             trainHitRatio = CalculateHitRatio(trainData.Input, trainData.Output);
             testHitRatio = CalculateHitRatio(testData.Input, testData.Output);
 
-            log($" * TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
+            log($" > TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
         }
 
         double CalculateHitRatio(double[][] inputs, double[][] desiredOutputs)
@@ -222,7 +222,7 @@ namespace forexAI
                     continue;
 
                 string funcName = match.Groups[0].Value.Trim('[', ' ');
-                log($" * Function <{funcName}>");
+                log($" > Function <{funcName}>");
 
                 Dictionary<string, string> data = new Dictionary<string, string>();
 
@@ -237,13 +237,13 @@ namespace forexAI
             Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
             int.TryParse(match2.Groups[1].Value, out inputDimension);
 
-            log($" * InputDimension = {inputDimension}");
+            log($" > InputDimension = {inputDimension}");
 
             Match matchls = Regex.Match(fileTextData,
                                         "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
                  RegexOptions.Singleline);
 
-            log($" * Activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
+            log($" > Activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
 
             inputLayerActivationFunction = matchls.Groups[1].Value;
             middleLayerActivationFunction = matchls.Groups[2].Value;
@@ -253,7 +253,7 @@ namespace forexAI
         {
             DirectoryInfo d = new DirectoryInfo(Configuration.DataDirectory);
             DirectoryInfo[] Dirs = d.GetDirectories("*");
-             
+
             log($"Looking for networks in {Configuration.DataDirectory}: found {Dirs.Length} networks.");
 
             storage["networks"] = JsonConvert.SerializeObject(Dirs);
@@ -266,12 +266,12 @@ namespace forexAI
             trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
             testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
 
-            log($" * trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
+            log($" > trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
             train_mse = AINetwork.TestDataParallel(trainData, 4);
             test_mse = AINetwork.TestDataParallel(testData, 3);
 
-            log($" * MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")} bitfail={AINetwork.BitFail}");
+            log($" > MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")} bitfail={AINetwork.BitFail}");
         }
 
         void AddText(string text)
@@ -281,7 +281,7 @@ namespace forexAI
             pos = Open[0];
             on = (pos.ToString());
             ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
-            ObjectSetText(on, text, 8, "consolas", Color.Orange);
+            ObjectSetText(on, text, 8, "lucida console", Color.DarkRed);
         }
 
         void DumpInfo()
@@ -356,7 +356,7 @@ namespace forexAI
                     ObjectCreate(l_name_8, OBJ_LABEL, 0, DateTime.Now, 0);
                     ObjectSet(l_name_8, OBJPROP_CORNER, 1);
                     ObjectSet(l_name_8, OBJPROP_XDISTANCE, 300);
-                    ObjectSet(l_name_8, OBJPROP_YDISTANCE, i * 10);
+                    ObjectSet(l_name_8, OBJPROP_YDISTANCE, i > 10);
                 }
 
                 ObjectSetText(l_name_8,
@@ -715,7 +715,7 @@ namespace forexAI
         //    // number of losses orders without a break
         //    int losses = 0;
         //    //---- select lot size
-        //    double lot = NormalizeDouble(AccountFreeMargin() * MaximumRisk / 1000.0, 1);
+        //    double lot = NormalizeDouble(AccountFreeMargin() > MaximumRisk / 1000.0, 1);
         //    //---- calcuulate number of losses orders without a break
         //    if (DecreaseFactor > 0)
         //    {
@@ -735,7 +735,7 @@ namespace forexAI
         //                losses++;
         //        }
         //        if (losses > 1)
-        //            lot = NormalizeDouble(lot - lot * losses / DecreaseFactor, 1);
+        //            lot = NormalizeDouble(lot - lot > losses / DecreaseFactor, 1);
         //    }
         //    //---- return lot size
         //    if (lot < 0.1)
