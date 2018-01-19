@@ -13,6 +13,7 @@ namespace forexAI
     {
         string settingsPath = @"d:\temp\forexAI\mt4forexai.cfg";
         Dictionary<string, object> settings = new Dictionary<string, object>();
+
         public object this[string name]
         {
             get
@@ -27,14 +28,13 @@ namespace forexAI
 
         public Settings()
         {
-            string data = File.ReadAllText(settingsPath);
-            settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
+            settings = JsonConvert.DeserializeObject<Dictionary<string, object>>
+                (File.ReadAllText(settingsPath));
         }
 
         public void Save()
         {
-            string data = JsonConvert.SerializeObject(settings, Formatting.Indented);
-            File.WriteAllText(settingsPath, data);
+            File.WriteAllText(settingsPath, JsonConvert.SerializeObject(settings, Formatting.Indented));
         }
 
         ~Settings()

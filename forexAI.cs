@@ -141,7 +141,7 @@ namespace forexAI
 
             InitStorages();
 
-            DumpDebug();
+            DumpInfo();
             ListGlobalVariables();
 
             ScanNetworks();
@@ -259,14 +259,14 @@ namespace forexAI
 
             log($" * InputDimension = {inputDimension}");
 
-            Match matchls = Regex.Match(fileTextData,
+            Match matches = Regex.Match(fileTextData,
                                         "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
                  RegexOptions.Singleline);
 
-            log($" * Activation functions: input [{matchls.Groups[1].Value}] layer [{matchls.Groups[2].Value}]");
+            log($" * Activation functions: input [{matches.Groups[1].Value}] layer [{matches.Groups[2].Value}]");
 
-            inputLayerActivationFunction = matchls.Groups[1].Value;
-            middleLayerActivationFunction = matchls.Groups[2].Value;
+            inputLayerActivationFunction = matches.Groups[1].Value;
+            middleLayerActivationFunction = matches.Groups[2].Value;
         }
 
         void ScanNetworks()
@@ -294,7 +294,7 @@ namespace forexAI
             log($" * MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")} bitfail={FXNetwork.BitFail}");
         }
 
-        void AddText(string text)
+        void AddLabel(string text)
         {
             string on;
             double pos = Bid + (Bid - Ask) / 2;
@@ -304,7 +304,7 @@ namespace forexAI
             ObjectSetText(on, text, 8, "lucida console", Color.DarkRed);
         }
 
-        void DumpDebug()
+        void DumpInfo()
         {
             log($"AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
             log($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
