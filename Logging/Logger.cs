@@ -42,6 +42,13 @@ namespace forexAI
             }
         }
 
+        public static void console(string lines)
+        {
+            Console.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " <" +
+                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
+        }
+
+
         public static void debug(string lines)
         {
             StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
@@ -63,7 +70,7 @@ namespace forexAI
         public static void info(string lines)
         {
             StreamWriter file = new StreamWriter(Configuration.LogFileName, true);
-            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + "<" +
+            file.WriteLine(DateTime.Now.ToString("h:mm:ss.fff") + " <" +
                 Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "info: " + lines);
             file.Close();
         }
