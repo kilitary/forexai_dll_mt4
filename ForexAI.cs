@@ -732,7 +732,7 @@ namespace forexAI
             double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
 
             //---- sell conditions
-            if (Open[1] > ma && Close[1] < ma && random.Next(22) == 21)
+            if (Open[1] > ma && Close[1] < ma && random.Next(11) == 1)
             {
                 OrderSend(Symbol(), OP_SELL, 0.01, Bid, 3, 0, 0, "", 25, DateTime.MinValue, Color.Red);
                 log("->open sell ");
@@ -740,7 +740,7 @@ namespace forexAI
                 return;
             }
             //---- buy conditions
-            if (Open[1] < ma && Close[1] > ma && random.Next(22) == 21)
+            if (Open[1] < ma && Close[1] > ma && random.Next(11) == 1)
             {
                 OrderSend(Symbol(), OP_BUY, 0.01, Ask, 3, 0, 0, "", 25, DateTime.MinValue, Color.Blue);
                 log("->open buy ");

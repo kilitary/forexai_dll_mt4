@@ -54,19 +54,22 @@ namespace forexAI
                 console("ого");
             else if (random.Next(Configuration.ExperimentalRandomDimension) == 53)
                 console("мда бля..");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 99)
-                console("нед");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 929)
-                console("нет");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 94)
-                console("ноу");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 96)
-                console("найн");
             else if (random.Next(Configuration.ExperimentalRandomDimension) == 154)
                 console("ахуенчик");
             else if (random.Next(Configuration.ExperimentalRandomDimension) == 48)
                 console("бля ну заебись");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == Configuration.ExperimentalRandomDimension)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 9981)
+                console("нед");
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 929)
+                console("нет");
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 9481)
+                console("ноу");
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 9811)
+                console("найн");
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 934)
+                console("да и похуй");
+
+            if (random.Next(Configuration.ExperimentalRandomDimension) == Configuration.ExperimentalRandomDimension)
                 console("и чо");
 
             if (random.Next(Configuration.ExperimentalRandomDimension) == random.Next(Configuration.ExperimentalRandomDimension))
