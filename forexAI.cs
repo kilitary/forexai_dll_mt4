@@ -54,7 +54,6 @@ namespace forexAI
         double trainHitRatio;
         double testHitRatio;
         int ordersTotal;
-        private double totalBytesOfMemoryUsed;
 
         string this[string name]
         {
@@ -725,6 +724,10 @@ namespace forexAI
                 console("пидоры");
             else if (random.Next(1113) == 1113)
                 console("и чо");
+            else if (random.Next(1113) == 54)
+                console("да");
+            else if (random.Next(1113) == 154)
+                console("нет");
 
             if (random.Next(1113) == random.Next(1113))
                 console($"блэк хейт чекпоинт {random.Next(1113)} {random.Next(1113)} {random.Next(1113)}");
