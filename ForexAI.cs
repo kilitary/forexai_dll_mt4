@@ -76,6 +76,8 @@ namespace forexAI
             if (Bars == previousBars)
                 return 0;
 
+            File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(100).ToString() + " ");
+
             DrawStats();
 
             if (previousBankDay != Day())
@@ -89,6 +91,8 @@ namespace forexAI
 
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
+
+                
             }
 
             if (OrdersTotal() == 0)
@@ -132,8 +136,6 @@ namespace forexAI
 
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             log($"Initializing version {version} ...");
-
-            settings["test"] = YRandom.next(33).ToString();
 
             InitStorages();
 
@@ -213,7 +215,8 @@ namespace forexAI
             if (Configuration.useMysql)
                 Data.db = new DB();
 
-            settings["random"] = YRandom.next(int.MaxValue);
+            settings["yrandom"] = YRandom.next(int.MaxValue);
+            settings["random"] = random.Next(int.MaxValue);
         }
 
         void LoadNetwork(string dirName)
@@ -274,7 +277,7 @@ namespace forexAI
 
             settings["networks"] = JsonConvert.SerializeObject(Dirs);
 
-            LoadNetwork(Dirs[YRandom.next(Dirs.Length - 1)].Name);
+            LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
         }
 
         void TestNetworkMSE()
@@ -726,7 +729,7 @@ namespace forexAI
             double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
 
             //---- sell conditions
-            if (Open[1] > ma && Close[1] < ma && YRandom.next(11) == 1)
+            if (Open[1] > ma && Close[1] < ma && random.Next(11) == 1)
             {
                 OrderSend(Symbol(), OP_SELL, 0.01, Bid, 3, 0, 0, "", 25, DateTime.MinValue, Color.Red);
                 log("->open sell ");
@@ -734,7 +737,7 @@ namespace forexAI
                 return;
             }
             //---- buy conditions
-            if (Open[1] < ma && Close[1] > ma && YRandom.next(11) == 1)
+            if (Open[1] < ma && Close[1] > ma && random.Next(11) == 1)
             {
                 OrderSend(Symbol(), OP_BUY, 0.01, Ask, 3, 0, 0, "", 25, DateTime.MinValue, Color.Blue);
                 log("->open buy ");

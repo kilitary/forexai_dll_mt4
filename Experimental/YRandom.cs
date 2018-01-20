@@ -47,7 +47,7 @@ namespace forexAI
                 double randomValueInRange = Math.Floor(multiplier * range);
 
                 result = (int) (minimumValue + randomValueInRange);
-            } while (result == prevResult || random.Next(12) > 2);
+            } while (result == prevResult);
 
             prevResult = result;
 

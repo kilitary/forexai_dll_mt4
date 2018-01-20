@@ -28,6 +28,6 @@ namespace forexAI
         public static int MemcachedPort = 11211;
 
         // Experimental features
-        public static int ExperimentalRandomDimension = 5000;
+        public static int ExRandomDimension = 5000;
     }
 }
