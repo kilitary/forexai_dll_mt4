@@ -36,6 +36,14 @@ namespace forexAI
             }
         }
 
+        public void Set(string name, object obj)
+        {
+            settings[name] = JsonConvert.SerializeObject(obj, Formatting.Indented);
+        }
+        public object Get(string name)
+        {
+            return JsonConvert.DeserializeObject<object>(settings[name].ToString());
+        }
         public Settings()
         {
             settings = JsonConvert.DeserializeObject<Dictionary<string, object>>
