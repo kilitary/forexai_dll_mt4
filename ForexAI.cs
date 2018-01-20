@@ -60,11 +60,12 @@ namespace forexAI
         {
             get
             {
-                return (string) Data.db.GetSetting(name);
+                return "";
+               // return (string) Data.db.GetSetting(name);
             }
             set
             {
-                Data.db.SetSetting(name, value);
+              //  Data.db.SetSetting(name, value);
             }
         }
 
@@ -146,7 +147,7 @@ namespace forexAI
             TestNetworkMSE();
             TestNetworkHitRatio();
 
-            this["runNum"] = (int.Parse(this["runNum"]) + 1).ToString();
+            //this["runNum"] = (int.Parse(this["runNum"]) + 1).ToString();
 
             log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec.");
             return 0;
@@ -310,7 +311,7 @@ namespace forexAI
             debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
             debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
 
-            runNum = int.Parse(this["runNum"] != null ? this["runNum"] : "0");
+            //runNum = int.Parse(this["runNum"] != null ? this["runNum"] : "0");
             debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()} runNum={runNum}");
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
             debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +

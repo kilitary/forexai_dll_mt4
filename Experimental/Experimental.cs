@@ -34,6 +34,12 @@ namespace forexAI
 
         static public void AlliedInstructions()
         {
+            int e;
+            do
+            {
+                e = random.Next(9999999);
+            } while (e % 1 == 0);
+
             if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 21)
                 console("пиздец");
             else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 33)
