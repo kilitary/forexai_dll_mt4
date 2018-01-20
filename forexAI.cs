@@ -76,13 +76,13 @@ namespace forexAI
                 return 0;
 
             DrawStats();
-            
+
 
             if (previousBankDay != Day())
             {
                 previousBankDay = Day();
 
-              
+
                 log($"> Day{previousBankDay.ToString(" 0")} opnum={operationsCount} barsPerDay={barsPerDay}");
 
                 operationsCount = 0;
@@ -111,35 +111,58 @@ namespace forexAI
             return 0;
         }
 
+        //┓┏┓┏┓┃ 
+        //┛┗┛┗┛┃
+        //┓┏┓┏┓┃ 
+        //┛┗┛┗┛┃ ЕБАНЫЙ РОООООТ!
+        //┓┏┓┏┓┃＼○／ 
+        //┛┗┛┗┛┃ / /
+        //┓┏┓┏┓┃ノ
+        //┛┗┛┗┛┃ 
+        //┓┏┓┏┓┃ 
+        //┛┗┛┗┛┃ 
+        //┓┏┓┏┓┃ 
+        //┛┗┛┗┛┃ 
+        //┓┏┓┏┓┃ 
+        //┛┗┛┗┛┃ 
+        //┓┏┓┏┓┃ 
+        //┛┗┛┗┛┃ 
+        //┓┏┓┏┓┃ 
+        //┛┗┛┗┛┃ 
+        //┓┏┓┏┓┃ 
+        //┛┗┛┗┛┃
+
         public void Experimental()
         {
-            if (random.Next(5000) == 21)
-                console("пиздец нахуй");
-            else if (random.Next(5000) == 33)
+            if (random.Next(Configuration.ExperimentalRandomDimension) == 21)
+                console("пиздец");
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 33)
                 console("даладно нахуй");
-            else if (random.Next(5000) == 44)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 44)
                 console("ахуеть");
-            else if (random.Next(5000) == 444)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 29)
                 console("чо за хуйня");
-            else if (random.Next(5000) == 666)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 444)
+                console("мудаки ёбаные");
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 666)
                 console("пошли нахуй");
-            else if (random.Next(5000) == 999)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 999)
                 console("пидоры");
-            else if (random.Next(5000) == 5000)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == Configuration.ExperimentalRandomDimension)
                 console("и чо");
-            else if (random.Next(5000) == 52)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 52)
                 console("да");
-            else if (random.Next(5000) == 54)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 54)
                 console("ого");
-            else if (random.Next(5000) == 53)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 53)
                 console("нет");
-            else if (random.Next(5000) == 154)
-                console("пизда ёбаная");
-            else if (random.Next(5000) == 48)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 154)
+                console("ахуенчик");
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 48)
                 console("бля ну заебись");
 
-            if (random.Next(5000) == random.Next(5000))
-                console($"блэк хейт чекпоинт {random.Next(5000)} {random.Next(5000)} {random.Next(5000)}");
+            if (random.Next(Configuration.ExperimentalRandomDimension) == random.Next(Configuration.ExperimentalRandomDimension))
+                console($"блэк хейт чекпоинт {random.Next(Configuration.ExperimentalRandomDimension)} {random.Next(Configuration.ExperimentalRandomDimension)} {random.Next(Configuration.ExperimentalRandomDimension)}");
         }
 
         public override int deinit()
