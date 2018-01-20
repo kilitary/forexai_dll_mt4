@@ -1,31 +1,36 @@
-﻿// class 2999
-//░░ ♡ ▄▀▀▀▄░░░ 
-//▄███▀░◐░░░▌░░░░░░░ 
-//░░░░▌░░░░░▐░░░░░░░ 
-//░░░░▐░░░░░▐░░░░░░░ 
-//░░░░▌░░░░░▐▄▄░░░░░ 
-//░░░░▌░░░░▄▀▒▒▀▀▀▀▄ 
-//░░░▐░░░░▐▒▒▒▒▒▒▒▒▀▀▄ 
-//░░░▐░░░░▐▄▒▒▒▒▒▒▒▒▒▒▀▄ 
-//░░░░▀▄░░░░▀▄▒▒▒▒▒▒▒▒▒▒▀▄ 
-//░░░░░░▀▄▄▄▄▄█▄▄▄▄▄▄▄▄▄▄▄▀▄ 
-//░░░░░░░░░░░▌▌░▌▌░░░░░ 
-//░░░░░░░░░░░▌▌░▌▌░░░░░ 
-//░░░░░░░░░▄▄▌▌▄▌▌░░░░░
-
-
+﻿//class2999
+//┓┏┓┏┓┃ 
+//┛┗┛┗┛┃
+//┓┏┓┏┓┃ 
+//┛┗┛┗┛┃ ЕБАНЫЙ РОООООТ!
+//┓┏┓┏┓┃＼○／ 
+//┛┗┛┗┛┃ / /
+//┓┏┓┏┓┃ノ
+//┛┗┛┗┛┃ 
+//┓┏┓┏┓┃ 
+//┛┗┛┗┛┃ 
+//┓┏┓┏┓┃ 
+//┛┗┛┗┛┃ 
+//┓┏┓┏┓┃ 
+//┛┗┛┗┛┃ 
+//┓┏┓┏┓┃ 
+//┛┗┛┗┛┃ 
+//┓┏┓┏┓┃ 
+//┛┗┛┗┛┃ 
+//┓┏┓┏┓┃ 
+//┛┗┛┗┛┃
+using static forexAI.Logger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static forexAI.Logger;
 
 namespace forexAI
 {
     static public class Experimental
     {
-        static Random random = new Random((int) random.Next(999999999));
+        static Random random = new Random((int) (int) (((double) DateTimeOffset.Now.ToUnixTimeMilliseconds()) / 3.1));
 
         static public void AlliedInstructions()
         {
@@ -49,7 +54,7 @@ namespace forexAI
                 console("ого");
             else if (random.Next(Configuration.ExperimentalRandomDimension) == 53)
                 console("мда бля..");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 94)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 99)
                 console("нет");
             else if (random.Next(Configuration.ExperimentalRandomDimension) == 154)
                 console("ахуенчик");
@@ -63,3 +68,4 @@ namespace forexAI
         }
     }
 }
+
