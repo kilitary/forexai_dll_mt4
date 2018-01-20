@@ -14,7 +14,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.1.134.0</AssemblyVersion>
+    <AssemblyVersion>0.1.136.0</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -98,6 +98,7 @@
     <Compile Include="Data\Configuration.cs" />
     <Compile Include="Data\Data.cs" />
     <Compile Include="Data\Settings.cs" />
+    <Compile Include="Experimental\Experimental.cs" />
     <Compile Include="ForexAI.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Data\DB.cs" />
