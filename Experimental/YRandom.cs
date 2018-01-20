@@ -1,16 +1,16 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography;
+using static forexAI.Logger;
 
 namespace forexAI
 {
-    public static class XRandom
+    public static class YRandom
     {
-        public static Random random;
         private static readonly RNGCryptoServiceProvider _generator = new RNGCryptoServiceProvider();
 
         public static void init()
         {
-            random = new Random((int) (((double) DateTimeOffset.Now.ToUnixTimeMilliseconds()) / 3.1));
         }
 
         public static int next(int n)
@@ -30,6 +30,8 @@ namespace forexAI
             _generator.GetBytes(randomNumber);
 
             double asciiValueOfRandomCharacter = Convert.ToDouble(randomNumber[0]);
+
+            File.AppendAllText(@"d:\temp\forexAI\seed", asciiValueOfRandomCharacter.ToString() + " ");
 
             // We are using Math.Max, and substracting 0.00000000001, 
             // to ensure "multiplier" will always be between 0.0 and .99999999999

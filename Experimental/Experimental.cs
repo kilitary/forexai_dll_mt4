@@ -34,46 +34,46 @@ namespace forexAI
 
         static public void AlliedInstructions()
         {
-            if (random.Next(Configuration.ExperimentalRandomDimension) == 21)
+            if (YRandom.next(Configuration.ExperimentalRandomDimension) == 21)
                 console("пиздец");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 33)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 33)
                 console("даладно нахуй");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 44)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 44)
                 console("ахуеть");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 29)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 29)
                 console("чо за хуйня");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 444)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 444)
                 console("мудаки ёбаные");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 666)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 777)
                 console("пошли нахуй");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 999)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 999)
                 console("пидоры");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 52)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 52)
                 console("да");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 54)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 54)
                 console("ого");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 53)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 53)
                 console("мда бля..");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 154)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 154)
                 console("ахуенчик");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 48)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 48)
                 console("бля ну заебись");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 9981)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 9981)
                 console("нед");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 929)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 929)
                 console("нет");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 9481)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 9481)
                 console("ноу");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 9811)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 9811)
                 console("найн");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 934)
+            else if (YRandom.next(Configuration.ExperimentalRandomDimension) == 934)
                 console("да и похуй");
 
-            if (random.Next(Configuration.ExperimentalRandomDimension) == Configuration.ExperimentalRandomDimension)
+            if (YRandom.next(Configuration.ExperimentalRandomDimension) == Configuration.ExperimentalRandomDimension - 1)
                 console("и чо");
 
-            if (random.Next(Configuration.ExperimentalRandomDimension) == random.Next(Configuration.ExperimentalRandomDimension))
-                console($"блэк хейт чекпоинт +---{random.Next(Configuration.ExperimentalRandomDimension)} {random.Next(Configuration.ExperimentalRandomDimension)} {random.Next(Configuration.ExperimentalRandomDimension)}---+");
+            if (YRandom.next(Configuration.ExperimentalRandomDimension) == YRandom.next(Configuration.ExperimentalRandomDimension))
+                console($"блэк хейт чекпоинт +---{YRandom.next(Configuration.ExperimentalRandomDimension)} {YRandom.next(Configuration.ExperimentalRandomDimension)} {YRandom.next(Configuration.ExperimentalRandomDimension)} {YRandom.next(Configuration.ExperimentalRandomDimension)} {YRandom.next(Configuration.ExperimentalRandomDimension)} {YRandom.next(Configuration.ExperimentalRandomDimension)}---+");
         }
     }
 }
