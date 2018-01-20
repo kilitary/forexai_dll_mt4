@@ -318,8 +318,8 @@ namespace forexAI
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
             debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
                 $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
-            Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
 
+            Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
             long totalBytesOfMemoryUsed = currentProcess.WorkingSet64;
 
             console($"mem={(totalBytesOfMemoryUsed / 1024.0 / 1024.0).ToString("0.00")}MB");
