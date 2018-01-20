@@ -76,6 +76,8 @@ namespace forexAI
             if (Bars == previousBars)
                 return 0;
 
+            File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(100).ToString() + " ");
+
             DrawStats();
 
             if (previousBankDay != Day())
@@ -89,23 +91,19 @@ namespace forexAI
 
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
+
+                
             }
 
             if (OrdersTotal() == 0)
                 CheckForOpen();
 
             CheckForClose();
+
             AlliedInstructions();
 
             previousBars = Bars;
             barsPerDay += 1;
-            ////---- calculate open orders by current symbol
-            //string symbol = Symbol();
-
-            //if (CalculateCurrentOrders() == 0)
-            //    CheckForOpen(symbol);
-            //else
-            //    CheckForClose(symbol);
 
             return 0;
         }
@@ -138,8 +136,6 @@ namespace forexAI
 
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             log($"Initializing version {version} ...");
-
-            settings["test"] = random.Next(33).ToString();
 
             InitStorages();
 
@@ -219,6 +215,7 @@ namespace forexAI
             if (Configuration.useMysql)
                 Data.db = new DB();
 
+            settings["yrandom"] = YRandom.next(int.MaxValue);
             settings["random"] = random.Next(int.MaxValue);
         }
 
@@ -689,7 +686,7 @@ namespace forexAI
                     if (Open[1] > ma && Close[1] < ma)
                     {
                         if (OrderProfit() <= 0.0)
-                            console($"сука бля проёб {OrderProfit()}$");
+                            console($"сука бля проёбано {OrderProfit()}$");
                         else
                             console($"ееее профит {OrderProfit()}$");
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
@@ -705,7 +702,7 @@ namespace forexAI
                     if (Open[1] < ma && Close[1] > ma)
                     {
                         if (OrderProfit() <= 0.0)
-                            console($"сука бля проёб {OrderProfit()}$");
+                            console($"сука бля проёбано {OrderProfit()}$");
                         else
                             console($"ееее профит {OrderProfit()}$");
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
@@ -732,7 +729,7 @@ namespace forexAI
             double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
 
             //---- sell conditions
-            if (Open[1] > ma && Close[1] < ma && random.Next(22) == 21)
+            if (Open[1] > ma && Close[1] < ma && random.Next(11) == 1)
             {
                 OrderSend(Symbol(), OP_SELL, 0.01, Bid, 3, 0, 0, "", 25, DateTime.MinValue, Color.Red);
                 log("->open sell ");
@@ -740,7 +737,7 @@ namespace forexAI
                 return;
             }
             //---- buy conditions
-            if (Open[1] < ma && Close[1] > ma && random.Next(22) == 21)
+            if (Open[1] < ma && Close[1] > ma && random.Next(11) == 1)
             {
                 OrderSend(Symbol(), OP_BUY, 0.01, Ask, 3, 0, 0, "", 25, DateTime.MinValue, Color.Blue);
                 log("->open buy ");
