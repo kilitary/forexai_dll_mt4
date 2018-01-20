@@ -683,7 +683,7 @@ namespace forexAI
                     if (Open[1] > ma && Close[1] < ma)
                     {
                         if (OrderProfit() <= 0.0)
-                            console($"сука бля проёб {OrderProfit()}$");
+                            console($"сука бля проёбано {OrderProfit()}$");
                         else
                             console($"ееее профит {OrderProfit()}$");
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
@@ -699,7 +699,7 @@ namespace forexAI
                     if (Open[1] < ma && Close[1] > ma)
                     {
                         if (OrderProfit() <= 0.0)
-                            console($"сука бля проёб {OrderProfit()}$");
+                            console($"сука бля проёбано {OrderProfit()}$");
                         else
                             console($"ееее профит {OrderProfit()}$");
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);

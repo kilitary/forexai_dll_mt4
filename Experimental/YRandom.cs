@@ -7,6 +7,8 @@ namespace forexAI
 {
     public static class YRandom
     {
+        private static Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
+
         private static readonly RNGCryptoServiceProvider _generator = new RNGCryptoServiceProvider();
 
         public static void init()
@@ -26,24 +28,32 @@ namespace forexAI
         public static int between(int minimumValue, int maximumValue)
         {
             byte[] randomNumber = new byte[1];
+            int result, prevResult = -1;
 
-            _generator.GetBytes(randomNumber);
+            do
+            {
+                _generator.GetBytes(randomNumber);
 
-            double asciiValueOfRandomCharacter = Convert.ToDouble(randomNumber[0]);
+                double asciiValueOfRandomCharacter = Convert.ToDouble(randomNumber[0]);
 
-            File.AppendAllText(@"d:\temp\forexAI\seed", asciiValueOfRandomCharacter.ToString() + " ");
+                // We are using Math.Max, and substracting 0.00000000001, 
+                // to ensure "multiplier" will always be between 0.0 and .99999999999
+                // Otherwise, it's possible for it to be "1", which causes problems in our rounding.
+                double multiplier = Math.Max(0, (asciiValueOfRandomCharacter / 255d) - 0.00000000001d);
 
-            // We are using Math.Max, and substracting 0.00000000001, 
-            // to ensure "multiplier" will always be between 0.0 and .99999999999
-            // Otherwise, it's possible for it to be "1", which causes problems in our rounding.
-            double multiplier = Math.Max(0, (asciiValueOfRandomCharacter / 255d) - 0.00000000001d);
+                // We need to add one to the range, to allow for the rounding done with Math.Floor
+                int range = maximumValue - minimumValue + 1;
 
-            // We need to add one to the range, to allow for the rounding done with Math.Floor
-            int range = maximumValue - minimumValue + 1;
+                double randomValueInRange = Math.Floor(multiplier * range);
 
-            double randomValueInRange = Math.Floor(multiplier * range);
+                result = (int) (minimumValue + randomValueInRange);
+            } while (result == prevResult || random.Next(12) > 2);
 
-            return (int) (minimumValue + randomValueInRange);
+            prevResult = result;
+
+            File.AppendAllText(@"d:\temp\forexAI\seed", result.ToString() + " ");
+
+            return result;
         }
 
         public static string randomString()
