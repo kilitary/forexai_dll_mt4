@@ -56,7 +56,7 @@ namespace forexAI
                 console("мда бля..");
             else if (random.Next(Configuration.ExperimentalRandomDimension) == 99)
                 console("нед");
-            else if (random.Next(Configuration.ExperimentalRandomDimension) == 921)
+            else if (random.Next(Configuration.ExperimentalRandomDimension) == 929)
                 console("нет");
             else if (random.Next(Configuration.ExperimentalRandomDimension) == 94)
                 console("ноу");
@@ -70,7 +70,7 @@ namespace forexAI
                 console("и чо");
 
             if (random.Next(Configuration.ExperimentalRandomDimension) == random.Next(Configuration.ExperimentalRandomDimension))
-                console($"блэк хэйт чекпоинт +---{random.Next(Configuration.ExperimentalRandomDimension)} {random.Next(Configuration.ExperimentalRandomDimension)} {random.Next(Configuration.ExperimentalRandomDimension)}---+");
+                console($"блэк хейт чекпоинт +---{random.Next(Configuration.ExperimentalRandomDimension)} {random.Next(Configuration.ExperimentalRandomDimension)} {random.Next(Configuration.ExperimentalRandomDimension)}---+");
         }
     }
 }
