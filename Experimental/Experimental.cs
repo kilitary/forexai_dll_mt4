@@ -34,46 +34,46 @@ namespace forexAI
 
         static public void AlliedInstructions()
         {
-            if (random.Next(Configuration.ExperimentalRandomLimit) == 21)
+            if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 21)
                 console("пиздец");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 33)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 33)
                 console("даладно нахуй");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 44)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 44)
                 console("ахуеть");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 29)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 29)
                 console("чо за хуйня");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 444)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 444)
                 console("мудаки ёбаные");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 777)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 777)
                 console("пошли нахуй");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 999)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 999)
                 console("пидоры");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 52)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 52)
                 console("да");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 54)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 54)
                 console("ого");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 53)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 53)
                 console("мда бля..");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 154)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 154)
                 console("ахуенчик");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 48)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 48)
                 console("бля ну заебись");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 9981)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 9981)
                 console("нед");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 9293)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 9293)
                 console("нет");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 9481)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 9481)
                 console("ноу");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 9811)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 9811)
                 console("найн");
-            else if (random.Next(Configuration.ExperimentalRandomLimit) == 934)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 934)
                 console("да и похуй");
 
-            if (random.Next(Configuration.ExperimentalRandomLimit) == Configuration.ExperimentalRandomLimit)
+            if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == Configuration.ExperimentalAlliedRandomLimit)
                 console("и чо");
 
-            if (random.Next(Configuration.ExperimentalRandomLimit) == random.Next(Configuration.ExperimentalRandomLimit))
-                console($"блэк хейт чекпоинт +---{random.Next(Configuration.ExperimentalRandomLimit)} {random.Next(Configuration.ExperimentalRandomLimit)} {random.Next(Configuration.ExperimentalRandomLimit)} {random.Next(Configuration.ExperimentalRandomLimit)} {random.Next(Configuration.ExperimentalRandomLimit)} {random.Next(Configuration.ExperimentalRandomLimit)}---+");
+            if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == random.Next(Configuration.ExperimentalAlliedRandomLimit))
+                console($"блэк хейт чекпоинт +---{random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)}---+");
         }
     }
 }
