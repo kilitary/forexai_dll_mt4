@@ -54,6 +54,7 @@ namespace forexAI
         double trainHitRatio;
         double testHitRatio;
         int ordersTotal;
+        private double totalBytesOfMemoryUsed;
 
         string this[string name]
         {
@@ -81,11 +82,7 @@ namespace forexAI
             {
                 previousBankDay = Day();
 
-                Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
-                long totalBytesOfMemoryUsed = currentProcess.WorkingSet64;
-
-                console($"mem={(totalBytesOfMemoryUsed / 1024.0 / 1024.0).ToString("0.00")}MB");
-
+              
                 log($"> Day{previousBankDay.ToString(" 0")} opnum={operationsCount} barsPerDay={barsPerDay}");
 
                 operationsCount = 0;
@@ -94,7 +91,7 @@ namespace forexAI
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
-            if(OrdersTotal() == 0)
+            if (OrdersTotal() == 0)
                 CheckForOpen();
             CheckForClose();
             previousBars = Bars;
@@ -316,6 +313,11 @@ namespace forexAI
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
             debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
                 $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
+            Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
+
+            long totalBytesOfMemoryUsed = currentProcess.WorkingSet64;
+
+            console($"mem={(totalBytesOfMemoryUsed / 1024.0 / 1024.0).ToString("0.00")}MB");
         }
 
         double GetActiveIncome()
@@ -681,6 +683,10 @@ namespace forexAI
                     // log("test  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                     if (Open[1] > ma && Close[1] < ma)
                     {
+                        if (OrderProfit() <= 0.0)
+                            console($"сука бля проёб {OrderProfit()}$");
+                        else
+                            console($"ееее профит {OrderProfit()}$");
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         log("close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         operationsCount++;
@@ -693,14 +699,35 @@ namespace forexAI
                     // log("test  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                     if (Open[1] < ma && Close[1] > ma)
                     {
+                        if (OrderProfit() <= 0.0)
+                            console($"сука бля проёб {OrderProfit()}$");
+                        else
+                            console($"ееее профит {OrderProfit()}$");
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
-                        log("close sell " + OrderTicket()+"  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
+                        log("close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         operationsCount++;
                     }
 
                     break;
                 }
             }
+            if (random.Next(1113) == 21)
+                console("пиздец нахуй");
+            else if (random.Next(1113) == 33)
+                console("даладно нахуй");
+            else if (random.Next(1113) == 44)
+                console("ахуеть");
+            else if (random.Next(1113) == 444)
+                console("чо за хуйня");
+            else if (random.Next(1113) == 666)
+                console("пошли нахуй");
+            else if (random.Next(1113) == 999)
+                console("пидоры");
+            else if (random.Next(1113) == 1113)
+                console("и чо");
+
+            if (random.Next(1113) == random.Next(1113))
+                console($"блэк хейт чекпоинт {random.Next(1113)} {random.Next(1113)} {random.Next(1113)}");
         }
 
         ////+------------------------------------------------------------------+
@@ -717,7 +744,7 @@ namespace forexAI
             double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
 
             //---- sell conditions
-            if (Open[1] > ma && Close[1] < ma)
+            if (Open[1] > ma && Close[1] < ma && random.Next(44) == 21)
             {
                 OrderSend(Symbol(), OP_SELL, 0.01, Bid, 3, 0, 0, "", 25, DateTime.MinValue, Color.Red);
                 log("open sell ");
@@ -725,7 +752,7 @@ namespace forexAI
                 return;
             }
             //---- buy conditions
-            if (Open[1] < ma && Close[1] > ma)
+            if (Open[1] < ma && Close[1] > ma && random.Next(44) == 21)
             {
                 OrderSend(Symbol(), OP_BUY, 0.01, Ask, 3, 0, 0, "", 25, DateTime.MinValue, Color.Blue);
                 log("open buy ");
