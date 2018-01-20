@@ -127,12 +127,16 @@ namespace forexAI
                 console("пидоры");
             else if (random.Next(5000) == 5000)
                 console("и чо");
-            else if (random.Next(5000) == 54)
+            else if (random.Next(5000) == 52)
                 console("да");
-            else if (random.Next(5000) == 154)
+            else if (random.Next(5000) == 54)
+                console("ого");
+            else if (random.Next(5000) == 53)
                 console("нет");
+            else if (random.Next(5000) == 154)
+                console("пизда ёбаная");
             else if (random.Next(5000) == 48)
-                console("бля заебись");
+                console("бля ну заебись");
 
             if (random.Next(5000) == random.Next(5000))
                 console($"блэк хейт чекпоинт {random.Next(5000)} {random.Next(5000)} {random.Next(5000)}");
