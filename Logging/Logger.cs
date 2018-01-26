@@ -17,7 +17,7 @@ namespace forexAI
         [DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
         private static extern int GetCurrentThreadId();
 
-        public static void ClearLogs()
+        public static void ResetLog()
         {
             if (File.Exists(Configuration.LogFileName))
                 File.Delete(Configuration.LogFileName);

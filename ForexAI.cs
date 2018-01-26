@@ -6,7 +6,9 @@
 //╰┳┫▔╲╰┳━━┳╯╱▔┊ ║ 
 //┈┃╰━━╲▕╲╱▏╱━━━┬╨╮ 
 //┈╰━━╮┊▕╱╲▏┊╭━━┴╥╯
+//                                                   |    |    |
 
+//-------^-----------------^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -63,10 +65,6 @@ namespace forexAI
             if (Bars == previousBars)
                 return 0;
 
-            File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(100).ToString() + " ");
-
-            DrawStats();
-
             if (previousBankDay != Day())
             {
                 previousBankDay = Day();
@@ -77,12 +75,17 @@ namespace forexAI
                 barsPerDay = 0;
             }
 
+            File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(100).ToString() + " ");
+
+            CalculateCurrentOrders();
+
             if (OrdersTotal() == 0)
                 CheckForOpen();
 
             CheckForClose();
-
             AlliedInstructions();
+
+            DrawStats();
 
             previousBars = Bars;
             barsPerDay += 1;
@@ -273,30 +276,19 @@ namespace forexAI
             log($" * MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")} bitfail={FXNetwork.BitFail}");
         }
 
-        void AddLabel(string text)
-        {
-            string on;
-            double pos = Bid + (Bid - Ask) / 2;
-            pos = Open[0];
-            on = (pos.ToString());
-            ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
-            ObjectSetText(on, text, 8, "lucida console", Color.DarkRed);
-        }
-
         void DumpInfo()
         {
             log($"AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
             log($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
+
             debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
             debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
-
             debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
             debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
                 $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
 
             Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
-
             console($"mem={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}MB");
         }
 
@@ -344,6 +336,15 @@ namespace forexAI
             }
 
             return (total);
+        }
+        void AddLabel(string text)
+        {
+            string on;
+            double pos = Bid + (Bid - Ask) / 2;
+            pos = Open[0];
+            on = (pos.ToString());
+            ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
+            ObjectSetText(on, text, 8, "lucida console", Color.DarkRed);
         }
 
         void DrawStats()
@@ -616,28 +617,28 @@ namespace forexAI
         //+------------------------------------------------------------------+
         //| Calculate open positions                                         |
         //+------------------------------------------------------------------+
-        //private int CalculateCurrentOrders()
-        //{
-        //    int buys = 0, sells = 0;
+        private int CalculateCurrentOrders()
+        {
+            int buys = 0, sells = 0;
 
-        //    for (int i = 0; i < OrdersTotal(); i++)
-        //    {
-        //        if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
-        //            break;
-        //        if (OrderSymbol() == Symbol() && OrderMagicNumber() == MAGICMA)
-        //        {
-        //            if (OrderType() == OP_BUY)
-        //                buys++;
-        //            if (OrderType() == OP_SELL)
-        //                sells++;
-        //        }
-        //    }
+            for (int i = 0; i < OrdersTotal(); i++)
+            {
+                if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+                    break;
+                if (OrderSymbol() == Symbol() && OrderMagicNumber() == 0x25)
+                {
+                    if (OrderType() == OP_BUY)
+                        buys++;
+                    if (OrderType() == OP_SELL)
+                        sells++;
+                }
+            }
 
-        //    //---- return orders volume
-        //    if (buys > 0)
-        //        return (buys);
-        //    return (-sells);
-        //}
+            //---- return orders volume
+            if (buys > 0)
+                return (buys);
+            return (-sells);
+        }
 
         ////+------------------------------------------------------------------+
         ////| Check for close order conditions                                 |
@@ -668,7 +669,7 @@ namespace forexAI
                         else
                             console($"ееее профит {OrderProfit()}$");
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
-                        log("->close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
+                        log("# close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         operationsCount++;
                     }
 
@@ -684,7 +685,7 @@ namespace forexAI
                         else
                             console($"ееее профит {OrderProfit()}$");
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
-                        log("->close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
+                        log("# close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         operationsCount++;
                     }
 
@@ -710,7 +711,7 @@ namespace forexAI
             if (Open[1] > ma && Close[1] < ma && random.Next(11) == 1)
             {
                 OrderSend(Symbol(), OP_SELL, 0.01, Bid, 3, 0, 0, "", 25, DateTime.MinValue, Color.Red);
-                log("->open sell ");
+                log("# open sell ");
                 operationsCount++;
                 return;
             }
@@ -718,7 +719,7 @@ namespace forexAI
             if (Open[1] < ma && Close[1] > ma && random.Next(11) == 1)
             {
                 OrderSend(Symbol(), OP_BUY, 0.01, Ask, 3, 0, 0, "", 25, DateTime.MinValue, Color.Blue);
-                log("->open buy ");
+                log("# open buy ");
                 operationsCount++;
             }
         }
