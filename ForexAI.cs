@@ -49,6 +49,7 @@ namespace forexAI
         int previousBars = 0;
         int barsPerDay = 0;
         int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
+        int buys = 0, sells = 0;
         int startTime = 0;
         int previousBankDay = 0;
         double trainHitRatio;
@@ -205,13 +206,13 @@ namespace forexAI
 
         void LoadNetwork(string dirName)
         {
-            long fileLength = new FileInfo($"{Configuration.DataDirectory}\\{dirName}\\FANN.net").Length;
+            long fileLength = new FileInfo($"{Configuration.dataDirectory}\\{dirName}\\FANN.net").Length;
             log($"Loading network {dirName} ({(fileLength / 1024.0).ToString("0.00")} KB)");
 
             AIName = dirName;
             this.dirName = dirName;
 
-            FXNetwork = new NeuralNet($"{Configuration.DataDirectory}\\{dirName}\\FANN.net");
+            FXNetwork = new NeuralNet($"{Configuration.dataDirectory}\\{dirName}\\FANN.net");
 
             log($"Network: hash={FXNetwork.GetHashCode()} inputs={FXNetwork.InputCount} layers={FXNetwork.LayerCount}" +
                 $" outputs={FXNetwork.OutputCount} neurons={FXNetwork.TotalNeurons} connections={FXNetwork.TotalConnections}");
@@ -254,10 +255,10 @@ namespace forexAI
 
         void ScanNetworks()
         {
-            DirectoryInfo d = new DirectoryInfo(Configuration.DataDirectory);
+            DirectoryInfo d = new DirectoryInfo(Configuration.dataDirectory);
             DirectoryInfo[] Dirs = d.GetDirectories("*");
 
-            log($"Looking for networks in {Configuration.DataDirectory}: found {Dirs.Length} networks.");
+            log($"Looking for networks in {Configuration.dataDirectory}: found {Dirs.Length} networks.");
 
             settings["networks"] = JsonConvert.SerializeObject(Dirs);
 
@@ -266,8 +267,8 @@ namespace forexAI
 
         void TestNetworkMSE()
         {
-            trainData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\traindata.dat");
-            testData = new TrainingData(Configuration.DataDirectory + $"\\{dirName}\\testdata.dat");
+            trainData = new TrainingData(Configuration.dataDirectory + $"\\{dirName}\\traindata.dat");
+            testData = new TrainingData(Configuration.dataDirectory + $"\\{dirName}\\testdata.dat");
 
             log($" * trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
@@ -620,8 +621,6 @@ namespace forexAI
         //+------------------------------------------------------------------+
         private int CalculateCurrentOrders()
         {
-            int buys = 0, sells = 0;
-
             for (int i = 0; i < OrdersTotal(); i++)
             {
                 if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))

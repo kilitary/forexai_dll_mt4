@@ -100,7 +100,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="Storages\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\forexAI_MT4.csproj">

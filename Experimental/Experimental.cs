@@ -38,7 +38,7 @@ namespace forexAI
             do
             {
                 e = random.Next(3);
-            } while (e % 2 == 0);
+            } while (e % 2 == 0 || YRandom.Next(4) > 1);
 
             if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 21)
                 console("пиздец");
@@ -74,6 +74,8 @@ namespace forexAI
                 console("найн");
             else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 934)
                 console("да и похуй");
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 99219)
+                console("√");
 
             if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == Configuration.ExperimentalAlliedRandomLimit)
                 console("и чо");

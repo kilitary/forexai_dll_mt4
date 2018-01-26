@@ -21,7 +21,6 @@ namespace forexAI
 {
     class Settings
     {
-        string settingsPath = @"d:\temp\forexAI\mt4forexai.cfg";
         Dictionary<string, object> settings = new Dictionary<string, object>();
 
         public object this[string name]
@@ -47,12 +46,12 @@ namespace forexAI
         public Settings()
         {
             settings = JsonConvert.DeserializeObject<Dictionary<string, object>>
-                (File.ReadAllText(settingsPath));
+                (File.ReadAllText(Configuration.settingsPath));
         }
 
         public void Save()
         {
-            File.WriteAllText(settingsPath, JsonConvert.SerializeObject(settings, Formatting.Indented));
+            File.WriteAllText(Configuration.settingsPath, JsonConvert.SerializeObject(settings, Formatting.Indented));
         }
 
         ~Settings()

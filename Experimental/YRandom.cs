@@ -11,20 +11,16 @@ namespace forexAI
         private static int prevResult = -1;
         private static readonly RNGCryptoServiceProvider _generator = new RNGCryptoServiceProvider();
 
-        public static void init()
-        {
-        }
-
         public static int Next(int n)
         {
-            int r = between(1, n);
+            int r = between(0, n);
             File.AppendAllText(@"d:\temp\forexAI\Yseed", r.ToString() + " ");
             return r;
         }
 
         public static int Next(int n, int m)
         {
-            return between(Math.Min(n, m), Math.Max(n, m));
+            return between(n, m);
         }
 
         public static int between(int minimumValue, int maximumValue)
