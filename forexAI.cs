@@ -56,18 +56,6 @@ namespace forexAI
         double testHitRatio;
         int ordersTotal;
 
-        string this[string name]
-        {
-            get
-            {
-                return (string) Data.db.GetSetting(name);
-            }
-            set
-            {
-                Data.db.SetSetting(name, value);
-            }
-        }
-
         //+------------------------------------------------------------------+■
         //| Start function                                                   |
         //+------------------------------------------------------------------+
@@ -79,7 +67,7 @@ namespace forexAI
             File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(100).ToString() + " ");
 
             DrawStats();
-
+            
             if (previousBankDay != Day())
             {
                 previousBankDay = Day();
@@ -88,18 +76,13 @@ namespace forexAI
 
                 operationsCount = 0;
                 barsPerDay = 0;
-
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-
-                
             }
 
             if (OrdersTotal() == 0)
                 CheckForOpen();
 
             CheckForClose();
-
+            
             AlliedInstructions();
 
             previousBars = Bars;
@@ -145,8 +128,6 @@ namespace forexAI
             ScanNetworks();
             TestNetworkMSE();
             TestNetworkHitRatio();
-
-            this["runNum"] = (int.Parse(this["runNum"]) + 1).ToString();
 
             log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec.");
             return 0;
@@ -310,16 +291,14 @@ namespace forexAI
             debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
             debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
 
-            runNum = int.Parse(this["runNum"] != null ? this["runNum"] : "0");
             debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()} runNum={runNum}");
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
             debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
                 $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
 
             Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
-            long totalBytesOfMemoryUsed = currentProcess.WorkingSet64;
 
-            console($"mem={(totalBytesOfMemoryUsed / 1024.0 / 1024.0).ToString("0.00")}MB");
+            console($"mem={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}MB");
         }
 
         double GetActiveIncome()
