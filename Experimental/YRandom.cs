@@ -8,19 +8,21 @@ namespace forexAI
     public static class YRandom
     {
         private static Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
-
+        private static int prevResult = -1;
         private static readonly RNGCryptoServiceProvider _generator = new RNGCryptoServiceProvider();
 
         public static void init()
         {
         }
 
-        public static int next(int n)
+        public static int Next(int n)
         {
-            return between(0, n);
+            int r = between(1, n);
+            File.AppendAllText(@"d:\temp\forexAI\Yseed", r.ToString() + " ");
+            return r;
         }
 
-        public static int next(int n, int m)
+        public static int Next(int n, int m)
         {
             return between(Math.Min(n, m), Math.Max(n, m));
         }
@@ -28,7 +30,7 @@ namespace forexAI
         public static int between(int minimumValue, int maximumValue)
         {
             byte[] randomNumber = new byte[1];
-            int result, prevResult = -1;
+            int result;
 
             do
             {
@@ -50,8 +52,6 @@ namespace forexAI
             } while (result == prevResult);
 
             prevResult = result;
-
-            File.AppendAllText(@"d:\temp\forexAI\seed", result.ToString() + " ");
 
             return result;
         }
