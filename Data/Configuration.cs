@@ -16,6 +16,7 @@ namespace forexAI
 {
     public static class Configuration
     {
+        // common configuration
         public static string dataDirectory = @"D:\temp\forexAI";
         public static string logFileName = @"d:\temp\forexAI\mt4.log";
         public static string settingsPath = @"d:\temp\forexAI\mt4forexai.cfg";
@@ -31,9 +32,11 @@ namespace forexAI
         // audio/fx
         public static string newDayWAV = @"d:\Audio_FX\17130__noisecollector__ak47-chamber-round.wav";
         public static string profitWAV = @"d:\Audio_FX\209578__zott820__cash-register-purchase.wav";
+        public static string brokenWAV = @"d:\Audio_FX\115276__xdrav__broken-bulb.wav";
 
         // Experimental features
         public static int ExperimentalAlliedRandomLimit = 5000;
+        
     }
 }
 

@@ -81,7 +81,10 @@ namespace forexAI
                 console("и чо");
 
             if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == random.Next(Configuration.ExperimentalAlliedRandomLimit))
+            {
                 console($"блэк хейт чекпоинт +---{random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)}---+");
+                Audio.FX.FXBroken();
+            }
         }
     }
 }

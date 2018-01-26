@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using forexAI;
 
-namespace AudioFX
+namespace Audio
 {
-    public static class Audio
+    public static class FX
     {
         public static void FXNewDay()
         {
@@ -19,6 +19,12 @@ namespace AudioFX
         public static void FXProfit()
         {
             SoundPlayer simpleSound = new SoundPlayer(Configuration.profitWAV);
+            simpleSound.PlaySync();
+        }
+
+        public static void FXBroken()
+        {
+            SoundPlayer simpleSound = new SoundPlayer(Configuration.brokenWAV);
             simpleSound.PlaySync();
         }
     }

@@ -73,7 +73,7 @@ namespace forexAI
                 operationsCount = 0;
                 barsPerDay = 0;
 
-                AudioFX.Audio.FXNewDay();
+                Audio.FX.FXNewDay();
             }
 
             File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(100).ToString() + " ");
@@ -667,7 +667,7 @@ namespace forexAI
                         else
                         {
                             console($"ееее профит {OrderProfit()}$");
-                            AudioFX.Audio.FXProfit();
+                            Audio.FX.FXProfit();
                         }
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         log("# close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
@@ -686,7 +686,7 @@ namespace forexAI
                         else
                         {
                             console($"ееее профит {OrderProfit()}$");
-                            AudioFX.Audio.FXProfit();
+                            Audio.FX.FXProfit();
                         }
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
                         log("# close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
