@@ -39,7 +39,6 @@ namespace forexAI
         int previousBankDay = 0;
         double profit;
         public static Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
-        int runNum;
         int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
         double spends;
         int startTime = 0;
@@ -67,7 +66,7 @@ namespace forexAI
             File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(100).ToString() + " ");
 
             DrawStats();
-            
+
             if (previousBankDay != Day())
             {
                 previousBankDay = Day();
@@ -82,7 +81,7 @@ namespace forexAI
                 CheckForOpen();
 
             CheckForClose();
-            
+
             AlliedInstructions();
 
             previousBars = Bars;
@@ -291,7 +290,7 @@ namespace forexAI
             debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
             debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
 
-            debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()} runNum={runNum}");
+            debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
             debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
                 $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");

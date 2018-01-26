@@ -16,7 +16,7 @@ using Color = System.Drawing.Color;
 
 namespace forexAI
 {
-     class Storage
+    class Storage
     {
         MemcachedClient mc = null;
         Dictionary<string, object> properties = new Dictionary<string, object>();

@@ -30,7 +30,7 @@ namespace forexAI
 {
     static public class Experimental
     {
-        static Random random = new Random((int) (((double) DateTimeOffset.Now.ToUnixTimeMilliseconds()) / 3.2));
+        static Random random = new Random((int) (((double) DateTimeOffset.Now.ToUnixTimeMilliseconds()) / 3.9));
 
         static public void AlliedInstructions()
         {
