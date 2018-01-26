@@ -13,15 +13,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using FANNCSharp.Double;
 using Newtonsoft.Json;
 using NQuotes;
-using TicTacTec.TA.Library;
 using static forexAI.Logger;
 using Color = System.Drawing.Color;
 using static forexAI.Experimental;
@@ -76,6 +72,8 @@ namespace forexAI
 
                 operationsCount = 0;
                 barsPerDay = 0;
+
+                AudioFX.Audio.FXNewDay();
             }
 
             File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(100).ToString() + " ");
@@ -667,7 +665,10 @@ namespace forexAI
                         if (OrderProfit() <= 0.0)
                             console($"сука бля проёбано {OrderProfit()}$");
                         else
+                        {
                             console($"ееее профит {OrderProfit()}$");
+                            AudioFX.Audio.FXProfit();
+                        }
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         log("# close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         operationsCount++;
@@ -683,7 +684,10 @@ namespace forexAI
                         if (OrderProfit() <= 0.0)
                             console($"сука бля проёбано {OrderProfit()}$");
                         else
+                        {
                             console($"ееее профит {OrderProfit()}$");
+                            AudioFX.Audio.FXProfit();
+                        }
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
                         log("# close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         operationsCount++;

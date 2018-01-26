@@ -28,6 +28,10 @@ namespace forexAI
         public static bool useMysql = false;
         public static int MemcachedPort = 11211;
 
+        // audio/fx
+        public static string newDayWAV = @"d:\Audio_FX\17130__noisecollector__ak47-chamber-round.wav";
+        public static string profitWAV = @"d:\Audio_FX\209578__zott820__cash-register-purchase.wav";
+
         // Experimental features
         public static int ExperimentalAlliedRandomLimit = 5000;
     }

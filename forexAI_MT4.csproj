@@ -14,7 +14,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.1.217.0</AssemblyVersion>
+    <AssemblyVersion>0.1.221.0</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -95,6 +95,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audio\Audio.cs" />
     <Compile Include="Data\Configuration.cs" />
     <Compile Include="Storages\Data.cs" />
     <Compile Include="Storages\Settings.cs" />
