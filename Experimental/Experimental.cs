@@ -30,15 +30,15 @@ namespace forexAI
 {
     static public class Experimental
     {
-        static Random random = new Random((int) (((double) DateTimeOffset.Now.ToUnixTimeMilliseconds()) / 3.8));
+        static Random random = new Random((int) (((double) DateTimeOffset.Now.ToUnixTimeMilliseconds())));
 
         static public void AlliedInstructions()
         {
             int e;
             do
             {
-                e = random.Next(3);
-            } while (e % 2 == 0);
+                e = random.Next(6);
+            } while (e % 2 == 0 || random.Next(4) == 1);
 
             if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 21)
                 console("пиздец");
@@ -64,17 +64,17 @@ namespace forexAI
                 console("ахуенчик");
             else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 48)
                 console("бля ну заебись");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 9981)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4981)
                 console("нед");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 9293)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4293)
                 console("нет");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 9481)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4481)
                 console("ноу");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 9811)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4811)
                 console("найн");
             else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 934)
                 console("да и похуй");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 99219)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4219)
                 console("√");
 
             if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == Configuration.ExperimentalAlliedRandomLimit)
