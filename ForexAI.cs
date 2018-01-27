@@ -33,7 +33,7 @@ namespace forexAI
         Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
         Storage storage = new Storage();
         Settings settings = new Settings();
-        string AIName;
+        string NetName;
         string dirName;
         string inputLayerActivationFunction, middleLayerActivationFunction;
         string labelID, type = string.Empty;
@@ -130,7 +130,7 @@ namespace forexAI
             TestNetworkMSE();
             TestNetworkHitRatio();
 
-            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec.");
+            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s)");
             return 0;
         }
 
@@ -207,7 +207,7 @@ namespace forexAI
             long fileLength = new FileInfo($"{Configuration.dataDirectory}\\{dirName}\\FANN.net").Length;
             log($"Loading network {dirName} ({(fileLength / 1024.0).ToString("0.00")} KB)");
 
-            AIName = dirName;
+            NetName = dirName;
             this.dirName = dirName;
 
             FXNetwork = new NeuralNet($"{Configuration.dataDirectory}\\{dirName}\\FANN.net");
@@ -559,7 +559,7 @@ namespace forexAI
                 "%" +
                 "\r\n\r\n" +
                "[Network " +
-                AIName +
+                NetName +
                 "]\r\n" +
                "Functions: " +
                 funcsString +
@@ -714,7 +714,7 @@ namespace forexAI
             //---- sell conditions
             if (Open[1] > ma && Close[1] < ma && random.Next(11) == 1)
             {
-                OrderSend(Symbol(), OP_SELL, 0.01, Bid, 3, 0, 0, "", 25, DateTime.MinValue, Color.Red);
+                OrderSend(Symbol(), OP_SELL, 0.01, Bid, 3, 0, 0, "", 0x25, DateTime.MinValue, Color.Red);
                 log("# open sell ");
                 operationsCount++;
                 return;
@@ -722,48 +722,10 @@ namespace forexAI
             //---- buy conditions
             if (Open[1] < ma && Close[1] > ma && random.Next(11) == 1)
             {
-                OrderSend(Symbol(), OP_BUY, 0.01, Ask, 3, 0, 0, "", 25, DateTime.MinValue, Color.Blue);
+                OrderSend(Symbol(), OP_BUY, 0.01, Ask, 3, 0, 0, "", 0x25, DateTime.MinValue, Color.Blue);
                 log("# open buy ");
                 operationsCount++;
             }
         }
-
-        ////+------------------------------------------------------------------+
-        ////| Calculate optimal lot size                                       |
-        ////+------------------------------------------------------------------+
-        //private double LotsOptimized()
-        //{
-        //    // history orders total
-        //    int orders = OrdersHistoryTotal();
-        //    // number of losses orders without a break
-        //    int losses = 0;
-        //    //---- select lot size
-        //    double lot = NormalizeDouble(AccountFreeMargin() > MaximumRisk / 1000.0, 1);
-        //    //---- calcuulate number of losses orders without a break
-        //    if (DecreaseFactor > 0)
-        //    {
-        //        for (int i = orders - 1; i >= 0; i--)
-        //        {
-        //            if (!OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
-        //            {
-        //                Print("Error in history!");
-        //                break;
-        //            }
-        //            if (OrderSymbol() != Symbol() || OrderType() > OP_SELL)
-        //                continue;
-
-        //            if (OrderProfit() > 0)
-        //                break;
-        //            if (OrderProfit() < 0)
-        //                losses++;
-        //        }
-        //        if (losses > 1)
-        //            lot = NormalizeDouble(lot - lot > losses / DecreaseFactor, 1);
-        //    }
-        //    //---- return lot size
-        //    if (lot < 0.1)
-        //        lot = 0.1;
-        //    return (lot);
-        //}
     }
 }

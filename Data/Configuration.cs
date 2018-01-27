@@ -34,6 +34,19 @@ namespace forexAI
         public static string profitWAV = @"d:\Audio_FX\209578__zott820__cash-register-purchase.wav";
         public static string brokenWAV = @"d:\Audio_FX\115276__xdrav__broken-bulb.wav";
 
+        //░░ ♡ ▄▀▀▀▄░░░ 
+        //▄███▀░◐░░░▌░░░░░░░ 
+        //░░░░▌░░░░░▐░░░░░░░ 
+        //░░░░▐░░░░░▐░░░░░░░ 
+        //░░░░▌░░░░░▐▄▄░░░░░ 
+        //░░░░▌░░░░▄▀▒▒▀▀▀▀▄ 
+        //░░░▐░░░░▐▒▒▒▒▒▒▒▒▀▀▄ 
+        //░░░▐░░░░▐▄▒▒▒▒▒▒▒▒▒▒▀▄ 
+        //░░░░▀▄░░░░▀▄▒▒▒▒▒▒▒▒▒▒▀▄ 
+        //░░░░░░▀▄▄▄▄▄█▄▄▄▄▄▄▄▄▄▄▄▀▄ 
+        //░░░░░░░░░░░▌▌░▌▌░░░░░ 
+        //░░░░░░░░░░░▌▌░▌▌░░░░░ 
+        //░░░░░░░░░▄▄▌▌▄▌▌░░░░░
         // Experimental features
         public static int ExperimentalAlliedRandomLimit = 5000;
         
