@@ -14,7 +14,7 @@ namespace forexAI
         public static int Next(int n)
         {
             int r = between(0, n);
-            File.AppendAllText(@"d:\temp\forexAI\Yseed", r.ToString() + " ");
+           
             return r;
         }
 

@@ -55,6 +55,7 @@ namespace forexAI
         double profit;
         float test_mse;
         float train_mse;
+        int magickNumber = 0x25;
 
         //+------------------------------------------------------------------+■
         //| Start function                                                   |
@@ -76,11 +77,12 @@ namespace forexAI
                 Audio.FX.FXNewDay();
             }
 
-            File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(100).ToString() + " ");
+            File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(99).ToString("00") + " ");
+            File.AppendAllText(@"d:\temp\forexAI\Yseed", YRandom.Next(99).ToString("00") + " ");
 
             CalculateCurrentOrders();
 
-            if (OrdersTotal() == 0)
+            if (OrdersTotal() < 3)
                 CheckForOpen();
 
             CheckForClose();
@@ -119,13 +121,10 @@ namespace forexAI
             version = Assembly.GetExecutingAssembly().GetName().Version;
 
             ResetLog();
-            Banner();
-
+            ShowBanner();
             InitStorages();
-
             DumpInfo();
             ListGlobalVariables();
-
             ScanNetworks();
             TestNetworkMSE();
             TestNetworkHitRatio();
@@ -134,7 +133,7 @@ namespace forexAI
             return 0;
         }
 
-        void Banner()
+        void ShowBanner()
         {
             log($"# Automated Expert for MT4 using neural network with strategy created by code/data fuzzing.");
             log($"# (c) 2018 Deconf (kilitary@gmail.com telegram:@deconf skype:serjnah icq:401112)");
@@ -509,7 +508,7 @@ namespace forexAI
                 ObjectSet(labelID, OBJPROP_XDISTANCE, 10);
                 ObjectSet(labelID, OBJPROP_YDISTANCE, 70);
             }
-            ObjectSetText(labelID, "dirtext: " + dirtext, 8, "lucida console", Color.Yellow);
+            ObjectSetText(labelID, "genetic1: " + dirtext, 8, "lucida console", Color.Yellow);
 
             labelID = gs_80 + "12";
             if (ObjectFind(labelID) == -1)
@@ -519,7 +518,7 @@ namespace forexAI
                 ObjectSet(labelID, OBJPROP_XDISTANCE, 10);
                 ObjectSet(labelID, OBJPROP_YDISTANCE, 80);
             }
-            ObjectSetText(labelID, "dirtext2: " + dirtext2, 8, "lucida console", Color.Yellow);
+            ObjectSetText(labelID, "genetic2: " + dirtext2, 8, "lucida console", Color.Yellow);
 
             tot_spends = spend_sells + spend_buys;
             tot_profits = profitsells + profitbuys;
@@ -623,7 +622,7 @@ namespace forexAI
             {
                 if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
                     break;
-                if (OrderSymbol() == Symbol() && OrderMagicNumber() == 0x25)
+                if (OrderSymbol() == Symbol() && OrderMagicNumber() == magickNumber)
                 {
                     if (OrderType() == OP_BUY)
                         buys++;
@@ -643,7 +642,6 @@ namespace forexAI
         ////+------------------------------------------------------------------+
         private void CheckForClose()
         {
-            string symbol = Symbol();
             //---- go trading only for first tiks of new bar
             if (Volume[0] > 1)
                 return;
@@ -654,7 +652,7 @@ namespace forexAI
             {
                 if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
                     break;
-                if (OrderMagicNumber() != 25 || OrderSymbol() != Symbol())
+                if (OrderMagicNumber() != magickNumber || OrderSymbol() != symbol)
                     continue;
                 //---- check order type
                 if (OrderType() == OP_BUY)
@@ -703,27 +701,29 @@ namespace forexAI
         ////+------------------------------------------------------------------+
         private void CheckForOpen()
         {
-            string symbol = Symbol();
             //---- go trading only for first tiks of new bar
             if (Volume[0] > 1)
+            {
+                log("vol bad");
                 return;
+            }
 
             //---- get Moving Average
             double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
 
+
             //---- sell conditions
-            if (Open[1] > ma && Close[1] < ma && random.Next(11) == 1)
+            if (Open[1] > ma && Close[1] < ma)
             {
-                OrderSend(Symbol(), OP_SELL, 0.01, Bid, 3, 0, 0, "", 0x25, DateTime.MinValue, Color.Red);
-                log("# open sell ");
+                OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Red);
+                log("# open sell  @" + Bid);
                 operationsCount++;
-                return;
             }
             //---- buy conditions
-            if (Open[1] < ma && Close[1] > ma && random.Next(11) == 1)
+            if (Open[1] < ma && Close[1] > ma)
             {
-                OrderSend(Symbol(), OP_BUY, 0.01, Ask, 3, 0, 0, "", 0x25, DateTime.MinValue, Color.Blue);
-                log("# open buy ");
+                OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Blue);
+                log("# open buy @" + Ask);
                 operationsCount++;
             }
         }

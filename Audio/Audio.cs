@@ -10,22 +10,25 @@ namespace Audio
 {
     public static class FX
     {
+        public static void Play(string audioFileName)
+        {
+            SoundPlayer simpleSound = new SoundPlayer(audioFileName);
+            simpleSound.Play();
+        }
+
         public static void FXNewDay()
         {
-            SoundPlayer simpleSound = new SoundPlayer(Configuration.newDayWAV);
-            simpleSound.PlaySync();
+            Play(Configuration.newDayWAV);
         }
 
         public static void FXProfit()
         {
-            SoundPlayer simpleSound = new SoundPlayer(Configuration.profitWAV);
-            simpleSound.PlaySync();
+            Play(Configuration.profitWAV);
         }
 
         public static void FXBroken()
         {
-            SoundPlayer simpleSound = new SoundPlayer(Configuration.brokenWAV);
-            simpleSound.PlaySync();
+            Play(Configuration.brokenWAV);
         }
     }
 }

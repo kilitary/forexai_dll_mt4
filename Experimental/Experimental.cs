@@ -30,7 +30,7 @@ namespace forexAI
 {
     static public class Experimental
     {
-        static Random random = new Random((int) (((double) DateTimeOffset.Now.ToUnixTimeMilliseconds()) / 3.9));
+        static Random random = new Random((int) (((double) DateTimeOffset.Now.ToUnixTimeMilliseconds()) / 3.8));
 
         static public void AlliedInstructions()
         {
@@ -38,7 +38,7 @@ namespace forexAI
             do
             {
                 e = random.Next(3);
-            } while (e % 2 == 0 || YRandom.Next(4) > 1);
+            } while (e % 2 == 0 || YRandom.Next(2) == 1);
 
             if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 21)
                 console("пиздец");
