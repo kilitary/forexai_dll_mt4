@@ -38,7 +38,7 @@ namespace forexAI
             do
             {
                 e = random.Next(3);
-            } while (e % 2 == 0 || YRandom.Next(2) == 1);
+            } while (e % 2 == 0);
 
             if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 21)
                 console("пиздец");

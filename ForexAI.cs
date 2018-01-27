@@ -56,12 +56,19 @@ namespace forexAI
         float test_mse;
         float train_mse;
         int magickNumber = 0x25;
+        bool hasNoticedLowBalance = false;
+        bool ProfitTrailing = true;
+
+        public double TrailingStop { get; private set; }
+        public double TrailingStep { get; private set; }
 
         //+------------------------------------------------------------------+■
         //| Start function                                                   |
         //+------------------------------------------------------------------+
         public override int start()
         {
+            TrailingAlls();
+
             if (Bars == previousBars)
                 return 0;
 
@@ -78,17 +85,28 @@ namespace forexAI
             }
 
             File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(99).ToString("00") + " ");
-            File.AppendAllText(@"d:\temp\forexAI\Yseed", YRandom.Next(99).ToString("00") + " ");
+            File.AppendAllText(@"d:\temp\forexAI\Yseed", YRandom.Next(101, 201).ToString("000") + " ");
 
             CalculateCurrentOrders();
 
-            if (OrdersTotal() < 3)
+            if (OrdersTotal() <= 0)
                 CheckForOpen();
 
             CheckForClose();
             AlliedInstructions();
 
             DrawStats();
+
+            if (AccountBalance() <= 5.0 && !hasNoticedLowBalance)
+            {
+                hasNoticedLowBalance = true;
+                console($"всё пизда бля, кеш весь слит нахуй, бабок: {AccountBalance()}$");
+                Audio.FX.FXLowBalance();
+            }
+            else if (hasNoticedLowBalance && YRandom.Next(0, 6) == 3)
+            {
+                Audio.FX.FXGoodWork();
+            }
 
             previousBars = Bars;
             barsPerDay += 1;
@@ -711,21 +729,159 @@ namespace forexAI
             //---- get Moving Average
             double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
 
-
             //---- sell conditions
-            if (Open[1] > ma && Close[1] < ma)
+            if (Open[1] > ma && Close[1] < ma && YRandom.Next(4) == 2)
             {
                 OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Red);
                 log("# open sell  @" + Bid);
                 operationsCount++;
             }
             //---- buy conditions
-            if (Open[1] < ma && Close[1] > ma)
+            if (Open[1] < ma && Close[1] > ma && YRandom.Next(4) == 2)
             {
                 OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Blue);
                 log("# open buy @" + Ask);
                 operationsCount++;
             }
         }
+
+        void TrailingPositions()
+        {
+            double pBid, pAsk, pp;
+            bool fm;
+
+            pp = MarketInfo(symbol, 20);
+
+            if (OrderType() == OP_BUY)
+            {
+                pBid = MarketInfo(symbol, MODE_BID);
+                if (!ProfitTrailing || (pBid - OrderOpenPrice()) > TrailingStop * pp)
+                {
+                    if (OrderStopLoss() < pBid - (TrailingStop + TrailingStep - 1) * pp)
+                    {
+                        fm = OrderModify(OrderTicket(), OrderOpenPrice(), pBid - TrailingStop * pp, OrderTakeProfit(), DateTime.Now, Color.Blue);
+                        return;
+                    }
+                }
+            }
+            if (OrderType() == OP_SELL)
+            {
+                pAsk = MarketInfo(symbol, MODE_ASK);
+                if (!ProfitTrailing || OrderOpenPrice() - pAsk > TrailingStop * pp)
+                {
+                    if (OrderStopLoss() > pAsk + (TrailingStop + TrailingStep - 1) * pp || OrderStopLoss() == 0)
+                    {
+
+
+                        fm = OrderModify(OrderTicket(), OrderOpenPrice(), pAsk + TrailingStop * pp, OrderTakeProfit(), DateTime.Now, Color.Red);
+                        return;
+                    }
+                }
+            }
+        }
+
+        public void TrailOrders()
+        {
+            int current_order;
+            for (current_order = 0; current_order < OrdersTotal(); current_order++)
+            {
+                OrderSelect(current_order, SELECT_BY_POS, MODE_TRADES);
+
+                int buy_order_ticket = 0;
+                if (OrderSymbol() == symbol && OrderType() == OP_BUY && OrderMagicNumber() == magickNumber)
+                {
+                    double new_take_profit;
+                    double stop_loss = 0;
+                    double new_stop_loss = stop_loss;
+                    double eStopLoss = 0;
+                    if (eStopLoss <= 0.0)
+                        new_stop_loss = 0;
+                    new_take_profit = OrderTakeProfit();
+                    if (new_take_profit != OrderTakeProfit() || new_stop_loss != OrderStopLoss())
+                    {
+                        OrderModify(OrderTicket(), OrderOpenPrice(), new_stop_loss, new_take_profit, DateTime.Now, Color.Pink);
+
+                        double ticket = 0;
+                        ObjectCreate(DoubleToStr(ticket, 0), OBJ_TEXT, 0, iTime(symbol, PERIOD_M1, 0), OrderOpenPrice());
+                        ObjectSetText(DoubleToStr(ticket, 0), "MDF " + DoubleToStr(OrderTicket(), 0), 8, "tahoma", Color.Pink);
+                    }
+
+                    operationsCount++;
+                }
+
+                if (OrderSymbol() == symbol && OrderType() == OP_SELL && OrderMagicNumber() == magickNumber)
+                {
+                    double l_price_24;
+                    double ld_184 = 0;
+                    double stop_loss_price = ld_184;
+                    double eStopLoss = 0;
+                    if (eStopLoss <= 0.0)
+                        stop_loss_price = 0;
+
+                    l_price_24 = OrderTakeProfit();
+                    if (l_price_24 != OrderTakeProfit() || stop_loss_price != OrderStopLoss())
+                    {
+                        OrderModify(OrderTicket(), OrderOpenPrice(), stop_loss_price, l_price_24, DateTime.Now, Color.Red);
+
+                        double ticket = 0;
+                        ObjectCreate(DoubleToStr(ticket, 0), OBJ_TEXT, 0, iTime(symbol, PERIOD_M1, 0), OrderOpenPrice());
+                        ObjectSetText(DoubleToStr(ticket, 0), "MDF " + DoubleToStr(OrderTicket(), 0), 8, "tahoma", Color.Pink);
+                    }
+                    operationsCount++;
+                }
+            }
+        }
+
+        public void TrailingAlls(int trail = 10)
+        {
+            double TakeProfit = 20;
+            double Point = 0.00020;
+            double stopcrnt;
+            double stopcal;
+            int trade;
+            int trades = OrdersTotal();
+            double profitcalc;
+
+            if (trail == 0)
+                return;
+
+            for (trade = 0; trade < trades; trade++)
+            {
+                OrderSelect(trade, SELECT_BY_POS, MODE_TRADES);
+                if (OrderSymbol() == symbol)
+                {
+                    if (OrderType() == OP_BUY)
+                    {
+                        stopcrnt = OrderStopLoss();
+                        stopcal = Bid - (trail * Point);
+
+                        profitcalc = OrderTakeProfit() + (TakeProfit * Point);
+                        if (stopcrnt == 0)
+                        {
+                            OrderModify(OrderTicket(), OrderOpenPrice(), stopcal, profitcalc, DateTime.Now, Color.Blue);
+                        }
+                        else if (stopcal > stopcrnt)
+                        {
+                            OrderModify(OrderTicket(), OrderOpenPrice(), stopcal, profitcalc, DateTime.Now, Color.Blue);
+                        }
+                    }
+
+                    if (OrderType() == OP_SELL)
+                    {
+                        stopcrnt = OrderStopLoss();
+                        stopcal = Ask + (trail * Point);
+                        profitcalc = OrderTakeProfit() - (TakeProfit * Point);
+                        if (stopcrnt == 0)
+                        {
+                            OrderModify(OrderTicket(), OrderOpenPrice(), stopcal, profitcalc, DateTime.Now, Color.Red);
+                        }
+                        else if (stopcal < stopcrnt)
+                        {
+                            OrderModify(OrderTicket(), OrderOpenPrice(), stopcal, profitcalc, DateTime.Now, Color.Red);
+                        }
+                    }
+                }
+            }
+        }//Shrt
     }
 }

@@ -13,7 +13,7 @@ namespace Audio
         public static void Play(string audioFileName)
         {
             SoundPlayer simpleSound = new SoundPlayer(audioFileName);
-            simpleSound.Play();
+            simpleSound.PlaySync();
         }
 
         public static void FXNewDay()
@@ -29,6 +29,16 @@ namespace Audio
         public static void FXBroken()
         {
             Play(Configuration.brokenWAV);
+        }
+
+        public static void FXLowBalance()
+        {
+            Play(Configuration.lowBalanceWAV);
+        }
+
+        public static void FXGoodWork()
+        {
+            Play(Configuration.goodWorkWAV);
         }
     }
 }

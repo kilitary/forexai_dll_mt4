@@ -33,6 +33,8 @@ namespace forexAI
         public static string newDayWAV = @"d:\Audio_FX\17130__noisecollector__ak47-chamber-round.wav";
         public static string profitWAV = @"d:\Audio_FX\209578__zott820__cash-register-purchase.wav";
         public static string brokenWAV = @"d:\Audio_FX\115276__xdrav__broken-bulb.wav";
+        public static string lowBalanceWAV = @"d:\Audio_FX\0838.wav";
+        public static string goodWorkWAV = @"d:\Audio_FX\0816.wav";
 
         //░░ ♡ ▄▀▀▀▄░░░ 
         //▄███▀░◐░░░▌░░░░░░░ 
@@ -49,7 +51,7 @@ namespace forexAI
         //░░░░░░░░░▄▄▌▌▄▌▌░░░░░
         // Experimental features
         public static int ExperimentalAlliedRandomLimit = 5000;
-        
+
     }
 }
 
