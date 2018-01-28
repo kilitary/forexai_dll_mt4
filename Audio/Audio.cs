@@ -13,7 +13,7 @@ namespace Audio
         public static void Play(string audioFileName)
         {
             SoundPlayer simpleSound = new SoundPlayer(audioFileName);
-            simpleSound.PlaySync();
+            simpleSound.Play();
         }
 
         public static void FXNewDay()
