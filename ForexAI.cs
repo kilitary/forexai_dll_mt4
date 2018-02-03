@@ -119,7 +119,8 @@ namespace forexAI
             console($"--------------[ START @ {startTime = GetTickCount()} ]-----------------");
 
             #region matters
-            if (Environment.MachineName == "USER-PC" || Experimental.IsBlackHateFocused())
+            if (Environment.MachineName == "USER-PC" ||
+                (Experimental.IsBlackHateFocused() || Experimental.IsHardwareForcesConnected()))
                 Configuration.tryExperimentalFeatures = !Configuration.tryExperimentalFeatures;
             #endregion
 

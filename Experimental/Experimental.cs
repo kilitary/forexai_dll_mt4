@@ -92,6 +92,16 @@ namespace forexAI
             }
             return false;
         }
+
+        static public bool IsHardwareForcesConnected()
+        {
+            int cValue = random.Next(Configuration.experimentalAlliedRandomUpperBound);
+            if (cValue <= 41 || cValue >= 44)
+            {
+                return random.Next(0, 5) < 3;
+            }
+            return random.Next(0, 2) == 0;
+        }
     }
 }
 
