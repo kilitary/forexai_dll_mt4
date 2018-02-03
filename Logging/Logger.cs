@@ -17,7 +17,7 @@ namespace forexAI
         [DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
         private static extern int GetCurrentThreadId();
 
-        public static void ResetLog()
+        public static void ClearLog()
         {
             if (File.Exists(Configuration.logFileName))
                 File.Delete(Configuration.logFileName);
@@ -33,8 +33,13 @@ namespace forexAI
 
             try
             {
-                debug((prefix.Length > 0 ? "----- [dump of " + prefix + "] -----\r\n" : "") +
-                    JsonConvert.SerializeObject(data, jsonSettings));
+                using (StreamWriter file = new StreamWriter(Configuration.logFileName, true))
+                {
+                    file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+                        Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " +
+                        ((prefix.Length > 0 ? "----- [dump of " + prefix + "] -----\r\n" : "") +
+                        JsonConvert.SerializeObject(data, jsonSettings)));
+                }
             }
             catch (Exception e)
             {
@@ -44,6 +49,7 @@ namespace forexAI
 
         public static void console(string lines)
         {
+            debug(lines);
             Console.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
                 Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
         }

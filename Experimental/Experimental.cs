@@ -2,7 +2,7 @@
 //┓┏┓┏┓┃ 
 //┛┗┛┗┛┃
 //┓┏┓┏┓┃ 
-//┛┗┛┗┛┃ ЕБАНЫЙ РОООООТ!
+//┛┗┛┗┛┃コ ア に パ ー キ ロ ェ  ン ヨ ダ キ ェ  !
 //┓┏┓┏┓┃＼○／ 
 //┛┗┛┗┛┃ / /
 //┓┏┓┏┓┃ノ
@@ -83,7 +83,7 @@ namespace forexAI
             if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == random.Next(Configuration.ExperimentalAlliedRandomLimit))
             {
                 console($"блэк хейт чекпоинт +---{random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)}---+");
-                Audio.FX.FXBroken();
+                Audio.FX.TheBroken();
             }
         }
     }

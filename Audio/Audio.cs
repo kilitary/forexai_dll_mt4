@@ -1,4 +1,5 @@
-﻿using System;
+﻿//コ  ー キ ロ ェ に パ ン ヨ ダ キ ェ アコ  ー キ ロ ェ に パ ン ヨ ダ キ ェ アコ  ー キ ロ ェ に パ ン ヨ ダ キ ェ アコ  ー キ ロ ェ に パ ン ヨ ダ キ ェ ア
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Media;
@@ -12,33 +13,33 @@ namespace Audio
     {
         public static void Play(string audioFileName)
         {
-            SoundPlayer simpleSound = new SoundPlayer(audioFileName);
-            simpleSound.Play();
+            SoundPlayer sampleSound = new SoundPlayer(audioFileName);
+            sampleSound.Play();
         }
 
-        public static void FXNewDay()
+        public static void TheNewDay()
         {
             Play(Configuration.newDayWAV);
         }
 
-        public static void FXProfit()
+        public static void Profit()
         {
             Play(Configuration.profitWAV);
         }
 
-        public static void FXBroken()
+        public static void TheBroken()
         {
             Play(Configuration.brokenWAV);
         }
 
-        public static void FXLowBalance()
+        public static void TheGoodWork()
+        {
+            Play(Configuration.goodWorkWAV);
+        }
+        public static void LowBalance()
         {
             Play(Configuration.lowBalanceWAV);
         }
 
-        public static void FXGoodWork()
-        {
-            Play(Configuration.goodWorkWAV);
-        }
     }
 }

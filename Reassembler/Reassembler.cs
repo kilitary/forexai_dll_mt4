@@ -1,4 +1,4 @@
-﻿// *    * *    *                   *    * *
+﻿// *    * *    *                   *    * ** *    *                   *    * *
 //┓┏┓┏┓┃ 
 //┛┗┛┗┛┃
 //┓┏┓┏┓┃ 
@@ -18,53 +18,23 @@
 //┛┗┛┗┛┃ 
 //┓┏┓┏┓┃ 
 //┛┗┛┗┛┃ 
-
 //┓┏┓┏┓┃ 
 //┛┗┛┗┛┃ 
 //┓┏┓┏┓┃ 
 //┛┗┛┗┛┃
+using static forexAI.Logger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static forexAI.Logger;
 using Newtonsoft.Json;
 
 namespace forexAI
 {
-    public class ExMethodInfo
+    public static class Reassembler
     {
-        public string Name;
-        public string AssemblyName;
-        public string ClassName;
-        public string Signature;
-        public string Signature2;
-        public int MemberType;
-        public object GenericArguments;
-    }
-
-    public class FunctionParams
-    {
-        public int ParamIndex;
-        public int NumData;
-        public int OutBegIdx;
-        public int Offset;
-        public List<string> parametersMap;
-        // public object Arguments;
-        public int OutIndex;
-        public int OutNbElement;
-    }
-
-    public class FunctionsConfiguration
-    {
-        public FunctionParams parameters;
-        public ExMethodInfo methodInfo;
-    }
-
-    class Reassembler
-    {
-        public Reassembler(string functionsConfig, int inputDimension)
+        public static void Compose(string functionsConfig, int inputDimension)
         {
             Dictionary<string, FunctionsConfiguration> functionsConfiguration;
 
@@ -77,8 +47,8 @@ namespace forexAI
             {
                 string functionName = item.Key;
 
-                log($"#{fidx++} [{functionName}]");
-                dump(item.Value);
+                log($" -> func {fidx++,2:00} [{functionName}]");
+                dump(item.Value, functionName);
             }
 
             return;

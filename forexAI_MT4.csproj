@@ -14,7 +14,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.1.368.0</AssemblyVersion>
+    <AssemblyVersion>0.1.395.0</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -112,8 +112,9 @@
   <ItemGroup>
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Data\Configuration.cs" />
-    <Compile Include="Reassembling\FunctionParameters.cs" />
-    <Compile Include="Reassembling\Reassembler.cs" />
+    <Compile Include="Reassembler\FunctionParameters.cs" />
+    <Compile Include="Reassembler\FunctionsJson.cs" />
+    <Compile Include="Reassembler\Reassembler.cs" />
     <Compile Include="Prices\Prices.cs" />
     <Compile Include="Storages\Data.cs" />
     <Compile Include="Storages\Settings.cs" />

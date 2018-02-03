@@ -29,7 +29,7 @@ namespace forexAI
 
         ~Storage()
         {
-            log("Storage DESTROY CALLED!");
+            log("Storage DESTROY CALLED! but i am died already....");
             SyncData();
         }
 
