@@ -136,8 +136,7 @@ namespace forexAI
                 error("NO NETWORK!");
             }
 
-            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s) "
-                + (FXNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
+            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s) ");
 
             return 0;
         }
@@ -197,11 +196,11 @@ namespace forexAI
             debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
             debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" + $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
-
+            
             currentProcess = Process.GetCurrentProcess();
-            console($"WorkingSet={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}MB " +
-                $"PrivateMemory={(currentProcess.PrivateMemorySize64 / 1024.0 / 1024.0).ToString("0.00")}MB " +
-                $"Threads={currentProcess.Threads.Count} FileName={currentProcess.MainModule.FileName}");
+            console($"WorkingSet={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
+                $"PrivateMemory={(currentProcess.PrivateMemorySize64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
+                $"Threads={currentProcess.Threads.Count} FileName={currentProcess.MainModule.ModuleName}");
         }
 
         void TestNetworkHitRatio()
