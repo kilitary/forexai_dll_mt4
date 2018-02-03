@@ -48,7 +48,7 @@ namespace forexAI
         int openedBuys = 0, openedSells = 0;
         int startTime = 0;
         int previousBankDay = 0;
-        int magickNumber = Configuration.MagickNumber;
+        int magickNumber = Configuration.magickNumber;
         double trainHitRatio = 0.0;
         double testHitRatio = 0.0;
         double total = 0.0;
@@ -118,10 +118,17 @@ namespace forexAI
         {
             console($"--------------[ START @ {startTime = GetTickCount()} ]-----------------");
 
+            #region matters
+            if (Environment.MachineName == "USER-PC" || Experimental.IsBlackHateFocused() ||
+                (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused()))
+                Configuration.tryExperimentalFeatures = !Configuration.tryExperimentalFeatures;
+            #endregion
+
             symbol = Symbol();
             currentProcess = Process.GetCurrentProcess();
 
-            console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)}");
+            console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)} Machine={Environment.MachineName}" +
+                $" XprmntL={Configuration.tryExperimentalFeatures}");
 
             TruncateLog();
             ShowBanner();
