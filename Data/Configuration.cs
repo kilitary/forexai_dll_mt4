@@ -28,7 +28,7 @@ namespace forexAI
         public static bool useMemcached = false;
         public static bool useMysql = false;
         public static int MemcachedPort = 11211;
-        public static int MagickNumber = 0xCB;
+        public static int MagickNumber = 0xC34;
 
         // audio/fx
         public static string newDayWAV = @"d:\Audio_FX\17130__noisecollector__ak47-chamber-round.wav";
