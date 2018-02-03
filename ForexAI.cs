@@ -6,9 +6,7 @@
 //╰┳┫▔╲╰┳━━┳╯╱▔┊ ║ 
 //┈┃╰━━╲▕╲╱▏╱━━━┬╨╮ 
 //┈╰━━╮┊▕╱╲▏┊╭━━┴╥╯
-//                                                   |    |    |
-
-//-------^-----------------^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
+//--------^---Ѽ---^-----^^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -129,6 +127,7 @@ namespace forexAI
             TestNetworkHitRatio();
 
             log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s)");
+
             return 0;
         }
 
@@ -232,6 +231,7 @@ namespace forexAI
 
                 curX++;
             }
+
             return ((double) hits / (double) inputs.Length) * 100.0;
         }
 
@@ -264,7 +264,7 @@ namespace forexAI
             inputLayerActivationFunction = matches.Groups[1].Value;
             middleLayerActivationFunction = matches.Groups[2].Value;
 
-            Reassembler.Compose(
+            Reassembler.Build(
                 File.ReadAllText($"{Configuration.dataDirectory}\\{dirName}\\functions.json"),
                 inputDimension);
         }
@@ -641,6 +641,7 @@ namespace forexAI
             //---- return orders volume
             if (buys > 0)
                 return (buys);
+
             return (-sells);
         }
 

@@ -14,14 +14,6 @@
 //┛┗┛┗┛┃ 
 //┓┏┓┏┓┃ 
 //┛┗┛┗┛┃ 
-//┓┏┓┏┓┃ 
-//┛┗┛┗┛┃ 
-//┓┏┓┏┓┃ 
-//┛┗┛┗┛┃ 
-//┓┏┓┏┓┃ 
-//┛┗┛┗┛┃ 
-//┓┏┓┏┓┃ 
-//┛┗┛┗┛┃
 using static forexAI.Logger;
 using System;
 using System.Collections.Generic;
@@ -34,7 +26,7 @@ namespace forexAI
 {
     public static class Reassembler
     {
-        public static void Compose(string functionsConfig, int inputDimension)
+        public static void Build(string functionsConfig, int inputDimension)
         {
             Dictionary<string, FunctionsConfiguration> functionsConfiguration;
 
@@ -47,7 +39,7 @@ namespace forexAI
             {
                 string functionName = item.Key;
 
-                log($" -> func {fidx++,2:00} [{functionName}]");
+                log($" -> func{fidx++,2:00} [{functionName}]");
                 dump(item.Value, functionName);
             }
 
