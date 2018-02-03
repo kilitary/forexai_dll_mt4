@@ -33,7 +33,7 @@ namespace forexAI
 
             try
             {
-                debug((prefix.Length > 0 ? "-- dump of " + prefix + ":\r\n" : "") +
+                debug((prefix.Length > 0 ? "----- dump of " + prefix + "-----\r\n" : "") +
                     JsonConvert.SerializeObject(data, jsonSettings));
             }
             catch (Exception e)

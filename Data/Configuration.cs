@@ -50,7 +50,7 @@ namespace forexAI
         //░░░░░░░░░░░▌▌░▌▌░░░░░ 
         //░░░░░░░░░▄▄▌▌▄▌▌░░░░░
         // Experimental features
-        public static int ExperimentalAlliedRandomLimit = 5000;
+        public static int ExperimentalAlliedRandomLimit = 4500;
 
     }
 }

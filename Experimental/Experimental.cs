@@ -64,7 +64,7 @@ namespace forexAI
                 console("ахуенчик");
             else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 48)
                 console("бля ну заебись");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4981)
+            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4381)
                 console("нед");
             else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4293)
                 console("нет");
