@@ -143,7 +143,7 @@ namespace forexAI
             }
             else
             {
-                error("NO NETWORK!");
+                error(" ALARM!!!!!!  NO NETWAAAARK!!!!! ALARM!!!!!! ");
             }
 
             log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s) ");
