@@ -79,11 +79,18 @@ namespace forexAI
             if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == Configuration.experimentalAlliedRandomUpperBound)
                 console("и чо");
 
+            DetectBlackHate();
+        }
+
+        static public bool DetectBlackHate()
+        {
             if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == random.Next(Configuration.experimentalAlliedRandomUpperBound))
             {
                 console($"bLACK HATE CHECKPOINt +---{random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)}---+");
                 Audio.FX.TheBroken();
+                return true;
             }
+            return false;
         }
     }
 }
