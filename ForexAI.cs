@@ -493,10 +493,10 @@ namespace forexAI
 
             totalSpends = spendSells + spendBuys;
             totalProfits = profitSells + profitBuys;
-            string KPD = "0";
+            double KPD = 0.0;
 
             if (totalSpends > 0 && totalProfits > 0)
-                KPD = DoubleToStr(100 - ((100.0 / totalProfits) * totalSpends), 2);
+                KPD = (100.0 - ((100.0 / (double) totalProfits) * (double) totalSpends));
 
             string funcsString = string.Empty;
             foreach (var func in Data.nnFunctions)
@@ -507,27 +507,24 @@ namespace forexAI
                 Comment(
               "Profit sells: " +
                profitSells +
-               "\r\n"
-              +
+               "\r\n" +
+               "Spend sells:  " +
+               spendSells +
+               "\r\n" +
                "Profit buys:   " +
                profitBuys +
                "\r\n" +
-              "Spend sells:  " +
-               spendSells +
-               "\r\n"
-              +
                "Spend buys:    " +
                spendBuys +
-               "\r\n"
-             +
+               "\r\n" +
                "Total profits: " +
-               DoubleToStr(totalProfits, 0) +
+               totalProfits +
                "\r\n" +
               "Total spends:  " +
-               DoubleToStr(totalSpends, 0) +
+               totalSpends +
                "\r\n" +
               "КПД: " +
-               KPD +
+               KPD.ToString("0.00") +
                "%" +
                "\r\n\r\n" +
               "[Network " +

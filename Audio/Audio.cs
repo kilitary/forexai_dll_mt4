@@ -13,6 +13,9 @@ namespace Audio
     {
         public static void Play(string audioFileName)
         {
+            if (!Configuration.useAudio)
+                return;
+
             SoundPlayer sampleSound = new SoundPlayer(audioFileName);
             sampleSound.Play();
         }
