@@ -37,7 +37,7 @@ namespace forexAI
         public static string lowBalanceWAV = @"d:\Audio_FX\0838.wav";
         public static string goodWorkWAV = @"d:\Audio_FX\0816.wav";
 
-        //[! ♡ ▄▀▀▀▄░░░[!] 
+        //[! ♡ ▄▀▀▀▄░░░ !] 
         //▄███▀░◐░░░▌░░░░[!] 
         //░░░░▌░░░░░▐░░░░░[!]
         //░░░░▐░░░░░▐░░░░░░░ 
