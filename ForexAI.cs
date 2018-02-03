@@ -91,9 +91,9 @@ namespace forexAI
                 CheckForOpen();
 
             CheckForClose();
-            AlliedInstructions();
 
-            DrawStats();
+            if (Configuration.tryExperimentalFeatures)
+                AlliedInstructions();
 
             if (AccountBalance() <= 5.0 && !hasNoticedLowBalance)
             {
@@ -105,6 +105,8 @@ namespace forexAI
             {
                 Audio.FX.GoodWork();
             }
+
+            DrawStats();
 
             previousBars = Bars;
             barsPerDay += 1;
