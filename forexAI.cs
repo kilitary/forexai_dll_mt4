@@ -130,7 +130,7 @@ namespace forexAI
             currentProcess = Process.GetCurrentProcess();
 
             console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)} Machine={Environment.MachineName}" +
-                $" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@{currentProcess.Modules[0].BaseAddress}");
+                $" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@0x{currentProcess.Modules[0].BaseAddress}");
 
             TruncateLog();
             ShowBanner();
@@ -145,7 +145,7 @@ namespace forexAI
                 TestNetworkHitRatio();
             }
             else
-                error(" ALARM!!!!!!  NO fxNetwork!!!!! ALARM!!!!!! ");
+                error("+++ ALARM!!!!!!  NO fxNetwork!!!!! ALARM!!!!!! +++");
 
             log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s) ");
 
@@ -163,8 +163,8 @@ namespace forexAI
             storage.SyncData();
 
             string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
-            log($"Uptime {mins} mins, has do {operationsCount} operations");
-            console("... shutting down");
+            log($"Uptime {mins} mins, has do {totalOperationsCount} operations.");
+            console("... shutted down.");
 
             return 0;
         }
@@ -440,7 +440,7 @@ namespace forexAI
                 ObjectSet(labelID, OBJPROP_YDISTANCE, 40);
             }
             ObjectSetText(labelID,
-                          "kpd %: " + DoubleToStr(total, 0) + "%",
+                          "xxxx",
                           8,
                           "lucida console",
                           Color.Yellow);
@@ -493,10 +493,10 @@ namespace forexAI
 
             totalSpends = spendSells + spendBuys;
             totalProfits = profitSells + profitBuys;
-            string KPD = "0";
+            double KPD = 0.0;
 
             if (totalSpends > 0 && totalProfits > 0)
-                KPD = DoubleToStr(100 - ((100.0 / totalProfits) * totalSpends), 2);
+                KPD = (100.0 - ((100.0 / (double) totalProfits) * (double) totalSpends));
 
             string funcsString = string.Empty;
             foreach (var func in Data.nnFunctions)
@@ -507,27 +507,24 @@ namespace forexAI
                 Comment(
               "Profit sells: " +
                profitSells +
-               "\r\n"
-              +
+               "\r\n" +
+               "Spend sells:  " +
+               spendSells +
+               "\r\n" +
                "Profit buys:   " +
                profitBuys +
                "\r\n" +
-              "Spend sells:  " +
-               spendSells +
-               "\r\n"
-              +
                "Spend buys:    " +
                spendBuys +
-               "\r\n"
-             +
+               "\r\n" +
                "Total profits: " +
-               DoubleToStr(totalProfits, 0) +
+               totalProfits +
                "\r\n" +
               "Total spends:  " +
-               DoubleToStr(totalSpends, 0) +
+               totalSpends +
                "\r\n" +
               "КПД: " +
-               KPD +
+               KPD.ToString("0.00") +
                "%" +
                "\r\n\r\n" +
               "[Network " +

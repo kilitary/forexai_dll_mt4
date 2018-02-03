@@ -16,14 +16,14 @@ namespace forexAI
 {
     public class Prices
     {
-        public ForexAI fai;
+        public ForexAI forexAIProgram;
 
         public double[] GetOpen(int numData)
         {
             double[] prices = new double[numData];
 
             for (int i = 0; i < numData; i++)
-                prices[i] = fai.iOpen(fai.Symbol(), MqlApi.PERIOD_M5, i);
+                prices[i] = forexAIProgram.iOpen(forexAIProgram.Symbol(), MqlApi.PERIOD_M15, i);
 
             dump(prices, "open");
             System.Threading.Thread.Sleep(10000);
@@ -35,7 +35,7 @@ namespace forexAI
             double[] prices = new double[numData];
 
             for (int i = 0; i < numData; i++)
-                prices[i] = fai.iClose(fai.Symbol(), MqlApi.PERIOD_M5, i);
+                prices[i] = forexAIProgram.iClose(forexAIProgram.Symbol(), MqlApi.PERIOD_M15, i);
 
             return prices;
         }
@@ -45,7 +45,7 @@ namespace forexAI
             double[] prices = new double[numData];
 
             for (int i = 0; i < numData; i++)
-                prices[i] = fai.iHigh(fai.Symbol(), MqlApi.PERIOD_M5, i);
+                prices[i] = forexAIProgram.iHigh(forexAIProgram.Symbol(), MqlApi.PERIOD_M15, i);
 
             return prices;
         }
@@ -55,7 +55,7 @@ namespace forexAI
             double[] prices = new double[numData];
 
             for (int i = 0; i < numData; i++)
-                prices[i] = fai.iLow(fai.Symbol(), MqlApi.PERIOD_M5, i);
+                prices[i] = forexAIProgram.iLow(forexAIProgram.Symbol(), MqlApi.PERIOD_M15, i);
 
             return prices;
         }
@@ -65,7 +65,7 @@ namespace forexAI
             double[] prices = new double[numData];
 
             for (int i = 0; i < numData; i++)
-                prices[i] = fai.iVolume(fai.Symbol(), MqlApi.PERIOD_M5, i);
+                prices[i] = forexAIProgram.iVolume(forexAIProgram.Symbol(), MqlApi.PERIOD_M15, i);
 
             return prices;
         }
