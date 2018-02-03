@@ -79,10 +79,10 @@ namespace forexAI
             if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == Configuration.experimentalAlliedRandomUpperBound)
                 console("и чо");
 
-            BlackHateApproaching();
+            IsBlackHateFocused();
         }
 
-        static public bool BlackHateApproaching()
+        static public bool IsBlackHateFocused()
         {
             if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == random.Next(Configuration.experimentalAlliedRandomUpperBound))
             {
