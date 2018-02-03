@@ -72,7 +72,8 @@ namespace forexAI
             {
                 previousBankDay = Day();
 
-                log($"> Day{previousBankDay.ToString(" 0")} [opnum={operationsCount} barsPerDay={barsPerDay}]");
+                log($"> Day{previousBankDay.ToString(" 0")} [opnum={operationsCount} barsPerDay={barsPerDay}] "
+                    + (FXNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 
                 operationsCount = 0;
                 barsPerDay = 0;
@@ -112,24 +113,31 @@ namespace forexAI
 
         public override int init()
         {
-            startTime = GetTickCount();
-            console($"--------------[ START @ {startTime} ]-----------------");
+            console($"--------------[ START @ {startTime = GetTickCount()} ]-----------------");
 
             symbol = Symbol();
             currentProcess = Process.GetCurrentProcess();
 
-            console($"Symbol={symbol} random.Next={random.Next(0, 100)}");
+            console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)}");
 
-            ClearLog();
+            TruncateLog();
             ShowBanner();
             InitStorages();
             DumpInfo();
             ListGlobalVariables();
             ScanNetworks();
-            TestNetworkMSE();
-            TestNetworkHitRatio();
+            if (FXNetwork != null)
+            {
+                TestNetworkMSE();
+                TestNetworkHitRatio();
+            }
+            else
+            {
+                error("NO NETWORK!");
+            }
 
-            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s)");
+            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s) "
+                + (FXNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 
             return 0;
         }
@@ -282,7 +290,7 @@ namespace forexAI
             settings["networks"] = JsonConvert.SerializeObject(Dirs);
             if (Dirs.Length == 0)
             {
-                log("WHAT I SHOULD DO U THINK????");
+                error("WHAT I SHOULD DO?? DO U THINK????");
                 return;
             }
             LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
@@ -486,76 +494,80 @@ namespace forexAI
             foreach (var func in Data.nnFunctions)
                 funcsString += $"|{func.Key}";
 
-            Comment(
-               "profitsells: " +
-                profitsells +
-                "\r\n"
-               +
-                "profitbuys:   " +
-                profitbuys +
-                "\r\n" +
-               "spend_sells:  " +
-                spend_sells +
-                "\r\n"
-               +
-                "spend_buys:    " +
-                spend_buys +
-                "\r\n"
+            if (FXNetwork != null)
+            {
+                Comment(
+              "profitsells: " +
+               profitsells +
+               "\r\n"
               +
-                "tot_profits: " +
-                DoubleToStr(tot_profits, 0) +
-                "\r\n" +
-               "tot_spends:  " +
-                DoubleToStr(tot_spends, 0) +
-                "\r\n" +
-               "КПД: " +
-                d +
-                "%" +
-                "\r\n\r\n" +
-               "[Network " +
-                NetName +
-                "]\r\n" +
-               "Functions: " +
-                funcsString +
-                "\r\n" +
-               "InputDimension: " +
-                inputDimension +
-                "\r\n" +
-               "TotalNeurons: " +
-                FXNetwork.TotalNeurons +
-                "\r\n" +
-               "InputCount: " +
-                FXNetwork.InputCount +
-                "\r\n" +
-               "InputActFunc: " +
-                inputLayerActivationFunction +
-                "\r\n" +
-               "LayerActFunc: " +
-                middleLayerActivationFunction +
-                "\r\n" +
-               "ConnRate: " +
-                FXNetwork.ConnectionRate +
-                "\r\n" +
-               "Connections: " +
-                FXNetwork.TotalConnections +
-                "\r\n" +
-               "LayerCount: " +
-                FXNetwork.LayerCount +
-                "\r\n" +
-               "Train/Test MSE: " +
-                train_mse +
-                "/" +
-                test_mse +
-                "\r\n" +
-               "LearningRate: " +
-                FXNetwork.LearningRate +
-                "\r\n" +
-               "Test Hit Ratio: " +
-                testHitRatio.ToString("0.00") +
-                "%\r\n" +
-               "Train Hit Ratio: " +
-                trainHitRatio.ToString("0.00") +
-                "%\r\n");
+               "profitbuys:   " +
+               profitbuys +
+               "\r\n" +
+              "spend_sells:  " +
+               spend_sells +
+               "\r\n"
+              +
+               "spend_buys:    " +
+               spend_buys +
+               "\r\n"
+             +
+               "tot_profits: " +
+               DoubleToStr(tot_profits, 0) +
+               "\r\n" +
+              "tot_spends:  " +
+               DoubleToStr(tot_spends, 0) +
+               "\r\n" +
+              "КПД: " +
+               d +
+               "%" +
+               "\r\n\r\n" +
+              "[Network " +
+               NetName +
+               "]\r\n" +
+              "Functions: " +
+               funcsString +
+               "\r\n" +
+              "InputDimension: " +
+               inputDimension +
+               "\r\n" +
+              "TotalNeurons: " +
+               FXNetwork.TotalNeurons +
+               "\r\n" +
+              "InputCount: " +
+               FXNetwork.InputCount +
+               "\r\n" +
+              "InputActFunc: " +
+               inputLayerActivationFunction +
+               "\r\n" +
+              "LayerActFunc: " +
+               middleLayerActivationFunction +
+               "\r\n" +
+              "ConnRate: " +
+               FXNetwork.ConnectionRate +
+               "\r\n" +
+              "Connections: " +
+               FXNetwork.TotalConnections +
+               "\r\n" +
+              "LayerCount: " +
+               FXNetwork.LayerCount +
+               "\r\n" +
+              "Train/Test MSE: " +
+               train_mse +
+               "/" +
+               test_mse +
+               "\r\n" +
+              "LearningRate: " +
+               FXNetwork.LearningRate +
+               "\r\n" +
+              "Test Hit Ratio: " +
+               testHitRatio.ToString("0.00") +
+               "%\r\n" +
+              "Train Hit Ratio: " +
+               trainHitRatio.ToString("0.00") +
+               "%\r\n");
+
+            }
 
             if (ObjectFind("statyys") == -1)
             {
@@ -714,7 +726,7 @@ namespace forexAI
         {
             if (Volume[0] > 1)
             {
-                log("vol bad");
+                //log("vol bad");
                 return;
             }
 
