@@ -118,14 +118,14 @@ namespace forexAI
         {
             console($"--------------[ START @ {startTime = GetTickCount()} ]-----------------");
 
-            if (Environment.MachineName == "USER-PC" || Experimental.DetectBlackHate())
-                Configuration.tryExperimentalFeatures = true;
+            if (Environment.MachineName == "USER-PC" || Experimental.BlackHateApproaching())
+                Configuration.tryExperimentalFeatures = !Configuration.tryExperimentalFeatures;
 
             symbol = Symbol();
             currentProcess = Process.GetCurrentProcess();
 
             console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)} Machine={Environment.MachineName}"+
-                $" Xprmnt={Configuration.tryExperimentalFeatures}");
+                $" XprmntL={Configuration.tryExperimentalFeatures}");
 
             TruncateLog();
             ShowBanner();
