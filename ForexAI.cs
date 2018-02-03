@@ -46,7 +46,7 @@ namespace forexAI
         int buys = 0, sells = 0;
         int startTime = 0;
         int previousBankDay = 0;
-        int magickNumber = 0x25;
+        int magickNumber = Configuration.MagickNumber;
         double trainHitRatio;
         double testHitRatio;
         double total;
@@ -669,7 +669,7 @@ namespace forexAI
                     if (Open[1] > ma && Close[1] < ma)
                     {
                         if (OrderProfit() <= 0.0)
-                            console($"с{new String('y', random.Next(1, 5))}к{new String('a', random.Next(1, 5))} бля проёбано {OrderProfit()}$");
+                            console($"с{new String('y', random.Next(1, 3))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
                         else
                         {
                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$");
@@ -688,7 +688,7 @@ namespace forexAI
                     if (Open[1] < ma && Close[1] > ma)
                     {
                         if (OrderProfit() <= 0.0)
-                            console($"с{new String('y', random.Next(1, 5))}к{new String('a', random.Next(1, 5))} бля проёбано {OrderProfit()}$");
+                            console($"с{new String('y', random.Next(1, 3))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
                         else
                         {
                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$");
@@ -709,24 +709,20 @@ namespace forexAI
         ////+------------------------------------------------------------------+
         private void CheckForOpen()
         {
-            //---- go trading only for first tiks of new bar
             if (Volume[0] > 1)
             {
                 log("vol bad");
                 return;
             }
 
-            //---- get Moving Average
             double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
 
-            //---- sell conditions
             if (Open[1] > ma && Close[1] < ma && YRandom.Next(4) == 2)
             {
                 OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Red);
                 log("# open sell  @" + Bid);
                 operationsCount++;
             }
-            //---- buy conditions
             if (Open[1] < ma && Close[1] > ma && YRandom.Next(4) == 2)
             {
                 OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Blue);
