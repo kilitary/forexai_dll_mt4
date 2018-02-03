@@ -49,7 +49,6 @@ namespace forexAI
 
         public static void console(string lines)
         {
-            notice(lines);
             Console.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
                 Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
         }

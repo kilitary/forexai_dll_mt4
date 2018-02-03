@@ -49,6 +49,7 @@ namespace forexAI
         int startTime = 0;
         int previousBankDay = 0;
         int magickNumber = Configuration.magickNumber;
+        int totalOperationsCount = 0;
         double trainHitRatio = 0.0;
         double testHitRatio = 0.0;
         double total = 0.0;
@@ -73,9 +74,10 @@ namespace forexAI
             {
                 previousBankDay = Day();
 
-                log($"> Day{previousBankDay.ToString(" 0")} [opnum={operationsCount} barsPerDay={barsPerDay}] "
+                log($"> Day{previousBankDay.ToString(" 0")} [opsDone={operationsCount} barsPerDay={barsPerDay}] "
                     + (fxNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 
+                totalOperationsCount += operationsCount;
                 operationsCount = 0;
                 barsPerDay = 0;
 
@@ -119,16 +121,16 @@ namespace forexAI
             console($"--------------[ START @ {startTime = GetTickCount()} ]-----------------");
 
             #region matters
-            if (Environment.MachineName == "USER-PC" || Experimental.IsBlackHateFocused() ||
+            if (Environment.MachineName == "USER-PC" ||
                 (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused()))
-                Configuration.tryExperimentalFeatures = !Configuration.tryExperimentalFeatures;
+                Configuration.tryExperimentalFeatures = true;
             #endregion
 
             symbol = Symbol();
             currentProcess = Process.GetCurrentProcess();
 
             console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)} Machine={Environment.MachineName}" +
-                $" XprmntL={Configuration.tryExperimentalFeatures} Base[0]@{currentProcess.Modules[0].BaseAddress}!");
+                $" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@{currentProcess.Modules[0].BaseAddress}");
 
             TruncateLog();
             ShowBanner();
@@ -136,15 +138,14 @@ namespace forexAI
             DumpInfo();
             ListGlobalVariables();
             ScanNetworks();
+
             if (fxNetwork != null)
             {
                 TestNetworkMSE();
                 TestNetworkHitRatio();
             }
             else
-            {
-                error(" ALARM!!!!!!  NO NETWAAAARK!!!!! ALARM!!!!!! ");
-            }
+                error(" ALARM!!!!!!  NO fxNetwork!!!!! ALARM!!!!!! ");
 
             log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s) ");
 
@@ -453,7 +454,7 @@ namespace forexAI
                 ObjectSet(labelID, OBJPROP_YDISTANCE, 50);
             }
 
-            ObjectSetText(labelID, "opnum: " + operationsCount, 8, "lucida console", Color.Yellow);
+            ObjectSetText(labelID, "Total operations: " + totalOperationsCount, 8, "lucida console", Color.Yellow);
 
             labelID = gs_80 + "10";
             if (ObjectFind(labelID) == -1)
@@ -464,7 +465,7 @@ namespace forexAI
                 ObjectSet(labelID, OBJPROP_YDISTANCE, 60);
             }
             ObjectSetText(labelID,
-                          "OrdersTotal: " + OrdersTotal(),
+                          "Live Orders: " + OrdersTotal(),
                           8,
                           "lucida console",
                           Color.Yellow);
@@ -692,12 +693,14 @@ namespace forexAI
                     {
                         if (OrderProfit() <= 0.0)
                         {
-                            console($"с{new String('y', random.Next(1, 3))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
+                            if (Configuration.tryExperimentalFeatures)
+                                console($"с{new String('y', random.Next(1, 3))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
                             spendBuys++;
                         }
                         else
                         {
-                            console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$");
+                            if (Configuration.tryExperimentalFeatures)
+                                console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$");
                             Audio.FX.Profit();
                             profitBuys++;
                         }
@@ -715,12 +718,14 @@ namespace forexAI
                     {
                         if (OrderProfit() <= 0.0)
                         {
-                            console($"с{new String('y', random.Next(1, 3))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
+                            if (Configuration.tryExperimentalFeatures)
+                                console($"с{new String('y', random.Next(1, 3))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
                             spendSells++;
                         }
                         else
                         {
-                            console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$");
+                            if (Configuration.tryExperimentalFeatures)
+                                console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$");
                             Audio.FX.Profit();
                             profitSells++;
                         }
