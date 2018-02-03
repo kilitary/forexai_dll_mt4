@@ -6,9 +6,7 @@
 //╰┳┫▔╲╰┳━━┳╯╱▔┊ ║ 
 //┈┃╰━━╲▕╲╱▏╱━━━┬╨╮ 
 //┈╰━━╮┊▕╱╲▏┊╭━━┴╥╯
-//                                                   |    |    |
-
-//-------^-----------------^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
+//--------^---Ѽ---^-----^^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,38 +24,40 @@ namespace forexAI
 {
     public class ForexAI : MqlApi
     {
-        Version version;
-        NeuralNet FXNetwork;
-        TrainingData trainData;
-        TrainingData testData;
+        Process currentProcess = null;
+        Version version = null;
+        NeuralNet fxNetwork = null;
+        TrainingData trainData = null;
+        TrainingData testData = null;
         Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
         Storage storage = new Storage();
         Settings settings = new Settings();
-        string NetName;
-        string dirName;
-        string inputLayerActivationFunction, middleLayerActivationFunction;
+        string NetName = string.Empty;
+        string dirName = string.Empty;
+        string inputLayerActivationFunction = string.Empty;
+        string middleLayerActivationFunction = string.Empty;
         string labelID, type = string.Empty;
         string symbol = string.Empty;
         int inputDimension = 0;
         int currentTicket = 0;
         int operationsCount = 0;
-        int ordersTotal;
+        int ordersTotal = 0;
         int previousBars = 0;
         int barsPerDay = 0;
-        int spend_sells = 0, spend_buys = 0, profitsells = 0, profitbuys = 0, tot_spends = 0, tot_profits = 0;
-        int buys = 0, sells = 0;
+        int spendSells = 0, spendBuys = 0, profitSells = 0, profitBuys = 0, totalSpends = 0, totalProfits = 0;
+        int openedBuys = 0, openedSells = 0;
         int startTime = 0;
         int previousBankDay = 0;
-        int magickNumber = 0x25;
-        double trainHitRatio;
-        double testHitRatio;
-        double total;
-        double spends;
-        double profit;
-        double TrailingStop;
-        double TrailingStep;
-        float test_mse;
-        float train_mse;
+        int magickNumber = Configuration.MagickNumber;
+        double trainHitRatio = 0.0;
+        double testHitRatio = 0.0;
+        double total = 0.0;
+        double spends = 0.0;
+        double profit = 0.0;
+        double TrailingStop = 0.0;
+        double TrailingStep = 0.0;
+        float testMse = 0.0f;
+        float trainMse = 0.0f;
         bool hasNoticedLowBalance = false;
         bool ProfitTrailing = true;
 
@@ -73,12 +73,13 @@ namespace forexAI
             {
                 previousBankDay = Day();
 
-                log($"> Day{previousBankDay.ToString(" 0")} opnum={operationsCount} barsPerDay={barsPerDay}");
+                log($"> Day{previousBankDay.ToString(" 0")} [opnum={operationsCount} barsPerDay={barsPerDay}] "
+                    + (fxNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 
                 operationsCount = 0;
                 barsPerDay = 0;
 
-                Audio.FX.FXNewDay();
+                Audio.FX.TheNewDay();
             }
 
             File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(99).ToString("00") + " ");
@@ -97,12 +98,12 @@ namespace forexAI
             if (AccountBalance() <= 5.0 && !hasNoticedLowBalance)
             {
                 hasNoticedLowBalance = true;
-                console($"всё пизда бля, кеш весь слит нахуй, бабок: {AccountBalance()}$");
-                Audio.FX.FXLowBalance();
+                console($"всё пизда, кеш весь слит нахуй, бабок: {AccountBalance()}$");
+                Audio.FX.LowBalance();
             }
             else if (hasNoticedLowBalance && YRandom.Next(0, 6) == 3)
             {
-                Audio.FX.FXGoodWork();
+                Audio.FX.GoodWork();
             }
 
             previousBars = Bars;
@@ -113,21 +114,31 @@ namespace forexAI
 
         public override int init()
         {
-            startTime = GetTickCount();
+            console($"--------------[ START @ {startTime = GetTickCount()} ]-----------------");
+
             symbol = Symbol();
+            currentProcess = Process.GetCurrentProcess();
 
-            console($"symbol {symbol} @ {startTime}");
+            console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)}");
 
-            ResetLog();
+            TruncateLog();
             ShowBanner();
             InitStorages();
             DumpInfo();
             ListGlobalVariables();
             ScanNetworks();
-            TestNetworkMSE();
-            TestNetworkHitRatio();
+            if (fxNetwork != null)
+            {
+                TestNetworkMSE();
+                TestNetworkHitRatio();
+            }
+            else
+            {
+                error("NO NETWORK!");
+            }
 
-            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s)");
+            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s) ");
+
             return 0;
         }
 
@@ -143,7 +154,8 @@ namespace forexAI
 
             string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
             log($"Uptime {mins} mins, has do {operationsCount} operations");
-            log("... shutting down");
+            console("... shutting down");
+
             return 0;
         }
 
@@ -153,7 +165,6 @@ namespace forexAI
             log($"# (c) 2018 Deconf (kilitary@gmail.com telegram:@deconf skype:serjnah icq:401112)");
 
             version = Assembly.GetExecutingAssembly().GetName().Version;
-
             log($"Initializing version {version} ...");
         }
 
@@ -185,19 +196,20 @@ namespace forexAI
             debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
             debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
-            debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
-                $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
+            debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" + $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
 
-            Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
-            console($"mem={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}MB");
+            currentProcess = Process.GetCurrentProcess();
+            console($"WorkingSet={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
+                $"PrivateMemory={(currentProcess.PrivateMemorySize64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
+                $"Threads={currentProcess.Threads.Count} FileName={currentProcess.MainModule.ModuleName}");
         }
 
         void TestNetworkHitRatio()
         {
-            FXNetwork.SetOutputScalingParams(trainData, -1.0f, 1.0f);
-            FXNetwork.SetInputScalingParams(trainData, -1.0f, 1.0f);
-            FXNetwork.SetOutputScalingParams(testData, -1.0f, 1.0f);
-            FXNetwork.SetInputScalingParams(testData, -1.0f, 1.0f);
+            fxNetwork.SetOutputScalingParams(trainData, -1.0f, 1.0f);
+            fxNetwork.SetInputScalingParams(trainData, -1.0f, 1.0f);
+            fxNetwork.SetOutputScalingParams(testData, -1.0f, 1.0f);
+            fxNetwork.SetInputScalingParams(testData, -1.0f, 1.0f);
 
             trainHitRatio = CalculateHitRatio(trainData.Input, trainData.Output);
             testHitRatio = CalculateHitRatio(testData.Input, testData.Output);
@@ -210,8 +222,8 @@ namespace forexAI
             int hits = 0, curX = 0;
             foreach (double[] input in inputs)
             {
-                double[] output = FXNetwork.Run(input);
-                FXNetwork.DescaleOutput(output);
+                double[] output = fxNetwork.Run(input);
+                fxNetwork.DescaleOutput(output);
 
                 double output0 = 0;
                 if (output[0] > output[1])
@@ -230,6 +242,7 @@ namespace forexAI
 
                 curX++;
             }
+
             return ((double) hits / (double) inputs.Length) * 100.0;
         }
 
@@ -241,10 +254,10 @@ namespace forexAI
             NetName = dirName;
             this.dirName = dirName;
 
-            FXNetwork = new NeuralNet($"{Configuration.dataDirectory}\\{dirName}\\FANN.net");
+            fxNetwork = new NeuralNet($"{Configuration.dataDirectory}\\{dirName}\\FANN.net");
 
-            log($"Network: hash={FXNetwork.GetHashCode()} inputs={FXNetwork.InputCount} layers={FXNetwork.LayerCount}" +
-                $" outputs={FXNetwork.OutputCount} neurons={FXNetwork.TotalNeurons} connections={FXNetwork.TotalConnections}");
+            log($"Network: hash={fxNetwork.GetHashCode()} inputs={fxNetwork.InputCount} layers={fxNetwork.LayerCount}" +
+                $" outputs={fxNetwork.OutputCount} neurons={fxNetwork.TotalNeurons} connections={fxNetwork.TotalConnections}");
 
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
 
@@ -262,9 +275,7 @@ namespace forexAI
             inputLayerActivationFunction = matches.Groups[1].Value;
             middleLayerActivationFunction = matches.Groups[2].Value;
 
-            Reassembler reassembler = new Reassembler(
-                File.ReadAllText($"{Configuration.dataDirectory}\\{dirName}\\functions.json"),
-                inputDimension);
+            Reassembler.Build(File.ReadAllText($"{Configuration.dataDirectory}\\{dirName}\\functions.json"), inputDimension);
         }
 
         void ScanNetworks()
@@ -275,7 +286,11 @@ namespace forexAI
             log($"Looking for networks in {Configuration.dataDirectory}: found {Dirs.Length} networks.");
 
             settings["networks"] = JsonConvert.SerializeObject(Dirs);
-
+            if (Dirs.Length == 0)
+            {
+                error("WHAT I SHOULD DO?? DO U THINK????");
+                return;
+            }
             LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
         }
 
@@ -286,10 +301,10 @@ namespace forexAI
 
             log($" * trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
-            train_mse = FXNetwork.TestDataParallel(trainData, 4);
-            test_mse = FXNetwork.TestDataParallel(testData, 3);
+            trainMse = fxNetwork.TestDataParallel(trainData, 4);
+            testMse = fxNetwork.TestDataParallel(testData, 3);
 
-            log($" * MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")} bitfail={FXNetwork.BitFail}");
+            log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={fxNetwork.BitFail}");
         }
 
         void DrawStats()
@@ -466,87 +481,91 @@ namespace forexAI
             }
             ObjectSetText(labelID, "genetic2: " + dirtext2, 8, "lucida console", Color.Yellow);
 
-            tot_spends = spend_sells + spend_buys;
-            tot_profits = profitsells + profitbuys;
-            string d = "0";
+            totalSpends = spendSells + spendBuys;
+            totalProfits = profitSells + profitBuys;
+            string KPD = "0";
 
-            if (tot_spends > 0 && tot_profits > 0)
-                d = DoubleToStr(100 - ((100.0 / tot_profits) * tot_spends), 2);
+            if (totalSpends > 0 && totalProfits > 0)
+                KPD = DoubleToStr(100 - ((100.0 / totalProfits) * totalSpends), 2);
 
             string funcsString = string.Empty;
             foreach (var func in Data.nnFunctions)
                 funcsString += $"|{func.Key}";
 
-            Comment(
-               "profitsells: " +
-                profitsells +
-                "\r\n"
-               +
-                "profitbuys:   " +
-                profitbuys +
-                "\r\n" +
-               "spend_sells:  " +
-                spend_sells +
-                "\r\n"
-               +
-                "spend_buys:    " +
-                spend_buys +
-                "\r\n"
+            if (fxNetwork != null)
+            {
+                Comment(
+              "Profit sells: " +
+               profitSells +
+               "\r\n"
               +
-                "tot_profits: " +
-                DoubleToStr(tot_profits, 0) +
-                "\r\n" +
-               "tot_spends:  " +
-                DoubleToStr(tot_spends, 0) +
-                "\r\n" +
-               "КПД: " +
-                d +
-                "%" +
-                "\r\n\r\n" +
-               "[Network " +
-                NetName +
-                "]\r\n" +
-               "Functions: " +
-                funcsString +
-                "\r\n" +
-               "InputDimension: " +
-                inputDimension +
-                "\r\n" +
-               "TotalNeurons: " +
-                FXNetwork.TotalNeurons +
-                "\r\n" +
-               "InputCount: " +
-                FXNetwork.InputCount +
-                "\r\n" +
-               "InputActFunc: " +
-                inputLayerActivationFunction +
-                "\r\n" +
-               "LayerActFunc: " +
-                middleLayerActivationFunction +
-                "\r\n" +
-               "ConnRate: " +
-                FXNetwork.ConnectionRate +
-                "\r\n" +
-               "Connections: " +
-                FXNetwork.TotalConnections +
-                "\r\n" +
-               "LayerCount: " +
-                FXNetwork.LayerCount +
-                "\r\n" +
-               "Train/Test MSE: " +
-                train_mse +
-                "/" +
-                test_mse +
-                "\r\n" +
-               "LearningRate: " +
-                FXNetwork.LearningRate +
-                "\r\n" +
-               "Test Hit Ratio: " +
-                testHitRatio.ToString("0.00") +
-                "%\r\n" +
-               "Train Hit Ratio: " +
-                trainHitRatio.ToString("0.00") +
-                "%\r\n");
+               "Profit buys:   " +
+               profitBuys +
+               "\r\n" +
+              "Spend sells:  " +
+               spendSells +
+               "\r\n"
+              +
+               "Spend buys:    " +
+               spendBuys +
+               "\r\n"
+             +
+               "Total profits: " +
+               DoubleToStr(totalProfits, 0) +
+               "\r\n" +
+              "Total spends:  " +
+               DoubleToStr(totalSpends, 0) +
+               "\r\n" +
+              "КПД: " +
+               KPD +
+               "%" +
+               "\r\n\r\n" +
+              "[Network " +
+               NetName +
+               "]\r\n" +
+              "Functions: " +
+               funcsString +
+               "\r\n" +
+              "InputDimension: " +
+               inputDimension +
+               "\r\n" +
+              "TotalNeurons: " +
+               fxNetwork.TotalNeurons +
+               "\r\n" +
+              "InputCount: " +
+               fxNetwork.InputCount +
+               "\r\n" +
+              "InputActFunc: " +
+               inputLayerActivationFunction +
+               "\r\n" +
+              "LayerActFunc: " +
+               middleLayerActivationFunction +
+               "\r\n" +
+              "ConnRate: " +
+               fxNetwork.ConnectionRate +
+               "\r\n" +
+              "Connections: " +
+               fxNetwork.TotalConnections +
+               "\r\n" +
+              "LayerCount: " +
+               fxNetwork.LayerCount +
+               "\r\n" +
+              "Train/Test MSE: " +
+               trainMse +
+               "/" +
+               testMse +
+               "\r\n" +
+              "LearningRate: " +
+               fxNetwork.LearningRate +
+               "\r\n" +
+              "Test Hit Ratio: " +
+               testHitRatio.ToString("0.00") +
+               "%\r\n" +
+              "Train Hit Ratio: " +
+               trainHitRatio.ToString("0.00") +
+               "%\r\n");
+
+            }
 
             if (ObjectFind("statyys") == -1)
             {
@@ -626,16 +645,17 @@ namespace forexAI
                 if (OrderSymbol() == Symbol() && OrderMagicNumber() == magickNumber)
                 {
                     if (OrderType() == OP_BUY)
-                        buys++;
+                        openedBuys++;
                     if (OrderType() == OP_SELL)
-                        sells++;
+                        openedSells++;
                 }
             }
 
             //---- return orders volume
-            if (buys > 0)
-                return (buys);
-            return (-sells);
+            if (openedBuys > 0)
+                return (openedBuys);
+
+            return (-openedSells);
         }
 
         ////+------------------------------------------------------------------+
@@ -662,11 +682,15 @@ namespace forexAI
                     if (Open[1] > ma && Close[1] < ma)
                     {
                         if (OrderProfit() <= 0.0)
-                            console($"сука бля проёбано {OrderProfit()}$");
+                        {
+                            console($"с{new String('y', random.Next(1, 3))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
+                            spendBuys++;
+                        }
                         else
                         {
-                            console($"ееее профит {OrderProfit()}$");
-                            Audio.FX.FXProfit();
+                            console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$");
+                            Audio.FX.Profit();
+                            profitBuys++;
                         }
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         log("# close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
@@ -681,14 +705,19 @@ namespace forexAI
                     if (Open[1] < ma && Close[1] > ma)
                     {
                         if (OrderProfit() <= 0.0)
-                            console($"сука бля проёбано {OrderProfit()}$");
+                        {
+                            console($"с{new String('y', random.Next(1, 3))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
+                            spendSells++;
+                        }
                         else
                         {
-                            console($"ееее профит {OrderProfit()}$");
-                            Audio.FX.FXProfit();
+                            console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$");
+                            Audio.FX.Profit();
+                            profitSells++;
                         }
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
-                        log("# close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
+                        log("# close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
+                            " profit=" + OrderProfit());
                         operationsCount++;
                     }
 
@@ -702,25 +731,21 @@ namespace forexAI
         ////+------------------------------------------------------------------+
         private void CheckForOpen()
         {
-            //---- go trading only for first tiks of new bar
             if (Volume[0] > 1)
             {
-                log("vol bad");
+                //log("vol bad");
                 return;
             }
 
-            //---- get Moving Average
             double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
 
-            //---- sell conditions
-            if (Open[1] > ma && Close[1] < ma && YRandom.Next(4) > 2)
+            if (Open[1] > ma && Close[1] < ma && YRandom.Next(4) == 2)
             {
                 OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Red);
                 log("# open sell  @" + Bid);
                 operationsCount++;
             }
-            //---- buy conditions
-            if (Open[1] < ma && Close[1] > ma && YRandom.Next(4) > 2)
+            if (Open[1] < ma && Close[1] > ma && YRandom.Next(4) == 2)
             {
                 OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Blue);
                 log("# open buy @" + Ask);
