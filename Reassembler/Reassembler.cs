@@ -42,7 +42,7 @@ namespace forexAI
             {
                 string functionName = item.Key;
 
-                log($" ->func{fidx++,2:00} [{functionName}]");
+                log($"   ->func{fidx++,2:00} [{functionName}]");
                 dump(item.Value);
             }
 

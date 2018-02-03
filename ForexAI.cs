@@ -130,7 +130,7 @@ namespace forexAI
             currentProcess = Process.GetCurrentProcess();
 
             console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)} Machine={Environment.MachineName}" +
-                $" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@{currentProcess.Modules[0].BaseAddress}");
+                $" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@0x{currentProcess.Modules[0].BaseAddress}");
 
             TruncateLog();
             ShowBanner();
@@ -145,7 +145,7 @@ namespace forexAI
                 TestNetworkHitRatio();
             }
             else
-                error(" ALARM!!!!!!  NO fxNetwork!!!!! ALARM!!!!!! ");
+                error("+++ ALARM!!!!!!  NO fxNetwork!!!!! ALARM!!!!!! +++");
 
             log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s) ");
 
@@ -163,8 +163,8 @@ namespace forexAI
             storage.SyncData();
 
             string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
-            log($"Uptime {mins} mins, has do {operationsCount} operations");
-            console("... shutting down");
+            log($"Uptime {mins} mins, has do {totalOperationsCount} operations.");
+            console("... shutted down.");
 
             return 0;
         }
