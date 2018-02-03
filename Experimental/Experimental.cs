@@ -1,6 +1,6 @@
 ﻿//class2999
 //┓┏┓┏┓┃ 
-//┛┗┛┗┛┃
+//┛┗┛┗┛┃E x p e r i m e n t a l c o d e i s n o t w r i t t e n f o r m o m e n t s w h e n s o m e o n e a s k s " f o r w h a t ? "
 //┓┏┓┏┓┃ 
 //┛┗┛┗┛┃コ ア に パ ー キ ロ ェ  ン ヨ ダ キ ェ  !
 //┓┏┓┏┓┃＼○／ 
