@@ -440,7 +440,7 @@ namespace forexAI
                 ObjectSet(labelID, OBJPROP_YDISTANCE, 40);
             }
             ObjectSetText(labelID,
-                          "kpd %: " + DoubleToStr(total, 0) + "%",
+                          "xxxx",
                           8,
                           "lucida console",
                           Color.Yellow);
