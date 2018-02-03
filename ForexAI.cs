@@ -247,34 +247,14 @@ namespace forexAI
                 $" outputs={FXNetwork.OutputCount} neurons={FXNetwork.TotalNeurons} connections={FXNetwork.TotalConnections}");
 
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
-            Regex regex = new Regex(@"\[([^ \r\n\[\]]{1,10}?)\s+?", RegexOptions.Multiline | RegexOptions.Singleline);
-
-            foreach (Match match in regex.Matches(fileTextData))
-            {
-                if (match.Groups[0].Value.Length <= 0)
-                    continue;
-
-                string funcName = match.Groups[0].Value.Trim('[', ' ');
-                log($" * Function <{funcName}>");
-
-                Dictionary<string, string> data = new Dictionary<string, string>();
-
-                data["name"] = funcName;
-
-                if (Data.nnFunctions.ContainsKey(funcName))
-                    continue;
-
-                Data.nnFunctions.Add(funcName, data);
-            }
 
             Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
             int.TryParse(match2.Groups[1].Value, out inputDimension);
 
             log($" * InputDimension = {inputDimension}");
-            log($"Functions: {JsonConvert.SerializeObject(Data.nnFunctions)}");
 
             Match matches = Regex.Match(fileTextData,
-                                        "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
+                 "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
                  RegexOptions.Singleline);
 
             log($" * Activation functions: input [{matches.Groups[1].Value}] layer [{matches.Groups[2].Value}]");

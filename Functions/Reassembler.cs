@@ -28,49 +28,53 @@ using Newtonsoft.Json;
 
 namespace forexAI
 {
-    class ExMethodInfo
+    public class ExMethodInfo
     {
-        string Name;
-        string AssemblyName;
-        string ClassName;
-        string Signature;
-        string Signature2;
-        int MemberType;
-        object GenericArguments;
+        public string Name;
+        public string AssemblyName;
+        public string ClassName;
+        public string Signature;
+        public string Signature2;
+        public int MemberType;
+        public object GenericArguments;
     }
 
-    class FunctionParams
+    public class FunctionParams
     {
-        int ParamIndex;
-        int NumData;
-        int OutBegIdx;
-        int Offset;
-        object Arguments;
-        int OutIndex;
-        int OutNbElement;
+        public int ParamIndex;
+        public int NumData;
+        public int OutBegIdx;
+        public int Offset;
+        public object Arguments;
+        public int OutIndex;
+        public int OutNbElement;
     }
 
-    class FunctionsConfiguration
+    public class FunctionsConfiguration
     {
-        Dictionary<string, FunctionParams> parameters;
-        ExMethodInfo methodInfo;
-    }
-
-    class CombinedData
-    {
-        Dictionary<string, FunctionsConfiguration> functions;
+        public FunctionParams parameters;
+        public ExMethodInfo methodInfo;
     }
 
     class Reassembler
     {
         public Reassembler(string functionsConfig, int inputDimension)
         {
-            CombinedData functionConfiguration;
+            Dictionary<string, FunctionsConfiguration> functionsConfiguration;
 
-            log($"functionsConfig:{functionsConfig}");
+            var settings = new JsonSerializerSettings();
+            settings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
 
-            functionConfiguration = JsonConvert.DeserializeObject<CombinedData>(functionsConfig);
-            dump(functionConfiguration, "fc");
+            functionsConfiguration = JsonConvert.DeserializeObject<Dictionary<string, FunctionsConfiguration>>(functionsConfig, settings);
+
+            int fidx = 0;
+            foreach (var item in functionsConfiguration)
+            {
+                string functionName = item.Key;
+                
+                log($"#{fidx++} [{functionName}]");
+                dump(item.Value);
+            }
 
             return;
         }
