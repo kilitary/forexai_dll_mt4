@@ -32,7 +32,7 @@ namespace Audio
             Play(Configuration.brokenWAV);
         }
 
-        public static void TheGoodWork()
+        public static void GoodWork()
         {
             Play(Configuration.goodWorkWAV);
         }
