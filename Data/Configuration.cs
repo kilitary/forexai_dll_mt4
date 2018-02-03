@@ -25,12 +25,12 @@ namespace forexAI
         public static string mysqlServer = "192.168.10.10";
         public static string mysqlUid = "homestead";
         public static string memcachedIP = "192.168.10.10";
-        public static bool useMemcached = false;
-        public static bool useMysql = false;
         public static int memcachedPort = 11211;
         public static int magickNumber = 0xC34;
+        public static bool useMemcached = false;
+        public static bool useMysql = false;
 
-        // audio/fx
+        // audio/FX
         public static string newDayWAV = @"d:\Audio_FX\17130__noisecollector__ak47-chamber-round.wav";
         public static string profitWAV = @"d:\Audio_FX\209578__zott820__cash-register-purchase.wav";
         public static string brokenWAV = @"d:\Audio_FX\115276__xdrav__broken-bulb.wav";
@@ -48,7 +48,7 @@ namespace forexAI
         //░░░░▀▄░░░░▀▄▒▒▒▒▒▒▒▒▒▒▀▄ 
         //[!]░░░▀▄▄▄▄▄█▄▄▄▄▄▄▄▄▄▄▄▀▄ 
         // Experimental features [!]
-        public static bool tryExperimentalFeatures = true;
+        public static bool tryExperimentalFeatures = false;
         public static int experimentalAlliedRandomUpperBound = 4498;
         //░░░░░░░░░░░▌▌░▌▌░░░░░  
         //░[!]░░░░░░░▌▌░▌▌░░░░░  
