@@ -96,7 +96,7 @@ namespace forexAI
         static public bool IsHardwareForcesConnected()
         {
             int cValue = random.Next(Configuration.experimentalAlliedRandomUpperBound);
-            if (cValue <= 41 || cValue >= 44)
+            if (cValue <= 41 || cValue >= 44 || cValue == 11)
             {
                 return random.Next(0, 5) < 3;
             }
