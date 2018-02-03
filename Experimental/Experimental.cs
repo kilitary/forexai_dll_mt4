@@ -82,7 +82,7 @@ namespace forexAI
             IsBlackHateFocused();
         }
 
-        static public bool IsBlackHateFocused()
+        static public bool IsBlackHateFocused() // B l ack @te.. F oc us ed
         {
             if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == random.Next(Configuration.experimentalAlliedRandomUpperBound))
             {
