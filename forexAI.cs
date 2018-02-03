@@ -48,19 +48,18 @@ namespace forexAI
         int buys = 0, sells = 0;
         int startTime = 0;
         int previousBankDay = 0;
+        int magickNumber = 0x25;
         double trainHitRatio;
         double testHitRatio;
         double total;
         double spends;
         double profit;
+        double TrailingStop;
+        double TrailingStep;
         float test_mse;
         float train_mse;
-        int magickNumber = 0x25;
         bool hasNoticedLowBalance = false;
         bool ProfitTrailing = true;
-
-        public double TrailingStop { get; private set; }
-        public double TrailingStep { get; private set; }
 
         //+------------------------------------------------------------------+■
         //| Start function                                                   |
@@ -112,7 +111,25 @@ namespace forexAI
             return 0;
         }
 
+        public override int init()
+        {
+            startTime = GetTickCount();
+            symbol = Symbol();
 
+            console($"symbol {symbol} @ {startTime}");
+
+            ResetLog();
+            ShowBanner();
+            InitStorages();
+            DumpInfo();
+            ListGlobalVariables();
+            ScanNetworks();
+            TestNetworkMSE();
+            TestNetworkHitRatio();
+
+            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s)");
+            return 0;
+        }
 
         public override int deinit()
         {
@@ -130,30 +147,49 @@ namespace forexAI
             return 0;
         }
 
-        public override int init()
-        {
-            startTime = GetTickCount();
-            symbol = Symbol();
-            version = Assembly.GetExecutingAssembly().GetName().Version;
-
-            ResetLog();
-            ShowBanner();
-            InitStorages();
-            DumpInfo();
-            ListGlobalVariables();
-            ScanNetworks();
-            TestNetworkMSE();
-            TestNetworkHitRatio();
-
-            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s)");
-            return 0;
-        }
-
         void ShowBanner()
         {
             log($"# Automated Expert for MT4 using neural network with strategy created by code/data fuzzing.");
             log($"# (c) 2018 Deconf (kilitary@gmail.com telegram:@deconf skype:serjnah icq:401112)");
+
+            version = Assembly.GetExecutingAssembly().GetName().Version;
+
             log($"Initializing version {version} ...");
+        }
+
+        void ListGlobalVariables()
+        {
+            int var_total = GlobalVariablesTotal();
+            string name;
+            for (int i = 0; i < var_total; i++)
+            {
+                name = GlobalVariableName(i);
+                debug($"global var {i} [{name}={GlobalVariableGet(name)}]");
+            }
+        }
+
+        void InitStorages()
+        {
+            if (Configuration.useMysql)
+                Data.db = new DB();
+
+            settings["yrandom"] = YRandom.Next(int.MaxValue);
+            settings["random"] = random.Next(int.MaxValue);
+        }
+
+        void DumpInfo()
+        {
+            log($"AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
+            debug($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
+            debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
+            debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
+            debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
+            debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
+            debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
+                $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
+
+            Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
+            console($"mem={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}MB");
         }
 
         void TestNetworkHitRatio()
@@ -197,26 +233,6 @@ namespace forexAI
             return ((double) hits / (double) inputs.Length) * 100.0;
         }
 
-        void ListGlobalVariables()
-        {
-            int var_total = GlobalVariablesTotal();
-            string name;
-            for (int i = 0; i < var_total; i++)
-            {
-                name = GlobalVariableName(i);
-                debug($"global var {i} [{name}={GlobalVariableGet(name)}]");
-            }
-        }
-
-        void InitStorages()
-        {
-            if (Configuration.useMysql)
-                Data.db = new DB();
-
-            settings["yrandom"] = YRandom.Next(int.MaxValue);
-            settings["random"] = random.Next(int.MaxValue);
-        }
-
         void LoadNetwork(string dirName)
         {
             long fileLength = new FileInfo($"{Configuration.dataDirectory}\\{dirName}\\FANN.net").Length;
@@ -231,25 +247,6 @@ namespace forexAI
                 $" outputs={FXNetwork.OutputCount} neurons={FXNetwork.TotalNeurons} connections={FXNetwork.TotalConnections}");
 
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
-            Regex regex = new Regex(@"\[([^ \r\n\[\]]{1,10}?)\s+?", RegexOptions.Multiline | RegexOptions.Singleline);
-
-            foreach (Match match in regex.Matches(fileTextData))
-            {
-                if (match.Groups[0].Value.Length <= 0)
-                    continue;
-
-                string funcName = match.Groups[0].Value.Trim('[', ' ');
-                log($" * Function <{funcName}>");
-
-                Dictionary<string, string> data = new Dictionary<string, string>();
-
-                data["name"] = funcName;
-
-                if (Data.nnFunctions.ContainsKey(funcName))
-                    continue;
-
-                Data.nnFunctions.Add(funcName, data);
-            }
 
             Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
             int.TryParse(match2.Groups[1].Value, out inputDimension);
@@ -257,13 +254,17 @@ namespace forexAI
             log($" * InputDimension = {inputDimension}");
 
             Match matches = Regex.Match(fileTextData,
-                                        "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
+                 "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
                  RegexOptions.Singleline);
 
             log($" * Activation functions: input [{matches.Groups[1].Value}] layer [{matches.Groups[2].Value}]");
 
             inputLayerActivationFunction = matches.Groups[1].Value;
             middleLayerActivationFunction = matches.Groups[2].Value;
+
+            Reassembler reassembler = new Reassembler(
+                File.ReadAllText($"{Configuration.dataDirectory}\\{dirName}\\functions.json"),
+                inputDimension);
         }
 
         void ScanNetworks()
@@ -289,77 +290,6 @@ namespace forexAI
             test_mse = FXNetwork.TestDataParallel(testData, 3);
 
             log($" * MSE: train={train_mse.ToString("0.0000")} test={test_mse.ToString("0.0000")} bitfail={FXNetwork.BitFail}");
-        }
-
-        void DumpInfo()
-        {
-            log($"AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
-            log($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
-
-            debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
-            debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
-            debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
-            debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
-            debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" +
-                $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
-
-            Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
-            console($"mem={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}MB");
-        }
-
-        double GetActiveIncome()
-        {
-            total = 0.0;
-
-            double spends = GetActiveSpend();
-            double profit = GetActiveProfit();
-            if (profit > spends)
-                total = profit + (spends);
-            else
-                total = 0.0;
-
-            return (total);
-        }
-
-        double GetActiveProfit()
-        {
-            ordersTotal = OrdersTotal();
-            total = 0.0;
-
-            for (int pos = 0; pos < ordersTotal; pos++)
-            {
-                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
-                    continue;
-                if (OrderProfit() > 0.0)
-                    total = total + OrderProfit();
-            }
-
-            return (total);
-        }
-
-        double GetActiveSpend()
-        {
-            ordersTotal = OrdersTotal();
-            total = 0.0;
-
-            for (int pos = 0; pos < ordersTotal; pos++)
-            {
-                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
-                    continue;
-                if (OrderProfit() < 0.0)
-                    total = total + OrderProfit();
-            }
-
-            return (total);
-        }
-        void AddLabel(string text)
-        {
-            string on;
-            double pos = Bid + (Bid - Ask) / 2;
-            pos = Open[0];
-            on = (pos.ToString());
-            ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
-            ObjectSetText(on, text, 8, "lucida console", Color.DarkRed);
         }
 
         void DrawStats()
@@ -629,6 +559,61 @@ namespace forexAI
             WindowRedraw();
         }
 
+        double GetActiveIncome()
+        {
+            total = 0.0;
+
+            double spends = GetActiveSpend();
+            double profit = GetActiveProfit();
+            if (profit > spends)
+                total = profit + (spends);
+            else
+                total = 0.0;
+
+            return (total);
+        }
+
+        double GetActiveProfit()
+        {
+            ordersTotal = OrdersTotal();
+            total = 0.0;
+
+            for (int pos = 0; pos < ordersTotal; pos++)
+            {
+                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+                if (OrderProfit() > 0.0)
+                    total = total + OrderProfit();
+            }
+
+            return (total);
+        }
+
+        double GetActiveSpend()
+        {
+            ordersTotal = OrdersTotal();
+            total = 0.0;
+
+            for (int pos = 0; pos < ordersTotal; pos++)
+            {
+                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+                if (OrderProfit() < 0.0)
+                    total = total + OrderProfit();
+            }
+
+            return (total);
+        }
+        void AddLabel(string text)
+        {
+            string on;
+            double pos = Bid + (Bid - Ask) / 2;
+            pos = Open[0];
+            on = (pos.ToString());
+            ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
+            ObjectSetText(on, text, 8, "lucida console", Color.DarkRed);
+        }
+
         //+------------------------------------------------------------------+
         //| Calculate open positions                                         |
         //+------------------------------------------------------------------+
@@ -880,5 +865,8 @@ namespace forexAI
         //        }
         //    }
         //}
+        //} 
+
+
     }
 }

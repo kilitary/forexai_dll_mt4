@@ -1,7 +1,13 @@
-﻿//┓┏┓┏┓┃ 
+﻿// *    * *    *                   *    * *
+//┓┏┓┏┓┃ 
 //┛┗┛┗┛┃
 //┓┏┓┏┓┃ 
 //┛┗┛┗┛┃ ЕБАНЫЙ РОООООТ!
+//┓┏┓┏┓┃＼○／ 
+//┛┗┛┗┛┃ / /
+//┓┏┓┏┓┃ノ
+//┛┗┛┗┛┃ 
+//┓┏┓┏┓┃ 
 //┓┏┓┏┓┃＼○／ 
 //┛┗┛┗┛┃ / /
 //┓┏┓┏┓┃ノ
@@ -12,8 +18,7 @@
 //┛┗┛┗┛┃ 
 //┓┏┓┏┓┃ 
 //┛┗┛┗┛┃ 
-//┓┏┓┏┓┃ 
-//┛┗┛┗┛┃ 
+
 //┓┏┓┏┓┃ 
 //┛┗┛┗┛┃ 
 //┓┏┓┏┓┃ 
@@ -45,7 +50,8 @@ namespace forexAI
         public int NumData;
         public int OutBegIdx;
         public int Offset;
-        public object Arguments;
+        public List<string> parametersMap;
+        // public object Arguments;
         public int OutIndex;
         public int OutNbElement;
     }
@@ -62,16 +68,15 @@ namespace forexAI
         {
             Dictionary<string, FunctionsConfiguration> functionsConfiguration;
 
-            var settings = new JsonSerializerSettings();
-            settings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
-
-            functionsConfiguration = JsonConvert.DeserializeObject<Dictionary<string, FunctionsConfiguration>>(functionsConfig, settings);
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
+            functionsConfiguration = JsonConvert.DeserializeObject<Dictionary<string, FunctionsConfiguration>>(functionsConfig, jsonSettings);
 
             int fidx = 0;
             foreach (var item in functionsConfiguration)
             {
                 string functionName = item.Key;
-                
+
                 log($"#{fidx++} [{functionName}]");
                 dump(item.Value);
             }
