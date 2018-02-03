@@ -2,7 +2,7 @@
 //┓┏┓┏┓┃ 
 //┛┗┛┗┛┃E x p e r i m e n t a l c o d e i s n o t w r i t t e n f o r m o m e n t s w h e n s o m e o n e a s k s " f o r w h a t ? "
 //┓┏┓┏┓┃                                             !
-//┛┗┛┗┛┃に パ に ェ キ コ ア ーロー に ダ キ ヨ パ , ェ ン !  
+//┛┗┛┗┛┃に パ に ェ キ  コ ア... に ダ キ ヨ パ , ェ ン !                                     [ ロー○ーロ ]
 //┓┏┓┏┓┃＼○／ 
 //┛┗┛┗┛┃ / /
 //┓┏┓┏┓┃ノ
