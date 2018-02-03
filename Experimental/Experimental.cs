@@ -39,49 +39,49 @@ namespace forexAI
                 e = random.Next(6);
             } while (e % 2 == 0 || random.Next(4) == 1);
 
-            if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 21)
+            if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 21)
                 console("пиздец");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 33)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 33)
                 console("даладно нахуй");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 44)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 44)
                 console("ахуеть");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 29)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 29)
                 console("чо за хуйня");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 444)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 444)
                 console("мудаки ёбаные");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 777)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 777)
                 console("пошли нахуй");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 999)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 999)
                 console("пидоры");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 52)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 52)
                 console("да");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 54)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 54)
                 console("ого");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 53)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 53)
                 console("мда бля..");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 154)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 154)
                 console("ахуенчик");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 48)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 48)
                 console("бля ну заебись");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4381)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4381)
                 console("нед");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4293)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4293)
                 console("нет");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4481)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4481)
                 console("ноу");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4811)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4811)
                 console("найн");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 934)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 934)
                 console("да и похуй");
-            else if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == 4219)
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4219)
                 console("√");
 
-            if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == Configuration.ExperimentalAlliedRandomLimit)
+            if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == Configuration.experimentalAlliedRandomUpperBound)
                 console("и чо");
 
-            if (random.Next(Configuration.ExperimentalAlliedRandomLimit) == random.Next(Configuration.ExperimentalAlliedRandomLimit))
+            if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == random.Next(Configuration.experimentalAlliedRandomUpperBound))
             {
-                console($"bLACK HATE CHECKPOINt +---{random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)} {random.Next(Configuration.ExperimentalAlliedRandomLimit)}---+");
+                console($"bLACK HATE CHECKPOINt +---{random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)}---+");
                 Audio.FX.TheBroken();
             }
         }

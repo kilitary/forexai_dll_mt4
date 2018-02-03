@@ -48,7 +48,7 @@ namespace forexAI
         int openedBuys = 0, openedSells = 0;
         int startTime = 0;
         int previousBankDay = 0;
-        int magickNumber = Configuration.MagickNumber;
+        int magickNumber = Configuration.magickNumber;
         double trainHitRatio = 0.0;
         double testHitRatio = 0.0;
         double total = 0.0;

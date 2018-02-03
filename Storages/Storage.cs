@@ -76,8 +76,8 @@ namespace forexAI
         public void InitMemcached()
         {
             MemcachedClientConfiguration config = new MemcachedClientConfiguration();
-            IPEndPoint ipEndpoint = new IPEndPoint(IPAddress.Parse(Configuration.MemcachedIP),
-                                                   Configuration.MemcachedPort);
+            IPEndPoint ipEndpoint = new IPEndPoint(IPAddress.Parse(Configuration.memcachedIP),
+                                                   Configuration.memcachedPort);
             config.Servers.Add(ipEndpoint);
             config.Protocol = MemcachedProtocol.Text;
             mc = new MemcachedClient(config);

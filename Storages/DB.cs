@@ -26,16 +26,16 @@ namespace forexAI
         {
             string connectionString;
             connectionString = "SERVER=" +
-                Configuration.mysql_server +
+                Configuration.mysqlServer +
                 ";" +
                 "DATABASE=" +
-                Configuration.mysql_database +
+                Configuration.mysqlDatabase +
                 ";" +
                 "UID=" +
-                Configuration.mysql_uid +
+                Configuration.mysqlUid +
                 ";" +
                 "PASSWORD=" +
-                Configuration.mysql_password +
+                Configuration.mysqlPassword +
                 ";";
 
             connection = new MySqlConnection(connectionString);

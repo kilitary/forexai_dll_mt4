@@ -20,15 +20,15 @@ namespace forexAI
         public static string dataDirectory = @"D:\temp\forexAI";
         public static string logFileName = @"d:\temp\forexAI\mt4.log";
         public static string settingsPath = @"d:\temp\forexAI\mt4forexai.cfg";
-        public static string mysql_database = "forex";
-        public static string mysql_password = "secret";
-        public static string mysql_server = "192.168.10.10";
-        public static string mysql_uid = "homestead";
-        public static string MemcachedIP = "192.168.10.10";
+        public static string mysqlDatabase = "forex";
+        public static string mysqlPassword = "secret";
+        public static string mysqlServer = "192.168.10.10";
+        public static string mysqlUid = "homestead";
+        public static string memcachedIP = "192.168.10.10";
         public static bool useMemcached = false;
         public static bool useMysql = false;
-        public static int MemcachedPort = 11211;
-        public static int MagickNumber = 0xC34;
+        public static int memcachedPort = 11211;
+        public static int magickNumber = 0xC34;
 
         // audio/fx
         public static string newDayWAV = @"d:\Audio_FX\17130__noisecollector__ak47-chamber-round.wav";
@@ -49,7 +49,7 @@ namespace forexAI
         //[!]░░░▀▄▄▄▄▄█▄▄▄▄▄▄▄▄▄▄▄▀▄ 
         // Experimental features [!]
         public static bool tryExperimentalFeatures = true;
-        public static int ExperimentalAlliedRandomLimit = 4498;
+        public static int experimentalAlliedRandomUpperBound = 4498;
         //░░░░░░░░░░░▌▌░▌▌░░░░░  
         //░[!]░░░░░░░▌▌░▌▌░░░░░  
         //░░░░░░░░░▄▄▌▌▄▌▌░░[!]  
