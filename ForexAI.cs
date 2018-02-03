@@ -24,6 +24,7 @@ namespace forexAI
 {
     public class ForexAI : MqlApi
     {
+        Process currentProcess;
         Version version;
         NeuralNet FXNetwork;
         TrainingData trainData;
@@ -71,7 +72,7 @@ namespace forexAI
             {
                 previousBankDay = Day();
 
-                log($"> Day{previousBankDay.ToString(" 0")} opnum={operationsCount} barsPerDay={barsPerDay}");
+                log($"> Day{previousBankDay.ToString(" 0")} [opnum={operationsCount} barsPerDay={barsPerDay}]");
 
                 operationsCount = 0;
                 barsPerDay = 0;
@@ -111,11 +112,13 @@ namespace forexAI
 
         public override int init()
         {
-            console("--------------[ START ]-----------------");
             startTime = GetTickCount();
-            symbol = Symbol();
+            console($"--------------[ START @ {startTime} ]-----------------");
 
-            console($"[Symbol={symbol} startTickCount={startTime} random.Next={random.Next(0, 100)}]");
+            symbol = Symbol();
+            currentProcess = Process.GetCurrentProcess();
+
+            console($"Symbol={symbol} random.Next={random.Next(0, 100)}");
 
             ClearLog();
             ShowBanner();
@@ -187,10 +190,10 @@ namespace forexAI
             debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
             debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" + $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
 
-            Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
-            console($"[WorkingSet={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}MB " +
+            currentProcess = Process.GetCurrentProcess();
+            console($"WorkingSet={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}MB " +
                 $"PrivateMemory={(currentProcess.PrivateMemorySize64 / 1024.0 / 1024.0).ToString("0.00")}MB " +
-                $"Threads={currentProcess.Threads.Count}]");
+                $"Threads={currentProcess.Threads.Count} FileName={currentProcess.MainModule.FileName}");
         }
 
         void TestNetworkHitRatio()

@@ -37,7 +37,7 @@ namespace forexAI
                 {
                     file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
                         Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " +
-                        ((prefix.Length > 0 ? "----- [dump of " + prefix + "] -----\r\n" : "") +
+                        ((prefix.Length > 0 ? "----- [" + prefix + "] -----\r\n" : "") +
                         JsonConvert.SerializeObject(data, jsonSettings)));
                 }
             }
@@ -49,7 +49,7 @@ namespace forexAI
 
         public static void console(string lines)
         {
-            debug(lines);
+            log(lines);
             Console.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
                 Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
         }
