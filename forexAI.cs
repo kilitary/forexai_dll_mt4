@@ -128,7 +128,7 @@ namespace forexAI
             currentProcess = Process.GetCurrentProcess();
 
             console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)} Machine={Environment.MachineName}" +
-                $" XprmntL={Configuration.tryExperimentalFeatures}");
+                $" XprmntL={Configuration.tryExperimentalFeatures} Base[0]@{currentProcess.Modules[0].BaseAddress}!");
 
             TruncateLog();
             ShowBanner();
