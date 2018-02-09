@@ -54,7 +54,6 @@ namespace forexAI
         public static bool tryExperimentalFeatures = false;
         //░░░░░░░░░░░▌▌░▌▌░░░░░  
         public static int experimentalAlliedRandomUpperBound = 4498;
-        
         //░[!]░░░░░░░▌▌░▌▌░░░░░  
         //░░░░░░░░░░░▌▌░▌▌░░░░░  
         //░[!]░░░░░░░▌▌░▌▌░░░░░  
