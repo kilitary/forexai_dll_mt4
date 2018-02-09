@@ -691,7 +691,7 @@ namespace forexAI
                         if (OrderProfit() <= 0.0)
                         {
                             if (Configuration.tryExperimentalFeatures)
-                                console($"с{new String('y', random.Next(1, 3))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
+                                console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 1))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
                             spendBuys++;
                         }
                         else
@@ -716,7 +716,7 @@ namespace forexAI
                         if (OrderProfit() <= 0.0)
                         {
                             if (Configuration.tryExperimentalFeatures)
-                                console($"с{new String('y', random.Next(1, 3))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
+                                console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 1))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
                             spendSells++;
                         }
                         else
