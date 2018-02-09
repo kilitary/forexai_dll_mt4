@@ -55,6 +55,7 @@ namespace forexAI
                 }
             }
 
+            log($"=> Reassembling done.");
             return;
         }
     }

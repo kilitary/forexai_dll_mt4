@@ -34,8 +34,9 @@ namespace forexAI
         Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
         Storage storage = new Storage();
         Settings settings = new Settings();
-        string NetName = string.Empty;
-        string dirName = string.Empty;
+        DirectoryInfo[] networkDirs;
+        string netName = string.Empty;
+        string fannNetworkDirName = string.Empty;
         string inputLayerActivationFunction = string.Empty;
         string middleLayerActivationFunction = string.Empty;
         string labelID, type = string.Empty;
@@ -85,9 +86,9 @@ namespace forexAI
 
                 Audio.FX.TheNewDay();
             }
-           
+
             File.AppendAllText(Configuration.randomLogFileName, random.Next(99).ToString("00") + " ");
-            File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(101, 201).ToString("000") + " ");
+            File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
 
             CalculateCurrentOrders();
 
@@ -121,10 +122,10 @@ namespace forexAI
         public override int init()
         {
             console($"--------------[ START @ {startTime = GetTickCount()} ]-----------------",
-                ConsoleColor.Black, ConsoleColor.Red);
+                ConsoleColor.Black, ConsoleColor.Cyan);
 
-            Logger.TruncateLog(Configuration.randomLogFileName);
-            Logger.TruncateLog(Configuration.yrandomLogFileName);
+            TruncateLog(Configuration.randomLogFileName);
+            TruncateLog(Configuration.yrandomLogFileName);
 
             #region matters
             if (Environment.MachineName == "USER-PC" ||
@@ -136,7 +137,8 @@ namespace forexAI
             currentProcess = Process.GetCurrentProcess();
 
             console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)} Machine={Environment.MachineName}" +
-                $" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@0x{currentProcess.Modules[0].BaseAddress}");
+                $" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@0x{currentProcess.Modules[0].BaseAddress}",
+                ConsoleColor.Black, ConsoleColor.Yellow);
 
             TruncateLog();
             ShowBanner();
@@ -144,6 +146,7 @@ namespace forexAI
             DumpInfo();
             ListGlobalVariables();
             ScanNetworks();
+            LoadRandomNetwork();
 
             if (fxNetwork != null)
             {
@@ -153,7 +156,9 @@ namespace forexAI
             else
                 error("+++ ALARM!!!!!!  NO fxNetwork!!!!! ALARM!!!!!! +++");
 
-            log($"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s) ");
+            string inited = $"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s) ";
+            log(inited);
+            console(inited, ConsoleColor.Black, ConsoleColor.Yellow);
 
             return 0;
         }
@@ -208,18 +213,18 @@ namespace forexAI
 
         void DumpInfo()
         {
-            log($"AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
-            debug($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
-            debug($"equity={AccountEquity()} marginMode={AccountFreeMarginMode()} expert={WindowExpertName()}");
-            debug($"leverage={AccountLeverage()} server=[{AccountServer()}] stopoutLev={AccountStopoutLevel()} stopoutMod={AccountStopoutMode()}");
-            debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
-            debug($"orders={OrdersTotal()} timeCurrent={TimeCurrent()} digits={MarketInfo(symbol, MODE_DIGITS)} spred={MarketInfo(symbol, MODE_SPREAD)}");
-            debug($"tickValue={MarketInfo(symbol, MODE_TICKVALUE)} tickSize={MarketInfo(symbol, MODE_TICKSIZE)} minlot={MarketInfo(symbol, MODE_MINLOT)}" + $" lotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
+            log($"  AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
+            log($"  Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
+            log($"  Equity={AccountEquity()} FreeMarginMode={AccountFreeMarginMode()} Expert={WindowExpertName()}");
+            log($"  Leverage={AccountLeverage()} Server=[{AccountServer()}] StopoutLev={AccountStopoutLevel()} StopoutMod={AccountStopoutMode()}");
+            log($"  TickValue={MarketInfo(symbol, MODE_TICKVALUE)} TickSize={MarketInfo(symbol, MODE_TICKSIZE)} Minlot={MarketInfo(symbol, MODE_MINLOT)}" + $" LotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
+            log($"  Orders={OrdersTotal()} TimeForexCurrent=[{TimeCurrent()}] Digits={MarketInfo(symbol, MODE_DIGITS)} Spread={MarketInfo(symbol, MODE_SPREAD)}");
+            log($"  IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
 
-            currentProcess = Process.GetCurrentProcess();
             console($"WorkingSet={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
                 $"PrivateMemory={(currentProcess.PrivateMemorySize64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
-                $"Threads={currentProcess.Threads.Count} FileName={currentProcess.MainModule.ModuleName}");
+                $"Threads={currentProcess.Threads.Count} FileName={currentProcess.MainModule.ModuleName}",
+                ConsoleColor.Black, ConsoleColor.Yellow);
         }
 
         void TestNetworkHitRatio()
@@ -264,17 +269,22 @@ namespace forexAI
             return ((double) hits / (double) inputs.Length) * 100.0;
         }
 
+        private void LoadRandomNetwork()
+        {
+            LoadNetwork(networkDirs[random.Next(networkDirs.Length - 1)].Name);
+        }
+
         void LoadNetwork(string dirName)
         {
             long fileLength = new FileInfo($"{Configuration.dataDirectory}\\{dirName}\\FANN.net").Length;
             log($"Loading network {dirName} ({(fileLength / 1024.0).ToString("0.00")} KB)");
 
-            NetName = dirName;
-            this.dirName = dirName;
+            netName = dirName;
+            fannNetworkDirName = dirName;
 
             fxNetwork = new NeuralNet($"{Configuration.dataDirectory}\\{dirName}\\FANN.net");
 
-            log($"Network: hash={fxNetwork.GetHashCode()} inputs={fxNetwork.InputCount} layers={fxNetwork.LayerCount}" +
+            log($"Network met 8: hash={fxNetwork.GetHashCode()} inputs={fxNetwork.InputCount} layers={fxNetwork.LayerCount}" +
                 $" outputs={fxNetwork.OutputCount} neurons={fxNetwork.TotalNeurons} connections={fxNetwork.TotalConnections}");
 
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
@@ -299,23 +309,22 @@ namespace forexAI
         void ScanNetworks()
         {
             DirectoryInfo d = new DirectoryInfo(Configuration.dataDirectory);
-            DirectoryInfo[] Dirs = d.GetDirectories("*");
+            networkDirs = d.GetDirectories("*");
 
-            log($"Looking for networks in {Configuration.dataDirectory}: found {Dirs.Length} networks.");
+            log($"Looking for networks in {Configuration.dataDirectory}: found {networkDirs.Length} networks.");
 
-            settings["networks"] = JsonConvert.SerializeObject(Dirs);
-            if (Dirs.Length == 0)
+            settings["networks"] = JsonConvert.SerializeObject(networkDirs);
+            if (networkDirs.Length == 0)
             {
                 error("WHAT I SHOULD DO?? DO U THINK????");
                 return;
             }
-            LoadNetwork(Dirs[random.Next(Dirs.Length - 1)].Name);
         }
 
         void TestNetworkMSE()
         {
-            trainData = new TrainingData(Configuration.dataDirectory + $"\\{dirName}\\traindata.dat");
-            testData = new TrainingData(Configuration.dataDirectory + $"\\{dirName}\\testdata.dat");
+            trainData = new TrainingData(Configuration.dataDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
+            testData = new TrainingData(Configuration.dataDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
 
             log($" * trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
@@ -536,7 +545,7 @@ namespace forexAI
                "%" +
                "\r\n\r\n" +
               "[Network " +
-               NetName +
+               netName +
                "]\r\n" +
               "Functions: " +
                funcsString +
