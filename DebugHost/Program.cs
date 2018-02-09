@@ -20,9 +20,9 @@ namespace NQuotes.DebugHost
             {
                 NQuotes.DebugHost.Server.Start(args);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Console.WriteLine($"EXCEPTION:\r\n{e.Message}");
+                forexAI.Logger.console($"EXCEPTION:\r\n{e.Message}", ConsoleColor.Black, ConsoleColor.Red);
             }
         }
     }

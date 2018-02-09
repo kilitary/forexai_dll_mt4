@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using static System.ConsoleColor;
 
 namespace forexAI
 {
@@ -47,10 +48,13 @@ namespace forexAI
             }
         }
 
-        public static void console(string lines)
+        public static void console(string lines, ConsoleColor bgcolor = Black, ConsoleColor fgcolor = White)
         {
+            Console.BackgroundColor = bgcolor;
+            Console.ForegroundColor = fgcolor;
             Console.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
                 Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
+            Console.ResetColor();
         }
 
 

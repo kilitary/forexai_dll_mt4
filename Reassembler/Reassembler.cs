@@ -29,21 +29,30 @@ namespace forexAI
 {
     public static class Reassembler
     {
-        public static void Build(string functionsConfig, int inputDimension)
+        public static void Build(string functionConfigurationString, int inputDimension)
         {
-            Dictionary<string, FunctionsConfiguration> functionsConfiguration;
+            Dictionary<string, FunctionsConfiguration> functionConfiguration;
+
+            log($"=> Reassembling input sequence...");
 
             var jsonSettings = new JsonSerializerSettings();
             jsonSettings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
-            functionsConfiguration = JsonConvert.DeserializeObject<Dictionary<string, FunctionsConfiguration>>(functionsConfig, jsonSettings);
+            functionConfiguration = JsonConvert.DeserializeObject<Dictionary<string, FunctionsConfiguration>>(functionConfigurationString, jsonSettings);
+
+            log($"=> {functionConfiguration.Count} functions with {inputDimension} input dimension");
 
             int fidx = 0;
-            foreach (var item in functionsConfiguration)
+            foreach (var item in functionConfiguration)
             {
                 string functionName = item.Key;
+                FunctionsConfiguration conf = item.Value;
 
-                log($"   ->func{fidx++,2:00} [{functionName}]");
-                dump(item.Value);
+                log($" #{fidx++} [{functionName}]");
+
+                foreach (var param in conf.parameters.parametersMap)
+                {
+                    log($"   param {param}");
+                }
             }
 
             return;
