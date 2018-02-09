@@ -18,10 +18,13 @@ namespace forexAI
         [DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
         private static extern int GetCurrentThreadId();
 
-        public static void TruncateLog()
+        public static void TruncateLog(string fileName = null)
         {
-            if (File.Exists(Configuration.logFileName))
-                File.Delete(Configuration.logFileName);
+            if (fileName == null)
+                fileName = Configuration.logFileName;
+
+            if (File.Exists(fileName))
+                File.Delete(fileName);
         }
 
         public static void dump(object data, string prefix = "", int maxDepth = 255)

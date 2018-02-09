@@ -25,6 +25,8 @@ namespace forexAI
         public static string mysqlServer = "192.168.10.10";
         public static string mysqlUid = "homestead";
         public static string memcachedIP = "192.168.10.10";
+        public static string randomLogFileName = @"d:\temp\forexAI\seed";
+        public static string yrandomLogFileName = @"d:\temp\forexAI\Yseed";
         public static bool useMemcached = false;
         public static bool useMysql = false;
         public static bool useAudio = true;
@@ -52,6 +54,7 @@ namespace forexAI
         public static bool tryExperimentalFeatures = false;
         //░░░░░░░░░░░▌▌░▌▌░░░░░  
         public static int experimentalAlliedRandomUpperBound = 4498;
+        
         //░[!]░░░░░░░▌▌░▌▌░░░░░  
         //░░░░░░░░░░░▌▌░▌▌░░░░░  
         //░[!]░░░░░░░▌▌░▌▌░░░░░  

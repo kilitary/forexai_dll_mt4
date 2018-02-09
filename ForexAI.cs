@@ -85,9 +85,9 @@ namespace forexAI
 
                 Audio.FX.TheNewDay();
             }
-
-            File.AppendAllText(@"d:\temp\forexAI\seed", random.Next(99).ToString("00") + " ");
-            File.AppendAllText(@"d:\temp\forexAI\Yseed", YRandom.Next(101, 201).ToString("000") + " ");
+           
+            File.AppendAllText(Configuration.randomLogFileName, random.Next(99).ToString("00") + " ");
+            File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(101, 201).ToString("000") + " ");
 
             CalculateCurrentOrders();
 
@@ -122,6 +122,9 @@ namespace forexAI
         {
             console($"--------------[ START @ {startTime = GetTickCount()} ]-----------------",
                 ConsoleColor.Black, ConsoleColor.Red);
+
+            Logger.TruncateLog(Configuration.randomLogFileName);
+            Logger.TruncateLog(Configuration.yrandomLogFileName);
 
             #region matters
             if (Environment.MachineName == "USER-PC" ||
