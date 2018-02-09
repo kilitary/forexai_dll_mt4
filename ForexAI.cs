@@ -175,11 +175,12 @@ namespace forexAI
         void ShowBanner()
         {
             log($"# Automated Expert for MT4 using neural network with strategy created by code/data fuzzing.");
-            log($"# (c) 2018 Deconf (kilitary@gmail.com telegram:@deconf skype:serjnah icq:401112)");
+            log($"# (c) 2018 Deconf (kilitary@gmail.com teleg:@deconf skype:serjnah icq:401112)");
 
             version = Assembly.GetExecutingAssembly().GetName().Version;
             log($"Initializing version {version} ...");
-            Console.Title = $"Automated software: version {version}";
+
+            Console.Title = $"Automated trading expert console. Version {version} was built at AA-BB-2018 XX:YY:ZZ:QQ";
         }
 
         void ListGlobalVariables()
@@ -670,78 +671,6 @@ namespace forexAI
         }
 
         ////+------------------------------------------------------------------+
-        ////| Check for close order conditions                                 |
-        ////+------------------------------------------------------------------+
-        private void CheckForClose()
-        {
-            //---- go trading only for first tiks of new bar
-            if (Volume[0] > 1)
-                return;
-            //---- get Moving Average
-            double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
-
-            for (int i = 0; i < OrdersTotal(); i++)
-            {
-                if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
-                    break;
-                if (OrderMagicNumber() != magickNumber || OrderSymbol() != symbol)
-                    continue;
-                //---- check order type
-                if (OrderType() == OP_BUY)
-                {
-                    // log("test  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
-                    if (Open[1] > ma && Close[1] < ma)
-                    {
-                        if (OrderProfit() <= 0.0)
-                        {
-                            if (Configuration.tryExperimentalFeatures)
-                                console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
-                            spendBuys++;
-                        }
-                        else
-                        {
-                            if (Configuration.tryExperimentalFeatures)
-                                console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$");
-                            Audio.FX.Profit();
-                            profitBuys++;
-                        }
-                        OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
-                        log("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
-                        operationsCount++;
-                    }
-
-                    break;
-                }
-                if (OrderType() == OP_SELL)
-                {
-                    // log("test  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
-                    if (Open[1] < ma && Close[1] > ma)
-                    {
-                        if (OrderProfit() <= 0.0)
-                        {
-                            if (Configuration.tryExperimentalFeatures)
-                                console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$");
-                            spendSells++;
-                        }
-                        else
-                        {
-                            if (Configuration.tryExperimentalFeatures)
-                                console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$");
-                            Audio.FX.Profit();
-                            profitSells++;
-                        }
-                        OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
-                        log("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
-                            " profit=" + OrderProfit());
-                        operationsCount++;
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        ////+------------------------------------------------------------------+
         ////| Check for open order conditions                                  |
         ////+------------------------------------------------------------------+
         private void CheckForOpen()
@@ -765,6 +694,80 @@ namespace forexAI
                 OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Blue);
                 log("+ open buy @" + Ask);
                 operationsCount++;
+            }
+        }
+
+        ////+------------------------------------------------------------------+
+        ////| Check for close order conditions                                 |
+        ////+------------------------------------------------------------------+
+        private void CheckForClose()
+        {
+            //---- go trading only for first tiks of new bar
+            if (Volume[0] > 1)
+                return;
+            //---- get Moving Average
+            double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
+
+            for (int i = 0; i < OrdersTotal(); i++)
+            {
+                if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+                    break;
+                if (OrderMagicNumber() != magickNumber || OrderSymbol() != symbol)
+                    continue;
+                //---- check order type
+                if (OrderType() == OP_BUY)
+                {
+                    if (Open[1] > ma && Close[1] < ma)
+                    {
+                        if (OrderProfit() <= 0.0)
+                        {
+                            if (Configuration.tryExperimentalFeatures)
+                                console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
+                                    ConsoleColor.Black, ConsoleColor.Red);
+                            spendBuys++;
+                        }
+                        else
+                        {
+                            if (Configuration.tryExperimentalFeatures)
+                                console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
+                                    ConsoleColor.Black, ConsoleColor.Green);
+                            Audio.FX.Profit();
+                            profitBuys++;
+                        }
+                        OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
+                        log("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
+                        operationsCount++;
+                    }
+
+                    break;
+                }
+                if (OrderType() == OP_SELL)
+                {
+                    if (Open[1] < ma && Close[1] > ma)
+                    {
+                        if (OrderProfit() <= 0.0)
+                        {
+                            if (Configuration.tryExperimentalFeatures)
+                                console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
+                                    ConsoleColor.Black, ConsoleColor.Red);
+                            spendSells++;
+                        }
+                        else
+                        {
+                            if (Configuration.tryExperimentalFeatures)
+                                console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
+                                    ConsoleColor.Black, ConsoleColor.Green);
+                            Audio.FX.Profit();
+                            profitSells++;
+                        }
+                        OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
+                        log("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
+                            " profit=" + OrderProfit());
+                        operationsCount++;
+                    }
+
+                    break;
+                }
             }
         }
 

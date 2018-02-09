@@ -40,44 +40,44 @@ namespace forexAI
             } while (e % 2 == 0 || random.Next(4) == 1);
 
             if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 21)
-                console("пиздец", ConsoleColor.White, ConsoleColor.Green);
+                console("пиздец", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 33)
-                console("даладно нахуй", ConsoleColor.White, ConsoleColor.Green);
+                console("даладно нахуй", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 44)
-                console("ахуеть", ConsoleColor.White, ConsoleColor.Green);
+                console("ахуеть", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 29)
-                console("чо за хуйня", ConsoleColor.White, ConsoleColor.Green);
+                console("чо за хуйня", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 444)
-                console("мудаки ёбаные", ConsoleColor.White, ConsoleColor.Green);
+                console("мудаки ёбаные", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 777)
-                console("пошли нахуй", ConsoleColor.White, ConsoleColor.Green);
+                console("пошли нахуй", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 999)
-                console("пидоры", ConsoleColor.White, ConsoleColor.Green);
+                console("пидоры", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 52)
-                console("да", ConsoleColor.White, ConsoleColor.Green);
+                console("да", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 54)
-                console("ого", ConsoleColor.White, ConsoleColor.Green);
+                console("ого", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 53)
-                console("мда бля..", ConsoleColor.White, ConsoleColor.Green);
+                console("мда бля..", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 154)
-                console("ахуенчик", ConsoleColor.White, ConsoleColor.Green);
+                console("ахуенчик", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 48)
-                console("бля ну заебись", ConsoleColor.White, ConsoleColor.Green);
+                console("бля ну заебись", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4381)
-                console("нед", ConsoleColor.White, ConsoleColor.Green);
+                console("нед", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4293)
-                console("нет", ConsoleColor.White, ConsoleColor.Green);
+                console("нет", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4481)
-                console("ноу", ConsoleColor.White, ConsoleColor.Green);
+                console("ноу", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4811)
-                console("найн", ConsoleColor.White, ConsoleColor.Green);
+                console("найн", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 934)
-                console("да и похуй", ConsoleColor.White, ConsoleColor.Green);
+                console("да и похуй", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4219)
-                console("√", ConsoleColor.White, ConsoleColor.Green);
+                console("√", ConsoleColor.Black, ConsoleColor.Yellow);
 
             if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == Configuration.experimentalAlliedRandomUpperBound)
-                console("и чо", ConsoleColor.White, ConsoleColor.Green);
+                console("и чо", ConsoleColor.Black, ConsoleColor.Yellow);
 
             IsBlackHateFocused();
         }
@@ -86,7 +86,7 @@ namespace forexAI
         {
             if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == random.Next(Configuration.experimentalAlliedRandomUpperBound))
             {
-                console($"bLACK HATE CHECKPOINt +---{random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)}---+", ConsoleColor.Red, ConsoleColor.DarkBlue);
+                console($"bLACK HATE CHECKPOINt +---{random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)}---+", ConsoleColor.Yellow, ConsoleColor.Red);
                 Audio.FX.TheBroken();
                 return true;
             }

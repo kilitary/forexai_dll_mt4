@@ -29,15 +29,15 @@ namespace forexAI
 {
     public static class Reassembler
     {
+        static Dictionary<string, FunctionsConfiguration> functionConfiguration;
         public static void Build(string functionConfigurationString, int inputDimension)
         {
-            Dictionary<string, FunctionsConfiguration> functionConfiguration;
-
             log($"=> Reassembling input sequence...");
 
             var jsonSettings = new JsonSerializerSettings();
             jsonSettings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
-            functionConfiguration = JsonConvert.DeserializeObject<Dictionary<string, FunctionsConfiguration>>(functionConfigurationString, jsonSettings);
+            functionConfiguration = JsonConvert.DeserializeObject<Dictionary<string, FunctionsConfiguration>>
+                (functionConfigurationString, jsonSettings);
 
             log($"=> {functionConfiguration.Count} functions with {inputDimension} input dimension");
 
@@ -47,11 +47,11 @@ namespace forexAI
                 string functionName = item.Key;
                 FunctionsConfiguration conf = item.Value;
 
-                log($" #{fidx++} [{functionName}]");
+                log($" -> #{fidx++} {functionName}()");
 
                 foreach (var param in conf.parameters.parametersMap)
                 {
-                    log($"   param {param}");
+                    log($"     {param}");
                 }
             }
 
