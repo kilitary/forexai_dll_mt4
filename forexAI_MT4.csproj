@@ -14,7 +14,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.1.575.40</AssemblyVersion>
+    <AssemblyVersion>0.1.585.40</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,6 +63,33 @@
     </Reference>
     <Reference Include="FANNCSharp, Version=0.2.0.0, Culture=neutral, processorArchitecture=x86">
       <HintPath>packages\FANNCSharp-x86.0.1.8\lib\FANNCSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.TextEditor, Version=4.0.2.6466, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
+      <HintPath>packages\LeMP.26.2.0\lib\net45\ICSharpCode.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="LeMP, Version=2.6.2.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+      <HintPath>packages\LeMP.26.2.0\lib\net45\LeMP.exe</HintPath>
+    </Reference>
+    <Reference Include="LeMP.StdMacros, Version=2.6.2.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+      <HintPath>packages\LeMP.26.2.0\lib\net45\LeMP.StdMacros.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Collections, Version=2.6.2.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+      <HintPath>packages\Loyc.Collections.26.2.0\lib\net45\Loyc.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Ecs, Version=2.6.2.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+      <HintPath>packages\Loyc.Ecs.26.2.0\lib\net45\Loyc.Ecs.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Essentials, Version=2.6.2.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+      <HintPath>packages\Loyc.Essentials.26.2.0\lib\net45\Loyc.Essentials.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Math, Version=2.6.2.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+      <HintPath>packages\Loyc.Math.26.2.0\lib\net45\Loyc.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Syntax, Version=2.6.2.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+      <HintPath>packages\Loyc.Syntax.26.2.0\lib\net45\Loyc.Syntax.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Utilities, Version=2.6.2.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+      <HintPath>packages\Loyc.Utilities.26.2.0\lib\net45\Loyc.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Win32.Registry, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

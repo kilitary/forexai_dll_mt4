@@ -35,7 +35,7 @@ namespace forexAI
         Storage storage = new Storage();
         Settings settings = new Settings();
         DirectoryInfo[] networkDirs;
-        string netName = string.Empty;
+        string networkName = string.Empty;
         string fannNetworkDirName = string.Empty;
         string inputLayerActivationFunction = string.Empty;
         string middleLayerActivationFunction = string.Empty;
@@ -182,7 +182,7 @@ namespace forexAI
 
         void ShowBanner()
         {
-            log($"# Automated Expert for MT4 using neural network with strategy created by code/data fuzzing.");
+            log($"# Automated Expert for MT4 using neural network with strategy created by code/data fuzzing. met 8 ");
             log($"# (c) 2018 Deconf (kilitary@gmail.com teleg:@deconf skype:serjnah icq:401112)");
 
             version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -277,15 +277,15 @@ namespace forexAI
 
         void LoadNetwork(string dirName)
         {
-            long fileLength = new FileInfo($"{Configuration.dataDirectory}\\{dirName}\\FANN.net").Length;
+            long fileLength = new FileInfo($"{Configuration.rootDirectory}\\{dirName}\\FANN.net").Length;
             log($"Loading network {dirName} ({(fileLength / 1024.0).ToString("0.00")} KB)");
 
-            netName = dirName;
+            networkName = dirName;
             fannNetworkDirName = dirName;
 
-            fxNetwork = new NeuralNet($"{Configuration.dataDirectory}\\{dirName}\\FANN.net");
+            fxNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net");
 
-            log($"Network met 8: hash={fxNetwork.GetHashCode()} inputs={fxNetwork.InputCount} layers={fxNetwork.LayerCount}" +
+            log($"Network: hash={fxNetwork.GetHashCode()} inputs={fxNetwork.InputCount} layers={fxNetwork.LayerCount}" +
                 $" outputs={fxNetwork.OutputCount} neurons={fxNetwork.TotalNeurons} connections={fxNetwork.TotalConnections}");
 
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
@@ -304,15 +304,15 @@ namespace forexAI
             inputLayerActivationFunction = matches.Groups[1].Value;
             middleLayerActivationFunction = matches.Groups[2].Value;
 
-            Reassembler.Build(File.ReadAllText($"{Configuration.dataDirectory}\\{dirName}\\functions.json"), inputDimension);
+            Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension);
         }
 
         void ScanNetworks()
         {
-            DirectoryInfo d = new DirectoryInfo(Configuration.dataDirectory);
+            DirectoryInfo d = new DirectoryInfo(Configuration.rootDirectory);
             networkDirs = d.GetDirectories("*");
 
-            log($"Looking for networks in {Configuration.dataDirectory}: found {networkDirs.Length} networks.");
+            log($"Looking for networks in {Configuration.rootDirectory}: found {networkDirs.Length} networks.");
 
             settings["networks"] = JsonConvert.SerializeObject(networkDirs);
             if (networkDirs.Length == 0)
@@ -324,8 +324,12 @@ namespace forexAI
 
         void TestNetworkMSE()
         {
-            trainData = new TrainingData(Configuration.dataDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
-            testData = new TrainingData(Configuration.dataDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
+            FileInfo fi1 = new FileInfo(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
+            FileInfo fi2 = new FileInfo(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
+
+            log($" * loading {fannNetworkDirName} data: {(((double) fi1.Length + fi2.Length) / 1024.0 / 1024.0).ToString("0.00")}mb ...");
+            trainData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
+            testData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
 
             log($" * trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
@@ -546,7 +550,7 @@ namespace forexAI
                "%" +
                "\r\n\r\n" +
               "[Network " +
-               netName +
+               networkName +
                "]\r\n" +
               "Functions: " +
                funcsString +
