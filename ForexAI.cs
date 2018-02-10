@@ -98,12 +98,12 @@ namespace forexAI
 
             CalculateCurrentOrders();
 
-            if (OrdersTotal() <= 0)
-                CheckForOpen();
+            //if (OrdersTotal() <= 0)
+            //  CheckForOpen();
 
             CheckForClose();
 
-            CheckVolume();
+            CheckVolumeDisturbance();
 
             if (Configuration.tryExperimentalFeatures)
                 AlliedInstructions();
@@ -313,6 +313,141 @@ namespace forexAI
             testMse = forexNetwork.TestDataParallel(testData, 2);
 
             log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={forexNetwork.BitFail}");
+        }
+
+        // -------^-----------------^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
+        void CheckVolumeDisturbance()
+        {
+            if (Volume[1] - prevVolume > 800 && TimeHour(TimeCurrent()) > 8 && TimeHour(TimeCurrent()) < 18)
+            {
+                log($"vol {Volume[1]} diff {prevVolume - Volume[1]}");
+                AddLabel($"VOL DIFF {prevVolume - Volume[1]}");
+                console($"volume disturbance detected diff={Math.Abs(prevVolume - Volume[1])} points. Time={TimeCurrent()}");
+
+                if (isTrendM15Up(3))
+                    SendSell();
+                if (isTrendM15Down(3))
+                    SendBuy();
+            }
+
+            prevVolume = Volume[1];
+        }
+
+        bool isTrendM15Up(int bars)
+        {
+            bool up = true;
+            double trend_y, prev_trend_y = 0.0;
+
+            if (Bars <= bars)
+                return (false);
+
+            for (int i = 0; i < bars; i++)
+            {
+                trend_y = iCustom(symbol, PERIOD_M15, "Trend Magic", 0, i);
+                log($"up trend_y={trend_y}");
+                if ((prev_trend_y > 0.0 && trend_y > prev_trend_y) || trend_y == 2147483647)
+                    return (false);
+                prev_trend_y = trend_y;
+            }
+
+            return (true);
+        }
+
+
+        bool isTrendM15Down(int bars)
+        {
+            bool up = true;
+            double trend_y, prev_trend_y = 0.0;
+
+            if (Bars <= bars)
+                return (false);
+
+            for (int i = 0; i < bars; i++)
+            {
+                trend_y = iCustom(symbol, PERIOD_M15, "Trend Magic", 0, i);
+                log($"down trend_y={trend_y}");
+                if ((prev_trend_y > 0.0 && trend_y < prev_trend_y) || trend_y == 2147483647)
+                    return (false);
+                prev_trend_y = trend_y;
+            }
+
+            return (true);
+        }
+
+        ////+------------------------------------------------------------------+
+        ////| Check for close order conditions                                 |
+        ////+------------------------------------------------------------------+
+        private void CheckForClose()
+        {
+            double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
+
+            for (int i = 0; i < OrdersTotal(); i++)
+            {
+                if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+                    break;
+
+                if (OrderMagicNumber() != magickNumber || OrderSymbol() != symbol)
+                    continue;
+
+                if (OrderType() == OP_BUY)
+                {
+                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -6.0)
+                    {
+                        if (Configuration.tryExperimentalFeatures)
+                            console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
+                                ConsoleColor.Black, ConsoleColor.Red);
+
+                        spendBuys++;
+
+                        OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
+                        log("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
+                        operationsCount++;
+                    }
+                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 1.5)
+                    {
+                        if (Configuration.tryExperimentalFeatures)
+                            console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
+                                ConsoleColor.Black, ConsoleColor.Green);
+
+                        FX.Profit();
+                        profitBuys++;
+
+                        OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
+                        log("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
+                        operationsCount++;
+                    }
+                }
+                if (OrderType() == OP_SELL)
+                {
+                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -6.0)
+                    {
+                        if (Configuration.tryExperimentalFeatures)
+                            console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
+                                ConsoleColor.Black, ConsoleColor.Red);
+
+                        spendSells++;
+
+                        OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
+                        log("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
+                            " profit=" + OrderProfit());
+                        operationsCount++;
+                    }
+                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 1.5)
+                    {
+                        if (Configuration.tryExperimentalFeatures)
+                            console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
+                                ConsoleColor.Black, ConsoleColor.Green);
+
+                        FX.Profit();
+                        profitSells++;
+
+                        OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
+                        log("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
+                            " profit=" + OrderProfit());
+                        operationsCount++;
+                    }
+                }
+            }
         }
 
         double CalculateHitRatio(double[][] inputs, double[][] desiredOutputs)
@@ -692,115 +827,32 @@ namespace forexAI
             return (-openedSells);
         }
 
+        void SendSell()
+        {
+            OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Red);
+            operationsCount++;
+            log("+ open sell  @" + Bid);
+        }
+
+        void SendBuy()
+        {
+            OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Blue);
+            operationsCount++;
+            log("+ open buy @" + Ask);
+        }
+
         ////+------------------------------------------------------------------+
         ////| Check for open order conditions                                  |
         ////+------------------------------------------------------------------+
         private void CheckForOpen()
         {
-            if (Volume[0] > 1)
-            {
-                //log("vol bad");
-                return;
-            }
-
             double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
 
             if (Open[1] > ma && Close[1] < ma && YRandom.Next(4) == 2)
-            {
-                OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Red);
-                log("+ open sell  @" + Bid);
-                operationsCount++;
-            }
+                SendSell();
+
             if (Open[1] < ma && Close[1] > ma && YRandom.Next(4) == 2)
-            {
-                OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Blue);
-                log("+ open buy @" + Ask);
-                operationsCount++;
-            }
-        }
-
-        ////+------------------------------------------------------------------+
-        ////| Check for close order conditions                                 |
-        ////+------------------------------------------------------------------+
-        private void CheckForClose()
-        {
-            //---- go trading only for first tiks of new bar
-            if (Volume[0] > 1)
-                return;
-            //---- get Moving Average
-            double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
-
-            for (int i = 0; i < OrdersTotal(); i++)
-            {
-                if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
-                    break;
-                if (OrderMagicNumber() != magickNumber || OrderSymbol() != symbol)
-                    continue;
-                //---- check order type
-                if (OrderType() == OP_BUY)
-                {
-                    if (Open[1] > ma && Close[1] < ma)
-                    {
-                        if (OrderProfit() <= 0.0)
-                        {
-                            if (Configuration.tryExperimentalFeatures)
-                                console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
-                                    ConsoleColor.Black, ConsoleColor.Red);
-                            spendBuys++;
-                        }
-                        else
-                        {
-                            if (Configuration.tryExperimentalFeatures)
-                                console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
-                                    ConsoleColor.Black, ConsoleColor.Green);
-                            FX.Profit();
-                            profitBuys++;
-                        }
-                        OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
-                        log("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
-                        operationsCount++;
-                    }
-
-                    break;
-                }
-                if (OrderType() == OP_SELL)
-                {
-                    if (Open[1] < ma && Close[1] > ma)
-                    {
-                        if (OrderProfit() <= 0.0)
-                        {
-                            if (Configuration.tryExperimentalFeatures)
-                                console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
-                                    ConsoleColor.Black, ConsoleColor.Red);
-                            spendSells++;
-                        }
-                        else
-                        {
-                            if (Configuration.tryExperimentalFeatures)
-                                console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
-                                    ConsoleColor.Black, ConsoleColor.Green);
-                            FX.Profit();
-                            profitSells++;
-                        }
-                        OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
-                        log("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
-                            " profit=" + OrderProfit());
-                        operationsCount++;
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        private void CheckVolume()
-        {
-            if (Volume[1] - prevVolume > 1500)
-            {
-                log($"vol {Volume[1]} diff {prevVolume - Volume[1]}");
-                AddLabel($"VOL DIFF {prevVolume - Volume[1]}");
-            }
-            prevVolume = Volume[1];
+                SendBuy();
         }
 
         //void TrailingPositions()
