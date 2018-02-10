@@ -32,7 +32,7 @@ namespace forexAI
         static Dictionary<string, FunctionsConfiguration> functionConfiguration;
         public static void Build(string functionConfigurationString, int inputDimension)
         {
-            log($"=> Reassembling input sequence...");
+            log($"=> Reassembling input sequence ...");
 
             var jsonSettings = new JsonSerializerSettings();
             jsonSettings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;

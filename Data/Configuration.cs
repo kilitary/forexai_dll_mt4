@@ -20,13 +20,13 @@ namespace forexAI
         public static string rootDirectory = @"d:\temp\forexAI";
         public static string logFileName = $@"{Configuration.rootDirectory}\mt4.log";
         public static string settingsPath = $@"{Configuration.rootDirectory}\mt4forexai.cfg";
+        public static string randomLogFileName = $@"{Configuration.rootDirectory}\seed";
+        public static string yrandomLogFileName = $@"{Configuration.rootDirectory}\Yseed";
         public static string mysqlDatabase = "forex";
         public static string mysqlPassword = "secret";
         public static string mysqlServer = "192.168.10.10";
         public static string mysqlUid = "homestead";
         public static string memcachedIP = "192.168.10.10";
-        public static string randomLogFileName = $@"{Configuration.rootDirectory}\seed";
-        public static string yrandomLogFileName = $@"{Configuration.rootDirectory}\Yseed";
         public static bool useMemcached = false;
         public static bool useMysql = false;
         public static bool useAudio = true;

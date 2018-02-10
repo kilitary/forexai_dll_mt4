@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using forexAI;
 
-namespace Audio
+namespace forexAI
 {
     public static class FX
     {
@@ -16,8 +16,8 @@ namespace Audio
             if (!Configuration.useAudio)
                 return;
 
-            SoundPlayer sampleSound = new SoundPlayer(audioFileName);
-            sampleSound.Play();
+            SoundPlayer fileSound = new SoundPlayer(audioFileName);
+            fileSound.Play();
         }
 
         public static void TheNewDay()

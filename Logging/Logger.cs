@@ -51,13 +51,15 @@ namespace forexAI
             }
         }
 
-        public static void console(string lines, ConsoleColor bgcolor = Black, ConsoleColor fgcolor = White)
+        public static string console(string lines, ConsoleColor bgcolor = Black, ConsoleColor fgcolor = White)
         {
             Console.BackgroundColor = bgcolor;
             Console.ForegroundColor = fgcolor;
-            Console.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
+            string logString = DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines;
+            Console.WriteLine(logString);
             Console.ResetColor();
+            return logString;
         }
 
 

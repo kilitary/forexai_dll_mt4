@@ -21,6 +21,9 @@ using Color = System.Drawing.Color;
 using static forexAI.Experimental;
 using static System.Console;
 using static System.ConsoleColor;
+using LeMP;
+using LeMP.CSharp6;
+using LeMP.Prelude;
 
 namespace forexAI
 {
@@ -77,14 +80,14 @@ namespace forexAI
             {
                 previousBankDay = Day();
 
-                log($"> Day{previousBankDay.ToString(" 0")} [opsDone={operationsCount} barsPerDay={barsPerDay}] "
+                log($"-> Day {previousBankDay.ToString("0")} [opsDone={operationsCount} barsPerDay={barsPerDay}] "
                     + (fxNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 
                 totalOperationsCount += operationsCount;
                 operationsCount = 0;
                 barsPerDay = 0;
 
-                Audio.FX.TheNewDay();
+                FX.TheNewDay();
             }
 
             File.AppendAllText(Configuration.randomLogFileName, random.Next(99).ToString("00") + " ");
@@ -104,12 +107,10 @@ namespace forexAI
             {
                 hasNoticedLowBalance = true;
                 console($"всё пизда, кеш весь слит нахуй, бабок: {AccountBalance()}$", ConsoleColor.Red, ConsoleColor.White);
-                Audio.FX.LowBalance();
+                FX.LowBalance();
             }
             else if (hasNoticedLowBalance && YRandom.Next(0, 6) == 3)
-            {
-                Audio.FX.GoodWork();
-            }
+                FX.GoodWork();
 
             DrawStats();
 
@@ -136,10 +137,6 @@ namespace forexAI
             symbol = Symbol();
             currentProcess = Process.GetCurrentProcess();
 
-            console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)} Machine={Environment.MachineName}" +
-                $" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@0x{currentProcess.Modules[0].BaseAddress}",
-                ConsoleColor.Black, ConsoleColor.Yellow);
-
             TruncateLog();
             ShowBanner();
             InitStorages();
@@ -153,12 +150,10 @@ namespace forexAI
                 TestNetworkMSE();
                 TestNetworkHitRatio();
             }
-            else
-                error("+++ ALARM!!!!!!  NO fxNetwork!!!!! ALARM!!!!!! +++");
 
-            string inited = $"Initialized in {((GetTickCount() - startTime) / 1000.0).ToString("0.0")} sec(s) ";
-            log(inited);
-            console(inited, ConsoleColor.Black, ConsoleColor.Yellow);
+            string str = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) ";
+            log(str);
+            console(str, ConsoleColor.Black, ConsoleColor.Yellow);
 
             return 0;
         }
@@ -182,13 +177,14 @@ namespace forexAI
 
         void ShowBanner()
         {
-            log($"# Automated Expert for MT4 using neural network with strategy created by code/data fuzzing. met 8 ");
+            log($"# Automated Expert for MT4 using neural network with strategy created by code/data fuzzing. [met8]");
             log($"# (c) 2018 Deconf (kilitary@gmail.com teleg:@deconf skype:serjnah icq:401112)");
 
             version = Assembly.GetExecutingAssembly().GetName().Version;
             log($"Initializing version {version} ...");
 
-            Console.Title = $"Automated trading expert console. Version {version} was built at AA-BB-2018 XX:YY:ZZ:QQ";
+            Console.Title = $"Automated MT4 trading expert debug console. Version {version}. "
+                + (Configuration.tryExperimentalFeatures ? "[XPRMNTL ENABLED]" : "");
         }
 
         void ListGlobalVariables()
@@ -213,6 +209,10 @@ namespace forexAI
 
         void DumpInfo()
         {
+            console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)} Machine={Environment.MachineName}" +
+                $" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@0x{currentProcess.Modules[0].BaseAddress}",
+                ConsoleColor.Black, ConsoleColor.Yellow);
+
             log($"  AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
             log($"  Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
             log($"  Equity={AccountEquity()} FreeMarginMode={AccountFreeMarginMode()} Expert={WindowExpertName()}");
@@ -748,7 +748,7 @@ namespace forexAI
                             if (Configuration.tryExperimentalFeatures)
                                 console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
                                     ConsoleColor.Black, ConsoleColor.Green);
-                            Audio.FX.Profit();
+                            FX.Profit();
                             profitBuys++;
                         }
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
@@ -774,7 +774,7 @@ namespace forexAI
                             if (Configuration.tryExperimentalFeatures)
                                 console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
                                     ConsoleColor.Black, ConsoleColor.Green);
-                            Audio.FX.Profit();
+                            FX.Profit();
                             profitSells++;
                         }
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
