@@ -69,6 +69,8 @@ namespace forexAI
         float trainMse = 0.0f;
         bool hasNoticedLowBalance = false;
         bool ProfitTrailing = true;
+        bool hasNightReported = false;
+        bool hasMorningReported = false;
         double prevVolume;
 
         //+------------------------------------------------------------------+■
@@ -78,6 +80,22 @@ namespace forexAI
         {
             if (Bars == previousBars)
                 return 0;
+
+            if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
+            {
+                hasNightReported = true;
+                console($"Night....", ConsoleColor.Black, ConsoleColor.Gray);
+            }
+            else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
+                hasNightReported = false;
+
+            if (!hasMorningReported && TimeHour(TimeCurrent()) == 7)
+            {
+                hasMorningReported = true;
+                console($"Morning.", ConsoleColor.Black, ConsoleColor.Cyan);
+            }
+            else if (hasMorningReported && TimeHour(TimeCurrent()) == 8)
+                hasMorningReported = false;
 
             if (previousBankDay != Day())
             {
@@ -325,15 +343,14 @@ namespace forexAI
                 console($"volume disturbance detected diff={Math.Abs(prevVolume - Volume[1])} points. Time={TimeCurrent()}",
                     ConsoleColor.Black, ConsoleColor.Magenta);
 
-                if (IsTrendM15Up(5) && IsTrendH1Up(6))
+                if (IsTrendM15Up(6) && IsTrendH1Up(2))
                     SendSell();
-                if (IsTrendM15Down(5) && IsTrendH1Down(6))
+                if (IsTrendM15Down(6) && IsTrendH1Down(2))
                     SendBuy();
             }
 
-
-            if (IsFlat(10))
-                AddLabel($"[Flat]");
+            //if (IsFlat(10))
+            //    AddLabel($"[Flat]");
 
             prevVolume = Volume[1];
         }
@@ -412,7 +429,7 @@ namespace forexAI
             {
                 trend_y = iCustom(symbol, PERIOD_H1, "Trend Magic", 0, i);
                 debug($"down trend_y={trend_y}");
-                if ((prev_trend_y > 0.0 && trend_y > prev_trend_y) || trend_y == 2147483647)
+                if ((prev_trend_y > 0.0 && trend_y < prev_trend_y) || trend_y == 2147483647)
                     return (false);
                 prev_trend_y = trend_y;
             }
@@ -890,12 +907,9 @@ namespace forexAI
             pos = Open[0];
             on = (pos.ToString());
             ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
-            ObjectSetText(on, text, 10, "lucida console", Color.SkyBlue);
+            ObjectSetText(on, text, 12, "lucida console", Color.SkyBlue);
         }
 
-        //+------------------------------------------------------------------+
-        //| Calculate open positions                                         |
-        //+------------------------------------------------------------------+
         private int CalculateCurrentOrders()
         {
             for (int i = 0; i < OrdersTotal(); i++)
@@ -911,7 +925,6 @@ namespace forexAI
                 }
             }
 
-            //---- return orders volume
             if (openedBuys > 0)
                 return (openedBuys);
 
