@@ -20,10 +20,7 @@ namespace forexAI
 
         public static void TruncateLog(string fileName = null)
         {
-            if (fileName == null)
-                fileName = Configuration.logFileName;
-
-            if (File.Exists(fileName))
+            if (fileName != null && File.Exists(fileName))
                 File.Delete(fileName);
         }
 

@@ -87,8 +87,6 @@ namespace forexAI
 			{
 				hasNightReported = true;
 				console($"Night....", ConsoleColor.Black, ConsoleColor.Gray);
-
-				buysPermitted = sellsPermitted = 3;
 			}
 			else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
 				hasNightReported = false;
@@ -97,6 +95,7 @@ namespace forexAI
 			{
 				hasMorningReported = true;
 				console($"Morning!", ConsoleColor.Black, ConsoleColor.Yellow);
+				buysPermitted = sellsPermitted = 3;
 			}
 			else if (hasMorningReported && TimeHour(TimeCurrent()) == 8)
 				hasMorningReported = false;
@@ -154,7 +153,7 @@ namespace forexAI
 
 			TruncateLog(Configuration.randomLogFileName);
 			TruncateLog(Configuration.yrandomLogFileName);
-			TruncateLog();
+			TruncateLog(Configuration.logFileName);
 
 			#region matters
 			if (Environment.MachineName == "USER-PC" ||
@@ -178,9 +177,9 @@ namespace forexAI
 				TestNetworkHitRatio();
 			}
 
-			string str = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) ";
-			log(str);
-			console(str, ConsoleColor.Black, ConsoleColor.Yellow);
+			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) ";
+			log(initStr);
+			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
 
 			return 0;
 		}
@@ -347,9 +346,9 @@ namespace forexAI
 				console($"volume disturbance detected diff={Math.Abs(prevVolume - Volume[1])} points. Time={TimeCurrent()}",
 					ConsoleColor.Black, ConsoleColor.Magenta);
 
-				if (IsTrendM15Up(3) && IsTrendH1Up(3) && buysPermitted-- > 0 && SellsProfitable())
+				if (IsTrendM15Up(3) && IsTrendH1Up(3) && buysPermitted-- > 0 && BuysProfitable())
 					SendBuy();
-				if (IsTrendM15Down(3) && IsTrendH1Down(3) && sellsPermitted-- > 0 && BuysProfitable())
+				if (IsTrendM15Down(3) && IsTrendH1Down(3) && sellsPermitted-- > 0 && SellsProfitable())
 					SendSell();
 			}
 
