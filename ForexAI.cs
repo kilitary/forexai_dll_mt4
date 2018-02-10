@@ -293,7 +293,7 @@ namespace forexAI
             settings["networks"] = JsonConvert.SerializeObject(networkDirs);
             if (networkDirs.Length == 0)
             {
-                error("WHAT I SHOULD DO?? DO U THINK????");
+                error("WHAT I SHOULD DO?? DO U KNOW????");
                 return;
             }
         }
@@ -318,22 +318,27 @@ namespace forexAI
         // -------^-----------------^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
         void CheckVolumeDisturbance()
         {
-            if (Volume[1] - prevVolume > 800 && TimeHour(TimeCurrent()) > 8 && TimeHour(TimeCurrent()) < 18)
+            if (Volume[1] - prevVolume > 250 && TimeHour(TimeCurrent()) > 8 && TimeHour(TimeCurrent()) < 19)
             {
-                log($"vol {Volume[1]} diff {prevVolume - Volume[1]}");
+                debug($"vol {Volume[1]} diff {prevVolume - Volume[1]}");
                 AddLabel($"VOL DIFF {prevVolume - Volume[1]}");
-                console($"volume disturbance detected diff={Math.Abs(prevVolume - Volume[1])} points. Time={TimeCurrent()}");
+                console($"volume disturbance detected diff={Math.Abs(prevVolume - Volume[1])} points. Time={TimeCurrent()}",
+                    ConsoleColor.Black, ConsoleColor.Magenta);
 
-                if (isTrendM15Up(3))
+                if (IsTrendM15Up(5) && IsTrendH1Up(6))
                     SendSell();
-                if (isTrendM15Down(3))
+                if (IsTrendM15Down(5) && IsTrendH1Down(6))
                     SendBuy();
             }
+
+
+            if (IsFlat(10))
+                AddLabel($"[Flat]");
 
             prevVolume = Volume[1];
         }
 
-        bool isTrendM15Up(int bars)
+        bool IsTrendM15Up(int bars)
         {
             bool up = true;
             double trend_y, prev_trend_y = 0.0;
@@ -344,7 +349,7 @@ namespace forexAI
             for (int i = 0; i < bars; i++)
             {
                 trend_y = iCustom(symbol, PERIOD_M15, "Trend Magic", 0, i);
-                log($"up trend_y={trend_y}");
+                debug($"up trend_y={trend_y}");
                 if ((prev_trend_y > 0.0 && trend_y > prev_trend_y) || trend_y == 2147483647)
                     return (false);
                 prev_trend_y = trend_y;
@@ -354,7 +359,7 @@ namespace forexAI
         }
 
 
-        bool isTrendM15Down(int bars)
+        bool IsTrendM15Down(int bars)
         {
             bool up = true;
             double trend_y, prev_trend_y = 0.0;
@@ -365,13 +370,99 @@ namespace forexAI
             for (int i = 0; i < bars; i++)
             {
                 trend_y = iCustom(symbol, PERIOD_M15, "Trend Magic", 0, i);
-                log($"down trend_y={trend_y}");
+                debug($"down trend_y={trend_y}");
                 if ((prev_trend_y > 0.0 && trend_y < prev_trend_y) || trend_y == 2147483647)
                     return (false);
                 prev_trend_y = trend_y;
             }
 
             return (true);
+        }
+
+        bool IsTrendH1Up(int bars)
+        {
+            bool up = true;
+            double trend_y, prev_trend_y = 0.0;
+
+            if (Bars <= bars)
+                return (false);
+
+            for (int i = 0; i < bars; i++)
+            {
+                trend_y = iCustom(symbol, PERIOD_H1, "Trend Magic", 0, i);
+                debug($"up trend_y={trend_y}");
+                if ((prev_trend_y > 0.0 && trend_y < prev_trend_y) || trend_y == 2147483647)
+                    return (false);
+                prev_trend_y = trend_y;
+            }
+
+            return (true);
+        }
+
+
+        bool IsTrendH1Down(int bars)
+        {
+            bool up = true;
+            double trend_y, prev_trend_y = 0.0;
+
+            if (Bars <= bars)
+                return (false);
+
+            for (int i = 0; i < bars; i++)
+            {
+                trend_y = iCustom(symbol, PERIOD_H1, "Trend Magic", 0, i);
+                debug($"down trend_y={trend_y}");
+                if ((prev_trend_y > 0.0 && trend_y > prev_trend_y) || trend_y == 2147483647)
+                    return (false);
+                prev_trend_y = trend_y;
+            }
+
+            return (true);
+        }
+
+        bool IsFlat(int flat_bars = 5)
+        {
+            double trend_1, trend_2;
+
+            trend_1 = iCustom(symbol, PERIOD_M15, "Trend Magic", 1, 0);
+            trend_2 = iCustom(symbol, PERIOD_M15, "Trend Magic", 0, 0);
+
+            for (int i = 1; i < flat_bars; i++)
+                if (iCustom(symbol, PERIOD_M15, "Trend Magic", 1, i) != trend_1 ||
+                    iCustom(symbol, PERIOD_M15, "Trend Magic", 0, i) != trend_2)
+                    return (false);
+
+            return (true);
+        }
+
+        int CloseBuys()
+        {
+            debug("closing buys");
+            for (int cur_order = OrdersTotal() - 1; cur_order >= 0; cur_order--)
+            {
+                if (!(OrderSelect(cur_order, SELECT_BY_POS, MODE_TRADES)))
+                    break;
+                if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
+                {
+                    OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_BID), 2);
+                }
+            }
+            return (0);
+        }
+
+        int CloseSells()
+        {
+            debug("closing sells");
+            for (int l_pos_216 = OrdersTotal() - 1; l_pos_216 >= 0; l_pos_216--)
+            {
+                if (!(OrderSelect(l_pos_216, SELECT_BY_POS, MODE_TRADES)))
+                    break;
+                if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
+                {
+                    OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_ASK), 2);
+                }
+            }
+            return (0);
         }
 
         ////+------------------------------------------------------------------+
@@ -400,10 +491,10 @@ namespace forexAI
                         spendBuys++;
 
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
-                        log("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
+                        debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         operationsCount++;
                     }
-                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 1.5)
+                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.5)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
@@ -413,7 +504,7 @@ namespace forexAI
                         profitBuys++;
 
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
-                        log("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
+                        debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         operationsCount++;
                     }
                 }
@@ -428,11 +519,11 @@ namespace forexAI
                         spendSells++;
 
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
-                        log("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
+                        debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
                         operationsCount++;
                     }
-                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 1.5)
+                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.5)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
@@ -442,7 +533,7 @@ namespace forexAI
                         profitSells++;
 
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
-                        log("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
+                        debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
                         operationsCount++;
                     }
