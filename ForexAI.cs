@@ -1,4 +1,6 @@
-﻿//╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
+﻿using System.Web.UI;
+using System.Linq;
+//╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
 //╰╰╮╰╭╱▔▔▔▔╲╮╯╭╯ 
 //┏━┓┏┫╭▅╲╱▅╮┣┓╭║║║ 
 //╰┳╯╰┫┗━╭╮━┛┣╯╯╚╬╝ 
@@ -29,12 +31,12 @@ namespace forexAI
 {
     public class ForexAI : MqlApi
     {
+        Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
         Process currentProcess = null;
         Version version = null;
-        NeuralNet fxNetwork = null;
+        NeuralNet forexNetwork = null;
         TrainingData trainData = null;
         TrainingData testData = null;
-        Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
         Storage storage = new Storage();
         Settings settings = new Settings();
         DirectoryInfo[] networkDirs;
@@ -67,6 +69,7 @@ namespace forexAI
         float trainMse = 0.0f;
         bool hasNoticedLowBalance = false;
         bool ProfitTrailing = true;
+        double prevVolume;
 
         //+------------------------------------------------------------------+■
         //| Start function                                                   |
@@ -81,7 +84,7 @@ namespace forexAI
                 previousBankDay = Day();
 
                 log($"-> Day {previousBankDay.ToString("0")} [opsDone={operationsCount} barsPerDay={barsPerDay}] "
-                    + (fxNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
+                    + (forexNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 
                 totalOperationsCount += operationsCount;
                 operationsCount = 0;
@@ -99,6 +102,8 @@ namespace forexAI
                 CheckForOpen();
 
             CheckForClose();
+
+            CheckVolume();
 
             if (Configuration.tryExperimentalFeatures)
                 AlliedInstructions();
@@ -122,11 +127,12 @@ namespace forexAI
 
         public override int init()
         {
-            console($"--------------[ START @ {startTime = GetTickCount()} ]-----------------",
+            console($"--------------[ START tick={startTime = GetTickCount()} ]-----------------",
                 ConsoleColor.Black, ConsoleColor.Cyan);
 
             TruncateLog(Configuration.randomLogFileName);
             TruncateLog(Configuration.yrandomLogFileName);
+            TruncateLog();
 
             #region matters
             if (Environment.MachineName == "USER-PC" ||
@@ -137,7 +143,6 @@ namespace forexAI
             symbol = Symbol();
             currentProcess = Process.GetCurrentProcess();
 
-            TruncateLog();
             ShowBanner();
             InitStorages();
             DumpInfo();
@@ -145,7 +150,7 @@ namespace forexAI
             ScanNetworks();
             LoadRandomNetwork();
 
-            if (fxNetwork != null)
+            if (forexNetwork != null)
             {
                 TestNetworkMSE();
                 TestNetworkHitRatio();
@@ -161,14 +166,14 @@ namespace forexAI
         public override int deinit()
         {
             log("Deinitializing ...");
-            log($"Balance={AccountBalance()} Orders={OrdersTotal()}");
+            log($"Balance={AccountBalance()} Orders={OrdersTotal()} UninitializeReason={UninitializeReason()}");
 
             settings.Set("functions", Data.nnFunctions);
             settings.Set("balance", AccountBalance());
             settings.Save();
             storage.SyncData();
 
-            string mins = (((GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0");
+            string mins = ((((double) GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
             log($"Uptime {mins} mins, has do {totalOperationsCount} operations.");
             console("... shutted down.", ConsoleColor.Black, ConsoleColor.Red);
 
@@ -184,7 +189,7 @@ namespace forexAI
             log($"Initializing version {version} ...");
 
             Console.Title = $"Automated MT4 trading expert debug console. Version {version}. "
-                + (Configuration.tryExperimentalFeatures ? "[XPRMNTL ENABLED]" : "");
+                + (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : "");
         }
 
         void ListGlobalVariables()
@@ -194,7 +199,7 @@ namespace forexAI
             for (int i = 0; i < var_total; i++)
             {
                 name = GlobalVariableName(i);
-                debug($"global var {i} [{name}={GlobalVariableGet(name)}]");
+                debug($"global var #{i} [{name}={GlobalVariableGet(name)}]");
             }
         }
 
@@ -230,44 +235,15 @@ namespace forexAI
 
         void TestNetworkHitRatio()
         {
-            fxNetwork.SetOutputScalingParams(trainData, -1.0f, 1.0f);
-            fxNetwork.SetInputScalingParams(trainData, -1.0f, 1.0f);
-            fxNetwork.SetOutputScalingParams(testData, -1.0f, 1.0f);
-            fxNetwork.SetInputScalingParams(testData, -1.0f, 1.0f);
+            forexNetwork.SetOutputScalingParams(trainData, -1.0f, 1.0f);
+            forexNetwork.SetInputScalingParams(trainData, -1.0f, 1.0f);
+            forexNetwork.SetOutputScalingParams(testData, -1.0f, 1.0f);
+            forexNetwork.SetInputScalingParams(testData, -1.0f, 1.0f);
 
             trainHitRatio = CalculateHitRatio(trainData.Input, trainData.Output);
             testHitRatio = CalculateHitRatio(testData.Input, testData.Output);
 
             log($" * TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
-        }
-
-        double CalculateHitRatio(double[][] inputs, double[][] desiredOutputs)
-        {
-            int hits = 0, curX = 0;
-            foreach (double[] input in inputs)
-            {
-                double[] output = fxNetwork.Run(input);
-                fxNetwork.DescaleOutput(output);
-
-                double output0 = 0;
-                if (output[0] > output[1])
-                    output0 = 1.0;
-                else
-                    output0 = -1.0;
-
-                double output1 = 0;
-                if (output[1] > output[0])
-                    output1 = 1.0;
-                else
-                    output1 = -1.0;
-
-                if (output0 == desiredOutputs[curX][0] && output1 == desiredOutputs[curX][1])
-                    hits++;
-
-                curX++;
-            }
-
-            return ((double) hits / (double) inputs.Length) * 100.0;
         }
 
         private void LoadRandomNetwork()
@@ -283,10 +259,10 @@ namespace forexAI
             networkName = dirName;
             fannNetworkDirName = dirName;
 
-            fxNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net");
+            forexNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net");
 
-            log($"Network: hash={fxNetwork.GetHashCode()} inputs={fxNetwork.InputCount} layers={fxNetwork.LayerCount}" +
-                $" outputs={fxNetwork.OutputCount} neurons={fxNetwork.TotalNeurons} connections={fxNetwork.TotalConnections}");
+            log($"Network: hash={forexNetwork.GetHashCode()} inputs={forexNetwork.InputCount} layers={forexNetwork.LayerCount}" +
+                $" outputs={forexNetwork.OutputCount} neurons={forexNetwork.TotalNeurons} connections={forexNetwork.TotalConnections}");
 
             string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
 
@@ -327,16 +303,45 @@ namespace forexAI
             FileInfo fi1 = new FileInfo(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
             FileInfo fi2 = new FileInfo(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
 
-            log($" * loading {fannNetworkDirName} data: {(((double) fi1.Length + fi2.Length) / 1024.0 / 1024.0).ToString("0.00")}mb ...");
+            log($" * loading {(((double) fi1.Length + fi2.Length) / 1024.0 / 1024.0).ToString("0.00")}mb of {fannNetworkDirName} data...");
             trainData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
             testData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
 
             log($" * trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
-            trainMse = fxNetwork.TestDataParallel(trainData, 4);
-            testMse = fxNetwork.TestDataParallel(testData, 3);
+            trainMse = forexNetwork.TestDataParallel(trainData, 4);
+            testMse = forexNetwork.TestDataParallel(testData, 2);
 
-            log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={fxNetwork.BitFail}");
+            log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={forexNetwork.BitFail}");
+        }
+
+        double CalculateHitRatio(double[][] inputs, double[][] desiredOutputs)
+        {
+            int hits = 0, curX = 0;
+            foreach (double[] input in inputs)
+            {
+                double[] output = forexNetwork.Run(input);
+                forexNetwork.DescaleOutput(output);
+
+                double output0 = 0;
+                if (output[0] > output[1])
+                    output0 = 1.0;
+                else
+                    output0 = -1.0;
+
+                double output1 = 0;
+                if (output[1] > output[0])
+                    output1 = 1.0;
+                else
+                    output1 = -1.0;
+
+                if (output0 == desiredOutputs[curX][0] && output1 == desiredOutputs[curX][1])
+                    hits++;
+
+                curX++;
+            }
+
+            return ((double) hits / (double) inputs.Length) * 100.0;
         }
 
         void DrawStats()
@@ -524,7 +529,7 @@ namespace forexAI
             foreach (var func in Data.nnFunctions)
                 funcsString += $"|{func.Key}";
 
-            if (fxNetwork != null)
+            if (forexNetwork != null)
             {
                 Comment(
               "Profit sells: " +
@@ -559,10 +564,10 @@ namespace forexAI
                inputDimension +
                "\r\n" +
               "TotalNeurons: " +
-               fxNetwork.TotalNeurons +
+               forexNetwork.TotalNeurons +
                "\r\n" +
               "InputCount: " +
-               fxNetwork.InputCount +
+               forexNetwork.InputCount +
                "\r\n" +
               "InputActFunc: " +
                inputLayerActivationFunction +
@@ -571,13 +576,13 @@ namespace forexAI
                middleLayerActivationFunction +
                "\r\n" +
               "ConnRate: " +
-               fxNetwork.ConnectionRate +
+               forexNetwork.ConnectionRate +
                "\r\n" +
               "Connections: " +
-               fxNetwork.TotalConnections +
+               forexNetwork.TotalConnections +
                "\r\n" +
               "LayerCount: " +
-               fxNetwork.LayerCount +
+               forexNetwork.LayerCount +
                "\r\n" +
               "Train/Test MSE: " +
                trainMse +
@@ -585,7 +590,7 @@ namespace forexAI
                testMse +
                "\r\n" +
               "LearningRate: " +
-               fxNetwork.LearningRate +
+               forexNetwork.LearningRate +
                "\r\n" +
               "Test Hit Ratio: " +
                testHitRatio.ToString("0.00") +
@@ -659,7 +664,7 @@ namespace forexAI
             pos = Open[0];
             on = (pos.ToString());
             ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
-            ObjectSetText(on, text, 8, "lucida console", Color.DarkRed);
+            ObjectSetText(on, text, 10, "lucida console", Color.SkyBlue);
         }
 
         //+------------------------------------------------------------------+
@@ -786,6 +791,16 @@ namespace forexAI
                     break;
                 }
             }
+        }
+
+        private void CheckVolume()
+        {
+            if (Volume[1] - prevVolume > 1500)
+            {
+                log($"vol {Volume[1]} diff {prevVolume - Volume[1]}");
+                AddLabel($"VOL DIFF {prevVolume - Volume[1]}");
+            }
+            prevVolume = Volume[1];
         }
 
         //void TrailingPositions()
