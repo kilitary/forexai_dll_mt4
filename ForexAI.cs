@@ -58,8 +58,8 @@ namespace forexAI
 		int previousBankDay = 0;
 		int magickNumber = Configuration.magickNumber;
 		int totalOperationsCount = 0;
-		int buysLeft = 3;
-		int sellsLeft = 3;
+		int buysPermitted = 3;
+		int sellsPermitted = 3;
 		double trainHitRatio = 0.0;
 		double testHitRatio = 0.0;
 		double total = 0.0;
@@ -88,7 +88,7 @@ namespace forexAI
 				hasNightReported = true;
 				console($"Night....", ConsoleColor.Black, ConsoleColor.Gray);
 
-				buysLeft = sellsLeft = 3;
+				buysPermitted = sellsPermitted = 3;
 			}
 			else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
 				hasNightReported = false;
@@ -340,16 +340,16 @@ namespace forexAI
 		// -------^-----------------^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
 		void CheckVolumeDisturbance()
 		{
-			if (Volume[1] - prevVolume > 450 && TimeHour(TimeCurrent()) > 7 && TimeHour(TimeCurrent()) < 17)
+			if (Volume[1] - prevVolume > 450 && TimeHour(TimeCurrent()) > 5 && TimeHour(TimeCurrent()) < 17)
 			{
 				debug($"vol {Volume[1]} diff {prevVolume - Volume[1]}");
 				AddLabel($"VOL DIFF {prevVolume - Volume[1]}");
 				console($"volume disturbance detected diff={Math.Abs(prevVolume - Volume[1])} points. Time={TimeCurrent()}",
 					ConsoleColor.Black, ConsoleColor.Magenta);
 
-				if (IsTrendM15Up(3) && IsTrendH1Up(3) && buysLeft-- > 0)
+				if (IsTrendM15Up(3) && IsTrendH1Up(3) && buysPermitted-- > 0 && SellsProfitable())
 					SendBuy();
-				if (IsTrendM15Down(3) && IsTrendH1Down(3) && sellsLeft-- > 0)
+				if (IsTrendM15Down(3) && IsTrendH1Down(3) && sellsPermitted-- > 0 && BuysProfitable())
 					SendSell();
 			}
 
@@ -357,6 +357,38 @@ namespace forexAI
 			//    AddLabel($"[Flat]");
 
 			prevVolume = Volume[1];
+		}
+
+		bool BuysProfitable()
+		{
+			double buyIncome = 0.0;
+			for (int idx = OrdersTotal() - 1; idx >= 0; idx--)
+			{
+				if (!(OrderSelect(idx, SELECT_BY_POS, MODE_TRADES)))
+					continue;
+				if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
+					buyIncome += OrderProfit();
+			}
+
+			if (buyIncome >= 0.0)
+				return true;
+			return false;
+		}
+
+		bool SellsProfitable()
+		{
+			double sellIncome = 0.0;
+			for (int idx = OrdersTotal() - 1; idx >= 0; idx--)
+			{
+				if (!(OrderSelect(idx, SELECT_BY_POS, MODE_TRADES)))
+					continue;
+				if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
+					sellIncome += OrderProfit();
+			}
+
+			if (sellIncome >= 0.0)
+				return true;
+			return false;
 		}
 
 		bool IsTrendM15Up(int bars)
