@@ -58,6 +58,8 @@ namespace forexAI
 		int previousBankDay = 0;
 		int magickNumber = Configuration.magickNumber;
 		int totalOperationsCount = 0;
+		int buysLeft = 3;
+		int sellsLeft = 3;
 		double trainHitRatio = 0.0;
 		double testHitRatio = 0.0;
 		double total = 0.0;
@@ -85,6 +87,8 @@ namespace forexAI
 			{
 				hasNightReported = true;
 				console($"Night....", ConsoleColor.Black, ConsoleColor.Gray);
+
+				buysLeft = sellsLeft = 3;
 			}
 			else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
 				hasNightReported = false;
@@ -336,18 +340,17 @@ namespace forexAI
 		// -------^-----------------^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
 		void CheckVolumeDisturbance()
 		{
-			if (Volume[1] - prevVolume > 350 && TimeHour(TimeCurrent()) > 8 && TimeHour(TimeCurrent()) < 19)
+			if (Volume[1] - prevVolume > 450 && TimeHour(TimeCurrent()) > 7 && TimeHour(TimeCurrent()) < 17)
 			{
 				debug($"vol {Volume[1]} diff {prevVolume - Volume[1]}");
 				AddLabel($"VOL DIFF {prevVolume - Volume[1]}");
 				console($"volume disturbance detected diff={Math.Abs(prevVolume - Volume[1])} points. Time={TimeCurrent()}",
 					ConsoleColor.Black, ConsoleColor.Magenta);
 
-				if (IsTrendM15Up(3) && IsTrendH1Up(3))
+				if (IsTrendM15Up(3) && IsTrendH1Up(3) && buysLeft-- > 0)
 					SendBuy();
-				if (IsTrendM15Down(3) && IsTrendH1Down(3))
+				if (IsTrendM15Down(3) && IsTrendH1Down(3) && sellsLeft-- > 0)
 					SendSell();
-
 			}
 
 			//if (IsFlat(10))
@@ -675,10 +678,8 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 20);
 			}
 
-			total = GetActiveSpend();
-			ObjectSetText(labelID, "ActiveSpend: " + DoubleToStr(total, 2), 8, "lucida console", Color.Yellow);
+			ObjectSetText(labelID, "ActiveSpend: " + DoubleToStr(GetActiveSpend(), 2), 8, "lucida console", Color.Red);
 
-			total = GetActiveIncome();
 			labelID = gs_80 + "7";
 			if (ObjectFind(labelID) == -1)
 			{
@@ -688,10 +689,10 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 30);
 			}
 			ObjectSetText(labelID,
-						  "ActiveIncome: " + DoubleToStr(total, 2),
+						  "ActiveIncome: " + DoubleToStr(GetActiveIncome(), 2),
 						  8,
 						  "lucida console",
-						  Color.Yellow);
+						  Color.LightGreen);
 
 			spends = GetActiveSpend();
 			profit = GetActiveProfit();
@@ -862,8 +863,8 @@ namespace forexAI
 
 			double spends = GetActiveSpend();
 			double profit = GetActiveProfit();
-			if (profit >= spends)
-				total = profit + (spends);
+			if (profit + spends >= 0.0)
+				total = profit + spends;
 			else
 				total = 0.0;
 
