@@ -18,12 +18,12 @@ namespace forexAI
 {
     class FunctionParameters
     {
-        public int ParamIndex;
-        public int NumData;
+        public int paramIndex;
+        public int numData;
         public int OutBegIdx = 0;
         public int Offset;
         public StringBuilder parametersMap;
-        public object[] Arguments;
+        public object[] arguments;
         public int OutIndex;
         public int OutNbElement;
         public Prices prices;
@@ -31,60 +31,61 @@ namespace forexAI
         public FunctionParameters(MethodInfo methodInfo, int numdata, int offset)
         {
             
-            NumData = numdata;
+            numData = numdata;
             Offset = offset;
             parametersMap = new StringBuilder();
 
             // DumpParams(methodInfo);
-            Arguments = new object[methodInfo.GetParameters().Length];
+            arguments = new object[methodInfo.GetParameters().Length];
 
             // debug($"function method {methodInfo.Name} offset {offset} numdata {NumData} randomSeed {randomSeed}");
+            // TODO: использовать все opt* парамсы
             foreach (ParameterInfo param in methodInfo.GetParameters())
             {
                 string paramComment = string.Empty;
                 switch (param.Name)
                 {
                     case "optInVFactor":
-                        Arguments[ParamIndex] = 0;
+                        arguments[paramIndex] = 0;
                         break;
                     case "outMACDSignal":
-                        Arguments[ParamIndex] = 0;
+                        arguments[paramIndex] = 0;
                         break;
                     case "outMACDHist":
-                        Arguments[ParamIndex] = 0;
+                        arguments[paramIndex] = 0;
                         break;
 
                     case "outMin":
-                        Arguments[ParamIndex] = 0;
+                        arguments[paramIndex] = 0;
                         break;
                     case "optInNbDevUp":
-                        Arguments[ParamIndex] = 0.0;
+                        arguments[paramIndex] = 0.0;
                         break;
                     case "outMACD":
-                        Arguments[ParamIndex] = 0.0;
+                        arguments[paramIndex] = 0.0;
                         break;
                     case "outLeadSine":
-                        Arguments[ParamIndex] = 0.0;
+                        arguments[paramIndex] = 0.0;
                         break;
                     case "outSine":
-                        Arguments[ParamIndex] = 0.0;
+                        arguments[paramIndex] = 0.0;
                         break;
                     case "optInMinPeriod":
                     case "optInMaxPeriod":
                     case "optInSignalPeriod":
-                        Arguments[ParamIndex] = -999;
+                        arguments[paramIndex] = -999;
                         paramComment = $"MaTypeGen";
 
                         // debug($"{param.Name} optInSignalPeriod=" + arguments[paramIndex]);
                         break;
                     case "optInMAType":
-                        Arguments[ParamIndex] = -999;
+                        arguments[paramIndex] = -999;
                         paramComment = $"MaTypeGen";
 
                         // debug($"{param.Name} optInMAType=" + arguments[paramIndex]);
                         break;
                     case "optInNbDev":
-                        Arguments[ParamIndex] = 0.0;
+                        arguments[paramIndex] = 0.0;
                         break;
                     case "inReal0":
                     case "inReal1":
@@ -93,32 +94,32 @@ namespace forexAI
                         switch (index)
                         {
                             case 0:
-                                Arguments[ParamIndex] = prices.GetOpen(NumData);
-                                paramComment = $"%Open% {NumData}";
+                                arguments[paramIndex] = prices.GetOpen(numData);
+                                paramComment = $"%Open% {numData}";
                                 break;
                             case 1:
-                                Arguments[ParamIndex] = prices.GetClose(numdata);
-                                paramComment = $"%Close% {NumData}";
+                                arguments[paramIndex] = prices.GetClose(numdata);
+                                paramComment = $"%Close% {numData}";
                                 break;
                             case 2:
-                                Arguments[ParamIndex] = prices.GetHigh(NumData);
-                                paramComment = $"%High% {NumData}";
+                                arguments[paramIndex] = prices.GetHigh(numData);
+                                paramComment = $"%High% {numData}";
                                 break;
                             case 3:
-                                Arguments[ParamIndex] = prices.GetLow(NumData);
-                                paramComment = $"%Low% {NumData}";
+                                arguments[paramIndex] = prices.GetLow(numData);
+                                paramComment = $"%Low% {numData}";
                                 break;
                         }
 
                         // debug($"real {param.Name}[0]: " + ((double[])Arguments[ParamIndex])[0]);
                         break;
                     case "optInMaximum":
-                        Arguments[ParamIndex] = 0.0;
+                        arguments[paramIndex] = 0.0;
                         break;
                     case "optInSlowD_MAType":
                     case "optInFastD_MAType":
                     case "optInSlowK_MAType":
-                        Arguments[ParamIndex] = -999;
+                        arguments[paramIndex] = -999;
                         paramComment = $"MaTypeGen";
 
                         // debug($"{param.Name} optMAtype=" + arguments[paramIndex]);
@@ -130,93 +131,93 @@ namespace forexAI
                     case "optInAccelerationLong":
                     case "optInAccelerationInitLong":
                     case "optInAcceleration":
-                        Arguments[ParamIndex] = 0.0;
+                        arguments[paramIndex] = 0.0;
                         break;
 
                     case "optInOffsetOnReverse":
-                        Arguments[ParamIndex] = 0;
+                        arguments[paramIndex] = 0;
                         break;
                     case "optInSlowK_Period":
                     case "optInFastK_Period":
                     case "optInSlowD_Period":
                     case "optInFastD_Period":
-                        Arguments[ParamIndex] = -999;
+                        arguments[paramIndex] = -999;
                         paramComment = $"MaTypeGen";
                         break;
                     case "optInSlowPeriod":
-                        Arguments[ParamIndex] = -999;
+                        arguments[paramIndex] = -999;
                         break;
                     case "optInFastPeriod":
-                        Arguments[ParamIndex] = -999;
+                        arguments[paramIndex] = -999;
                         break;
 
                     case "optInTimePeriod":
-                        Arguments[ParamIndex] = 2;
+                        arguments[paramIndex] = 2;
                         break;
 
                     case "optInTimePeriod1":
                     case "optInTimePeriod3":
                     case "optInTimePeriod2":
-                        Arguments[ParamIndex] = -999;
+                        arguments[paramIndex] = -999;
                         break;
                     case "optInPenetration":
-                        Arguments[ParamIndex] = 0;
+                        arguments[paramIndex] = 0;
                         break;
                     case "optInStartValue":
-                        Arguments[ParamIndex] = 0;
+                        arguments[paramIndex] = 0;
                         break;
                     case "startIdx":
-                        Arguments[ParamIndex] = 0;
+                        arguments[paramIndex] = 0;
                         break;
                     case "endIdx":
-                        Arguments[ParamIndex] = NumData - 1;
+                        arguments[paramIndex] = numData - 1;
                         break;
                     case "inOpen":
-                        Arguments[ParamIndex] = prices.GetOpen(NumData);
-                        paramComment = $"Open {NumData}";
+                        arguments[paramIndex] = prices.GetOpen(numData);
+                        paramComment = $"Open {numData}";
                         break;
                     case "inHigh":
-                        Arguments[ParamIndex] = prices.GetHigh(NumData);
-                        paramComment = $"High {NumData}";
+                        arguments[paramIndex] = prices.GetHigh(numData);
+                        paramComment = $"High {numData}";
                         break;
                     case "inLow":
-                        Arguments[ParamIndex] = prices.GetLow(NumData);
-                        paramComment = $"Low {NumData}";
+                        arguments[paramIndex] = prices.GetLow(numData);
+                        paramComment = $"Low {numData}";
                         break;
                     case "inClose":
-                        Arguments[ParamIndex] = prices.GetClose(NumData);
-                        paramComment = $"Close {NumData}";
+                        arguments[paramIndex] = prices.GetClose(numData);
+                        paramComment = $"Close {numData}";
                         break;
                     case "inVolume":
-                        Arguments[ParamIndex] = prices.GetVolume(NumData);
-                        paramComment = $"Volume {NumData}";
+                        arguments[paramIndex] = prices.GetVolume(numData);
+                        paramComment = $"Volume {numData}";
                         break;
                     case "outBegIdx":
-                        Arguments[ParamIndex] = this.OutBegIdx;
+                        arguments[paramIndex] = this.OutBegIdx;
                         break;
                     case "outNBElement":
-                        Arguments[ParamIndex] = OutNbElement;
-                        OutNbElement = ParamIndex;
+                        arguments[paramIndex] = OutNbElement;
+                        OutNbElement = paramIndex;
                         break;
                     case "outInteger":
-                        Arguments[ParamIndex] = new int[NumData];
-                        OutIndex = ParamIndex;
+                        arguments[paramIndex] = new int[numData];
+                        OutIndex = paramIndex;
                         break;
                     case "outReal":
-                        Arguments[ParamIndex] = new double[NumData];
-                        OutIndex = ParamIndex;
+                        arguments[paramIndex] = new double[numData];
+                        OutIndex = paramIndex;
                         break;
                     case "outAroonUp":
-                        Arguments[ParamIndex] = new double[1000];
+                        arguments[paramIndex] = new double[1000];
                         break;
                     case "outAroonDown":
-                        Arguments[ParamIndex] = new double[1000];
+                        arguments[paramIndex] = new double[1000];
                         break;
                     case "outSlowD":
                     case "outSlowK":
                     case "outFastD":
                     case "outFastK":
-                        Arguments[ParamIndex] = new double[1000];
+                        arguments[paramIndex] = new double[1000];
                         break;
 
                     default:
@@ -224,8 +225,8 @@ namespace forexAI
                         break;
                 }
 
-                parametersMap.Append($"  arg{ParamIndex,2:0} {param.Name}: {Arguments[ParamIndex]} {paramComment}\r\n");
-                ParamIndex++;
+                parametersMap.Append($"  arg{paramIndex,2:0} {param.Name}: {arguments[paramIndex]} {paramComment}\r\n");
+                paramIndex++;
             }
 
             //DumpArguments();
