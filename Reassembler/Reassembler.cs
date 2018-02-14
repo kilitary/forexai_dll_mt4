@@ -49,10 +49,22 @@ namespace forexAI
 
                 log($" -> #{fidx++} {functionName}()");
 
+                string stringOut = string.Empty;
+
                 foreach (var param in conf.parameters.parametersMap)
                 {
-                    log($"     {param}");
+                    string[] values = new string[4];
+
+                    values = param.Split('|');
+                    int id;
+                    int.TryParse(values[0], out id);
+                    string paramName = values[1];
+                    double paramValue;
+                    double.TryParse(values[2], out paramValue);
+                    string comment = values[3];
+                    stringOut += $" [{paramName}={paramValue} {comment}]";
                 }
+                log(stringOut);
             }
 
             log($"=> Reassembling done.");

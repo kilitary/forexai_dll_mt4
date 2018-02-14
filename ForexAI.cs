@@ -23,9 +23,6 @@ using Color = System.Drawing.Color;
 using static forexAI.Experimental;
 using static System.Console;
 using static System.ConsoleColor;
-using LeMP;
-using LeMP.CSharp6;
-using LeMP.Prelude;
 
 namespace forexAI
 {
@@ -401,7 +398,7 @@ namespace forexAI
 			for (int i = 0; i < bars; i++)
 			{
 				trend_y = iCustom(symbol, PERIOD_M15, "Trend Magic", 0, i);
-				debug($"up trend_y={trend_y}");
+				//debug($"up trend_y={trend_y}");
 				if ((prev_trend_y > 0.0 && trend_y > prev_trend_y) || trend_y == 2147483647)
 					return (false);
 				prev_trend_y = trend_y;
@@ -422,7 +419,7 @@ namespace forexAI
 			for (int i = 0; i < bars; i++)
 			{
 				trend_y = iCustom(symbol, PERIOD_M15, "Trend Magic", 0, i);
-				debug($"down trend_y={trend_y}");
+				//debug($"down trend_y={trend_y}");
 				if ((prev_trend_y > 0.0 && trend_y < prev_trend_y) || trend_y == 2147483647)
 					return (false);
 				prev_trend_y = trend_y;
@@ -442,7 +439,7 @@ namespace forexAI
 			for (int i = 0; i < bars; i++)
 			{
 				trend_y = iCustom(symbol, PERIOD_H1, "Trend Magic", 0, i);
-				debug($"up trend_y={trend_y}");
+				//debug($"up trend_y={trend_y}");
 				if ((prev_trend_y > 0.0 && trend_y > prev_trend_y) || trend_y == 2147483647)
 					return (false);
 				prev_trend_y = trend_y;
@@ -463,7 +460,7 @@ namespace forexAI
 			for (int i = 0; i < bars; i++)
 			{
 				trend_y = iCustom(symbol, PERIOD_H1, "Trend Magic", 0, i);
-				debug($"down trend_y={trend_y}");
+				//debug($"down trend_y={trend_y}");
 				if ((prev_trend_y > 0.0 && trend_y < prev_trend_y) || trend_y == 2147483647)
 					return (false);
 				prev_trend_y = trend_y;
