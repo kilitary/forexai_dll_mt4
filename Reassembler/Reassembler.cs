@@ -26,6 +26,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using forexAI.Api;
 
 namespace forexAI
 {

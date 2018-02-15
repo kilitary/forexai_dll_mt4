@@ -14,7 +14,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.1.782.46</AssemblyVersion>
+    <AssemblyVersion>0.1.786.46</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -76,8 +76,8 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.11.0.1-beta3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="nquotes">
-      <HintPath>..\..\..\Libraries\nquotes\nquotes.dll</HintPath>
+    <Reference Include="nquotes, Version=1.14.0.0, Culture=neutral, PublicKeyToken=10a0b99e254e1a7d, processorArchitecture=MSIL">
+      <HintPath>packages\nquotes.1.14.0\lib\net45\nquotes.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="RestSharp, Version=106.3.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
@@ -126,6 +126,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\Mql.cs" />
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Data\Configuration.cs" />
     <Compile Include="Pool\NetworkPool.cs" />
