@@ -26,7 +26,7 @@ namespace forexAI
         public object[] arguments;
         public int OutIndex;
         public int OutNbElement;
-        public Prices prices;
+        public LivePrices prices;
 
         public FunctionParameters(MethodInfo methodInfo, int numdata, int offset)
         {
