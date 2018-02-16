@@ -75,7 +75,7 @@ namespace forexAI
             Core.SetCompatibility(Core.Compatibility.Metastock);
             // Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 33);
 
-            entireSet = new double[] { };
+            entireSet = null;
             failedReassemble = false;
             sourceInputDimension = inputDimension;
 
@@ -95,15 +95,12 @@ namespace forexAI
                 functionName = item.Key;
                 FunctionsConfiguration conf = item.Value;
 
-                //  log($" ==> #{fidx++} {functionName}: {conf.parameters.parametersMap.Count} args");
-
                 string stringOut = string.Empty;
                 arguments = new object[conf.parameters.parametersMap.Count];
                 int paramIndex = 0;
                 string[] values = new string[4];
                 int numData = inputDimension;
                 int id;
-                //  log($"    [params={SerializeObject(conf.parameters.parametersMap, Formatting.Indented)}]");
 
                 foreach (var param in conf.parameters.parametersMap)
                 {
@@ -113,15 +110,8 @@ namespace forexAI
                     int.TryParse(values[0], out id);
                     double.TryParse(values[2], out paramValue);
 
-                    if (paramName == "endIdx" && id == 1)
-                    {
-                        //inputDimension = numData = (int) paramValue + 1;
-                        //    log($"=> calculated {(int) paramValue + 1} input dimension");
-                    }
-
                     comment = values[3];
                     paramComment = string.Empty;
-                    //  log($"processing [{paramName}] paramIndex {paramIndex} argLen {arguments.Length}");
                     switch (paramName)
                     {
                         case "optInVFactor":
@@ -290,6 +280,7 @@ namespace forexAI
 
                 if (!reassembleComplete)
                     log($"=> {functionName} arguments({arguments.Length})={SerializeObject(arguments)}");
+
                 reassembledFunctions += $"{functionName}|";
                 arguments[OutIndex] = new double[inputDimension];
 
@@ -310,16 +301,16 @@ namespace forexAI
                     idx++;
                 }
 
-                MethodInfo mi = typeof(Core).GetMethod(functionName, functionTypes);
+                MethodInfo AIPartFunction = typeof(Core).GetMethod(functionName, functionTypes);
                 //  OutNbElement = (int) arguments[OutNbElement];
-                if (mi == null)
+                if (AIPartFunction == null)
                 {
                     error($"fail to load method [{functionName}] from TICTAC");
                     failedReassemble = true;
                 }
                 else
                 {
-                    ret = (Core.RetCode) mi.Invoke(null, arguments);
+                    ret = (Core.RetCode) AIPartFunction.Invoke(null, arguments);
                     int idxS = 0, toKill = 0;
 
                     if (typeOut == 0)
@@ -367,6 +358,7 @@ namespace forexAI
                     if (toKill > 0)
                     {
                         Array.Resize<double>(ref resultDataDouble, resultDataDouble.Length - toKill);
+
                         if (!reassembleComplete)
                             warning($"# {functionName}: modified! {toKill} (OutNbElement={OutNbElement})");
                     }
@@ -376,11 +368,12 @@ namespace forexAI
                         if (startIdx != 0)
                             warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
 
-                    //  log($"    => mi={mi.Name} ret={ret} resultDataDouble={resultDataDouble.Length} resultDataInt={resultDataInt.Length}");
                     if (!reassembleComplete)
                         log($"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
-                    int prevLen = entireSet.Length;
-                    int newLen = entireSet.Length + resultDataDouble.Length - startIdx;
+
+                    int prevLen = entireSet == null ? 0 : entireSet.Length;
+                    int newLen = (entireSet == null ? 0 : entireSet.Length) + resultDataDouble.Length - startIdx;
+
                     Array.Resize<double>(ref entireSet, newLen);
                     Array.Copy(resultDataDouble, startIdx, entireSet, prevLen > 0 ? prevLen - 1 : prevLen, resultDataDouble.Length - startIdx);
                 }
@@ -392,17 +385,19 @@ namespace forexAI
                 log($"=> Reassembling [ SUCCESS ] {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}" +
                     $" sourceInputDimension={sourceInputDimension}");
             }
+
             if (failedReassemble || forexNetwork.InputCount != entireSet.Length)
             {
                 error($"=> reassembler FAILED to reassemble input sequence: diff in input count of network is " +
                     $"{Math.Abs(entireSet.Length - forexNetwork.InputCount)}");
                 return new double[] { };
             }
+            else
+                reassembleComplete = true;
 
             double[] networkOutput = forexNetwork.Run(entireSet);
-            
 
-            reassembleComplete = true;
+            debug($"networkOutput = {networkOutput[0]} : {networkOutput[1]}");
 
             return networkOutput;
         }
