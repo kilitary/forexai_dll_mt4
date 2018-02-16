@@ -65,6 +65,7 @@ namespace forexAI
         double profit = 0.0;
         double TrailingStop = 0.0;
         double TrailingStep = 0.0;
+        double prevVolume;
         double[] networkOutput;
         float testMse = 0.0f;
         float trainMse = 0.0f;
@@ -74,7 +75,6 @@ namespace forexAI
         bool hasNightReported = false;
         bool hasMorningReported = false;
         bool applicationBooted = false;
-        double prevVolume;
 
         //+------------------------------------------------------------------+■
         //| Start function                                                   |
@@ -82,8 +82,9 @@ namespace forexAI
         public override int start()
         {
             if (applicationBooted)
-                networkOutput = Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"), inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompleteOverride,
-                   TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
+                networkOutput = Reassembler.RestoreSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
+                    inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompleteOverride,
+                    TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
 
             DrawStats();
 
@@ -100,7 +101,7 @@ namespace forexAI
             {
                 hasNightReported = true;
                 console($"Night....", ConsoleColor.Black, ConsoleColor.Gray);
-                AddLabel($"[NIGHT]", Color.White);
+                AddLabel($"[kNIGHT]", Color.White);
             }
             else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
                 hasNightReported = false;
@@ -133,20 +134,18 @@ namespace forexAI
             File.AppendAllText(Configuration.randomLogFileName, random.Next(99).ToString("00") + " ");
             File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
 
-            DrawStats();
-
             //if (OrdersTotal() <= 0)
             //  CheckForOpen();
             //CheckVolumeDisturbance();
 
-            if (networkOutput[1] > 0.9 && CountBuys() == 0)
-                SendBuy(networkOutput[1].ToString("0.000"));
-            if (networkOutput[0] > 0.9 && CountSells() == 0)
-                SendSell(networkOutput[0].ToString("0.000"));
+            if (BuyProbability() > 0.9 && CountBuys() == 0)
+                SendBuy(BuyProbability().ToString("0.000"));
+            if (SellProbability() > 0.9 && CountSells() == 0)
+                SendSell(SellProbability().ToString("0.000"));
 
-            if (networkOutput[1] < 0.1 && CountBuys() > 0)
+            if (BuyProbability() < 0.1 && CountBuys() > 0)
                 CloseBuys();
-            if (networkOutput[0] < 0.1 && CountSells() > 0)
+            if (SellProbability() < 0.1 && CountSells() > 0)
                 CloseSells();
 
             if (Configuration.tryExperimentalFeatures)
@@ -172,6 +171,7 @@ namespace forexAI
             currentDay = (int) System.DateTime.Now.DayOfWeek;
             applicationBooted = false;
             reassembleCompleteOverride = false;
+
             console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
                 ConsoleColor.Black, ConsoleColor.Cyan);
 
@@ -182,7 +182,7 @@ namespace forexAI
             #region matters
             if ((Environment.MachineName == "USER-PC" ||
                 (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused())) &&
-                (currentDay == 6 || currentDay == 0))
+                (currentDay == 0))
                 Configuration.tryExperimentalFeatures = true;
             #endregion
 
@@ -334,7 +334,7 @@ namespace forexAI
             inputLayerActivationFunction = matches.Groups[1].Value;
             middleLayerActivationFunction = matches.Groups[2].Value;
 
-            Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
+            Reassembler.RestoreSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
                 Open, Close, High, Low, Volume, Bars, forexNetwork, false,
                 TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
         }
@@ -954,12 +954,12 @@ namespace forexAI
 
         double BuyProbability()
         {
-            return networkOutput[1];
+            return networkOutput[0];
         }
 
         double SellProbability()
         {
-            return networkOutput[0];
+            return networkOutput[1];
         }
 
         double GetActiveIncome()

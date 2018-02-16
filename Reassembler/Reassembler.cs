@@ -33,38 +33,31 @@ using static Newtonsoft.Json.JsonConvert;
 
 namespace forexAI
 {
-    public class ParametersInput
-    {
-        string functionName;
-        object[] arguments;
-
-    }
     public static class Reassembler
     {
-        static List<ParametersInput> functionsList;
         static LivePrices prices = new LivePrices();
         static Dictionary<string, FunctionsConfiguration> functionConfigurationInput;
+        static Core.RetCode ret;
         static int OutBegIdx;
         static int OutNbElement = -1;
-        private static int pOutNbElement;
+        static int pOutNbElement;
         static int OutIndex = -1;
-        private static int typeOut;
+        static int typeOut;
+        static int nOutBegIdx;
+        static int sourceInputDimension = 0;
+        static int startIdx;
+        static int[] resultDataInt = null;
         static string reassembledFunctions = string.Empty;
         static string paramName = String.Empty;
         static string comment = string.Empty, paramComment = String.Empty;
-        static double paramValue = 0.0;
         static string functionName = string.Empty;
-        static int nOutBegIdx;
+        static double paramValue = 0.0;
         static double[] resultDataDouble = null;
-        static int[] resultDataInt = null;
         static double[] entireSet = null;
-        static Core.RetCode ret;
-        private static bool failedReassemble;
-        static int sourceInputDimension = 0;
-        private static int startIdx;
+        static bool failedReassemble;
         static bool reassembleCompleted = false;
 
-        public static double[] Build(string functionConfigurationString, int inputDimension,
+        public static double[] RestoreSequence(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
             IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork,
             bool reassembleCompleteOverride, string timeCurrent)
@@ -157,8 +150,7 @@ namespace forexAI
                         case "inReal0":
                         case "inReal1":
                         case "inReal":
-                            var index = YRandom.Next(3);
-                            switch (index)
+                            switch (paramValue)
                             {
                                 case 0:
                                     arguments[paramIndex] = prices.GetOpen(numData, Bars, Open);
@@ -315,7 +307,7 @@ namespace forexAI
                 else
                 {
                     ret = (Core.RetCode) AIPartFunction.Invoke(null, arguments);
-                    int idxS = 0, toKill = 0;
+                    int idxS = 0;
 
                     if (typeOut == 0)
                     {
@@ -330,14 +322,6 @@ namespace forexAI
                             if (resultDataDouble[i] == 0.0 && i == 0)
                                 if (!reassembleCompleted)
                                     warning($"fucking function {functionName} starts with zero");
-
-                            if (resultDataDouble[i] != 0.0)
-                            {
-                                toKill = 0;
-                                continue;
-                            }
-                            else
-                                toKill++;
                         }
                     }
                     else
@@ -348,29 +332,12 @@ namespace forexAI
                             if (resultDataDouble[i] == 0.0 && i == 0)
                                 if (!reassembleCompleted)
                                     warning($"fucking function {functionName} starts with zero");
-
-                            if (resultDataDouble[i] != 0.0)
-                            {
-                                toKill = 0;
-                                continue;
-                            }
-                            else
-                                toKill++;
                         }
                     }
 
-                    //if (toKill > 0)
-                    //{
-                    //    Array.Resize<double>(ref resultDataDouble, resultDataDouble.Length - toKill);
-
-                    //    if (!reassembleComplete)
-                    //        warning($"# {functionName}: modified! {toKill} (OutNbElement={OutNbElement})");
-                    //}
-
                     startIdx = (int) arguments[nOutBegIdx];
-                    if (!reassembleCompleted)
-                        if (startIdx != 0)
-                            warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
+                    if (!reassembleCompleted && startIdx != 0)
+                        warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
 
                     if (!reassembleCompleted)
                         log($"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
@@ -387,8 +354,7 @@ namespace forexAI
             if (!reassembleCompleted)
             {
                 log($"=> ret={ret} entireset={SerializeObject(entireSet)}");
-                log($"=> Reassembling [ SUCCESS ] {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}" +
-                    $" sourceInputDimension={sourceInputDimension}");
+                log($"=> Reassembling [ SUCCESS ] {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}");
             }
 
             if (forexNetwork.InputCount != entireSet.Length)
@@ -400,11 +366,9 @@ namespace forexAI
                 return new double[] { 0.0, 0.0 };
             }
 
-            //forexNetwork.ClearScalingParams();
-
             double[] networkOutput = forexNetwork.Run(entireSet);
 
-            forexNetwork.DescaleOutput(networkOutput);
+            //forexNetwork.DescaleOutput(networkOutput);
 
             debug($"{timeCurrent} networkOutput = {networkOutput[0].ToString("0.0000")} : {networkOutput[1].ToString("0.0000")}");
 
