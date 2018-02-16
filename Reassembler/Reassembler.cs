@@ -70,7 +70,7 @@ namespace forexAI
             log($"=> Reassembling input sequence ...");
 
             Core.SetCompatibility(Core.Compatibility.Metastock);
-            //Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 3);
+            // Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 33);
 
             entireSet = new double[] { };
             failedReassemble = false;
@@ -250,8 +250,7 @@ namespace forexAI
                             break;
                         case "outNBElement":
                             arguments[paramIndex] = OutNbElement;
-                            OutNbElement = paramIndex;
-                            pOutNbElement = paramIndex;
+                            OutNbElement = pOutNbElement = paramIndex;
                             break;
                         case "outInteger":
                             arguments[paramIndex] = new int[numData];
@@ -307,7 +306,7 @@ namespace forexAI
                 }
 
                 MethodInfo mi = typeof(Core).GetMethod(functionName, functionTypes);
-                OutNbElement = (int) arguments[pOutNbElement];
+              //  OutNbElement = (int) arguments[OutNbElement];
                 if (mi == null)
                 {
                     error($"fail to load method [{functionName}] from TICTAC");
@@ -316,20 +315,29 @@ namespace forexAI
                 else
                 {
                     ret = (Core.RetCode) mi.Invoke(null, arguments);
-
+                    int idxS = 0, toKill = 0;
 
                     if (typeOut == 0)
                     {
                         resultDataInt = (int[]) arguments[OutIndex];
-                        int idxS = 0;
                         Array.Resize<double>(ref resultDataDouble, OutNbElement);
 
                         for (int i = 0; i < OutNbElement; i++)
                             resultDataDouble[i] = resultDataInt[i];
+
+                        for (int i = 0; i < OutNbElement; i++)
+                        {
+                            if (resultDataDouble[i] != 0.0)
+                            {
+                                toKill = 0;
+                                continue;
+                            }
+                            else
+                                toKill++;
+                        }
                     }
                     else
                     {
-                        int idxS = 0, toKill = 0;
                         resultDataDouble = (double[]) arguments[OutIndex];
                         for (int i = 0; i < OutNbElement; i++)
                         {
@@ -341,23 +349,24 @@ namespace forexAI
                             else
                                 toKill++;
                         }
-                        if (toKill > 0)
-                        {
-                            Array.Resize<double>(ref resultDataDouble, resultDataDouble.Length - toKill);
-                            warning($"# modified! {toKill} (OutNbElement={OutNbElement})");
-                        }
-
                     }
+
+                    if (toKill > 0)
+                    {
+                        Array.Resize<double>(ref resultDataDouble, resultDataDouble.Length - toKill);
+                        warning($"# {functionName}: modified! {toKill} (OutNbElement={OutNbElement})");
+                    }
+
                     startIdx = (int) arguments[nOutBegIdx];
                     if (startIdx != 0)
-                        warning($"# startIdx = {startIdx} (OutNbElement={OutNbElement})");
+                        warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
 
                     //  log($"    => mi={mi.Name} ret={ret} resultDataDouble={resultDataDouble.Length} resultDataInt={resultDataInt.Length}");
                     log($"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
                     int prevLen = entireSet.Length;
                     int newLen = entireSet.Length + resultDataDouble.Length - startIdx;
                     Array.Resize<double>(ref entireSet, newLen);
-                    Array.Copy(resultDataDouble, startIdx, entireSet, prevLen > 0 ? prevLen - 1 : prevLen, resultDataDouble.Length - startIdx * 2);
+                    Array.Copy(resultDataDouble, startIdx, entireSet, prevLen > 0 ? prevLen - 1 : prevLen, resultDataDouble.Length - startIdx);
                 }
             }
 
