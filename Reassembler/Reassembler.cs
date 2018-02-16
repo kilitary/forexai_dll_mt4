@@ -56,13 +56,19 @@ namespace forexAI
         static int nOutBegIdx;
         static double[] resultDataDouble = { };
         static int[] resultDataInt = { };
-        static double[] entireSet = new double[1000];
+        static double[] entireSet = { };
+        static Core.RetCode ret;
+        private static bool failedReassemble;
+        static int sourceInputDimension = 0;
 
         public static double[] Build(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
             IMqlArray<double> Low, IMqlArray<double> Volume, int Bars)
         {
             log($"=> Reassembling input sequence ...");
+
+            failedReassemble = false;
+            sourceInputDimension = inputDimension;
 
             var jsonSettings = new JsonSerializerSettings();
             jsonSettings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
@@ -79,7 +85,7 @@ namespace forexAI
                 functionName = item.Key;
                 FunctionsConfiguration conf = item.Value;
 
-                log($" ==> #{fidx++} {functionName}: {conf.parameters.parametersMap.Count} args");
+              //  log($" ==> #{fidx++} {functionName}: {conf.parameters.parametersMap.Count} args");
 
                 string stringOut = string.Empty;
                 arguments = new object[conf.parameters.parametersMap.Count];
@@ -87,15 +93,22 @@ namespace forexAI
                 string[] values = new string[4];
                 int numData = inputDimension;
                 int id;
-
-                // log($"    [params={SerializeObject(conf.parameters.parametersMap, Formatting.Indented)}]");
+                //  log($"    [params={SerializeObject(conf.parameters.parametersMap, Formatting.Indented)}]");
 
                 foreach (var param in conf.parameters.parametersMap)
                 {
                     values = param.Split('|');
                     paramName = values[1];
+
                     int.TryParse(values[0], out id);
                     double.TryParse(values[2], out paramValue);
+
+                    if (paramName == "endIdx" && id == 1)
+                    {
+                        //inputDimension = numData = (int) paramValue + 1;
+                    //    log($"=> calculated {(int) paramValue + 1} input dimension");
+                    }
+
                     comment = values[3];
                     paramComment = string.Empty;
                     //  log($"processing [{paramName}] paramIndex {paramIndex} argLen {arguments.Length}");
@@ -238,13 +251,13 @@ namespace forexAI
                             arguments[paramIndex] = new int[numData];
                             OutIndex = paramIndex;
                             typeOut = 0;
-                            log($"outIndexI={OutIndex}");
+                            //    log($"outIndexI={OutIndex}");
                             break;
                         case "outReal":
                             arguments[paramIndex] = new double[numData];
                             OutIndex = paramIndex;
                             typeOut = 1;
-                            log($"outIndexR={OutIndex}");
+                            //   log($"outIndexR={OutIndex}");
                             break;
                         case "outAroonUp":
                             arguments[paramIndex] = new double[1000];
@@ -260,23 +273,19 @@ namespace forexAI
                             break;
 
                         default:
-                            debug($"nothing found for {paramName}");
+                            error($"nothing found for {paramName}");
                             break;
                     }
-                    //  log($"   arg[{paramIndex}] {arguments[paramIndex]}");
-
-
                     paramIndex++;
                 }
-                log($"  ==> arguments={SerializeObject(arguments)}");
 
-                // stringOut = $"     {paramName}={paramValue} {comment}";
-                //  log(stringOut);
+                //  log($"  ==> arguments={SerializeObject(arguments)}");
+
                 reassembledFunctions += $"[{functionName}] ";
 
                 arguments[OutIndex] = new double[inputDimension];
 
-                log($"  => getting method [{functionName}]:args={conf.parameters.parametersMap.Count} from TICTAC ...");
+                //                log($"    => getting method [{functionName}]:args={conf.parameters.parametersMap.Count} from TICTAC ...");
                 Type[] functionTypes = new Type[conf.parameters.parametersMap.Count];
                 int idx = 0;
                 foreach (var arg in arguments)
@@ -294,33 +303,47 @@ namespace forexAI
                     idx++;
                 }
 
-                //                log($"  => functionTypes[{functionTypes.Length}]: {SerializeObject(functionTypes, Formatting.Indented)}");
-
                 MethodInfo mi = typeof(Core).GetMethod(functionName, functionTypes);
                 if (mi == null)
+                {
                     error($"fail to load method [{functionName}] from TICTAC");
+                    failedReassemble = true;
+                }
                 else
                 {
-                    Core.RetCode ret = (Core.RetCode) mi.Invoke(null, arguments);
-
+                    ret = (Core.RetCode) mi.Invoke(null, arguments);
 
                     if (typeOut == 0)
                     {
                         resultDataInt = (int[]) arguments[OutIndex];
-                        log($"  -> resultDataInt={SerializeObject(resultDataInt)}");
+                        //     log($"    => resultDataInt={SerializeObject(resultDataInt)}");
+                        int idxS = 0;
+                        Array.Resize<double>(ref resultDataDouble, resultDataInt.Length);
+                        foreach (int i in resultDataInt)
+                            resultDataDouble[idxS++] = i;
                     }
                     else
                     {
                         resultDataDouble = (double[]) arguments[OutIndex];
-                        log($"  -> resultDataDouble={SerializeObject(resultDataDouble)}");
+                        //       log($"    => resultDataDouble={SerializeObject(resultDataDouble)}");
                     }
-                    log($"   mi={mi.Name} ret={ret} resultDataDouble={resultDataDouble.Length} resultDataInt={resultDataInt.Length}");
+                    //  log($"    => mi={mi.Name} ret={ret} resultDataDouble={resultDataDouble.Length} resultDataInt={resultDataInt.Length}");
 
-                    Array.Copy
+                    int prevLen = entireSet.Length;
+                    Array.Resize<double>(ref entireSet, entireSet.Length + resultDataDouble.Length);
+                    Array.Copy(resultDataDouble, 0, entireSet, prevLen, resultDataDouble.Length);
                 }
             }
 
-            log($"=> Reassembling done: {reassembledFunctions}");
+            if(failedReassemble)
+            {
+                error($"failed to reassemble");
+                return new double[] { };
+            }
+
+            log($"    =>  ret={ret} entireset={SerializeObject(entireSet)}");
+            log($"=> Reassembling done: {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}"+
+                $" sourceInputDimension={sourceInputDimension}");
 
             return entireSet;
         }
