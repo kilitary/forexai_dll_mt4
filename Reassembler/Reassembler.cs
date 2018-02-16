@@ -66,8 +66,10 @@ namespace forexAI
 
         public static double[] Build(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
-            IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork)
+            IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork, bool reassembleCompleteOverride,
+            string timeCurrent)
         {
+            reassembleComplete = reassembleCompleteOverride;
             if (!reassembleComplete)
                 log($"=> Reassembling input sequence ...");
 
@@ -76,6 +78,8 @@ namespace forexAI
             // Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 33);
 
             entireSet = null;
+            if (failedReassemble)
+                reassembleComplete = false;
             failedReassemble = false;
             sourceInputDimension = inputDimension;
 
@@ -355,13 +359,13 @@ namespace forexAI
                         }
                     }
 
-                    if (toKill > 0)
-                    {
-                        Array.Resize<double>(ref resultDataDouble, resultDataDouble.Length - toKill);
+                    //if (toKill > 0)
+                    //{
+                    //    Array.Resize<double>(ref resultDataDouble, resultDataDouble.Length - toKill);
 
-                        if (!reassembleComplete)
-                            warning($"# {functionName}: modified! {toKill} (OutNbElement={OutNbElement})");
-                    }
+                    //    if (!reassembleComplete)
+                    //        warning($"# {functionName}: modified! {toKill} (OutNbElement={OutNbElement})");
+                    //}
 
                     startIdx = (int) arguments[nOutBegIdx];
                     if (!reassembleComplete)
@@ -386,18 +390,22 @@ namespace forexAI
                     $" sourceInputDimension={sourceInputDimension}");
             }
 
-            if (failedReassemble || forexNetwork.InputCount != entireSet.Length)
+            if (forexNetwork.InputCount != entireSet.Length)
             {
                 error($"=> reassembler FAILED to reassemble input sequence: diff in input count of network is " +
                     $"{Math.Abs(entireSet.Length - forexNetwork.InputCount)}");
-                return new double[] { };
+                reassembleComplete = false;
+                failedReassemble = true;
+                return new double[] { 0.0, 0.0 };
             }
-            else
-                reassembleComplete = true;
+
+            //forexNetwork.ClearScalingParams();
 
             double[] networkOutput = forexNetwork.Run(entireSet);
 
-            debug($"networkOutput = {networkOutput[0]} : {networkOutput[1]}");
+            forexNetwork.DescaleOutput(networkOutput);
+
+            debug($"{timeCurrent} networkOutput = {networkOutput[0].ToString("0.0000")} : {networkOutput[1].ToString("0.0000")}");
 
             return networkOutput;
         }

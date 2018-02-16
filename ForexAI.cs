@@ -68,10 +68,12 @@ namespace forexAI
         double[] networkOutput;
         float testMse = 0.0f;
         float trainMse = 0.0f;
+        bool reassembleCompleteOverride = false;
         bool hasNoticedLowBalance = false;
         bool ProfitTrailing = true;
         bool hasNightReported = false;
         bool hasMorningReported = false;
+        bool applicationBooted = false;
         double prevVolume;
 
         //+------------------------------------------------------------------+■
@@ -79,8 +81,10 @@ namespace forexAI
         //+------------------------------------------------------------------+
         public override int start()
         {
-            networkOutput = Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"), inputDimension,
-               Open, Close, High, Low, Volume, Bars, forexNetwork);
+            if (applicationBooted)
+                networkOutput = Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"), inputDimension,
+                   Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompleteOverride, 
+                   TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
 
             DrawStats(true);
 
@@ -119,6 +123,7 @@ namespace forexAI
                 operationsCount = 0;
                 barsPerDay = 0;
 
+                ShowMemoryUsage();
                 FX.TheNewDay();
             }
 
@@ -161,6 +166,8 @@ namespace forexAI
         public override int init()
         {
             currentDay = (int) System.DateTime.Now.DayOfWeek;
+            applicationBooted = false;
+            reassembleCompleteOverride = false;
             console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
                 ConsoleColor.Black, ConsoleColor.Cyan);
 
@@ -191,6 +198,9 @@ namespace forexAI
             string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) ";
             log(initStr);
             console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
+
+            reassembleCompleteOverride = true;
+            applicationBooted = true;
 
             return 0;
         }
@@ -262,10 +272,15 @@ namespace forexAI
             log($"  IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
             log($"  Period={Period()}");
 
+            ShowMemoryUsage();
+        }
+
+        private void ShowMemoryUsage()
+        {
             console($"WorkingSet={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
-                $"PrivateMemory={(currentProcess.PrivateMemorySize64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
-                $"Threads={currentProcess.Threads.Count} FileName={currentProcess.MainModule.ModuleName}",
-                ConsoleColor.Black, ConsoleColor.Yellow);
+                 $"PrivateMemory={(currentProcess.PrivateMemorySize64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
+                 $"Threads={currentProcess.Threads.Count} FileName={currentProcess.MainModule.ModuleName}",
+                 ConsoleColor.Black, ConsoleColor.Yellow);
         }
 
         void TestNetworkHitRatio()
@@ -316,7 +331,8 @@ namespace forexAI
             middleLayerActivationFunction = matches.Groups[2].Value;
 
             Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
-                Open, Close, High, Low, Volume, Bars, forexNetwork);
+                Open, Close, High, Low, Volume, Bars, forexNetwork, false, 
+                TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
         }
 
         void ScanNetworks()
