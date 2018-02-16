@@ -44,15 +44,21 @@ namespace forexAI
         static LivePrices prices = new LivePrices();
         static Dictionary<string, FunctionsConfiguration> functionConfigurationInput;
         static int OutBegIdx;
-        static int OutNbElement;
-        static int OutIndex;
+        static int OutNbElement = -1;
+        private static int pOutNbElement;
+        static int OutIndex = -1;
+        private static int typeOut;
         static string reassembledFunctions = string.Empty;
         static string paramName = String.Empty;
         static string comment = string.Empty, paramComment = String.Empty;
         static double paramValue = 0.0;
         static string functionName = string.Empty;
+        static int nOutBegIdx;
+        static double[] resultDataDouble = { };
+        static int[] resultDataInt = { };
+        static double[] entireSet = new double[1000];
 
-        public static void Build(string functionConfigurationString, int inputDimension,
+        public static double[] Build(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
             IMqlArray<double> Low, IMqlArray<double> Volume, int Bars)
         {
@@ -73,7 +79,7 @@ namespace forexAI
                 functionName = item.Key;
                 FunctionsConfiguration conf = item.Value;
 
-                log($"===> #{fidx++} {functionName}: {conf.parameters.parametersMap.Count} args");
+                log($" ==> #{fidx++} {functionName}: {conf.parameters.parametersMap.Count} args");
 
                 string stringOut = string.Empty;
                 arguments = new object[conf.parameters.parametersMap.Count];
@@ -81,13 +87,14 @@ namespace forexAI
                 string[] values = new string[4];
                 int numData = inputDimension;
                 int id;
-                log($"    [params={SerializeObject(conf.parameters.parametersMap, Formatting.Indented)}]");
+
+                // log($"    [params={SerializeObject(conf.parameters.parametersMap, Formatting.Indented)}]");
+
                 foreach (var param in conf.parameters.parametersMap)
                 {
                     values = param.Split('|');
                     paramName = values[1];
                     int.TryParse(values[0], out id);
-
                     double.TryParse(values[2], out paramValue);
                     comment = values[3];
                     paramComment = string.Empty;
@@ -150,7 +157,6 @@ namespace forexAI
                                     break;
                             }
 
-                            // debug($"real {paramName}[0]: " + ((double[])Arguments[ParamIndex])[0]);
                             break;
                         case "optInMaximum":
                             arguments[paramIndex] = 0.0;
@@ -159,8 +165,6 @@ namespace forexAI
                         case "optInFastD_MAType":
                         case "optInSlowK_MAType":
                             arguments[paramIndex] = 0;
-
-                            // debug($"{paramName} optMAtype=" + arguments[paramIndex]);
                             break;
                         case "optInAccelerationShort":
                         case "optInAccelerationMaxShort":
@@ -223,19 +227,23 @@ namespace forexAI
                             break;
                         case "outBegIdx":
                             arguments[paramIndex] = OutBegIdx;
+                            nOutBegIdx = paramIndex;
                             break;
                         case "outNBElement":
                             arguments[paramIndex] = OutNbElement;
                             OutNbElement = paramIndex;
+                            pOutNbElement = paramIndex;
                             break;
                         case "outInteger":
                             arguments[paramIndex] = new int[numData];
                             OutIndex = paramIndex;
+                            typeOut = 0;
                             log($"outIndexI={OutIndex}");
                             break;
                         case "outReal":
                             arguments[paramIndex] = new double[numData];
                             OutIndex = paramIndex;
+                            typeOut = 1;
                             log($"outIndexR={OutIndex}");
                             break;
                         case "outAroonUp":
@@ -255,45 +263,66 @@ namespace forexAI
                             debug($"nothing found for {paramName}");
                             break;
                     }
-                    log($"   arg[{paramIndex}] {arguments[paramIndex]}");
+                    //  log($"   arg[{paramIndex}] {arguments[paramIndex]}");
 
 
                     paramIndex++;
                 }
-                log($"#arguments={SerializeObject(arguments)}");
+                log($"  ==> arguments={SerializeObject(arguments)}");
 
-                stringOut = $"     {paramName}={paramValue} {comment}";
-                log(stringOut);
+                // stringOut = $"     {paramName}={paramValue} {comment}";
+                //  log(stringOut);
                 reassembledFunctions += $"[{functionName}] ";
 
-                arguments[OutIndex] = new double[1024];
+                arguments[OutIndex] = new double[inputDimension];
 
-                log($"=> getting method [{functionName}]:{conf.parameters.parametersMap.Count} from TICTAC ...");
+                log($"  => getting method [{functionName}]:args={conf.parameters.parametersMap.Count} from TICTAC ...");
                 Type[] functionTypes = new Type[conf.parameters.parametersMap.Count];
                 int idx = 0;
                 foreach (var arg in arguments)
                 {
-                    if (arg.GetType().IsByRef)
+                    if (arg.GetType().IsByRef || arg.GetType().IsMarshalByRef)
                         functionTypes[idx] = arg.GetType().MakeByRefType();
                     else
                         functionTypes[idx] = arg.GetType();
 
+                    if (OutNbElement == idx)
+                        functionTypes[idx] = arg.GetType().MakeByRefType();
+
+                    if (nOutBegIdx == idx)
+                        functionTypes[idx] = arg.GetType().MakeByRefType();
                     idx++;
                 }
 
-                log($"functionTypes[{functionTypes.Length}]: {SerializeObject(functionTypes, Formatting.Indented)}");
+                //                log($"  => functionTypes[{functionTypes.Length}]: {SerializeObject(functionTypes, Formatting.Indented)}");
 
                 MethodInfo mi = typeof(Core).GetMethod(functionName, functionTypes);
-                double[] result;
                 if (mi == null)
                     error($"fail to load method [{functionName}] from TICTAC");
                 else
-                    log($"mi={mi.Module}");
+                {
+                    Core.RetCode ret = (Core.RetCode) mi.Invoke(null, arguments);
+
+
+                    if (typeOut == 0)
+                    {
+                        resultDataInt = (int[]) arguments[OutIndex];
+                        log($"  -> resultDataInt={SerializeObject(resultDataInt)}");
+                    }
+                    else
+                    {
+                        resultDataDouble = (double[]) arguments[OutIndex];
+                        log($"  -> resultDataDouble={SerializeObject(resultDataDouble)}");
+                    }
+                    log($"   mi={mi.Name} ret={ret} resultDataDouble={resultDataDouble.Length} resultDataInt={resultDataInt.Length}");
+
+                    Array.Copy
+                }
             }
 
             log($"=> Reassembling done: {reassembledFunctions}");
 
-            return;
+            return entireSet;
         }
     }
 }
