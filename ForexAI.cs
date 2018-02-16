@@ -159,7 +159,7 @@ namespace forexAI
             #region matters
             if ((Environment.MachineName == "USER-PC" ||
                 (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused())) &&
-                (currentDay == 5 || currentDay == 6 || currentDay == 0))
+                (currentDay == 6 || currentDay == 0))
                 Configuration.tryExperimentalFeatures = true;
             #endregion
 
