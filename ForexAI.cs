@@ -45,7 +45,7 @@ namespace forexAI
         string symbol = string.Empty;
         int inputDimension = 0;
         int currentTicket = 0;
-        int operationsCount = 0;
+        int dayOperationsCount = 0;
         int ordersTotal = 0;
         int previousBars = 0;
         int barsPerDay = 0;
@@ -85,9 +85,11 @@ namespace forexAI
                 networkOutput = Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"), inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompleteOverride,
                    TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
 
-            DrawStats(true);
+            DrawStats();
 
             CheckForClose();
+
+            CalculateCurrentOrders();
 
             if (Bars == previousBars)
                 return 0;
@@ -117,11 +119,11 @@ namespace forexAI
             {
                 previousBankDay = Day();
 
-                log($"-> Day {previousBankDay.ToString("0")} [opsDone={operationsCount} barsPerDay={barsPerDay}] "
+                log($"-> Day {previousBankDay.ToString("0")} [opsDone={dayOperationsCount} barsPerDay={barsPerDay}] "
                     + (forexNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 
-                totalOperationsCount += operationsCount;
-                operationsCount = 0;
+                totalOperationsCount += dayOperationsCount;
+                dayOperationsCount = 0;
                 barsPerDay = 0;
 
                 ShowMemoryUsage();
@@ -133,20 +135,18 @@ namespace forexAI
 
             DrawStats();
 
-            CalculateCurrentOrders();
-
             //if (OrdersTotal() <= 0)
             //  CheckForOpen();
             //CheckVolumeDisturbance();
-            
-            if (networkOutput[1] > 0.8 && CountBuys() == 0)
+
+            if (networkOutput[1] > 0.9 && CountBuys() == 0)
                 SendBuy(networkOutput[1].ToString("0.000"));
-            if (networkOutput[0] > 0.8 && CountSells() == 0)
+            if (networkOutput[0] > 0.9 && CountSells() == 0)
                 SendSell(networkOutput[0].ToString("0.000"));
 
-            if (networkOutput[1] < 0.5 && CountBuys() > 0)
+            if (networkOutput[1] < 0.1 && CountBuys() > 0)
                 CloseBuys();
-            if (networkOutput[0] < 0.5 && CountSells() > 0)
+            if (networkOutput[0] < 0.1 && CountSells() > 0)
                 CloseSells();
 
             if (Configuration.tryExperimentalFeatures)
@@ -232,7 +232,7 @@ namespace forexAI
             storage.SyncData();
 
             string mins = ((((double) GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
-            log($"Uptime {mins} mins, has do {totalOperationsCount} operations.");
+            log($"Uptime {mins} mins, has do {totalOperationsCount + dayOperationsCount} operations.");
             console("... shutted down.", ConsoleColor.Black, ConsoleColor.Red);
 
             return 0;
@@ -247,7 +247,7 @@ namespace forexAI
             log($"Initializing version {version} ...");
 
             Console.Title = $"Automated MT4 trading expert debug console. Version {version}. "
-                + (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : "");
+                + (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
         }
 
         void ListGlobalVariables()
@@ -558,6 +558,7 @@ namespace forexAI
                 if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
                 {
                     OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_BID), 2);
+                    dayOperationsCount++;
                 }
             }
             return (0);
@@ -573,6 +574,7 @@ namespace forexAI
                 if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
                 {
                     OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_ASK), 2);
+                    dayOperationsCount++;
                 }
             }
             return (0);
@@ -602,7 +604,7 @@ namespace forexAI
 
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
-                        operationsCount++;
+                        dayOperationsCount++;
                     }
                     else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.5)
                     {
@@ -615,7 +617,7 @@ namespace forexAI
 
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
-                        operationsCount++;
+                        dayOperationsCount++;
                     }
                 }
                 if (OrderType() == OP_SELL)
@@ -631,7 +633,7 @@ namespace forexAI
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
                         debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
-                        operationsCount++;
+                        dayOperationsCount++;
                     }
                     else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.5)
                     {
@@ -645,7 +647,7 @@ namespace forexAI
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
                         debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
-                        operationsCount++;
+                        dayOperationsCount++;
                     }
                 }
             }
@@ -682,7 +684,7 @@ namespace forexAI
 
         void DrawStats(bool commentsOnly = false)
         {
-            if (commentsOnly)
+            if (!commentsOnly)
             {
                 int i;
 
@@ -817,7 +819,7 @@ namespace forexAI
                     ObjectSet(labelID, OBJPROP_YDISTANCE, 50);
                 }
 
-                ObjectSetText(labelID, "Total operations: " + totalOperationsCount, 8, "lucida console", Color.Yellow);
+                ObjectSetText(labelID, "Total operations: " + (totalOperationsCount + dayOperationsCount), 8, "lucida console", Color.Yellow);
 
                 labelID = gs_80 + "10";
                 if (ObjectFind(labelID) == -1)
@@ -842,7 +844,7 @@ namespace forexAI
                     ObjectSet(labelID, OBJPROP_XDISTANCE, 10);
                     ObjectSet(labelID, OBJPROP_YDISTANCE, 70);
                 }
-                ObjectSetText(labelID, "genetic1: " + dirtext, 8, "lucida console", Color.Yellow);
+                ObjectSetText(labelID, "Buy Probability: " + BuyProbability().ToString("0.0000"), 10, "lucida console", Color.LightGreen);
 
                 labelID = gs_80 + "12";
                 if (ObjectFind(labelID) == -1)
@@ -852,7 +854,7 @@ namespace forexAI
                     ObjectSet(labelID, OBJPROP_XDISTANCE, 10);
                     ObjectSet(labelID, OBJPROP_YDISTANCE, 80);
                 }
-                ObjectSetText(labelID, "genetic2: " + dirtext2, 8, "lucida console", Color.Yellow);
+                ObjectSetText(labelID, "Sell Probability: " + SellProbability().ToString("0.0000"), 10, "lucida console", Color.LightGreen);
 
                 WindowRedraw();
             }
@@ -950,6 +952,16 @@ namespace forexAI
 
         }
 
+        double BuyProbability()
+        {
+            return networkOutput[1];
+        }
+
+        double SellProbability()
+        {
+            return networkOutput[0];
+        }
+
         double GetActiveIncome()
         {
             double total = 0.0;
@@ -1030,7 +1042,7 @@ namespace forexAI
         {
             RefreshRates();
             OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Red);
-            operationsCount++;
+            dayOperationsCount++;
             debug("+ open sell  @" + Bid);
         }
 
@@ -1038,7 +1050,7 @@ namespace forexAI
         {
             RefreshRates();
             OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Blue);
-            operationsCount++;
+            dayOperationsCount++;
             debug("+ open buy @" + Ask);
         }
 
