@@ -159,7 +159,7 @@ namespace forexAI
             #region matters
             if ((Environment.MachineName == "USER-PC" ||
                 (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused())) &&
-                (currentDay == 5 || currentDay == 6 || currentDay == 0))
+                (currentDay == 6 || currentDay == 0))
                 Configuration.tryExperimentalFeatures = true;
             #endregion
 
@@ -304,7 +304,7 @@ namespace forexAI
             middleLayerActivationFunction = matches.Groups[2].Value;
 
             Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
-                Open, Close, High, Low, Volume, Bars);
+                Open, Close, High, Low, Volume, Bars, forexNetwork);
         }
 
         void ScanNetworks()
