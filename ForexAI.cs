@@ -304,7 +304,7 @@ namespace forexAI
             middleLayerActivationFunction = matches.Groups[2].Value;
 
             Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
-                Open, Close, High, Low, Volume, Bars);
+                Open, Close, High, Low, Volume, Bars, forexNetwork);
         }
 
         void ScanNetworks()

@@ -74,8 +74,8 @@ namespace forexAI
             StackFrame callStack = new StackFrame(1, true);
             StreamWriter file = new StreamWriter(Configuration.logFileName, true);
             file.WriteLine(DateTime.Now.ToString("h:mm:ss.ffff") + " <" +
-                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "ERROR: file " +
-                callStack.GetFileName() + "@" + callStack.GetFileLineNumber() + $" in {callStack.GetMethod().Name}(): " + lines);
+                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "ERROR: " +
+                callStack.GetFileName() + ":" + callStack.GetFileLineNumber() + $" in {callStack.GetMethod().Name}(): " + lines);
             file.Close();
         }
 

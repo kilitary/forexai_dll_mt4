@@ -29,6 +29,7 @@ using Newtonsoft.Json;
 using static Newtonsoft.Json.JsonConvert;
 using NQuotes;
 using TicTacTec.TA.Library;
+using FANNCSharp.Double;
 
 namespace forexAI
 {
@@ -63,10 +64,11 @@ namespace forexAI
 
         public static double[] Build(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
-            IMqlArray<double> Low, IMqlArray<double> Volume, int Bars)
+            IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork)
         {
             log($"=> Reassembling input sequence ...");
 
+            entireSet = new double[] { };
             failedReassemble = false;
             sourceInputDimension = inputDimension;
 
@@ -85,7 +87,7 @@ namespace forexAI
                 functionName = item.Key;
                 FunctionsConfiguration conf = item.Value;
 
-              //  log($" ==> #{fidx++} {functionName}: {conf.parameters.parametersMap.Count} args");
+                //  log($" ==> #{fidx++} {functionName}: {conf.parameters.parametersMap.Count} args");
 
                 string stringOut = string.Empty;
                 arguments = new object[conf.parameters.parametersMap.Count];
@@ -106,7 +108,7 @@ namespace forexAI
                     if (paramName == "endIdx" && id == 1)
                     {
                         //inputDimension = numData = (int) paramValue + 1;
-                    //    log($"=> calculated {(int) paramValue + 1} input dimension");
+                        //    log($"=> calculated {(int) paramValue + 1} input dimension");
                     }
 
                     comment = values[3];
@@ -335,14 +337,16 @@ namespace forexAI
                 }
             }
 
-            if(failedReassemble)
+            log($"    =>  ret={ret} entireset={SerializeObject(entireSet)}");
+
+            if (failedReassemble || forexNetwork.InputCount != entireSet.Length)
             {
-                error($"failed to reassemble");
+                error($"failed to reassemble: diff in input count of network is {Math.Abs(entireSet.Length - forexNetwork.InputCount)}");
                 return new double[] { };
             }
 
-            log($"    =>  ret={ret} entireset={SerializeObject(entireSet)}");
-            log($"=> Reassembling done: {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}"+
+           
+            log($"=> Reassembling done: {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}" +
                 $" sourceInputDimension={sourceInputDimension}");
 
             return entireSet;
