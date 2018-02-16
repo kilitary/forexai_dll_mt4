@@ -29,7 +29,7 @@ namespace forexAI
 {
     public class ForexAI : MqlApi
     {
-        Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
+        Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
         Process currentProcess = null;
         Version version = null;
         NeuralNet forexNetwork = null;
@@ -44,21 +44,7 @@ namespace forexAI
         string middleLayerActivationFunction = string.Empty;
         string labelID, type = string.Empty;
         string symbol = string.Empty;
-        int inputDimension = 0;
-        int currentTicket = 0;
-        int dayOperationsCount = 0;
-        int ordersTotal = 0;
-        int previousBars = 0;
-        int barsPerDay = 0;
-        int spendSells = 0, spendBuys = 0, profitSells = 0, profitBuys = 0, totalSpends = 0, totalProfits = 0;
-        int openedBuys = 0, openedSells = 0;
-        int startTime = 0;
-        int previousBankDay = 0;
-        int magickNumber = Configuration.magickNumber;
-        int totalOperationsCount = 0;
-        int buysPermitted = 3;
-        int sellsPermitted = 3;
-        int currentDay;
+        string charizedHistory;
         double trainHitRatio = 0.0;
         double testHitRatio = 0.0;
         double total = 0.0;
@@ -75,16 +61,30 @@ namespace forexAI
         bool ProfitTrailing = true;
         bool hasNightReported = false;
         bool hasMorningReported = false;
-        bool applicationBooted = false;
-        private string charizedHistory;
+        bool applicationBootstrapped = false;
+        int inputDimension = 0;
+        int currentTicket = 0;
+        int dayOperationsCount = 0;
+        int ordersTotal = 0;
+        int previousBars = 0;
+        int barsPerDay = 0;
+        int spendSells = 0, spendBuys = 0, profitSells = 0, profitBuys = 0, totalSpends = 0, totalProfits = 0;
+        int openedBuys = 0, openedSells = 0;
+        int startTime = 0;
+        int previousBankDay = 0;
+        int magickNumber = Configuration.magickNumber;
+        int totalOperationsCount = 0;
+        int buysPermitted = 3;
+        int sellsPermitted = 3;
+        int currentDay;
 
-        //+------------------------------------------------------------------+■
+        //+------------------------------------------------------------------+
         //| Start function                                                   |
         //+------------------------------------------------------------------+
         public override int start()
         {
-            if (applicationBooted)
-                networkOutput = Reassembler.RestoreSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
+            if (applicationBootstrapped)
+                networkOutput = Reassembler.ExecuteSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
                     inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
                     TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
 
@@ -94,8 +94,6 @@ namespace forexAI
 
             if (Bars == previousBars)
                 return 0;
-
-            log($"=> NETWORK RUN: {networkOutput[0].ToString("0.0000")}:{networkOutput[1].ToString("0.0000")}");
 
             if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
             {
@@ -127,14 +125,15 @@ namespace forexAI
                 dayOperationsCount = 0;
                 barsPerDay = 0;
 
-                ShowMemoryUsage();
                 FX.TheNewDay();
             }
+
+            log($"=> Probability: Buy={BuyProbability().ToString("0.000")} Sell={SellProbability().ToString("0.000")}");
 
             File.AppendAllText(Configuration.randomLogFileName, random.Next(99).ToString("00") + " ");
             File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
 
-            CheckForForexEntrance();
+            TryEnterForex();
 
             if (Configuration.tryExperimentalFeatures)
                 AlliedInstructions();
@@ -154,23 +153,23 @@ namespace forexAI
             return 0;
         }
 
-        void CheckForForexEntrance()
+        void TryEnterForex()
         {
             if (BuyProbability() > 0.8 && CountBuys() == 0)
                 SendBuy(BuyProbability().ToString("0.000"));
             if (SellProbability() > 0.8 && CountSells() == 0)
                 SendSell(SellProbability().ToString("0.000"));
 
-            if (BuyProbability() < 0.1 && CountBuys() > 0)
+            if (BuyProbability() < -0.3 && CountBuys() > 0)
                 CloseBuys();
-            if (SellProbability() < 0.1 && CountSells() > 0)
+            if (SellProbability() < -0.3 && CountSells() > 0)
                 CloseSells();
         }
 
         public override int init()
         {
             currentDay = (int) System.DateTime.Now.DayOfWeek;
-            applicationBooted = false;
+            applicationBootstrapped = false;
             reassembleCompletedOverride = false;
 
             console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
@@ -205,7 +204,7 @@ namespace forexAI
             console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
 
             reassembleCompletedOverride = true;
-            applicationBooted = true;
+            applicationBootstrapped = true;
 
             return 0;
         }
@@ -335,7 +334,7 @@ namespace forexAI
             inputLayerActivationFunction = matches.Groups[1].Value;
             middleLayerActivationFunction = matches.Groups[2].Value;
 
-            Reassembler.RestoreSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
+            Reassembler.ExecuteSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
                 Open, Close, High, Low, Volume, Bars, forexNetwork, false,
                 TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
         }

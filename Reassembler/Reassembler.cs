@@ -57,7 +57,7 @@ namespace forexAI
         static bool failedReassemble;
         static bool reassembleCompleted = false;
 
-        public static double[] RestoreSequence(string functionConfigurationString, int inputDimension,
+        public static double[] ExecuteSequence(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
             IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork,
             bool reassembleCompleteOverride, string timeCurrent)
