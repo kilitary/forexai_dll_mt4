@@ -79,6 +79,9 @@ namespace forexAI
         //+------------------------------------------------------------------+
         public override int start()
         {
+            networkOutput = Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"), inputDimension,
+               Open, Close, High, Low, Volume, Bars, forexNetwork);
+            DrawStats();
             if (Bars == previousBars)
                 return 0;
 
@@ -118,8 +121,7 @@ namespace forexAI
             File.AppendAllText(Configuration.randomLogFileName, random.Next(99).ToString("00") + " ");
             File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
 
-            networkOutput = Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"), inputDimension,
-               Open, Close, High, Low, Volume, Bars, forexNetwork);
+            
 
             log($"=> NETWORK RUN: {networkOutput[0].ToString("0.0000")}:{networkOutput[1].ToString("0.0000")}");
 
@@ -144,7 +146,7 @@ namespace forexAI
             else if (hasNoticedLowBalance && YRandom.Next(0, 6) == 3)
                 FX.GoodWork();
 
-            DrawStats();
+            
 
             previousBars = Bars;
             barsPerDay += 1;
@@ -884,7 +886,7 @@ namespace forexAI
                trainHitRatio.ToString("0.00") +
                "%\r\n"+
                "Current Output: " +
-               $"{ networkOutput[0].ToString("0.0000")}:{ networkOutput[1].ToString("0.0000")}");
+               (networkOutput != null ? ($"{ networkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ networkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : ""));
 
             }
 
