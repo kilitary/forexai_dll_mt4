@@ -66,8 +66,8 @@ namespace forexAI
 
         public static double[] Build(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
-            IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork, bool reassembleCompleteOverride,
-            string timeCurrent)
+            IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork,
+            bool reassembleCompleteOverride, string timeCurrent)
         {
             reassembleCompleted = reassembleCompleteOverride;
             if (!reassembleCompleted)
@@ -379,7 +379,8 @@ namespace forexAI
                     int newLen = (entireSet == null ? 0 : entireSet.Length) + resultDataDouble.Length - startIdx;
 
                     Array.Resize<double>(ref entireSet, newLen);
-                    Array.Copy(resultDataDouble, startIdx, entireSet, prevLen > 0 ? prevLen - 1 : prevLen, resultDataDouble.Length - startIdx);
+                    Array.Copy(resultDataDouble, startIdx, entireSet, prevLen > 0 ? prevLen - 1 : prevLen,
+                        resultDataDouble.Length - startIdx);
                 }
             }
 
