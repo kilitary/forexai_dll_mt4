@@ -62,13 +62,16 @@ namespace forexAI
         private static bool failedReassemble;
         static int sourceInputDimension = 0;
         private static int startIdx;
+        static bool reassembleComplete = false;
 
         public static double[] Build(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
             IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork)
         {
-            log($"=> Reassembling input sequence ...");
+            if (!reassembleComplete)
+                log($"=> Reassembling input sequence ...");
 
+            reassembledFunctions = string.Empty;
             Core.SetCompatibility(Core.Compatibility.Metastock);
             // Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 33);
 
@@ -81,7 +84,8 @@ namespace forexAI
             functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
                 (functionConfigurationString, jsonSettings);
 
-            log($"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
+            if (!reassembleComplete)
+                log($"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
 
             object[] arguments = null;
             int fidx = 0;
@@ -284,8 +288,9 @@ namespace forexAI
                     paramIndex++;
                 }
 
-                log($"=> {functionName} arguments({arguments.Length})={SerializeObject(arguments)}");
-                reassembledFunctions += $"[{functionName}] ";
+                if (!reassembleComplete)
+                    log($"=> {functionName} arguments({arguments.Length})={SerializeObject(arguments)}");
+                reassembledFunctions += $"{functionName}|";
                 arguments[OutIndex] = new double[inputDimension];
 
                 Type[] functionTypes = new Type[conf.parameters.parametersMap.Count];
@@ -306,7 +311,7 @@ namespace forexAI
                 }
 
                 MethodInfo mi = typeof(Core).GetMethod(functionName, functionTypes);
-              //  OutNbElement = (int) arguments[OutNbElement];
+                //  OutNbElement = (int) arguments[OutNbElement];
                 if (mi == null)
                 {
                     error($"fail to load method [{functionName}] from TICTAC");
@@ -327,6 +332,10 @@ namespace forexAI
 
                         for (int i = 0; i < OutNbElement; i++)
                         {
+                            if (resultDataDouble[i] == 0.0 && i == 0)
+                                if (!reassembleComplete)
+                                    warning($"fucking function {functionName} starts with zero");
+
                             if (resultDataDouble[i] != 0.0)
                             {
                                 toKill = 0;
@@ -341,6 +350,10 @@ namespace forexAI
                         resultDataDouble = (double[]) arguments[OutIndex];
                         for (int i = 0; i < OutNbElement; i++)
                         {
+                            if (resultDataDouble[i] == 0.0 && i == 0)
+                                if (!reassembleComplete)
+                                    warning($"fucking function {functionName} starts with zero");
+
                             if (resultDataDouble[i] != 0.0)
                             {
                                 toKill = 0;
@@ -354,15 +367,18 @@ namespace forexAI
                     if (toKill > 0)
                     {
                         Array.Resize<double>(ref resultDataDouble, resultDataDouble.Length - toKill);
-                        warning($"# {functionName}: modified! {toKill} (OutNbElement={OutNbElement})");
+                        if (!reassembleComplete)
+                            warning($"# {functionName}: modified! {toKill} (OutNbElement={OutNbElement})");
                     }
 
                     startIdx = (int) arguments[nOutBegIdx];
-                    if (startIdx != 0)
-                        warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
+                    if (!reassembleComplete)
+                        if (startIdx != 0)
+                            warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
 
                     //  log($"    => mi={mi.Name} ret={ret} resultDataDouble={resultDataDouble.Length} resultDataInt={resultDataInt.Length}");
-                    log($"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
+                    if (!reassembleComplete)
+                        log($"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
                     int prevLen = entireSet.Length;
                     int newLen = entireSet.Length + resultDataDouble.Length - startIdx;
                     Array.Resize<double>(ref entireSet, newLen);
@@ -370,9 +386,12 @@ namespace forexAI
                 }
             }
 
-            log($"=> ret={ret} entireset={SerializeObject(entireSet)}");
-            log($"=> Reassembling done: {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}" +
-                $" sourceInputDimension={sourceInputDimension}");
+            if (!reassembleComplete)
+            {
+                log($"=> ret={ret} entireset={SerializeObject(entireSet)}");
+                log($"=> Reassembling [ SUCCESS ] {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}" +
+                    $" sourceInputDimension={sourceInputDimension}");
+            }
             if (failedReassemble || forexNetwork.InputCount != entireSet.Length)
             {
                 error($"=> reassembler FAILED to reassemble input sequence: diff in input count of network is " +
@@ -380,7 +399,12 @@ namespace forexAI
                 return new double[] { };
             }
 
-            return entireSet;
+            double[] networkOutput = forexNetwork.Run(entireSet);
+            
+
+            reassembleComplete = true;
+
+            return networkOutput;
         }
     }
 }

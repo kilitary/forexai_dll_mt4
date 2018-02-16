@@ -1,6 +1,4 @@
-﻿using System.Web.UI;
-using System.Linq;
-//╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
+﻿//╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
 //╰╰╮╰╭╱▔▔▔▔╲╮╯╭╯ 
 //┏━┓┏┫╭▅╲╱▅╮┣┓╭║║║ 
 //╰┳╯╰┫┗━╭╮━┛┣╯╯╚╬╝ 
@@ -13,16 +11,18 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Web.UI;
 using FANNCSharp.Double;
 using Newtonsoft.Json;
 using NQuotes;
-using static forexAI.Logger;
-using Color = System.Drawing.Color;
-using static forexAI.Experimental;
 using static System.Console;
 using static System.ConsoleColor;
+using static forexAI.Experimental;
+using static forexAI.Logger;
+using Color = System.Drawing.Color;
 
 namespace forexAI
 {
@@ -65,6 +65,7 @@ namespace forexAI
         double profit = 0.0;
         double TrailingStop = 0.0;
         double TrailingStep = 0.0;
+        double[] networkOutput;
         float testMse = 0.0f;
         float trainMse = 0.0f;
         bool hasNoticedLowBalance = false;
@@ -116,6 +117,11 @@ namespace forexAI
 
             File.AppendAllText(Configuration.randomLogFileName, random.Next(99).ToString("00") + " ");
             File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
+
+            networkOutput = Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"), inputDimension,
+               Open, Close, High, Low, Volume, Bars, forexNetwork);
+
+            log($"=> NETWORK RUN: {networkOutput[0].ToString("0.0000")}:{networkOutput[1].ToString("0.0000")}");
 
             CalculateCurrentOrders();
 
@@ -876,7 +882,9 @@ namespace forexAI
                "%\r\n" +
               "Train Hit Ratio: " +
                trainHitRatio.ToString("0.00") +
-               "%\r\n");
+               "%\r\n"+
+               "Current Output: " +
+               $"{ networkOutput[0].ToString("0.0000")}:{ networkOutput[1].ToString("0.0000")}");
 
             }
 
