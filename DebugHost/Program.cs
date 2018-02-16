@@ -16,7 +16,14 @@ namespace NQuotes.DebugHost
     {
         public static void Main(string[] args)
         {
-            NQuotes.DebugHost.Server.Start(args);
+            try
+            {
+                NQuotes.DebugHost.Server.Start(args);
+            }
+            catch (Exception e)
+            {
+                forexAI.Logger.console($"EXCEPTION:\r\n{e.Message}", ConsoleColor.Black, ConsoleColor.Red);
+            }
         }
     }
 }

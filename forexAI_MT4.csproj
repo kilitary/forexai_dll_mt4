@@ -14,7 +14,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.1.786.46</AssemblyVersion>
+    <AssemblyVersion>0.1.841.47</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -126,11 +126,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\Mql.cs" />
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Data\Configuration.cs" />
     <Compile Include="Pool\NetworkPool.cs" />
-    <Compile Include="Reassembler\FunctionParameters.cs" />
     <Compile Include="Reassembler\FunctionJsonConfig.cs" />
     <Compile Include="Reassembler\Reassembler.cs" />
     <Compile Include="Prices\Prices.cs" />

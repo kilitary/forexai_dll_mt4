@@ -26,7 +26,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using forexAI.Api;
+using static Newtonsoft.Json.JsonConvert;
+using NQuotes;
+using TicTacTec.TA.Library;
 
 namespace forexAI
 {
@@ -38,38 +40,40 @@ namespace forexAI
     }
     public static class Reassembler
     {
-        public static List<ParametersInput> functionsList;
-        public static Dictionary<string, FunctionsConfiguration> functionConfigurationInput;
-        public static LivePrices prices = new LivePrices();
-        public static int OutBegIdx;
-        public static int OutNbElement;
-        public static int OutIndex;
+        static List<ParametersInput> functionsList;
+        static LivePrices prices = new LivePrices();
+        static Dictionary<string, FunctionsConfiguration> functionConfigurationInput;
+        static int OutBegIdx;
+        static int OutNbElement;
+        static int OutIndex;
+        static string reassembledFunctions = string.Empty;
+        static string paramName = String.Empty;
+        static string comment = string.Empty, paramComment = String.Empty;
+        static double paramValue = 0.0;
+        static string functionName = string.Empty;
 
-
-        public static void Build(string functionConfigurationString, int inputDimension)
+        public static void Build(string functionConfigurationString, int inputDimension,
+            IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
+            IMqlArray<double> Low, IMqlArray<double> Volume, int Bars)
         {
             log($"=> Reassembling input sequence ...");
 
             var jsonSettings = new JsonSerializerSettings();
             jsonSettings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
-            functionConfigurationInput = JsonConvert.DeserializeObject<Dictionary<string, FunctionsConfiguration>>
+            functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
                 (functionConfigurationString, jsonSettings);
 
             log($"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
 
-            object[] arguments;
+            object[] arguments = new object[20];
             int fidx = 0;
-            string reassembledFunctions = string.Empty;
-            string paramName = String.Empty;
-            string comment = string.Empty, paramComment = String.Empty;
-            double paramValue = 0.0;
 
             foreach (var item in functionConfigurationInput)
             {
-                string functionName = item.Key;
+                functionName = item.Key;
                 FunctionsConfiguration conf = item.Value;
 
-                log($" -> #{fidx++} {functionName}: {conf.parameters.parametersMap.Count} args");
+                log($"===> #{fidx++} {functionName}: {conf.parameters.parametersMap.Count} args");
 
                 string stringOut = string.Empty;
                 arguments = new object[conf.parameters.parametersMap.Count];
@@ -77,8 +81,7 @@ namespace forexAI
                 string[] values = new string[4];
                 int numData = inputDimension;
                 int id;
-
-
+                log($"    [params={SerializeObject(conf.parameters.parametersMap, Formatting.Indented)}]");
                 foreach (var param in conf.parameters.parametersMap)
                 {
                     values = param.Split('|');
@@ -88,7 +91,7 @@ namespace forexAI
                     double.TryParse(values[2], out paramValue);
                     comment = values[3];
                     paramComment = string.Empty;
-                    log($"processing [{paramName}] paramIndex {paramIndex} argLen {arguments.Length}");
+                    //  log($"processing [{paramName}] paramIndex {paramIndex} argLen {arguments.Length}");
                     switch (paramName)
                     {
                         case "optInVFactor":
@@ -131,21 +134,19 @@ namespace forexAI
                         case "inReal1":
                         case "inReal":
                             var index = YRandom.Next(3);
-                            log($"index={index}");
-                            log($"arguments[index]={arguments[index]} ({arguments[index].GetType()}");
                             switch (index)
                             {
                                 case 0:
-                                    arguments[paramIndex] = prices.GetOpen(numData);
+                                    arguments[paramIndex] = prices.GetOpen(numData, Bars, Open);
                                     break;
                                 case 1:
-                                    arguments[paramIndex] = prices.GetClose(numData);
+                                    arguments[paramIndex] = prices.GetClose(numData, Bars, Close);
                                     break;
                                 case 2:
-                                    arguments[paramIndex] = prices.GetHigh(numData);
+                                    arguments[paramIndex] = prices.GetHigh(numData, Bars, High);
                                     break;
                                 case 3:
-                                    arguments[paramIndex] = prices.GetLow(numData);
+                                    arguments[paramIndex] = prices.GetLow(numData, Bars, Low);
                                     break;
                             }
 
@@ -206,19 +207,19 @@ namespace forexAI
                             arguments[paramIndex] = numData - 1;
                             break;
                         case "inOpen":
-                            arguments[paramIndex] = prices.GetOpen(numData);
+                            arguments[paramIndex] = prices.GetOpen(numData, Bars, Open);
                             break;
                         case "inHigh":
-                            arguments[paramIndex] = prices.GetHigh(numData);
+                            arguments[paramIndex] = prices.GetHigh(numData, Bars, High);
                             break;
                         case "inLow":
-                            arguments[paramIndex] = prices.GetLow(numData);
+                            arguments[paramIndex] = prices.GetLow(numData, Bars, Low);
                             break;
                         case "inClose":
-                            arguments[paramIndex] = prices.GetClose(numData);
+                            arguments[paramIndex] = prices.GetClose(numData, Bars, Close);
                             break;
                         case "inVolume":
-                            arguments[paramIndex] = prices.GetVolume(numData);
+                            arguments[paramIndex] = prices.GetVolume(numData, Bars, Volume);
                             break;
                         case "outBegIdx":
                             arguments[paramIndex] = OutBegIdx;
@@ -230,10 +231,12 @@ namespace forexAI
                         case "outInteger":
                             arguments[paramIndex] = new int[numData];
                             OutIndex = paramIndex;
+                            log($"outIndexI={OutIndex}");
                             break;
                         case "outReal":
                             arguments[paramIndex] = new double[numData];
                             OutIndex = paramIndex;
+                            log($"outIndexR={OutIndex}");
                             break;
                         case "outAroonUp":
                             arguments[paramIndex] = new double[1000];
@@ -252,19 +255,44 @@ namespace forexAI
                             debug($"nothing found for {paramName}");
                             break;
                     }
-                    log($"arg[{paramIndex}] {arguments[paramIndex]}");
+                    log($"   arg[{paramIndex}] {arguments[paramIndex]}");
 
 
                     paramIndex++;
                 }
-                log($"dd={JsonConvert.SerializeObject(arguments)}");
+                log($"#arguments={SerializeObject(arguments)}");
 
                 stringOut = $"     {paramName}={paramValue} {comment}";
                 log(stringOut);
                 reassembledFunctions += $"[{functionName}] ";
+
+                arguments[OutIndex] = new double[1024];
+
+                log($"=> getting method [{functionName}]:{conf.parameters.parametersMap.Count} from TICTAC ...");
+                Type[] functionTypes = new Type[conf.parameters.parametersMap.Count];
+                int idx = 0;
+                foreach (var arg in arguments)
+                {
+                    if (arg.GetType().IsByRef)
+                        functionTypes[idx] = arg.GetType().MakeByRefType();
+                    else
+                        functionTypes[idx] = arg.GetType();
+
+                    idx++;
+                }
+
+                log($"functionTypes[{functionTypes.Length}]: {SerializeObject(functionTypes, Formatting.Indented)}");
+
+                MethodInfo mi = typeof(Core).GetMethod(functionName, functionTypes);
+                double[] result;
+                if (mi == null)
+                    error($"fail to load method [{functionName}] from TICTAC");
+                else
+                    log($"mi={mi.Module}");
             }
 
             log($"=> Reassembling done: {reassembledFunctions}");
+
             return;
         }
     }

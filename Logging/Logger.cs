@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using static System.ConsoleColor;
+using static Newtonsoft.Json.JsonConvert;
 
 namespace forexAI
 {
@@ -39,7 +40,7 @@ namespace forexAI
                     file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
                         Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " +
                         ((prefix.Length > 0 ? "[" + prefix + "] \r\n" : "") +
-                        JsonConvert.SerializeObject(data, jsonSettings)));
+                        SerializeObject(data, jsonSettings)));
                 }
             }
             catch (Exception e)
@@ -73,8 +74,8 @@ namespace forexAI
             StackFrame callStack = new StackFrame(1, true);
             StreamWriter file = new StreamWriter(Configuration.logFileName, true);
             file.WriteLine(DateTime.Now.ToString("h:mm:ss.ffff") + " <" +
-                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "error: " +
-                callStack.GetFileName() + ":" + callStack.GetFileLineNumber() + "# " + lines);
+                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "ERROR: file " +
+                callStack.GetFileName() + "@" + callStack.GetFileLineNumber() + $" in {callStack.GetMethod().Name}(): " + lines);
             file.Close();
         }
 

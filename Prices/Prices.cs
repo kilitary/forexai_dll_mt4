@@ -11,61 +11,55 @@ using FANNCSharp.Double;
 using Newtonsoft.Json;
 using NQuotes;
 using static forexAI.Logger;
-using forexAI.Api;
+using static Newtonsoft.Json.JsonConvert;
+
 namespace forexAI
 {
     public class LivePrices
     {
-        public Mql pMql  = new Mql();
-
-        public double[] GetOpen(int numData)
+        public double[] GetOpen(int numData, int Bars, IMqlArray<double> Open)
         {
-            double[] prices = new double[(pMql.Bars >= numData ? numData : pMql.Bars)];
+            double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-            for (int i = 0; i < (pMql.Bars >= numData ? numData : pMql.Bars); i++)
-                prices[i] = pMql.iOpen(pMql.Symbol(), MqlApi.PERIOD_M15, i);
-            log($"GetOpen({numData}) = {JsonConvert.SerializeObject(prices)}");
+            for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+                prices[i] = Open[i];
             return prices;
         }
 
-        public double[] GetClose(int numData)
+        public double[] GetClose(int numData, int Bars, IMqlArray<double> Close)
         {
-            double[] prices = new double[(pMql.Bars >= numData ? numData : pMql.Bars)];
+            double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-            for (int i = 0; i < (pMql.Bars >= numData ? numData : pMql.Bars); i++)
-                prices[i] = pMql.iClose(pMql.Symbol(), MqlApi.PERIOD_M15, i);
-            log($"GetClose({numData}) = {JsonConvert.SerializeObject(prices)}");
+            for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+                prices[i] = Close[i];
             return prices;
         }
 
-        public double[] GetHigh(int numData)
+        public double[] GetHigh(int numData, int Bars, IMqlArray<double> High)
         {
-            double[] prices = new double[(pMql.Bars >= numData ? numData : pMql.Bars)];
+            double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-            for (int i = 0; i < (pMql.Bars >= numData ? numData : pMql.Bars); i++)
-                prices[i] = pMql.iHigh(pMql.Symbol(), MqlApi.PERIOD_M15, i);
-            log($"GetHigh({numData}) = {JsonConvert.SerializeObject(prices)}");
+            for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+                prices[i] = High[i];
             return prices;
         }
 
-        public double[] GetLow(int numData)
+        public double[] GetLow(int numData, int Bars, IMqlArray<double> Low)
         {
-            double[] prices = new double[(pMql.Bars >= numData ? numData : pMql.Bars)];
+            double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-            for (int i = 0; i < (pMql.Bars >= numData ? numData : pMql.Bars); i++)
-                prices[i] = pMql.iLow(pMql.Symbol(), MqlApi.PERIOD_M15, i);
+            for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+                prices[i] = Low[i];
 
-            log($"GetLow({numData}) = {JsonConvert.SerializeObject(prices)}");
             return prices;
         }
 
-        public double[] GetVolume(int numData)
+        public double[] GetVolume(int numData, int Bars, IMqlArray<double> Volume)
         {
-            double[] prices = new double[(pMql.Bars >= numData ? numData : pMql.Bars)];
+            double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-            for (int i = 0; i < (pMql.Bars >= numData ? numData : pMql.Bars); i++)
-                prices[i] = pMql.iVolume(pMql.Symbol(), MqlApi.PERIOD_M15, i);
-            log($"GetVolume({numData}) = {JsonConvert.SerializeObject(prices)}");
+            for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+                prices[i] = Volume[i];
             return prices;
         }
     }
