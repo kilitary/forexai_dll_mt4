@@ -60,9 +60,9 @@ namespace forexAI
         public static double[] ExecuteSequence(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
             IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork,
-            bool reassembleCompleteOverride, string timeCurrent)
+            bool reassemblingCompletedOverride, string timeCurrent)
         {
-            reassemblingCompleted = reassembleCompleteOverride;
+            reassemblingCompleted = reassemblingCompletedOverride;
             if (!reassemblingCompleted)
                 log($"=> Reassembling input sequence ...");
 
@@ -363,9 +363,7 @@ namespace forexAI
 
             double[] networkOutput = forexNetwork.Run(entireSet);
 
-            //forexNetwork.DescaleOutput(networkOutput);
-
-            debug($"{timeCurrent} networkOutput = {networkOutput[0].ToString("0.0000")} : {networkOutput[1].ToString("0.0000")}");
+            //debug($"{timeCurrent} networkOutput = {networkOutput[0].ToString("0.0000")} : {networkOutput[1].ToString("0.0000")}");
 
             return networkOutput;
         }
