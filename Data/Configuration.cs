@@ -14,9 +14,10 @@ using System.Threading.Tasks;
 
 namespace forexAI
 {
+    // ♫ ♫ ♫ √
     public static class Configuration
     {
-        // common configuration
+        // common configuration    
         public static string rootDirectory = @"d:\temp\forexAI";
         public static string logFileName = $@"{Configuration.rootDirectory}\mt4.log";
         public static string settingsPath = $@"{Configuration.rootDirectory}\mt4forexai.cfg";
@@ -33,6 +34,7 @@ namespace forexAI
         public static int memcachedPort = 11211;
         public static int magickNumber = 0xC34;
 
+        // ♫ ♫ ♫ √
         // audio/FX
         public static string audioDirectory = @"d:\Audio_FX";
         public static string newDayWAV = $@"{Configuration.audioDirectory}\17130__noisecollector__ak47-chamber-round.wav";
@@ -41,6 +43,7 @@ namespace forexAI
         public static string lowBalanceWAV = $@"{Configuration.audioDirectory}\0838.wav";
         public static string goodWorkWAV = $@"{Configuration.audioDirectory}\0816.wav";
 
+        // ♥ ♥ ♥ ♥ √
         //[! ♡ ▄▀▀▀▄░░░ !] 
         //▄███▀░◐░░░▌░░░░[!] 
         //░░░░▌░░░░░▐░░░░░[!]
@@ -52,9 +55,9 @@ namespace forexAI
         //░░░░▀▄░░░░▀▄▒▒▒▒▒▒▒▒▒▒▀▄ 
         //[!]░░░▀▄▄▄▄▄█▄▄▄▄▄▄▄▄▄▄▄▀▄ 
         // Experimental features [!]
-        public static bool tryExperimentalFeatures = false;
+        public static bool tryExperimentalFeatures = false; // √
         //░░░░░░░░░░░▌▌░▌▌░░░░░  
-        public static int experimentalAlliedRandomUpperBound = 4498;
+        public static int experimentalAlliedRandomUpperBound = 4498; // √
         //░[!]░░░░░░░▌▌░▌▌░░░░░  
         //░░░░░░░░░░░▌▌░▌▌░░░░░  
         //░[!]░░░░░░░▌▌░▌▌░░░░░  

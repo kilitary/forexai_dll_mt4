@@ -44,7 +44,7 @@ namespace forexAI
         string middleLayerActivationFunction = string.Empty;
         string labelID, type = string.Empty;
         string symbol = string.Empty;
-        string charizedOrdersHistory = string.Emptys;
+        string charizedOrdersHistory = string.Empty;
         double trainHitRatio = 0.0;
         double testHitRatio = 0.0;
         double total = 0.0;

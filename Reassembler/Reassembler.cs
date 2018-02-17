@@ -246,25 +246,23 @@ namespace forexAI
                             arguments[paramIndex] = new int[numData];
                             OutIndex = paramIndex;
                             typeOut = 0;
-                            //    log($"outIndexI={OutIndex}");
                             break;
                         case "outReal":
                             arguments[paramIndex] = new double[numData];
                             OutIndex = paramIndex;
                             typeOut = 1;
-                            //   log($"outIndexR={OutIndex}");
                             break;
                         case "outAroonUp":
-                            arguments[paramIndex] = new double[1000];
+                            arguments[paramIndex] = new double[11];
                             break;
                         case "outAroonDown":
-                            arguments[paramIndex] = new double[1000];
+                            arguments[paramIndex] = new double[11];
                             break;
                         case "outSlowD":
                         case "outSlowK":
                         case "outFastD":
                         case "outFastK":
-                            arguments[paramIndex] = new double[1000];
+                            arguments[paramIndex] = new double[11];
                             break;
 
                         default:
@@ -318,9 +316,8 @@ namespace forexAI
 
                         for (int i = 0; i < OutNbElement; i++)
                         {
-                            if (resultDataDouble[i] == 0.0 && i == 0)
-                                if (!reassemblingCompleted)
-                                    warning($"fucking function {functionName} starts with zero");
+                            if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblingCompleted)
+                                warning($"fucking function {functionName} starts with zero");
                         }
                     }
                     else
@@ -328,9 +325,8 @@ namespace forexAI
                         resultDataDouble = (double[]) arguments[OutIndex];
                         for (int i = 0; i < OutNbElement; i++)
                         {
-                            if (resultDataDouble[i] == 0.0 && i == 0)
-                                if (!reassemblingCompleted)
-                                    warning($"fucking function {functionName} starts with zero");
+                            if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblingCompleted)
+                                warning($"fucking function {functionName} starts with zero");
                         }
                     }
 
