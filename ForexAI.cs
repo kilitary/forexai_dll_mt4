@@ -935,7 +935,7 @@ namespace forexAI
             debug("+ open sell  @" + Bid);
         }
 
-        void SendBuy(string comment = "")
+        void SendBuy(string comment="")
         {
             RefreshRates();
             OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Blue);
