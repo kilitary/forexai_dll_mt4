@@ -1,4 +1,5 @@
-﻿//╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
+﻿// ѼΞΞΞΞΞΞΞD   ѼΞΞΞΞΞΞΞD  ѼΞΞΞΞΞΞΞD 
+//╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
 //╰╰╮╰╭╱▔▔▔▔╲╮╯╭╯ 
 //┏━┓┏┫╭▅╲╱▅╮┣┓╭║║║ 
 //╰┳╯╰┫┗━╭╮━┛┣╯╯╚╬╝ 
@@ -28,7 +29,7 @@ namespace forexAI
 {
     public class ForexAI : MqlApi
     {
-        Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds());
+        Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
         Process currentProcess = null;
         Version version = null;
         NeuralNet forexNetwork = null;
@@ -43,9 +44,27 @@ namespace forexAI
         string middleLayerActivationFunction = string.Empty;
         string labelID, type = string.Empty;
         string symbol = string.Empty;
+        string charizedOrdersHistory = string.Empty;
+        double trainHitRatio = 0.0;
+        double testHitRatio = 0.0;
+        double total = 0.0;
+        double spends = 0.0;
+        double profit = 0.0;
+        double TrailingStop = 0.0;
+        double TrailingStep = 0.0;
+        double prevVolume;
+        double[] networkOutput = null;
+        float testMse = 0.0f;
+        float trainMse = 0.0f;
+        bool reassembleCompletedOverride = false;
+        bool hasNoticedLowBalance = false;
+        bool ProfitTrailing = true;
+        bool hasNightReported = false;
+        bool hasMorningReported = false;
+        bool applicationBootstrapped = false;
         int inputDimension = 0;
         int currentTicket = 0;
-        int operationsCount = 0;
+        int dayOperationsCount = 0;
         int ordersTotal = 0;
         int previousBars = 0;
         int barsPerDay = 0;
@@ -58,46 +77,24 @@ namespace forexAI
         int buysPermitted = 3;
         int sellsPermitted = 3;
         int currentDay;
-        double trainHitRatio = 0.0;
-        double testHitRatio = 0.0;
-        double total = 0.0;
-        double spends = 0.0;
-        double profit = 0.0;
-        double TrailingStop = 0.0;
-        double TrailingStep = 0.0;
-        double[] networkOutput;
-        float testMse = 0.0f;
-        float trainMse = 0.0f;
-        bool reassembleCompleteOverride = false;
-        bool hasNoticedLowBalance = false;
-        bool ProfitTrailing = true;
-        bool hasNightReported = false;
-        bool hasMorningReported = false;
-        bool applicationBooted = false;
-        double prevVolume;
 
-        //+------------------------------------------------------------------+■
+        //+------------------------------------------------------------------+
         //| Start function                                                   |
         //+------------------------------------------------------------------+
         public override int start()
         {
-            if (applicationBooted)
-                networkOutput = Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"), inputDimension,
-                   Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompleteOverride, 
-                   TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
-
-            DrawStats(true);
+            CheckForClose();
+            CalculateCurrentOrders();
+            DrawStats();
 
             if (Bars == previousBars)
                 return 0;
-
-            log($"=> NETWORK RUN: {networkOutput[0].ToString("0.0000")}:{networkOutput[1].ToString("0.0000")}");
 
             if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
             {
                 hasNightReported = true;
                 console($"Night....", ConsoleColor.Black, ConsoleColor.Gray);
-                AddLabel($"[NIGHT]", Color.White);
+                AddLabel($"[kNIGHT]", Color.White);
             }
             else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
                 hasNightReported = false;
@@ -116,32 +113,27 @@ namespace forexAI
             {
                 previousBankDay = Day();
 
-                log($"-> Day {previousBankDay.ToString("0")} [opsDone={operationsCount} barsPerDay={barsPerDay}] "
+                log($"-> Day {previousBankDay.ToString("0")} [opsDone={dayOperationsCount} barsPerDay={barsPerDay}] "
                     + (forexNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 
-                totalOperationsCount += operationsCount;
-                operationsCount = 0;
+                totalOperationsCount += dayOperationsCount;
+                dayOperationsCount = 0;
                 barsPerDay = 0;
 
-                ShowMemoryUsage();
                 FX.TheNewDay();
             }
+
+            log($"=> Probability: Buy={BuyProbability().ToString("0.000")} Sell={SellProbability().ToString("0.000")}");
 
             File.AppendAllText(Configuration.randomLogFileName, random.Next(99).ToString("00") + " ");
             File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
 
+            TryEnterForex();
 
-            DrawStats();
-
-
-            CalculateCurrentOrders();
-
-            //if (OrdersTotal() <= 0)
-            //  CheckForOpen();
-
-            CheckForClose();
-
-            CheckVolumeDisturbance();
+            if (applicationBootstrapped)
+                networkOutput = Reassembler.ExecuteSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
+                    inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
+                    TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
 
             if (Configuration.tryExperimentalFeatures)
                 AlliedInstructions();
@@ -155,8 +147,6 @@ namespace forexAI
             else if (hasNoticedLowBalance && YRandom.Next(0, 6) == 3)
                 FX.GoodWork();
 
-
-
             previousBars = Bars;
             barsPerDay += 1;
 
@@ -166,8 +156,9 @@ namespace forexAI
         public override int init()
         {
             currentDay = (int) System.DateTime.Now.DayOfWeek;
-            applicationBooted = false;
-            reassembleCompleteOverride = false;
+            applicationBootstrapped = false;
+            reassembleCompletedOverride = false;
+
             console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
                 ConsoleColor.Black, ConsoleColor.Cyan);
 
@@ -178,7 +169,7 @@ namespace forexAI
             #region matters
             if ((Environment.MachineName == "USER-PC" ||
                 (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused())) &&
-                (currentDay == 6 || currentDay == 0))
+                (currentDay == 0))
                 Configuration.tryExperimentalFeatures = true;
             #endregion
 
@@ -199,8 +190,25 @@ namespace forexAI
             log(initStr);
             console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
 
-            reassembleCompleteOverride = true;
-            applicationBooted = true;
+            reassembleCompletedOverride = true;
+            applicationBootstrapped = true;
+
+            return 0;
+        }
+
+        public override int deinit()
+        {
+            log("Deinitializing ...");
+            log($"Balance={AccountBalance()} Orders={OrdersTotal()} UninitializeReason={UninitializeReason()}");
+
+            settings.Set("functions", Data.nnFunctions);
+            settings.Set("balance", AccountBalance());
+            settings.Save();
+            storage.SyncData();
+
+            string mins = ((((double) GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
+            log($"Uptime {mins} mins, has do {totalOperationsCount + dayOperationsCount} operations.");
+            console("... shutted down.", ConsoleColor.Black, ConsoleColor.Red);
 
             return 0;
         }
@@ -217,33 +225,29 @@ namespace forexAI
             settings["random"] = random.Next(int.MaxValue);
         }
 
-        public override int deinit()
+        void TryEnterForex()
         {
-            log("Deinitializing ...");
-            log($"Balance={AccountBalance()} Orders={OrdersTotal()} UninitializeReason={UninitializeReason()}");
+            if (BuyProbability() > 0.8 && CountBuys() == 0)
+                SendBuy(BuyProbability().ToString("0.000"));
+            if (SellProbability() > 0.8 && CountSells() == 0)
+                SendSell(SellProbability().ToString("0.000"));
 
-            settings.Set("functions", Data.nnFunctions);
-            settings.Set("balance", AccountBalance());
-            settings.Save();
-            storage.SyncData();
-
-            string mins = ((((double) GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
-            log($"Uptime {mins} mins, has do {totalOperationsCount} operations.");
-            console("... shutted down.", ConsoleColor.Black, ConsoleColor.Red);
-
-            return 0;
+            if (BuyProbability() < -0.3 && CountBuys() > 0)
+                CloseBuys();
+            if (SellProbability() < -0.3 && CountSells() > 0)
+                CloseSells();
         }
 
         void ShowBanner()
         {
-            log($"# Automated Expert for MT4 using neural network with strategy created by code/data fuzzing. [met8]");
-            log($"# (c) 2018 Deconf (kilitary@gmail.com teleg:@deconf skype:serjnah icq:401112)");
+            log($"> Automated Expert for MT4 using neural network with strategy created by code/data fuzzing. [met8]");
+            log($"> (c) 2018 Deconf (kilitary@gmail.com teleg:@deconf skype:serjnah icq:401112)");
 
             version = Assembly.GetExecutingAssembly().GetName().Version;
             log($"Initializing version {version} ...");
 
             Console.Title = $"Automated MT4 trading expert debug console. Version {version}. "
-                + (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : "");
+                + (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
         }
 
         void ListGlobalVariables()
@@ -330,8 +334,8 @@ namespace forexAI
             inputLayerActivationFunction = matches.Groups[1].Value;
             middleLayerActivationFunction = matches.Groups[2].Value;
 
-            Reassembler.Build(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
-                Open, Close, High, Low, Volume, Bars, forexNetwork, false, 
+            Reassembler.ExecuteSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
+                Open, Close, High, Low, Volume, Bars, forexNetwork, false,
                 TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
         }
 
@@ -367,28 +371,6 @@ namespace forexAI
             log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={forexNetwork.BitFail}");
         }
 
-        // -------^-----------------^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
-        void CheckVolumeDisturbance()
-        {
-            if (Volume[1] - prevVolume > 450 && TimeHour(TimeCurrent()) > 5 && TimeHour(TimeCurrent()) < 17)
-            {
-                //debug($"vol {Volume[1]} diff {prevVolume - Volume[1]}");
-                AddLabel($"VOL DIFF {prevVolume - Volume[1]}", Color.SkyBlue);
-                console($"volume disturbance detected diff={Math.Abs(prevVolume - Volume[1])} points. Time={TimeCurrent()}",
-                    ConsoleColor.Black, ConsoleColor.Magenta);
-
-                if (IsTrendM15Up(3) && IsTrendH1Up(3) && buysPermitted-- > 0 && BuysProfitable())
-                    SendBuy();
-                if (IsTrendM15Down(3) && IsTrendH1Down(3) && sellsPermitted-- > 0 && SellsProfitable())
-                    SendSell();
-            }
-
-            //if (IsFlat(10))
-            //    AddLabel($"[Flat]");
-
-            prevVolume = Volume[1];
-        }
-
         bool BuysProfitable()
         {
             double buyIncome = 0.0;
@@ -421,101 +403,30 @@ namespace forexAI
             return false;
         }
 
-        bool IsTrendM15Up(int bars)
+        int CountBuys()
         {
-            bool up = true;
-            double trend_y, prev_trend_y = 0.0;
-
-            if (Bars <= bars)
-                return (false);
-
-            for (int i = 0; i < bars; i++)
+            int count = 0;
+            for (int cur_order = OrdersTotal() - 1; cur_order >= 0; cur_order--)
             {
-                trend_y = iCustom(symbol, PERIOD_M15, "Trend Magic", 0, i);
-                //debug($"up trend_y={trend_y}");
-                if ((prev_trend_y > 0.0 && trend_y > prev_trend_y) || trend_y == 2147483647)
-                    return (false);
-                prev_trend_y = trend_y;
+                if (!(OrderSelect(cur_order, SELECT_BY_POS, MODE_TRADES)))
+                    break;
+                if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
+                    count++;
             }
-
-            return (true);
+            return count;
         }
 
-
-        bool IsTrendM15Down(int bars)
+        int CountSells()
         {
-            bool up = true;
-            double trend_y, prev_trend_y = 0.0;
-
-            if (Bars <= bars)
-                return (false);
-
-            for (int i = 0; i < bars; i++)
+            int count = 0;
+            for (int l_pos_216 = OrdersTotal() - 1; l_pos_216 >= 0; l_pos_216--)
             {
-                trend_y = iCustom(symbol, PERIOD_M15, "Trend Magic", 0, i);
-                //debug($"down trend_y={trend_y}");
-                if ((prev_trend_y > 0.0 && trend_y < prev_trend_y) || trend_y == 2147483647)
-                    return (false);
-                prev_trend_y = trend_y;
+                if (!(OrderSelect(l_pos_216, SELECT_BY_POS, MODE_TRADES)))
+                    break;
+                if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
+                    count++;
             }
-
-            return (true);
-        }
-
-        bool IsTrendH1Up(int bars)
-        {
-            bool up = true;
-            double trend_y, prev_trend_y = 0.0;
-
-            if (Bars <= bars)
-                return (false);
-
-            for (int i = 0; i < bars; i++)
-            {
-                trend_y = iCustom(symbol, PERIOD_H1, "Trend Magic", 0, i);
-                //debug($"up trend_y={trend_y}");
-                if ((prev_trend_y > 0.0 && trend_y > prev_trend_y) || trend_y == 2147483647)
-                    return (false);
-                prev_trend_y = trend_y;
-            }
-
-            return (true);
-        }
-
-
-        bool IsTrendH1Down(int bars)
-        {
-            bool up = true;
-            double trend_y, prev_trend_y = 0.0;
-
-            if (Bars <= bars)
-                return (false);
-
-            for (int i = 0; i < bars; i++)
-            {
-                trend_y = iCustom(symbol, PERIOD_H1, "Trend Magic", 0, i);
-                //debug($"down trend_y={trend_y}");
-                if ((prev_trend_y > 0.0 && trend_y < prev_trend_y) || trend_y == 2147483647)
-                    return (false);
-                prev_trend_y = trend_y;
-            }
-
-            return (true);
-        }
-
-        bool IsFlat(int flat_bars = 5)
-        {
-            double trend_1, trend_2;
-
-            trend_1 = iCustom(symbol, PERIOD_M15, "Trend Magic", 1, 0);
-            trend_2 = iCustom(symbol, PERIOD_M15, "Trend Magic", 0, 0);
-
-            for (int i = 1; i < flat_bars; i++)
-                if (iCustom(symbol, PERIOD_M15, "Trend Magic", 1, i) != trend_1 ||
-                    iCustom(symbol, PERIOD_M15, "Trend Magic", 0, i) != trend_2)
-                    return (false);
-
-            return (true);
+            return count;
         }
 
         int CloseBuys()
@@ -528,6 +439,8 @@ namespace forexAI
                 if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
                 {
                     OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_BID), 2);
+                    dayOperationsCount++;
+                    charizedOrdersHistory += "c";
                 }
             }
             return (0);
@@ -543,6 +456,8 @@ namespace forexAI
                 if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
                 {
                     OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_ASK), 2);
+                    dayOperationsCount++;
+                    charizedOrdersHistory += "c";
                 }
             }
             return (0);
@@ -560,9 +475,6 @@ namespace forexAI
                 if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
                     break;
 
-                if (OrderMagicNumber() != magickNumber || OrderSymbol() != symbol)
-                    continue;
-
                 if (OrderType() == OP_BUY)
                 {
                     if (OrderProfit() + OrderSwap() + OrderCommission() <= -6.0)
@@ -575,7 +487,8 @@ namespace forexAI
 
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
-                        operationsCount++;
+                        dayOperationsCount++;
+                        charizedOrdersHistory += "u";
                     }
                     else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.5)
                     {
@@ -588,7 +501,8 @@ namespace forexAI
 
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
-                        operationsCount++;
+                        dayOperationsCount++;
+                        charizedOrdersHistory += "x";
                     }
                 }
                 if (OrderType() == OP_SELL)
@@ -604,7 +518,8 @@ namespace forexAI
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
                         debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
-                        operationsCount++;
+                        dayOperationsCount++;
+                        charizedOrdersHistory += "u";
                     }
                     else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.5)
                     {
@@ -618,7 +533,8 @@ namespace forexAI
                         OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
                         debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
-                        operationsCount++;
+                        dayOperationsCount++;
+                        charizedOrdersHistory += "x";
                     }
                 }
             }
@@ -655,7 +571,7 @@ namespace forexAI
 
         void DrawStats(bool commentsOnly = false)
         {
-            if (commentsOnly)
+            if (!commentsOnly)
             {
                 int i;
 
@@ -776,10 +692,10 @@ namespace forexAI
                     ObjectSet(labelID, OBJPROP_YDISTANCE, 40);
                 }
                 ObjectSetText(labelID,
-                              "xxxx",
+                              charizedOrdersHistory,
                               8,
                               "lucida console",
-                              Color.Yellow);
+                              Color.Salmon);
 
                 labelID = gs_80 + "9";
                 if (ObjectFind(labelID) == -1)
@@ -790,7 +706,7 @@ namespace forexAI
                     ObjectSet(labelID, OBJPROP_YDISTANCE, 50);
                 }
 
-                ObjectSetText(labelID, "Total operations: " + totalOperationsCount, 8, "lucida console", Color.Yellow);
+                ObjectSetText(labelID, "Total operations: " + (totalOperationsCount + dayOperationsCount), 8, "lucida console", Color.Yellow);
 
                 labelID = gs_80 + "10";
                 if (ObjectFind(labelID) == -1)
@@ -815,7 +731,7 @@ namespace forexAI
                     ObjectSet(labelID, OBJPROP_XDISTANCE, 10);
                     ObjectSet(labelID, OBJPROP_YDISTANCE, 70);
                 }
-                ObjectSetText(labelID, "genetic1: " + dirtext, 8, "lucida console", Color.Yellow);
+                ObjectSetText(labelID, "Buy Probability: " + BuyProbability().ToString("0.0000"), 10, "lucida console", Color.LightGreen);
 
                 labelID = gs_80 + "12";
                 if (ObjectFind(labelID) == -1)
@@ -825,7 +741,9 @@ namespace forexAI
                     ObjectSet(labelID, OBJPROP_XDISTANCE, 10);
                     ObjectSet(labelID, OBJPROP_YDISTANCE, 80);
                 }
-                ObjectSetText(labelID, "genetic2: " + dirtext2, 8, "lucida console", Color.Yellow);
+                ObjectSetText(labelID, "Sell Probability: " + SellProbability().ToString("0.0000"), 10, "lucida console", Color.LightGreen);
+
+                WindowRedraw();
             }
 
             totalSpends = spendSells + spendBuys;
@@ -842,8 +760,6 @@ namespace forexAI
                 ObjectSet("statyys", OBJPROP_XDISTANCE, 150);
                 ObjectSet("statyys", OBJPROP_YDISTANCE, 16);
             }
-
-            WindowRedraw();
 
             if (forexNetwork != null)
             {
@@ -914,12 +830,25 @@ namespace forexAI
               "Train Hit Ratio: " +
                trainHitRatio.ToString("0.00") +
                "%\r\n" +
-               "Current Output: " +
-               (networkOutput != null && networkOutput[0] != null && networkOutput[1] != null ? ($"{ networkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ networkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : ""));
+               "Network Output: " +
+               ((networkOutput != null && networkOutput[0] != 0.0 && networkOutput[1] != 0.0) ?
+               ($"{ networkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ networkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : ""));
 
             }
+        }
 
+        double BuyProbability()
+        {
+            if (networkOutput == null)
+                return 0.0;
+            return networkOutput[1];
+        }
 
+        double SellProbability()
+        {
+            if (networkOutput == null)
+                return 0.0;
+            return networkOutput[0];
         }
 
         double GetActiveIncome()
@@ -998,35 +927,35 @@ namespace forexAI
             return (-openedSells);
         }
 
-        void SendSell()
+        void SendSell(string comment)
         {
             RefreshRates();
-            OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Red);
-            operationsCount++;
+            OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Red);
+            dayOperationsCount++;
             debug("+ open sell  @" + Bid);
         }
 
-        void SendBuy()
+        void SendBuy(string comment)
         {
             RefreshRates();
-            OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, "", magickNumber, DateTime.MinValue, Color.Blue);
-            operationsCount++;
+            OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Blue);
+            dayOperationsCount++;
             debug("+ open buy @" + Ask);
         }
 
         ////+------------------------------------------------------------------+
         ////| Check for open order conditions                                  |
         ////+------------------------------------------------------------------+
-        private void CheckForOpen()
-        {
-            double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
+        //private void CheckForOpen()
+        //{
+        //    double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
 
-            if (Open[1] > ma && Close[1] < ma && YRandom.Next(4) == 2)
-                SendSell();
+        //    if (Open[1] > ma && Close[1] < ma && YRandom.Next(4) == 2)
+        //        SendSell();
 
-            if (Open[1] < ma && Close[1] > ma && YRandom.Next(4) == 2)
-                SendBuy();
-        }
+        //    if (Open[1] < ma && Close[1] > ma && YRandom.Next(4) == 2)
+        //        SendBuy();
+        //}
 
         //void TrailingPositions()
         //{
