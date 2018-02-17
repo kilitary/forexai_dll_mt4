@@ -79,6 +79,8 @@ namespace forexAI
                 console("дяя", ConsoleColor.Black, ConsoleColor.Yellow);
             else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4423)
                 console("да", ConsoleColor.Black, ConsoleColor.Yellow);
+            else if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == 4424)
+                console("просто не слушай, и всё пройдёт", ConsoleColor.Black, ConsoleColor.DarkGray);
 
             if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == Configuration.experimentalAlliedRandomUpperBound)
                 console("и чо", ConsoleColor.Black, ConsoleColor.Yellow);

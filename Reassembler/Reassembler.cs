@@ -347,10 +347,7 @@ namespace forexAI
             }
 
             if (!reassemblingCompleted)
-            {
                 log($"=> ret={ret} entireset={SerializeObject(entireSet)}");
-                log($"=> Reassembling [ SUCCESS ] {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}");
-            }
 
             if (forexNetwork.InputCount != entireSet.Length)
             {
@@ -360,6 +357,9 @@ namespace forexAI
                 failedReassemble = true;
                 return null;
             }
+
+            if (!reassemblingCompleted)
+                log($"=> Reassembling [ SUCCESS ] {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}");
 
             double[] networkOutput = forexNetwork.Run(entireSet);
 
