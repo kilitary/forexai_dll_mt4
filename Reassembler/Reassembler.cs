@@ -55,15 +55,15 @@ namespace forexAI
         static double[] resultDataDouble = null;
         static double[] entireSet = null;
         static bool failedReassemble;
-        static bool reassembleCompleted = false;
+        static bool reassemblingCompleted = false;
 
         public static double[] ExecuteSequence(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
             IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork,
             bool reassembleCompleteOverride, string timeCurrent)
         {
-            reassembleCompleted = reassembleCompleteOverride;
-            if (!reassembleCompleted)
+            reassemblingCompleted = reassembleCompleteOverride;
+            if (!reassemblingCompleted)
                 log($"=> Reassembling input sequence ...");
 
             reassembledFunctions = string.Empty;
@@ -72,7 +72,7 @@ namespace forexAI
 
             entireSet = null;
             if (failedReassemble)
-                reassembleCompleted = false;
+                reassemblingCompleted = false;
             failedReassemble = false;
             sourceInputDimension = inputDimension;
 
@@ -81,7 +81,7 @@ namespace forexAI
             functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
                 (functionConfigurationString, jsonSettings);
 
-            if (!reassembleCompleted)
+            if (!reassemblingCompleted)
                 log($"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
 
             object[] arguments = null;
@@ -274,7 +274,7 @@ namespace forexAI
                     paramIndex++;
                 }
 
-                if (!reassembleCompleted)
+                if (!reassemblingCompleted)
                     log($"=> {functionName} arguments({arguments.Length})={SerializeObject(arguments)}");
 
                 reassembledFunctions += $"{functionName}|";
@@ -298,7 +298,6 @@ namespace forexAI
                 }
 
                 MethodInfo AIPartFunction = typeof(Core).GetMethod(functionName, functionTypes);
-                //  OutNbElement = (int) arguments[OutNbElement];
                 if (AIPartFunction == null)
                 {
                     error($"fail to load method [{functionName}] from TICTAC");
@@ -320,7 +319,7 @@ namespace forexAI
                         for (int i = 0; i < OutNbElement; i++)
                         {
                             if (resultDataDouble[i] == 0.0 && i == 0)
-                                if (!reassembleCompleted)
+                                if (!reassemblingCompleted)
                                     warning($"fucking function {functionName} starts with zero");
                         }
                     }
@@ -330,16 +329,16 @@ namespace forexAI
                         for (int i = 0; i < OutNbElement; i++)
                         {
                             if (resultDataDouble[i] == 0.0 && i == 0)
-                                if (!reassembleCompleted)
+                                if (!reassemblingCompleted)
                                     warning($"fucking function {functionName} starts with zero");
                         }
                     }
 
                     startIdx = (int) arguments[nOutBegIdx];
-                    if (!reassembleCompleted && startIdx != 0)
+                    if (!reassemblingCompleted && startIdx != 0)
                         warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
 
-                    if (!reassembleCompleted)
+                    if (!reassemblingCompleted)
                         log($"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
                     int prevLen = entireSet == null ? 0 : entireSet.Length;
@@ -351,7 +350,7 @@ namespace forexAI
                 }
             }
 
-            if (!reassembleCompleted)
+            if (!reassemblingCompleted)
             {
                 log($"=> ret={ret} entireset={SerializeObject(entireSet)}");
                 log($"=> Reassembling [ SUCCESS ] {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}");
@@ -361,9 +360,9 @@ namespace forexAI
             {
                 error($"=> reassembler FAILED to reassemble input sequence: diff in input count of network is " +
                     $"{Math.Abs(entireSet.Length - forexNetwork.InputCount)}");
-                reassembleCompleted = false;
+                reassemblingCompleted = false;
                 failedReassemble = true;
-                return new double[] { 0.0, 0.0 };
+                return null;
             }
 
             double[] networkOutput = forexNetwork.Run(entireSet);

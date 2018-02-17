@@ -44,7 +44,7 @@ namespace forexAI
         string middleLayerActivationFunction = string.Empty;
         string labelID, type = string.Empty;
         string symbol = string.Empty;
-        string charizedHistory;
+        string charizedOrdersHistory = string.Emptys;
         double trainHitRatio = 0.0;
         double testHitRatio = 0.0;
         double total = 0.0;
@@ -53,7 +53,7 @@ namespace forexAI
         double TrailingStop = 0.0;
         double TrailingStep = 0.0;
         double prevVolume;
-        double[] networkOutput;
+        double[] networkOutput = null;
         float testMse = 0.0f;
         float trainMse = 0.0f;
         bool reassembleCompletedOverride = false;
@@ -83,11 +83,6 @@ namespace forexAI
         //+------------------------------------------------------------------+
         public override int start()
         {
-            if (applicationBootstrapped)
-                networkOutput = Reassembler.ExecuteSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
-                    inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
-                    TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
-
             CheckForClose();
             CalculateCurrentOrders();
             DrawStats();
@@ -135,6 +130,11 @@ namespace forexAI
 
             TryEnterForex();
 
+            if (applicationBootstrapped)
+                networkOutput = Reassembler.ExecuteSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
+                    inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
+                    TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
+
             if (Configuration.tryExperimentalFeatures)
                 AlliedInstructions();
 
@@ -151,19 +151,6 @@ namespace forexAI
             barsPerDay += 1;
 
             return 0;
-        }
-
-        void TryEnterForex()
-        {
-            if (BuyProbability() > 0.8 && CountBuys() == 0)
-                SendBuy(BuyProbability().ToString("0.000"));
-            if (SellProbability() > 0.8 && CountSells() == 0)
-                SendSell(SellProbability().ToString("0.000"));
-
-            if (BuyProbability() < -0.3 && CountBuys() > 0)
-                CloseBuys();
-            if (SellProbability() < -0.3 && CountSells() > 0)
-                CloseSells();
         }
 
         public override int init()
@@ -209,18 +196,6 @@ namespace forexAI
             return 0;
         }
 
-        public void InitVariables()
-        {
-            symbol = Symbol();
-            currentProcess = Process.GetCurrentProcess();
-
-            if (Configuration.useMysql)
-                Data.db = new DB();
-
-            settings["yrandom"] = YRandom.Next(int.MaxValue);
-            settings["random"] = random.Next(int.MaxValue);
-        }
-
         public override int deinit()
         {
             log("Deinitializing ...");
@@ -236,6 +211,31 @@ namespace forexAI
             console("... shutted down.", ConsoleColor.Black, ConsoleColor.Red);
 
             return 0;
+        }
+
+        public void InitVariables()
+        {
+            symbol = Symbol();
+            currentProcess = Process.GetCurrentProcess();
+
+            if (Configuration.useMysql)
+                Data.db = new DB();
+
+            settings["yrandom"] = YRandom.Next(int.MaxValue);
+            settings["random"] = random.Next(int.MaxValue);
+        }
+
+        void TryEnterForex()
+        {
+            if (BuyProbability() > 0.8 && CountBuys() == 0)
+                SendBuy(BuyProbability().ToString("0.000"));
+            if (SellProbability() > 0.8 && CountSells() == 0)
+                SendSell(SellProbability().ToString("0.000"));
+
+            if (BuyProbability() < -0.3 && CountBuys() > 0)
+                CloseBuys();
+            if (SellProbability() < -0.3 && CountSells() > 0)
+                CloseSells();
         }
 
         void ShowBanner()
@@ -440,7 +440,7 @@ namespace forexAI
                 {
                     OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_BID), 2);
                     dayOperationsCount++;
-                    charizedHistory += "c";
+                    charizedOrdersHistory += "c";
                 }
             }
             return (0);
@@ -457,7 +457,7 @@ namespace forexAI
                 {
                     OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_ASK), 2);
                     dayOperationsCount++;
-                    charizedHistory += "c";
+                    charizedOrdersHistory += "c";
                 }
             }
             return (0);
@@ -488,7 +488,7 @@ namespace forexAI
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedHistory += "u";
+                        charizedOrdersHistory += "u";
                     }
                     else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.5)
                     {
@@ -502,7 +502,7 @@ namespace forexAI
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedHistory += "x";
+                        charizedOrdersHistory += "x";
                     }
                 }
                 if (OrderType() == OP_SELL)
@@ -519,7 +519,7 @@ namespace forexAI
                         debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedHistory += "u";
+                        charizedOrdersHistory += "u";
                     }
                     else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.5)
                     {
@@ -534,7 +534,7 @@ namespace forexAI
                         debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedHistory += "x";
+                        charizedOrdersHistory += "x";
                     }
                 }
             }
@@ -692,10 +692,10 @@ namespace forexAI
                     ObjectSet(labelID, OBJPROP_YDISTANCE, 40);
                 }
                 ObjectSetText(labelID,
-                              charizedHistory,
+                              charizedOrdersHistory,
                               8,
                               "lucida console",
-                              Color.Yellow);
+                              Color.Salmon);
 
                 labelID = gs_80 + "9";
                 if (ObjectFind(labelID) == -1)
@@ -835,17 +835,19 @@ namespace forexAI
                ($"{ networkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ networkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : ""));
 
             }
-
-
         }
 
         double BuyProbability()
         {
+            if (networkOutput == null)
+                return 0.0;
             return networkOutput[1];
         }
 
         double SellProbability()
         {
+            if (networkOutput == null)
+                return 0.0;
             return networkOutput[0];
         }
 
