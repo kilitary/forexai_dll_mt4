@@ -83,6 +83,9 @@ namespace forexAI
         //+------------------------------------------------------------------+
         public override int start()
         {
+            if (!applicationBootstrapped)
+                return 0;
+
             CheckForClose();
             CalculateCurrentOrders();
             DrawStats();
@@ -130,10 +133,9 @@ namespace forexAI
 
             TryEnterForex();
 
-            if (applicationBootstrapped)
-                networkOutput = Reassembler.ExecuteSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
-                    inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
-                    TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
+            networkOutput = Reassembler.ExecuteSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
+                inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
+                TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
 
             if (Configuration.tryExperimentalFeatures)
                 AlliedInstructions();
@@ -172,6 +174,7 @@ namespace forexAI
                 (currentDay == 0))
                 Configuration.tryExperimentalFeatures = true;
             #endregion
+            Configuration.tryExperimentalFeatures = false;
 
             InitVariables();
             ShowBanner();
@@ -213,7 +216,7 @@ namespace forexAI
             return 0;
         }
 
-        public void InitVariables()
+        void InitVariables()
         {
             symbol = Symbol();
             currentProcess = Process.GetCurrentProcess();
@@ -935,7 +938,7 @@ namespace forexAI
             debug("+ open sell  @" + Bid);
         }
 
-        void SendBuy(string comment="")
+        void SendBuy(string comment = "")
         {
             RefreshRates();
             OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Blue);
