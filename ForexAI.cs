@@ -85,7 +85,7 @@ namespace forexAI
         {
             CheckForClose();
             CalculateCurrentOrders();
-            TryEnterForex();
+            EnterExitPositions();
             DrawStats();
 
             if (Bars == previousBars)
@@ -134,7 +134,7 @@ namespace forexAI
                     inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
                     TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
 
-            #region allied_instructions
+            #region matters
             if (Configuration.tryExperimentalFeatures)
                 AlliedInstructions();
             #endregion
@@ -238,17 +238,17 @@ namespace forexAI
                 + (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
         }
 
-        void TryEnterForex()
+        void EnterExitPositions()
         {
-            if (BuyProbability() >= 0.9 && CountBuys() == 0)
+            if (BuyProbability() >= 0.7 && SellProbability() <= -0.6 && CountBuys() == 0)
                 SendBuy(BuyProbability().ToString("0.000"));
-            if (SellProbability() >= 0.9 && CountSells() == 0)
+            if (SellProbability() >= 0.7 && BuyProbability() <= -0.6 && CountSells() == 0)
                 SendSell(SellProbability().ToString("0.000"));
 
-            if (BuyProbability() < -0.7 && CountBuys() > 0)
+           /* if (BuyProbability() <= -1.0 && CountBuys() > 0)
                 CloseBuys();
-            if (SellProbability() < -0.7 && CountSells() > 0)
-                CloseSells();
+            if (SellProbability() <= -1.0 && CountSells() > 0)
+                CloseSells();*/
         }
 
         void ListGlobalVariables()
@@ -497,7 +497,7 @@ namespace forexAI
                         dayOperationsCount++;
                         charizedOrdersHistory += "u";
                     }
-                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
+                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.3)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
@@ -528,7 +528,7 @@ namespace forexAI
                         dayOperationsCount++;
                         charizedOrdersHistory += "u";
                     }
-                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
+                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.3)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
@@ -693,14 +693,14 @@ namespace forexAI
             {
                 ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
                 ObjectSet(labelID, OBJPROP_CORNER, 1);
-                ObjectSet(labelID, OBJPROP_XDISTANCE, 1567);
-                ObjectSet(labelID, OBJPROP_YDISTANCE, 516);
+                ObjectSet(labelID, OBJPROP_XDISTANCE, 1561);
+                ObjectSet(labelID, OBJPROP_YDISTANCE, 632);
             }
             ObjectSetText(labelID,
-                          charizedOrdersHistory,
+                          $"sign: {charizedOrdersHistory}",
                           19,
                           "consolas",
-                          Color.Salmon);
+                          Color.GreenYellow);
 
             labelID = gs_80 + "9";
             if (ObjectFind(labelID) == -1)
@@ -734,7 +734,7 @@ namespace forexAI
                 ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
                 ObjectSet(labelID, OBJPROP_CORNER, 1);
                 ObjectSet(labelID, OBJPROP_XDISTANCE, 17);
-                ObjectSet(labelID, OBJPROP_YDISTANCE, 283);
+                ObjectSet(labelID, OBJPROP_YDISTANCE, 191);
             }
             ObjectSetText(labelID, "Buy Prob. " + BuyProbability().ToString("0.0000"), 14, "lucida console", Color.LightCyan);
 
@@ -940,7 +940,7 @@ namespace forexAI
             OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Red);
             dayOperationsCount++;
             debug("+ open sell  @" + Bid);
-            AddLabel($"SP {SellProbability().ToString("0.0")}", Color.Yellow);
+            AddLabel($"SP {SellProbability().ToString("0.0")} BP {BuyProbability().ToString("0.0")}", Color.Yellow);
         }
 
         void SendBuy(string comment)
@@ -949,7 +949,7 @@ namespace forexAI
             OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Blue);
             dayOperationsCount++;
             debug("+ open buy @" + Ask);
-            AddLabel($"BP {BuyProbability().ToString("0.0")}", Color.Yellow);
+            AddLabel($"BP {BuyProbability().ToString("0.0")} SP {SellProbability().ToString("0.0")}", Color.Yellow);
         }
 
         ////+------------------------------------------------------------------+
