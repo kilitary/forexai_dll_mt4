@@ -363,6 +363,8 @@ namespace forexAI
 
             double[] networkOutput = forexNetwork.Run(entireSet);
 
+            //forexNetwork.DescaleOutput(networkOutput);
+
             //debug($"{timeCurrent} networkOutput = {networkOutput[0].ToString("0.0000")} : {networkOutput[1].ToString("0.0000")}");
 
             return networkOutput;
