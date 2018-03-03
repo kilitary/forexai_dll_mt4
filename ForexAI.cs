@@ -130,7 +130,7 @@ namespace forexAI
             File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
 
             if (applicationBootstrapped)
-                networkOutput = Reassembler.ExecuteSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
+                networkOutput = Reassembler.Execute(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
                     inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
                     TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
 
@@ -240,14 +240,14 @@ namespace forexAI
 
         void TryEnterForex()
         {
-            if (BuyProbability() > 0.8 && CountBuys() == 0)
+            if (BuyProbability() >= 0.9 && CountBuys() == 0)
                 SendBuy(BuyProbability().ToString("0.000"));
-            if (SellProbability() > 0.8 && CountSells() == 0)
+            if (SellProbability() >= 0.9 && CountSells() == 0)
                 SendSell(SellProbability().ToString("0.000"));
 
-            if (BuyProbability() < -0.3 && CountBuys() > 0)
+            if (BuyProbability() < -0.7 && CountBuys() > 0)
                 CloseBuys();
-            if (SellProbability() < -0.3 && CountSells() > 0)
+            if (SellProbability() < -0.7 && CountSells() > 0)
                 CloseSells();
         }
 
@@ -335,7 +335,7 @@ namespace forexAI
             inputLayerActivationFunction = matches.Groups[1].Value;
             middleLayerActivationFunction = matches.Groups[2].Value;
 
-            Reassembler.ExecuteSequence(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
+            Reassembler.Execute(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
                 Open, Close, High, Low, Volume, Bars, forexNetwork, false,
                 TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
         }
@@ -477,8 +477,6 @@ namespace forexAI
         ////+------------------------------------------------------------------+
         private void CheckForClose()
         {
-            double ma = iMA(symbol, 0, 25, 1, MODE_SMA, PRICE_CLOSE, 0);
-
             for (int i = 0; i < OrdersTotal(); i++)
             {
                 if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
@@ -486,7 +484,7 @@ namespace forexAI
 
                 if (OrderType() == OP_BUY)
                 {
-                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -6.0)
+                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -9.0)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -516,7 +514,7 @@ namespace forexAI
                 }
                 if (OrderType() == OP_SELL)
                 {
-                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -6.0)
+                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -9.0)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -700,8 +698,8 @@ namespace forexAI
             }
             ObjectSetText(labelID,
                           charizedOrdersHistory,
-                          14,
-                          "lucida console",
+                          19,
+                          "consolas",
                           Color.Salmon);
 
             labelID = gs_80 + "9";

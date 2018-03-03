@@ -57,12 +57,13 @@ namespace forexAI
         static bool failedReassemble;
         static bool reassemblingCompleted = false;
 
-        public static double[] ExecuteSequence(string functionConfigurationString, int inputDimension,
+        public static double[] Execute(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
             IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork,
             bool reassemblingCompletedOverride, string timeCurrent)
         {
             reassemblingCompleted = reassemblingCompletedOverride;
+
             if (!reassemblingCompleted)
                 log($"=> Reassembling input sequence ...");
 
@@ -71,8 +72,10 @@ namespace forexAI
             // Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 33);
 
             entireSet = null;
+
             if (failedReassemble)
                 reassemblingCompleted = false;
+
             failedReassemble = false;
             sourceInputDimension = inputDimension;
 
