@@ -134,8 +134,10 @@ namespace forexAI
                     inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
                     TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
 
+            #region allied_instructions
             if (Configuration.tryExperimentalFeatures)
                 AlliedInstructions();
+            #endregion
 
             if (AccountBalance() <= 5.0 && !hasNoticedLowBalance)
             {
@@ -497,7 +499,7 @@ namespace forexAI
                         dayOperationsCount++;
                         charizedOrdersHistory += "u";
                     }
-                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.5)
+                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
@@ -528,7 +530,7 @@ namespace forexAI
                         dayOperationsCount++;
                         charizedOrdersHistory += "u";
                     }
-                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.5)
+                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
@@ -553,7 +555,7 @@ namespace forexAI
             foreach (double[] input in inputs)
             {
                 double[] output = forexNetwork.Run(input);
-                forexNetwork.DescaleOutput(output);
+                //forexNetwork.DescaleOutput(output);
 
                 double output0 = 0;
                 if (output[0] > output[1])
@@ -693,12 +695,12 @@ namespace forexAI
             {
                 ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
                 ObjectSet(labelID, OBJPROP_CORNER, 1);
-                ObjectSet(labelID, OBJPROP_XDISTANCE, 10);
-                ObjectSet(labelID, OBJPROP_YDISTANCE, 40);
+                ObjectSet(labelID, OBJPROP_XDISTANCE, 1567);
+                ObjectSet(labelID, OBJPROP_YDISTANCE, 516);
             }
             ObjectSetText(labelID,
                           charizedOrdersHistory,
-                          8,
+                          14,
                           "lucida console",
                           Color.Salmon);
 
@@ -846,7 +848,7 @@ namespace forexAI
             if (networkOutput == null)
                 return 0.0;
 
-            return networkOutput[1];
+            return networkOutput[0];
         }
 
         double SellProbability()
@@ -854,7 +856,7 @@ namespace forexAI
             if (networkOutput == null)
                 return 0.0;
 
-            return networkOutput[0];
+            return networkOutput[1];
         }
 
         double GetActiveIncome()
