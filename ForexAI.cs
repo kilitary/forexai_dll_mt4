@@ -245,10 +245,10 @@ namespace forexAI
             if (SellProbability() >= 0.7 && BuyProbability() <= -0.6 && CountSells() == 0)
                 SendSell(SellProbability().ToString("0.000"));
 
-           /* if (BuyProbability() <= -1.0 && CountBuys() > 0)
-                CloseBuys();
-            if (SellProbability() <= -1.0 && CountSells() > 0)
-                CloseSells();*/
+            /* if (BuyProbability() <= -1.0 && CountBuys() > 0)
+                 CloseBuys();
+             if (SellProbability() <= -1.0 && CountSells() > 0)
+                 CloseSells();*/
         }
 
         void ListGlobalVariables()
@@ -334,6 +334,99 @@ namespace forexAI
 
             inputLayerActivationFunction = matches.Groups[1].Value;
             middleLayerActivationFunction = matches.Groups[2].Value;
+
+            
+            switch (inputLayerActivationFunction)
+            {
+                case "ELLIOT":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.ELLIOT, 0);
+                    break;
+                case "LINEAR":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR, 0);
+                    break;
+                case "SIGMOID":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID, 0);
+                    break;
+                case "SIGMOID_STEPWISE":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_STEPWISE, 0);
+                    break;
+                case "SIGMOID_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_SYMMETRIC, 0);
+                    break;
+                case "SIGMOID_SYMMETRIC_STEPWISE":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_SYMMETRIC_STEPWISE, 0);
+                    break;
+                case "GAUSSIAN":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN, 0);
+                    break;
+                case "GAUSSIAN_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN_SYMMETRIC, 0);
+                    break;
+                case "GAUSSIAN_STEPWISE":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN_STEPWISE, 0);
+                    break;
+                case "ELLIOT_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.ELLIOT_SYMMETRIC, 0);
+                    break;
+                case "LINEAR_PIECE":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR_PIECE, 0);
+                    break;
+                case "LINEAR_PIECE_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR_PIECE_SYMMETRIC, 0);
+                    break;
+                case "SIN_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIN_SYMMETRIC, 0);
+                    break;
+                case "COS_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.COS_SYMMETRIC, 0);
+                    break;
+            }
+
+            switch (middleLayerActivationFunction)
+            {
+                case "ELLIOT":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.ELLIOT, 1);
+                    break;
+                case "LINEAR":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR, 1);
+                    break;
+                case "SIGMOID":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID, 1);
+                    break;
+                case "SIGMOID_STEPWISE":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_STEPWISE, 1);
+                    break;
+                case "SIGMOID_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_SYMMETRIC, 1);
+                    break;
+                case "SIGMOID_SYMMETRIC_STEPWISE":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_SYMMETRIC_STEPWISE, 1);
+                    break;
+                case "GAUSSIAN":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN, 1);
+                    break;
+                case "GAUSSIAN_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN_SYMMETRIC, 1);
+                    break;
+                case "GAUSSIAN_STEPWISE":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN_STEPWISE, 1);
+                    break;
+                case "ELLIOT_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.ELLIOT_SYMMETRIC, 1);
+                    break;
+                case "LINEAR_PIECE":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR_PIECE, 1);
+                    break;
+                case "LINEAR_PIECE_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR_PIECE_SYMMETRIC, 1);
+                    break;
+                case "SIN_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIN_SYMMETRIC, 1);
+                    break;
+                case "COS_SYMMETRIC":
+                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.COS_SYMMETRIC, 1);
+                    break;
+            }
 
             Reassembler.Execute(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
                 Open, Close, High, Low, Volume, Bars, forexNetwork, false,
@@ -846,7 +939,7 @@ namespace forexAI
             if (networkOutput == null)
                 return 0.0;
 
-            return networkOutput[0];
+            return networkOutput[1];
         }
 
         double SellProbability()
@@ -854,7 +947,7 @@ namespace forexAI
             if (networkOutput == null)
                 return 0.0;
 
-            return networkOutput[1];
+            return networkOutput[0];
         }
 
         double GetActiveIncome()
