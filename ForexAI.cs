@@ -311,8 +311,7 @@ namespace forexAI
             long fileLength = new FileInfo($"{Configuration.rootDirectory}\\{dirName}\\FANN.net").Length;
             log($"Loading network {dirName} ({(fileLength / 1024.0).ToString("0.00")} KB)");
 
-            networkName = dirName;
-            fannNetworkDirName = dirName;
+            networkName = fannNetworkDirName = dirName;
 
             forexNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net");
 
@@ -334,99 +333,6 @@ namespace forexAI
 
             inputLayerActivationFunction = matches.Groups[1].Value;
             middleLayerActivationFunction = matches.Groups[2].Value;
-
-            
-            switch (inputLayerActivationFunction)
-            {
-                case "ELLIOT":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.ELLIOT, 0);
-                    break;
-                case "LINEAR":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR, 0);
-                    break;
-                case "SIGMOID":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID, 0);
-                    break;
-                case "SIGMOID_STEPWISE":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_STEPWISE, 0);
-                    break;
-                case "SIGMOID_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_SYMMETRIC, 0);
-                    break;
-                case "SIGMOID_SYMMETRIC_STEPWISE":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_SYMMETRIC_STEPWISE, 0);
-                    break;
-                case "GAUSSIAN":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN, 0);
-                    break;
-                case "GAUSSIAN_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN_SYMMETRIC, 0);
-                    break;
-                case "GAUSSIAN_STEPWISE":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN_STEPWISE, 0);
-                    break;
-                case "ELLIOT_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.ELLIOT_SYMMETRIC, 0);
-                    break;
-                case "LINEAR_PIECE":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR_PIECE, 0);
-                    break;
-                case "LINEAR_PIECE_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR_PIECE_SYMMETRIC, 0);
-                    break;
-                case "SIN_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIN_SYMMETRIC, 0);
-                    break;
-                case "COS_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.COS_SYMMETRIC, 0);
-                    break;
-            }
-
-            switch (middleLayerActivationFunction)
-            {
-                case "ELLIOT":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.ELLIOT, 1);
-                    break;
-                case "LINEAR":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR, 1);
-                    break;
-                case "SIGMOID":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID, 1);
-                    break;
-                case "SIGMOID_STEPWISE":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_STEPWISE, 1);
-                    break;
-                case "SIGMOID_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_SYMMETRIC, 1);
-                    break;
-                case "SIGMOID_SYMMETRIC_STEPWISE":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIGMOID_SYMMETRIC_STEPWISE, 1);
-                    break;
-                case "GAUSSIAN":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN, 1);
-                    break;
-                case "GAUSSIAN_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN_SYMMETRIC, 1);
-                    break;
-                case "GAUSSIAN_STEPWISE":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.GAUSSIAN_STEPWISE, 1);
-                    break;
-                case "ELLIOT_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.ELLIOT_SYMMETRIC, 1);
-                    break;
-                case "LINEAR_PIECE":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR_PIECE, 1);
-                    break;
-                case "LINEAR_PIECE_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.LINEAR_PIECE_SYMMETRIC, 1);
-                    break;
-                case "SIN_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.SIN_SYMMETRIC, 1);
-                    break;
-                case "COS_SYMMETRIC":
-                    forexNetwork.SetActivationFunctionLayer(FANNCSharp.ActivationFunction.COS_SYMMETRIC, 1);
-                    break;
-            }
 
             Reassembler.Execute(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
                 Open, Close, High, Low, Volume, Bars, forexNetwork, false,
@@ -499,70 +405,6 @@ namespace forexAI
                 return true;
 
             return false;
-        }
-
-        int CountBuys()
-        {
-            int count = 0;
-            for (int cur_order = OrdersTotal() - 1; cur_order >= 0; cur_order--)
-            {
-                if (!(OrderSelect(cur_order, SELECT_BY_POS, MODE_TRADES)))
-                    break;
-
-                if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
-                    count++;
-            }
-            return count;
-        }
-
-        int CountSells()
-        {
-            int count = 0;
-            for (int l_pos_216 = OrdersTotal() - 1; l_pos_216 >= 0; l_pos_216--)
-            {
-                if (!(OrderSelect(l_pos_216, SELECT_BY_POS, MODE_TRADES)))
-                    break;
-
-                if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
-                    count++;
-            }
-            return count;
-        }
-
-        int CloseBuys()
-        {
-            debug("closing buys");
-            for (int cur_order = OrdersTotal() - 1; cur_order >= 0; cur_order--)
-            {
-                if (!(OrderSelect(cur_order, SELECT_BY_POS, MODE_TRADES)))
-                    break;
-
-                if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
-                {
-                    OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_BID), 2);
-                    dayOperationsCount++;
-                    charizedOrdersHistory += "c";
-                }
-            }
-            return (0);
-        }
-
-        int CloseSells()
-        {
-            debug("closing sells");
-            for (int l_pos_216 = OrdersTotal() - 1; l_pos_216 >= 0; l_pos_216--)
-            {
-                if (!(OrderSelect(l_pos_216, SELECT_BY_POS, MODE_TRADES)))
-                    break;
-
-                if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
-                {
-                    OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_ASK), 2);
-                    dayOperationsCount++;
-                    charizedOrdersHistory += "c";
-                }
-            }
-            return (0);
         }
 
         ////+------------------------------------------------------------------+
@@ -667,6 +509,183 @@ namespace forexAI
             }
 
             return ((double) hits / (double) inputs.Length) * 100.0;
+        }
+
+        private int CalculateCurrentOrders()
+        {
+            for (int i = 0; i < OrdersTotal(); i++)
+            {
+                if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+                    break;
+                if (OrderSymbol() == Symbol() && OrderMagicNumber() == Configuration.magickNumber)
+                {
+                    if (OrderType() == OP_BUY)
+                        openedBuys++;
+                    if (OrderType() == OP_SELL)
+                        openedSells++;
+                }
+            }
+
+            if (openedBuys > 0)
+                return (openedBuys);
+
+            return -openedSells;
+        }
+
+        double BuyProbability()
+        {
+            if (networkOutput == null)
+                return 0.0;
+
+            return networkOutput[0];
+        }
+
+        double SellProbability()
+        {
+            if (networkOutput == null)
+                return 0.0;
+
+            return networkOutput[1];
+        }
+
+        double GetActiveIncome()
+        {
+            double total = 0.0;
+            double spends = GetActiveSpend();
+            double profit = GetActiveProfit();
+
+            if (profit + spends >= 0.0)
+                total = profit + spends;
+            else
+                total = 0.0;
+
+            return total;
+        }
+
+        double GetActiveProfit()
+        {
+            ordersTotal = OrdersTotal();
+            double total = 0.0;
+
+            for (int pos = 0; pos < ordersTotal; pos++)
+            {
+                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+
+                if (OrderProfit() > 0.0)
+                    total += OrderProfit();
+            }
+
+            return total;
+        }
+
+        double GetActiveSpend()
+        {
+            ordersTotal = OrdersTotal();
+            double total = 0.0;
+
+            for (int i = 0; i < ordersTotal; i++)
+            {
+                if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == false)
+                    continue;
+
+                if (OrderProfit() < 0.0)
+                    total += OrderProfit();
+            }
+
+            return total;
+        }
+        int CountBuys()
+        {
+            int count = 0;
+            for (int cur_order = OrdersTotal() - 1; cur_order >= 0; cur_order--)
+            {
+                if (!(OrderSelect(cur_order, SELECT_BY_POS, MODE_TRADES)))
+                    break;
+
+                if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
+                    count++;
+            }
+            return count;
+        }
+
+        int CountSells()
+        {
+            int count = 0;
+            for (int l_pos_216 = OrdersTotal() - 1; l_pos_216 >= 0; l_pos_216--)
+            {
+                if (!(OrderSelect(l_pos_216, SELECT_BY_POS, MODE_TRADES)))
+                    break;
+
+                if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
+                    count++;
+            }
+            return count;
+        }
+
+        int CloseBuys()
+        {
+            debug("closing buys");
+            for (int cur_order = OrdersTotal() - 1; cur_order >= 0; cur_order--)
+            {
+                if (!(OrderSelect(cur_order, SELECT_BY_POS, MODE_TRADES)))
+                    break;
+
+                if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
+                {
+                    OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_BID), 2);
+                    dayOperationsCount++;
+                    charizedOrdersHistory += "c";
+                }
+            }
+            return (0);
+        }
+
+        int CloseSells()
+        {
+            debug("closing sells");
+            for (int l_pos_216 = OrdersTotal() - 1; l_pos_216 >= 0; l_pos_216--)
+            {
+                if (!(OrderSelect(l_pos_216, SELECT_BY_POS, MODE_TRADES)))
+                    break;
+
+                if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
+                {
+                    OrderClose(OrderTicket(), OrderLots(), MarketInfo(OrderSymbol(), MODE_ASK), 2);
+                    dayOperationsCount++;
+                    charizedOrdersHistory += "c";
+                }
+            }
+            return (0);
+        }
+
+        void AddLabel(string text, Color clr)
+        {
+            string on;
+            double pos = Bid + (Bid - Ask) / 2;
+
+            pos = Open[0];
+            on = (pos.ToString());
+            ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
+            ObjectSetText(on, text, 10, "lucida console", clr);
+        }
+
+        void SendSell(string comment)
+        {
+            RefreshRates();
+            OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Red);
+            dayOperationsCount++;
+            debug("+ open sell  @" + Bid);
+            AddLabel($"SP {SellProbability().ToString("0.0")} BP {BuyProbability().ToString("0.0")}", Color.Yellow);
+        }
+
+        void SendBuy(string comment)
+        {
+            RefreshRates();
+            OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Blue);
+            dayOperationsCount++;
+            debug("+ open buy @" + Ask);
+            AddLabel($"BP {BuyProbability().ToString("0.0")} SP {SellProbability().ToString("0.0")}", Color.Yellow);
         }
 
         void DrawStats(bool commentsOnly = false)
@@ -786,11 +805,11 @@ namespace forexAI
             {
                 ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
                 ObjectSet(labelID, OBJPROP_CORNER, 1);
-                ObjectSet(labelID, OBJPROP_XDISTANCE, 1561);
-                ObjectSet(labelID, OBJPROP_YDISTANCE, 632);
+                ObjectSet(labelID, OBJPROP_XDISTANCE, 11);
+                ObjectSet(labelID, OBJPROP_YDISTANCE, 629);
             }
             ObjectSetText(labelID,
-                          $"sign: {charizedOrdersHistory}",
+                          $"{charizedOrdersHistory} :sign",
                           19,
                           "consolas",
                           Color.GreenYellow);
@@ -829,7 +848,7 @@ namespace forexAI
                 ObjectSet(labelID, OBJPROP_XDISTANCE, 17);
                 ObjectSet(labelID, OBJPROP_YDISTANCE, 191);
             }
-            ObjectSetText(labelID, "Buy Prob. " + BuyProbability().ToString("0.0000"), 14, "lucida console", Color.LightCyan);
+            ObjectSetText(labelID, "Buy Prob. " + BuyProbability().ToString("0.00"), 14, "consolas", Color.LightCyan);
 
             labelID = gs_80 + "12";
             if (ObjectFind(labelID) == -1)
@@ -837,9 +856,9 @@ namespace forexAI
                 ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
                 ObjectSet(labelID, OBJPROP_CORNER, 1);
                 ObjectSet(labelID, OBJPROP_XDISTANCE, 17);
-                ObjectSet(labelID, OBJPROP_YDISTANCE, 312);
+                ObjectSet(labelID, OBJPROP_YDISTANCE, 442);
             }
-            ObjectSetText(labelID, "Sell Prob. " + SellProbability().ToString("0.0000"), 14, "lucida console", Color.LightCyan);
+            ObjectSetText(labelID, "Sell Prob. " + SellProbability().ToString("0.00"), 14, "consolas", Color.LightCyan);
 
             WindowRedraw();
 
@@ -932,117 +951,6 @@ namespace forexAI
                ($"{ networkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ networkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : ""));
 
             }
-        }
-
-        double BuyProbability()
-        {
-            if (networkOutput == null)
-                return 0.0;
-
-            return networkOutput[1];
-        }
-
-        double SellProbability()
-        {
-            if (networkOutput == null)
-                return 0.0;
-
-            return networkOutput[0];
-        }
-
-        double GetActiveIncome()
-        {
-            double total = 0.0;
-            double spends = GetActiveSpend();
-            double profit = GetActiveProfit();
-
-            if (profit + spends >= 0.0)
-                total = profit + spends;
-            else
-                total = 0.0;
-
-            return total;
-        }
-
-        double GetActiveProfit()
-        {
-            ordersTotal = OrdersTotal();
-            double total = 0.0;
-
-            for (int pos = 0; pos < ordersTotal; pos++)
-            {
-                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
-                    continue;
-                if (OrderProfit() > 0.0)
-                    total += OrderProfit();
-            }
-
-            return total;
-        }
-
-        double GetActiveSpend()
-        {
-            ordersTotal = OrdersTotal();
-            double total = 0.0;
-
-            for (int pos = 0; pos < ordersTotal; pos++)
-            {
-                if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
-                    continue;
-                if (OrderProfit() < 0.0)
-                    total += OrderProfit();
-            }
-
-            return total;
-        }
-        void AddLabel(string text, Color clr)
-        {
-            string on;
-            double pos = Bid + (Bid - Ask) / 2;
-
-            pos = Open[0];
-            on = (pos.ToString());
-            ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
-            ObjectSetText(on, text, 10, "lucida console", clr);
-        }
-
-        private int CalculateCurrentOrders()
-        {
-            for (int i = 0; i < OrdersTotal(); i++)
-            {
-                if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
-                    break;
-                if (OrderSymbol() == Symbol() && OrderMagicNumber() == Configuration.magickNumber)
-                {
-                    if (OrderType() == OP_BUY)
-                        openedBuys++;
-                    if (OrderType() == OP_SELL)
-                        openedSells++;
-                }
-            }
-
-            if (openedBuys > 0)
-                return (openedBuys);
-
-            return -openedSells;
-        }
-
-        void SendSell(string comment)
-        {
-            RefreshRates();
-            OrderSend(symbol, OP_SELL, 0.01, Bid, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Red);
-            dayOperationsCount++;
-            debug("+ open sell  @" + Bid);
-            AddLabel($"SP {SellProbability().ToString("0.0")} BP {BuyProbability().ToString("0.0")}", Color.Yellow);
-        }
-
-        void SendBuy(string comment)
-        {
-            RefreshRates();
-            OrderSend(symbol, OP_BUY, 0.01, Ask, 3, 0, 0, $"Probability: {comment}", magickNumber, DateTime.MinValue, Color.Blue);
-            dayOperationsCount++;
-            debug("+ open buy @" + Ask);
-            AddLabel($"BP {BuyProbability().ToString("0.0")} SP {SellProbability().ToString("0.0")}", Color.Yellow);
         }
 
         ////+------------------------------------------------------------------+

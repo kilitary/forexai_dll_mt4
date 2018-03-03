@@ -69,7 +69,7 @@ namespace forexAI
 
             reassembledFunctions = string.Empty;
             Core.SetCompatibility(Core.Compatibility.Metastock);
-            // Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 33);
+            Core.SetUnstablePeriod(Core.FuncUnstId.Ema, 4);
 
             entireSet = null;
 
