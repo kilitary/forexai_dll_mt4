@@ -78,18 +78,36 @@ namespace forexAI
         int sellsPermitted = 3;
         int currentDay;
 
+        // Trailing
+        double Lots = 0.1;
+        int trailingStop = 30;
+        int trailingStep = 10;
+        int slippage = 5;
+        int maPeriod = 42;
+        int maShift = 1;
+        DateTime timePrev;
+
         //+------------------------------------------------------------------+
         //| Start function                                                   |
         //+------------------------------------------------------------------+
         public override int start()
         {
-            CheckForClose();
-            CalculateCurrentOrders();
-            EnterExitPositions();
             DrawStats();
 
             if (Bars == previousBars)
                 return 0;
+
+            CheckForClose();
+            //CalculateCurrentOrders();
+
+            if (applicationBootstrapped)
+                networkOutput = Reassembler.Execute(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
+                    inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
+                    TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
+
+            EnterExitPositions();
+
+            DoTrailing();
 
             if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
             {
@@ -128,11 +146,6 @@ namespace forexAI
 
             File.AppendAllText(Configuration.randomLogFileName, random.Next(99).ToString("00") + " ");
             File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
-
-            if (applicationBootstrapped)
-                networkOutput = Reassembler.Execute(File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json"),
-                    inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
-                    TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
 
             #region matters
             if (Configuration.tryExperimentalFeatures)
@@ -240,9 +253,9 @@ namespace forexAI
 
         void EnterExitPositions()
         {
-            if (BuyProbability() >= 0.7 && SellProbability() <= -0.6 && CountBuys() == 0)
+            if (BuyProbability() >= 0.9 && SellProbability() <= -0.6 && CountBuys() == 0)
                 SendBuy(BuyProbability().ToString("0.000"));
-            if (SellProbability() >= 0.7 && BuyProbability() <= -0.6 && CountSells() == 0)
+            if (SellProbability() >= 0.9 && BuyProbability() <= -0.6 && CountSells() == 0)
                 SendSell(SellProbability().ToString("0.000"));
 
             /* if (BuyProbability() <= -1.0 && CountBuys() > 0)
@@ -315,6 +328,8 @@ namespace forexAI
 
             forexNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net");
 
+            forexNetwork.ErrorLog = new FANNCSharp.FannFile($"{Configuration.rootDirectory}\\FANN.log", "a+");
+
             log($"Network: hash={forexNetwork.GetHashCode()} inputs={forexNetwork.InputCount} layers={forexNetwork.LayerCount}" +
                 $" outputs={forexNetwork.OutputCount} neurons={forexNetwork.TotalNeurons} connections={forexNetwork.TotalConnections}");
 
@@ -337,6 +352,8 @@ namespace forexAI
             Reassembler.Execute(File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\functions.json"), inputDimension,
                 Open, Close, High, Low, Volume, Bars, forexNetwork, false,
                 TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
+
+
         }
 
         void ScanNetworks()
@@ -950,6 +967,120 @@ namespace forexAI
                ((networkOutput != null && networkOutput[0] != 0.0 && networkOutput[1] != 0.0) ?
                ($"{ networkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ networkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : ""));
 
+            }
+        }
+
+        public int DoTrailing()
+        {
+            if (Digits == 3 || Digits == 5)
+            {
+                trailingStep *= 10;
+                trailingStop *= 10;
+                slippage *= 10;
+            }
+
+            TrailPositions();
+
+            return 0;
+        }
+
+        int TrailCountBuys()
+        {
+            int count = 0;
+            for (int cur_order = OrdersTotal() - 1; cur_order >= 0; cur_order--)
+            {
+                if (!(OrderSelect(cur_order, SELECT_BY_POS, MODE_TRADES)))
+                    break;
+                if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
+                    count++;
+            }
+            return count;
+        }
+
+        int CountBuy()
+        {
+            int count = 0;
+            for (int i = OrdersTotal() - 1; i >= 0; i--)
+            {
+                if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+                {
+                    if (OrderSymbol() == Symbol() && OrderMagicNumber() == Configuration.magickNumber && OrderType() == OP_BUY)
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            return count;
+        }
+
+        int TrailCountSells()
+        {
+            int count = 0;
+            for (int l_pos_216 = OrdersTotal() - 1; l_pos_216 >= 0; l_pos_216--)
+            {
+                if (!(OrderSelect(l_pos_216, SELECT_BY_POS, MODE_TRADES)))
+                    break;
+                if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
+                    count++;
+            }
+            return count;
+        }
+
+        int CountSell()
+        {
+            int count = 0;
+            for (int i = OrdersTotal() - 1; i >= 0; i--)
+            {
+                if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+                {
+                    if (OrderSymbol() == Symbol() && OrderMagicNumber() == Configuration.magickNumber && OrderType() == OP_SELL)
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            return count;
+        }
+
+        void TrailPositions()
+        {
+            for (int i = OrdersTotal() - 1; i >= 0; i--)
+            {
+                if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+                {
+                    if (OrderSymbol() == Symbol() && OrderMagicNumber() == Configuration.magickNumber)
+                    {
+                        if (OrderType() == OP_BUY)
+                        {
+                            if (Bid - OrderOpenPrice() > trailingStop * Point || OrderStopLoss() == 0)
+                            {
+                                if (OrderStopLoss() < Bid - (trailingStop + trailingStep) * Point || OrderStopLoss() == 0)
+                                {
+                                    if (!OrderModify(OrderTicket(), OrderOpenPrice(), NormalizeDouble(Bid - trailingStop * Point, Digits), 0, DateTime.Now, Color.Blue))
+                                    {
+                                        debug("Error create Buy Order");
+                                    }
+                                }
+                            }
+                        }
+
+                        if (OrderType() == OP_SELL)
+                        {
+                            if (OrderOpenPrice() - Ask > trailingStop * Point || OrderStopLoss() == 0)
+                            {
+                                if (OrderStopLoss() < Ask + (trailingStop + trailingStep) * Point || OrderStopLoss() == 0)
+                                {
+                                    if (!OrderModify(OrderTicket(), OrderOpenPrice(), NormalizeDouble(Ask + trailingStop * Point, Digits), 0, DateTime.Now, Color.Red))
+                                    {
+                                        debug("Error create Sell Order");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 

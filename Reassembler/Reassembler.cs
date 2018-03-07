@@ -364,6 +364,7 @@ namespace forexAI
             if (!reassemblingCompleted)
                 log($"=> Reassembling [ SUCCESS ] {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}");
 
+            //forexNetwork.ScaleInput()
             double[] networkOutput = forexNetwork.Run(entireSet);
 
             //forexNetwork.DescaleOutput(networkOutput);
