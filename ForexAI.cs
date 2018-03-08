@@ -931,6 +931,8 @@ namespace forexAI
 
             if (totalSpends > 0 && totalProfits > 0)
                 KPD = (100.0 - ((100.0 / (double) totalProfits) * (double) totalSpends));
+            else
+                KPD = 100.0;
 
             if (ObjectFind("statyys") == -1)
             {

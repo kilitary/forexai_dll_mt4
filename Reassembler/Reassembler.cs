@@ -331,6 +331,8 @@ namespace forexAI
                         {
                             if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblingCompleted)
                                 warning($"fucking function {functionName} starts with zero");
+                            if (resultDataDouble[i] == 0.0 && i == OutNbElement - 1 && !reassemblingCompleted)
+                                warning($"fucking function {functionName} ends with zero");
                         }
                     }
                     else
