@@ -91,11 +91,12 @@ namespace forexAI
         public override int start()
         {
             DrawStats();
-            //  TrailingPositions();
+            TrailOrders();
 
             if (Bars == previousBars)
                 return 0;
 
+            BuildCharizedHistory();
             // AddVerticalLabel($"SP {SellProbability().ToString("0.000")} BP {BuyProbability().ToString("0.000")}");
             CheckForClose();
 
@@ -443,6 +444,21 @@ namespace forexAI
             return false;
         }
 
+        void BuildCharizedHistory()
+        {
+            charizedOrdersHistory = "";
+            for (int i = 0; i < OrdersHistoryTotal(); i++)
+            {
+                if (OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
+                {
+                    if (OrderProfit() > 0.0)
+                        charizedOrdersHistory += "x";
+                    else
+                        charizedOrdersHistory += ".";
+                }
+            }
+        }
+
         ////+------------------------------------------------------------------+
         ////| Check for close order conditions                                 |
         ////+------------------------------------------------------------------+
@@ -455,7 +471,7 @@ namespace forexAI
 
                 if (OrderType() == OP_BUY)
                 {
-                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -2.3)
+                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -1.3)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -466,26 +482,25 @@ namespace forexAI
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedOrdersHistory += ".";
                     }
-                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
-                    {
-                        if (Configuration.tryExperimentalFeatures)
-                            console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
-                                ConsoleColor.Black, ConsoleColor.Green);
+                    /* else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
+                     {
+                         if (Configuration.tryExperimentalFeatures)
+                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
+                                 ConsoleColor.Black, ConsoleColor.Green);
 
-                        FX.Profit();
-                        profitBuys++;
+                         FX.Profit();
+                         profitBuys++;
 
-                        OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
-                        debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
-                        dayOperationsCount++;
-                        charizedOrdersHistory += "x";
-                    }
+                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
+                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
+                         dayOperationsCount++;
+                         charizedOrdersHistory += "x";
+                     }*/
                 }
                 if (OrderType() == OP_SELL)
                 {
-                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -2.3)
+                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -1.3)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -497,23 +512,22 @@ namespace forexAI
                         debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedOrdersHistory += ".";
                     }
-                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
-                    {
-                        if (Configuration.tryExperimentalFeatures)
-                            console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
-                                ConsoleColor.Black, ConsoleColor.Green);
+                    /*  else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
+                      {
+                          if (Configuration.tryExperimentalFeatures)
+                              console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
+                                  ConsoleColor.Black, ConsoleColor.Green);
 
-                        FX.Profit();
-                        profitSells++;
+                          FX.Profit();
+                          profitSells++;
 
-                        OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
-                        debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
-                            " profit=" + OrderProfit());
-                        dayOperationsCount++;
-                        charizedOrdersHistory += "x";
-                    }
+                          OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
+                          debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
+                              " profit=" + OrderProfit());
+                          dayOperationsCount++;
+                          charizedOrdersHistory += "x";
+                      }*/
                 }
             }
         }
@@ -1056,46 +1070,44 @@ namespace forexAI
             //  WindowRedraw();
         }
 
-        /*
+        void TrailOrders()
+        {
+            double TrailingStop = 20;
+            double TrailingBorder = 20;
+            double newStopLoss = 0;
 
-                void TrailingPositions()
+            for (int current_order = 0; current_order < OrdersTotal(); current_order++)
+            {
+                OrderSelect(current_order, SELECT_BY_POS, MODE_TRADES);
+
+                if (OrderType() == OP_BUY)
                 {
-                    double pBid, pAsk, pp;
-                    bool fm;
-                    double TrailingStop = 0.040;
-                    double TrailingStep = 0.005;
-
-                    pp = MarketInfo(symbol, 20);
-                    for (int current_order = 0; current_order < OrdersTotal(); current_order++)
+                    if (OrderStopLoss() < Bid - (TrailingStop * Point)
+                        && Bid - (TrailingBorder * Point) > OrderOpenPrice()
+                        && OrderProfit() + OrderCommission() + OrderSwap() > 0.01)
                     {
-                        OrderSelect(current_order, SELECT_BY_POS, MODE_TRADES);
-
-                        if (OrderType() == OP_BUY)
-                        {
-                            pBid = MarketInfo(symbol, MODE_BID);
-                            if (!ProfitTrailing || (pBid - OrderOpenPrice()) > TrailingStop * pp)
-                            {
-                                if (OrderStopLoss() < pBid - (TrailingStop + TrailingStep - 1) * pp)
-                                {
-                                    fm = OrderModify(OrderTicket(), OrderOpenPrice(), pBid - TrailingStop * pp, OrderTakeProfit(), OrderExpiration(), Color.BlueViolet);
-                                    return;
-                                }
-                            }
-                        }
-                        if (OrderType() == OP_SELL)
-                        {
-                            pAsk = MarketInfo(symbol, MODE_ASK);
-                            if (!ProfitTrailing || OrderOpenPrice() - pAsk > TrailingStop * pp)
-                            {
-                                if (OrderStopLoss() > pAsk + (TrailingStop + TrailingStep - 1) * pp || OrderStopLoss() == 0)
-                                {
-                                    fm = OrderModify(OrderTicket(), OrderOpenPrice(), pAsk + TrailingStop * pp, OrderTakeProfit(), OrderExpiration(), Color.MediumVioletRed);
-                                    return;
-                                }
-                            }
-                        }
+                        newStopLoss = Bid - TrailingStop * Point;
+                        log($"modify buy newStopLoss={newStopLoss}");
+                        OrderModify(OrderTicket(), OrderOpenPrice(), newStopLoss, OrderTakeProfit(),
+                            OrderExpiration(), Color.BlueViolet);
+                        dayOperationsCount++;
                     }
-                }*/
+                }
+                if (OrderType() == OP_SELL)
+                {
+                    if (OrderStopLoss() < Ask + (TrailingStop * Point)
+                        && Ask + (TrailingBorder * Point) < OrderOpenPrice()
+                        && OrderProfit() + OrderCommission() + OrderSwap() > 0.01)
+                    {
+                        newStopLoss = Ask + TrailingStop * Point;
+                        log($"modify sell newStopLoss={newStopLoss}");
+                        OrderModify(OrderTicket(), OrderOpenPrice(), newStopLoss, OrderTakeProfit(),
+                            OrderExpiration(), Color.MediumVioletRed);
+                        dayOperationsCount++;
+                    }
+                }
+            }
+        }
 
 
         /*  public int DoTrailing()
