@@ -266,8 +266,8 @@ namespace forexAI
                     lot = NormalizeDouble(lot - lot * losses / DecreaseFactor, 1);
             }
             //---- return lot size
-            if (lot < 0.03)
-                lot = 0.03;
+            if (lot < Configuration.orderLots)
+                lot = Configuration.orderLots;
             return lot;
         }
 
@@ -625,7 +625,7 @@ namespace forexAI
             if (networkOutput == null)
                 return 0.0;
 
-            return networkOutput[0];
+            return networkOutput[1];
         }
 
         double SellProbability()
@@ -633,7 +633,7 @@ namespace forexAI
             if (networkOutput == null)
                 return 0.0;
 
-            return networkOutput[1];
+            return networkOutput[0];
         }
 
         double GetActiveIncome()
@@ -1151,7 +1151,7 @@ namespace forexAI
                 if (OrderType() == OP_BUY)
                 {
                     newStopLoss = Bid - TrailingStop * Point;
-                    if ((OrderStopLoss() == 0.0 || newStopLoss < OrderStopLoss())
+                    if ((OrderStopLoss() == 0.0 || newStopLoss > OrderStopLoss())
                         && Bid - (TrailingBorder * Point) > OrderOpenPrice()
                         && OrderProfit() + OrderCommission() + OrderSwap() >= 0.01)
                     {
