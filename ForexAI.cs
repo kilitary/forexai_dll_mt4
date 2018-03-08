@@ -1140,8 +1140,8 @@ namespace forexAI
 
         void TrailOrders()
         {
-            double TrailingStop = 30;
-            double TrailingBorder = 25;
+            double TrailingStop = Configuration.trailingStop;
+            double TrailingBorder = Configuration.trailingBorder;
             double newStopLoss = 0;
 
             for (int current_order = 0; current_order < OrdersTotal(); current_order++)
