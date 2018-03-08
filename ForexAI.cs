@@ -278,7 +278,6 @@ namespace forexAI
 
             minStopLevel = MarketInfo(Symbol(), MODE_STOPLEVEL);
             ordersStopPoints = minStopLevel > 0 ? minStopLevel * 2 : 60;
-            debug($"minstoplevel={minStopLevel}");
 
             if (Configuration.useMysql)
                 Data.db = new DB();
@@ -336,6 +335,7 @@ namespace forexAI
             debug($"  Orders={OrdersTotal()} TimeForexCurrent=[{TimeCurrent()}] Digits={MarketInfo(symbol, MODE_DIGITS)} Spread={MarketInfo(symbol, MODE_SPREAD)}");
             debug($"  IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
             debug($"  Period={Period()}");
+            debug($"  minstoplevel={minStopLevel}");
 
             ShowMemoryUsage();
         }
@@ -1134,8 +1134,6 @@ namespace forexAI
                ((networkOutput != null && networkOutput[0] != 0.0 && networkOutput[1] != 0.0) ?
                ($"{ networkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ networkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : ""));
             }
-
-            //  WindowRedraw();
         }
 
         void TrailOrders()

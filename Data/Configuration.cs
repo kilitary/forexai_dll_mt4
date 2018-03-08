@@ -28,10 +28,10 @@ namespace forexAI
         public static string mysqlServer = "192.168.10.10";
         public static string mysqlUid = "homestead";
         public static string memcachedIP = "192.168.10.10";
-        public static double orderLots = 0.03;
+        public static double orderLots = 0.01;
         public static double minNegativeSpendProfit = -15.0;
         public static double trailingBorder = 20;
-        public static double trailingStop = 30;
+        public static double trailingStop = 24;
         public static bool useMemcached = false;
         public static bool useMysql = false;
         public static bool useAudio = true;
