@@ -53,9 +53,9 @@ namespace forexAI
         double spends = 0.0;
         double profit = 0.0;
         double prevVolume;
-        double[] prevBuyProbability = new double[4];
-        double[] prevSellProbability = new double[4];
         double[] networkOutput = null;
+        double[] prevBuyProbability = new double[5];
+        double[] prevSellProbability = new double[5];
         float testMse = 0.0f;
         float trainMse = 0.0f;
         bool reassembleCompletedOverride = false;
@@ -64,7 +64,6 @@ namespace forexAI
         bool hasNightReported = false;
         bool hasMorningReported = false;
         bool networkBootstrapped = false;
-        bool stableTrend = false;
         int spendSells = 0, spendBuys = 0, profitSells = 0, profitBuys = 0, totalSpends = 0, totalProfits = 0;
         int openedBuys = 0, openedSells = 0;
         int magickNumber = Configuration.magickNumber;
@@ -97,36 +96,12 @@ namespace forexAI
 
             if (networkBootstrapped)
             {
-                stableTrend = true;
-
                 networkOutput = Reassembler.Execute(functionsTextContent,
                     inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
                     TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
-
-                for (int x = 0; x < prevBuyProbability.Length; x++)
-                {
-                    double prob = prevBuyProbability[x];
-                    if (prob.ToString("0.0") != BuyProbability().ToString("0.0"))
-                        stableTrend = false;
-                }
-                prevBuyProbability[0] = prevBuyProbability[1];
-                prevBuyProbability[1] = prevBuyProbability[2];
-                prevBuyProbability[2] = prevBuyProbability[3];
-                prevBuyProbability[3] = BuyProbability();
-
-                for (int x = 0; x < prevSellProbability.Length; x++)
-                {
-                    double prob = prevSellProbability[x];
-                    if (prob.ToString("0.0") != SellProbability().ToString("0.0"))
-                        stableTrend = false;
-                }
-                prevSellProbability[0] = prevSellProbability[1];
-                prevSellProbability[1] = prevSellProbability[2];
-                prevSellProbability[2] = prevSellProbability[3];
-                prevSellProbability[3] = SellProbability();
+                if (IsStableTrend())
+                    EnterPositions();
             }
-            if (IsStableTrend())
-                EnterPositions();
 
             if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
             {
@@ -277,9 +252,9 @@ namespace forexAI
 
         void EnterPositions()
         {
-            if (BuyProbability() >= 0.9 && SellProbability() <= -0.6 && CountBuys() == 0)
+            if (BuyProbability() >= 0.7 && SellProbability() <= -0.6 && CountBuys() == 0)
                 SendBuy(BuyProbability().ToString("0.000"));
-            if (SellProbability() >= 0.9 && BuyProbability() <= -0.6 && CountSells() == 0)
+            if (SellProbability() >= 0.7 && BuyProbability() <= -0.6 && CountSells() == 0)
                 SendSell(SellProbability().ToString("0.000"));
         }
 
@@ -474,7 +449,7 @@ namespace forexAI
 
                 if (OrderType() == OP_BUY)
                 {
-                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -9.0)
+                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -1.3)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -485,9 +460,9 @@ namespace forexAI
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedOrdersHistory += "u";
+                        charizedOrdersHistory += "s";
                     }
-                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.03)
+                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
@@ -499,12 +474,12 @@ namespace forexAI
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedOrdersHistory += "x";
+                        charizedOrdersHistory += "p";
                     }
                 }
                 if (OrderType() == OP_SELL)
                 {
-                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -9.0)
+                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -1.3)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -516,9 +491,9 @@ namespace forexAI
                         debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedOrdersHistory += "u";
+                        charizedOrdersHistory += "s";
                     }
-                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.03)
+                    else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
@@ -531,7 +506,7 @@ namespace forexAI
                         debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedOrdersHistory += "x";
+                        charizedOrdersHistory += "p";
                     }
                 }
             }
@@ -773,6 +748,29 @@ namespace forexAI
 
         bool IsStableTrend()
         {
+            bool stableTrend = true;
+            for (int x = 0; x < prevBuyProbability.Length; x++)
+            {
+                if (prevBuyProbability[x].ToString("0.0") != BuyProbability().ToString("0.0"))
+                    stableTrend = false;
+            }
+            prevBuyProbability[0] = prevBuyProbability[1];
+            prevBuyProbability[1] = prevBuyProbability[2];
+            prevBuyProbability[2] = prevBuyProbability[3];
+            prevBuyProbability[3] = prevBuyProbability[4];
+            prevBuyProbability[4] = BuyProbability();
+
+            for (int x = 0; x < prevSellProbability.Length; x++)
+            {
+                if (prevSellProbability[x].ToString("0.0") != SellProbability().ToString("0.0"))
+                    stableTrend = false;
+            }
+            prevSellProbability[0] = prevSellProbability[1];
+            prevSellProbability[1] = prevSellProbability[2];
+            prevSellProbability[2] = prevSellProbability[3];
+            prevSellProbability[3] = prevSellProbability[4];
+            prevSellProbability[4] = SellProbability();
+
             return stableTrend;
         }
 
@@ -956,7 +954,7 @@ namespace forexAI
                 ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
                 ObjectSet(labelID, OBJPROP_YDISTANCE, 318);
             }
-            ObjectSetText(labelID, (stableTrend ? "STABLE" : "UNSTABLE"), 14, "consolas",
+            ObjectSetText(labelID, (IsStableTrend() ? "STABLE" : "UNSTABLE"), 14, "consolas",
                 IsStableTrend() ? Color.LightGreen : Color.Red);
 
             totalSpends = spendSells + spendBuys;
