@@ -1140,7 +1140,7 @@ namespace forexAI
 
         void TrailOrders()
         {
-            double TrailingStop = 20;
+            double TrailingStop = 30;
             double TrailingBorder = 25;
             double newStopLoss = 0;
 
