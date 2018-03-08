@@ -38,7 +38,7 @@ namespace forexAI
     {
         static LivePrices prices = new LivePrices();
         static Dictionary<string, FunctionsConfiguration> functionConfigurationInput;
-        static Core.RetCode ret;
+        static Core.RetCode ret = Core.RetCode.UnknownErr;
         static int OutBegIdx = 0;
         static int OutNbElement = -1;
         static int pOutNbElement = 0;
@@ -47,12 +47,12 @@ namespace forexAI
         static int nOutBegIdx = 0;
         static int startIdx = 0;
         static int fidx = 0;
-        static int iReal;
+        static int iReal = 0;
         static int[] resultDataInt = null;
         static string paramName = String.Empty;
         static string comment = string.Empty;
         static string functionName = string.Empty;
-        static string hashFunctions = string.Empty;
+        static string hashOfFunctionConfiguration = string.Empty;
         static double paramValue = 0.0;
         static double[] resultDataDouble = null;
         static double[] entireSet = null;
@@ -77,16 +77,16 @@ namespace forexAI
 
             failedReassemble = false;
 
-            if (hashFunctions != Hash.MD5(functionConfigurationString))
+            if (hashOfFunctionConfiguration != Hash.MD5(functionConfigurationString))
             {
-                log($"hashFunctions({hashFunctions}) not match, deserializing {functionConfigurationString.Length} bytes ...");
+                log($"hashOfFunctionConfiguration ({hashOfFunctionConfiguration}) not match content, deserializing {functionConfigurationString.Length} bytes ...");
                 var jsonSettings = new JsonSerializerSettings();
                 jsonSettings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
                 functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
                     (functionConfigurationString, jsonSettings);
 
-                hashFunctions = Hash.MD5(functionConfigurationString);
-                log($"hash={hashFunctions}");
+                hashOfFunctionConfiguration = Hash.MD5(functionConfigurationString);
+                log($"hash of configuration: {hashOfFunctionConfiguration}");
             }
 
             if (!reassemblingCompleted)
