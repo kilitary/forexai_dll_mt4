@@ -1,12 +1,12 @@
 ﻿// ѼΞΞΞΞΞΞΞD   ѼΞΞΞΞΞΞΞD  ѼΞΞΞΞΞΞΞD 
-//╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
-//╰╰╮╰╭╱▔▔▔▔╲╮╯╭╯ 
+//   ╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
+//   ╰╰╮╰╭╱▔▔▔▔╲╮╯╭╯ 
 //┏━┓┏┫╭▅╲╱▅╮┣┓╭║║║ 
 //╰┳╯╰┫┗━╭╮━┛┣╯╯╚╬╝ 
 //╭┻╮╱╰╮╰━━╯╭╯╲┊ ║ 
 //╰┳┫▔╲╰┳━━┳╯╱▔┊ ║ 
 //┈┃╰━━╲▕╲╱▏╱━━━┬╨╮ 
-//┈╰━━╮┊▕╱╲▏┊╭━━┴╥╯
+//┈ ╰━━╮┊▕╱╲▏┊╭━━┴╥╯
 //--------^---Ѽ---^-----^^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
 using System;
 using System.Collections.Generic;
@@ -52,8 +52,6 @@ namespace forexAI
         double total = 0.0;
         double spends = 0.0;
         double profit = 0.0;
-        double TrailingStop = 0.0;
-        double TrailingStep = 0.0;
         double prevVolume;
         double[] networkOutput = null;
         float testMse = 0.0f;
@@ -307,19 +305,6 @@ namespace forexAI
                  ConsoleColor.Black, ConsoleColor.Yellow);
         }
 
-        void TestNetworkHitRatio()
-        {
-            forexNetwork.SetOutputScalingParams(trainData, -1.0f, 1.0f);
-            forexNetwork.SetInputScalingParams(trainData, -1.0f, 1.0f);
-            forexNetwork.SetOutputScalingParams(testData, -1.0f, 1.0f);
-            forexNetwork.SetInputScalingParams(testData, -1.0f, 1.0f);
-
-            trainHitRatio = CalculateHitRatio(trainData.Input, trainData.Output);
-            testHitRatio = CalculateHitRatio(testData.Input, testData.Output);
-
-            log($" * TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
-        }
-
         void LoadNetwork(string dirName)
         {
             long fileLength = new FileInfo($"{Configuration.rootDirectory}\\{dirName}\\FANN.net").Length;
@@ -355,8 +340,6 @@ namespace forexAI
             Reassembler.Execute(functionsTextContent, inputDimension,
                 Open, Close, High, Low, Volume, Bars, forexNetwork, false,
                 TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString());
-
-
         }
 
         void ScanNetworks()
@@ -389,6 +372,43 @@ namespace forexAI
             testMse = forexNetwork.TestDataParallel(testData, 2);
 
             log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={forexNetwork.BitFail}");
+        }
+
+        void TestNetworkHitRatio()
+        {
+            trainHitRatio = CalculateHitRatio(trainData.Input, trainData.Output);
+            testHitRatio = CalculateHitRatio(testData.Input, testData.Output);
+
+            log($" * TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
+        }
+
+        double CalculateHitRatio(double[][] inputs, double[][] desiredOutputs)
+        {
+            int hits = 0, curX = 0;
+            foreach (double[] input in inputs)
+            {
+                double[] output = forexNetwork.Run(input);
+                //forexNetwork.DescaleOutput(output);
+
+                double output0 = 0;
+                if (output[0] > output[1])
+                    output0 = 1.0;
+                else
+                    output0 = -1.0;
+
+                double output1 = 0;
+                if (output[1] > output[0])
+                    output1 = 1.0;
+                else
+                    output1 = -1.0;
+
+                if (output0 == desiredOutputs[curX][0] && output1 == desiredOutputs[curX][1])
+                    hits++;
+
+                curX++;
+            }
+
+            return ((double) hits / (double) inputs.Length) * 100.0;
         }
 
         bool BuysProfitable()
@@ -500,35 +520,6 @@ namespace forexAI
                     }
                 }
             }
-        }
-
-        double CalculateHitRatio(double[][] inputs, double[][] desiredOutputs)
-        {
-            int hits = 0, curX = 0;
-            foreach (double[] input in inputs)
-            {
-                double[] output = forexNetwork.Run(input);
-                //forexNetwork.DescaleOutput(output);
-
-                double output0 = 0;
-                if (output[0] > output[1])
-                    output0 = 1.0;
-                else
-                    output0 = -1.0;
-
-                double output1 = 0;
-                if (output[1] > output[0])
-                    output1 = 1.0;
-                else
-                    output1 = -1.0;
-
-                if (output0 == desiredOutputs[curX][0] && output1 == desiredOutputs[curX][1])
-                    hits++;
-
-                curX++;
-            }
-
-            return ((double) hits / (double) inputs.Length) * 100.0;
         }
 
         private int CalculateCurrentOrders()
@@ -826,6 +817,8 @@ namespace forexAI
         {
             double pBid, pAsk, pp;
             bool fm;
+            double TrailingStop = 0.020;
+            double TrailingStep = 0.005;
 
             pp = MarketInfo(symbol, 20);
 
@@ -848,8 +841,6 @@ namespace forexAI
                 {
                     if (OrderStopLoss() > pAsk + (TrailingStop + TrailingStep - 1) * pp || OrderStopLoss() == 0)
                     {
-
-
                         fm = OrderModify(OrderTicket(), OrderOpenPrice(), pAsk + TrailingStop * pp, OrderTakeProfit(), DateTime.Now, Color.Red);
                         return;
                     }
@@ -1042,8 +1033,8 @@ namespace forexAI
             {
                 ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
                 ObjectSet(labelID, OBJPROP_CORNER, 1);
-                ObjectSet(labelID, OBJPROP_XDISTANCE, 10);
-                ObjectSet(labelID, OBJPROP_YDISTANCE, 20);
+                ObjectSet(labelID, OBJPROP_XDISTANCE, 627);
+                ObjectSet(labelID, OBJPROP_YDISTANCE, 608);
             }
 
             ObjectSetText(labelID, "ActiveSpend: " + DoubleToStr(GetActiveSpend(), 2), 8, "lucida console", Color.Red);
@@ -1053,8 +1044,8 @@ namespace forexAI
             {
                 ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
                 ObjectSet(labelID, OBJPROP_CORNER, 1);
-                ObjectSet(labelID, OBJPROP_XDISTANCE, 10);
-                ObjectSet(labelID, OBJPROP_YDISTANCE, 30);
+                ObjectSet(labelID, OBJPROP_XDISTANCE, 629);
+                ObjectSet(labelID, OBJPROP_YDISTANCE, 627);
             }
             ObjectSetText(labelID,
                           "ActiveIncome: " + DoubleToStr(GetActiveIncome(), 2),

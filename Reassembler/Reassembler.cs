@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -76,7 +77,7 @@ namespace forexAI
 
             failedReassemble = false;
 
-            if (hashFunctions != Hash.md5(functionConfigurationString))
+            if (hashFunctions != Hash.MD5(functionConfigurationString))
             {
                 log($"hashFunctions({hashFunctions}) not match, deserializing {functionConfigurationString.Length} bytes ...");
                 var jsonSettings = new JsonSerializerSettings();
@@ -84,7 +85,7 @@ namespace forexAI
                 functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
                     (functionConfigurationString, jsonSettings);
 
-                hashFunctions = Hash.md5(functionConfigurationString);
+                hashFunctions = Hash.MD5(functionConfigurationString);
                 log($"hash={hashFunctions}");
             }
 
@@ -375,6 +376,7 @@ namespace forexAI
 
             //forexNetwork.ScaleInput()
             //forexNetwork.ClearScalingParams();
+            File.WriteAllText($"{Configuration.rootDirectory}\\entireset.dat", SerializeObject(entireSet));
             double[] networkOutput = forexNetwork.Run(entireSet);
 
             //forexNetwork.DescaleOutput(networkOutput);
