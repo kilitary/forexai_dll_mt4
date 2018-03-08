@@ -63,7 +63,7 @@ namespace forexAI
         public static double[] Execute(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
             IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork,
-            bool reassemblingCompletedOverride, string timeCurrent)
+            bool reassemblingCompletedOverride, string timeCurrent, out int networkFunctionsCount)
         {
             reassemblingCompleted = reassemblingCompletedOverride;
 
@@ -91,6 +91,8 @@ namespace forexAI
 
             if (!reassemblingCompleted)
                 log($"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
+
+            networkFunctionsCount = functionConfigurationInput.Count;
 
             foreach (var item in functionConfigurationInput)
             {
