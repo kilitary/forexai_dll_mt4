@@ -16,7 +16,7 @@ namespace forexAI
             byte[] originalBytes = ASCIIEncoding.Default.GetBytes(input);
             byte[] encodedBytes = md5.ComputeHash(originalBytes);
 
-            return BitConverter.ToString(encodedBytes).Replace("-", "");
+            return BitConverter.ToString(encodedBytes).Replace("-", "").ToLower();
         }
     }
 }

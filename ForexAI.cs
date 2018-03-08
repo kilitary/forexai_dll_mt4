@@ -455,7 +455,7 @@ namespace forexAI
 
                 if (OrderType() == OP_BUY)
                 {
-                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -1.3)
+                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -2.3)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -466,7 +466,7 @@ namespace forexAI
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedOrdersHistory += "o";
+                        charizedOrdersHistory += ".";
                     }
                     else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
                     {
@@ -480,12 +480,12 @@ namespace forexAI
                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedOrdersHistory += "X";
+                        charizedOrdersHistory += "x";
                     }
                 }
                 if (OrderType() == OP_SELL)
                 {
-                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -1.3)
+                    if (OrderProfit() + OrderSwap() + OrderCommission() <= -2.3)
                     {
                         if (Configuration.tryExperimentalFeatures)
                             console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -497,7 +497,7 @@ namespace forexAI
                         debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedOrdersHistory += "o";
+                        charizedOrdersHistory += ".";
                     }
                     else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
                     {
@@ -512,7 +512,7 @@ namespace forexAI
                         debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
                             " profit=" + OrderProfit());
                         dayOperationsCount++;
-                        charizedOrdersHistory += "X";
+                        charizedOrdersHistory += "x";
                     }
                 }
             }
