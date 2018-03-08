@@ -38,23 +38,25 @@ namespace forexAI
         static LivePrices prices = new LivePrices();
         static Dictionary<string, FunctionsConfiguration> functionConfigurationInput;
         static Core.RetCode ret;
-        static int OutBegIdx;
+        static int OutBegIdx = 0;
         static int OutNbElement = -1;
-        static int pOutNbElement;
+        static int pOutNbElement = 0;
         static int OutIndex = -1;
-        static int typeOut;
-        static int nOutBegIdx;
-        static int sourceInputDimension = 0;
-        static int startIdx;
+        static int typeOut = 0;
+        static int nOutBegIdx = 0;
+        static int startIdx = 0;
+        static int fidx = 0;
+        static int iReal;
         static int[] resultDataInt = null;
-        static string reassembledFunctions = string.Empty;
         static string paramName = String.Empty;
-        static string comment = string.Empty, paramComment = String.Empty;
+        static string comment = string.Empty;
         static string functionName = string.Empty;
+        static string hashFunctions = string.Empty;
         static double paramValue = 0.0;
         static double[] resultDataDouble = null;
         static double[] entireSet = null;
-        static bool failedReassemble;
+        static object[] arguments = null;
+        static bool failedReassemble = false;
         static bool reassemblingCompleted = false;
 
         public static double[] Execute(string functionConfigurationString, int inputDimension,
@@ -67,28 +69,27 @@ namespace forexAI
             if (!reassemblingCompleted)
                 log($"=> Reassembling input sequence ...");
 
-            reassembledFunctions = string.Empty;
-            Core.SetCompatibility(Core.Compatibility.Metastock);
-            Core.SetUnstablePeriod(Core.FuncUnstId.Ema, 4);
-
             entireSet = null;
 
             if (failedReassemble)
                 reassemblingCompleted = false;
 
             failedReassemble = false;
-            sourceInputDimension = inputDimension;
 
-            var jsonSettings = new JsonSerializerSettings();
-            jsonSettings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
-            functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
-                (functionConfigurationString, jsonSettings);
+            if (hashFunctions != Hash.md5(functionConfigurationString))
+            {
+                log($"hashFunctions({hashFunctions}) not match, deserializing {functionConfigurationString.Length} bytes ...");
+                var jsonSettings = new JsonSerializerSettings();
+                jsonSettings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
+                functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
+                    (functionConfigurationString, jsonSettings);
+
+                hashFunctions = Hash.md5(functionConfigurationString);
+                log($"hash={hashFunctions}");
+            }
 
             if (!reassemblingCompleted)
                 log($"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
-
-            object[] arguments = null;
-            int fidx = 0;
 
             foreach (var item in functionConfigurationInput)
             {
@@ -108,10 +109,9 @@ namespace forexAI
                     paramName = values[1];
 
                     int.TryParse(values[0], out id);
+                    comment = values[3];
                     double.TryParse(values[2], out paramValue);
 
-                    comment = values[3];
-                    paramComment = string.Empty;
                     switch (paramName)
                     {
                         case "optInVFactor":
@@ -153,7 +153,17 @@ namespace forexAI
                         case "inReal0":
                         case "inReal1":
                         case "inReal":
-                            switch (paramValue)
+
+                            if (comment.StartsWith("High"))
+                                iReal = 2;
+                            if (comment.StartsWith("Open"))
+                                iReal = 0;
+                            if (comment.StartsWith("Close"))
+                                iReal = 1;
+                            if (comment.StartsWith("Low"))
+                                iReal = 3;
+
+                            switch (iReal)
                             {
                                 case 0:
                                     arguments[paramIndex] = prices.GetOpen(numData, Bars, Open);
@@ -278,7 +288,6 @@ namespace forexAI
                 if (!reassemblingCompleted)
                     log($"=> {functionName} arguments({arguments.Length})={SerializeObject(arguments)}");
 
-                reassembledFunctions += $"{functionName}|";
                 arguments[OutIndex] = new double[inputDimension];
 
                 Type[] functionTypes = new Type[conf.parameters.parametersMap.Count];
@@ -362,15 +371,16 @@ namespace forexAI
             }
 
             if (!reassemblingCompleted)
-                log($"=> Reassembling [ SUCCESS ] {reassembledFunctions} OutputLength={entireSet.Length} inputDimension={inputDimension}");
+                log($"=> Reassembling [ SUCCESS ] ");
 
             //forexNetwork.ScaleInput()
+            //forexNetwork.ClearScalingParams();
             double[] networkOutput = forexNetwork.Run(entireSet);
 
             //forexNetwork.DescaleOutput(networkOutput);
 
             //debug($"{timeCurrent} networkOutput = {networkOutput[0].ToString("0.0000")} : {networkOutput[1].ToString("0.0000")}");
-
+            reassemblingCompleted = true;
             return networkOutput;
         }
     }
