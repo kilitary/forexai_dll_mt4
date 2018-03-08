@@ -383,7 +383,7 @@ namespace forexAI
             File.WriteAllText($"{Configuration.rootDirectory}\\entireset.dat", SerializeObject(entireSet));
             double[] networkOutput = forexNetwork.Run(entireSet);
 
-            //forexNetwork.DescaleOutput(networkOutput);
+            forexNetwork.DescaleOutput(networkOutput);
 
             //debug($"{timeCurrent} networkOutput = {networkOutput[0].ToString("0.0000")} : {networkOutput[1].ToString("0.0000")}");
             reassemblingCompleted = true;
