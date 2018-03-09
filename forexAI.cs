@@ -108,8 +108,7 @@ namespace forexAI
                     inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
                     TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), out networkFunctionsCount);
 
-                if (IsStableTrend() && stableTrendBar >= 2 && stableTrendBar <= 4)
-                    EnterPositions();
+                EnterPositions();
             }
 
             if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
@@ -300,13 +299,18 @@ namespace forexAI
 
         void EnterPositions()
         {
+            if (!IsStableTrend()
+                || stableTrendBar < Configuration.minStableTrendBarForEnter
+                || stableTrendBar > Configuration.maxStableTrendBarForEnter)
+                return;
+
             if (BuyProbability() >= 0.8
-                && SellProbability() <= -0.6
-                && CountBuys() <= Configuration.maxSellBuyOrdersParallel)
+                    && SellProbability() <= -0.6
+                    && CountBuys() <= Configuration.maxSellBuyOrdersParallel)
                 SendBuy(BuyProbability().ToString("0.000"));
             if (SellProbability() >= 0.8
-                && BuyProbability() <= -0.6
-                && CountSells() <= Configuration.maxSellBuyOrdersParallel)
+                    && BuyProbability() <= -0.6
+                    && CountSells() <= Configuration.maxSellBuyOrdersParallel)
                 SendSell(SellProbability().ToString("0.000"));
         }
 
@@ -858,6 +862,44 @@ namespace forexAI
             return stableTrend;
         }
 
+        void TrailOrders()
+        {
+            double TrailingStop = Configuration.trailingStop;
+            double TrailingBorder = Configuration.trailingBorder;
+            double newStopLoss = 0;
+
+            for (int current_order = 0; current_order < OrdersTotal(); current_order++)
+            {
+                OrderSelect(current_order, SELECT_BY_POS, MODE_TRADES);
+
+                if (OrderType() == OP_BUY)
+                {
+                    newStopLoss = Bid - TrailingStop * Point;
+                    if ((OrderStopLoss() == 0.0 || newStopLoss > OrderStopLoss())
+                        && Bid - (TrailingBorder * Point) > OrderOpenPrice()
+                        && OrderProfit() + OrderCommission() + OrderSwap() >= 0.01)
+                    {
+                        log($"modify buy {OrderTicket()} newStopLoss={newStopLoss}");
+                        OrderModify(OrderTicket(), OrderOpenPrice(), newStopLoss, OrderTakeProfit(),
+                            OrderExpiration(), Color.BlueViolet);
+                        dayOperationsCount++;
+                    }
+                }
+                if (OrderType() == OP_SELL)
+                {
+                    newStopLoss = Ask + TrailingStop * Point;
+                    if ((OrderStopLoss() == 0.0 || newStopLoss < OrderStopLoss())
+                        && Ask + (TrailingBorder * Point) < OrderOpenPrice()
+                        && OrderProfit() + OrderCommission() + OrderSwap() >= 0.01)
+                    {
+                        log($"modify sell {OrderTicket()} newStopLoss={newStopLoss}");
+                        OrderModify(OrderTicket(), OrderOpenPrice(), newStopLoss, OrderTakeProfit(),
+                            OrderExpiration(), Color.MediumVioletRed);
+                        dayOperationsCount++;
+                    }
+                }
+            }
+        }
         void DrawStats(bool commentsOnly = false)
         {
             int i;
@@ -1136,43 +1178,5 @@ namespace forexAI
             }
         }
 
-        void TrailOrders()
-        {
-            double TrailingStop = Configuration.trailingStop;
-            double TrailingBorder = Configuration.trailingBorder;
-            double newStopLoss = 0;
-
-            for (int current_order = 0; current_order < OrdersTotal(); current_order++)
-            {
-                OrderSelect(current_order, SELECT_BY_POS, MODE_TRADES);
-
-                if (OrderType() == OP_BUY)
-                {
-                    newStopLoss = Bid - TrailingStop * Point;
-                    if ((OrderStopLoss() == 0.0 || newStopLoss > OrderStopLoss())
-                        && Bid - (TrailingBorder * Point) > OrderOpenPrice()
-                        && OrderProfit() + OrderCommission() + OrderSwap() >= 0.01)
-                    {
-                        log($"modify buy {OrderTicket()} newStopLoss={newStopLoss}");
-                        OrderModify(OrderTicket(), OrderOpenPrice(), newStopLoss, OrderTakeProfit(),
-                            OrderExpiration(), Color.BlueViolet);
-                        dayOperationsCount++;
-                    }
-                }
-                if (OrderType() == OP_SELL)
-                {
-                    newStopLoss = Ask + TrailingStop * Point;
-                    if ((OrderStopLoss() == 0.0 || newStopLoss < OrderStopLoss())
-                        && Ask + (TrailingBorder * Point) < OrderOpenPrice()
-                        && OrderProfit() + OrderCommission() + OrderSwap() >= 0.01)
-                    {
-                        log($"modify sell {OrderTicket()} newStopLoss={newStopLoss}");
-                        OrderModify(OrderTicket(), OrderOpenPrice(), newStopLoss, OrderTakeProfit(),
-                            OrderExpiration(), Color.MediumVioletRed);
-                        dayOperationsCount++;
-                    }
-                }
-            }
-        }
     }
 }
