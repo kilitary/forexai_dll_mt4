@@ -29,7 +29,7 @@ namespace forexAI
         public static string mysqlUid = "homestead";
         public static string memcachedIP = "192.168.10.10";
         public static double orderLots = 0.01;
-        public static double minNegativeSpendProfit = -16.0;
+        public static double minNegativeSpendProfit = -3.0;
         public static double trailingBorder = 20;
         public static double trailingStop = 24;
         public static bool useMemcached = false;
@@ -37,7 +37,7 @@ namespace forexAI
         public static bool useAudio = true;
         public static int memcachedPort = 11211;
         public static int magickNumber = 0xC34;
-        public static int maxSellBuyOrdersParallel = 0;
+        public static int maxSellBuyOrdersInParallel = 0;
         public static int minStableTrendBarForEnter = 3;
         public static int maxStableTrendBarForEnter = 6;
 

@@ -56,7 +56,7 @@ namespace forexAI
         static double paramValue = 0.0;
         static double[] resultDataDouble = null;
         static double[] entireSet = null;
-        static object[] arguments = null;
+        static object[] functionArguments = null;
         static bool failedReassemble = false;
         static bool reassemblingCompleted = false;
 
@@ -100,7 +100,7 @@ namespace forexAI
                 FunctionsConfiguration conf = item.Value;
 
                 string stringOut = string.Empty;
-                arguments = new object[conf.parameters.parametersMap.Count];
+                functionArguments = new object[conf.parameters.parametersMap.Count];
                 int paramIndex = 0;
                 string[] values = new string[4];
                 int numData = inputDimension;
@@ -118,40 +118,40 @@ namespace forexAI
                     switch (paramName)
                     {
                         case "optInVFactor":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "outMACDSignal":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "outMACDHist":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
 
                         case "outMin":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "optInNbDevUp":
-                            arguments[paramIndex] = 0.0;
+                            functionArguments[paramIndex] = 0.0;
                             break;
                         case "outMACD":
-                            arguments[paramIndex] = 0.0;
+                            functionArguments[paramIndex] = 0.0;
                             break;
                         case "outLeadSine":
-                            arguments[paramIndex] = 0.0;
+                            functionArguments[paramIndex] = 0.0;
                             break;
                         case "outSine":
-                            arguments[paramIndex] = 0.0;
+                            functionArguments[paramIndex] = 0.0;
                             break;
                         case "optInMinPeriod":
                         case "optInMaxPeriod":
                         case "optInSignalPeriod":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "optInMAType":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "optInNbDev":
-                            arguments[paramIndex] = 0.0;
+                            functionArguments[paramIndex] = 0.0;
                             break;
                         case "inReal0":
                         case "inReal1":
@@ -169,27 +169,27 @@ namespace forexAI
                             switch (iReal)
                             {
                                 case 0:
-                                    arguments[paramIndex] = prices.GetOpen(numData, Bars, Open);
+                                    functionArguments[paramIndex] = prices.GetOpen(numData, Bars, Open);
                                     break;
                                 case 1:
-                                    arguments[paramIndex] = prices.GetClose(numData, Bars, Close);
+                                    functionArguments[paramIndex] = prices.GetClose(numData, Bars, Close);
                                     break;
                                 case 2:
-                                    arguments[paramIndex] = prices.GetHigh(numData, Bars, High);
+                                    functionArguments[paramIndex] = prices.GetHigh(numData, Bars, High);
                                     break;
                                 case 3:
-                                    arguments[paramIndex] = prices.GetLow(numData, Bars, Low);
+                                    functionArguments[paramIndex] = prices.GetLow(numData, Bars, Low);
                                     break;
                             }
 
                             break;
                         case "optInMaximum":
-                            arguments[paramIndex] = 0.0;
+                            functionArguments[paramIndex] = 0.0;
                             break;
                         case "optInSlowD_MAType":
                         case "optInFastD_MAType":
                         case "optInSlowK_MAType":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "optInAccelerationShort":
                         case "optInAccelerationMaxShort":
@@ -198,87 +198,87 @@ namespace forexAI
                         case "optInAccelerationLong":
                         case "optInAccelerationInitLong":
                         case "optInAcceleration":
-                            arguments[paramIndex] = 0.0;
+                            functionArguments[paramIndex] = 0.0;
                             break;
 
                         case "optInOffsetOnReverse":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "optInSlowK_Period":
                         case "optInFastK_Period":
                         case "optInSlowD_Period":
                         case "optInFastD_Period":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "optInSlowPeriod":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "optInFastPeriod":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
 
                         case "optInTimePeriod":
                         case "optInTimePeriod1":
                         case "optInTimePeriod3":
                         case "optInTimePeriod2":
-                            arguments[paramIndex] = 2;
+                            functionArguments[paramIndex] = 2;
                             break;
                         case "optInPenetration":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "optInStartValue":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "startIdx":
-                            arguments[paramIndex] = 0;
+                            functionArguments[paramIndex] = 0;
                             break;
                         case "endIdx":
-                            arguments[paramIndex] = numData - 1;
+                            functionArguments[paramIndex] = numData - 1;
                             break;
                         case "inOpen":
-                            arguments[paramIndex] = prices.GetOpen(numData, Bars, Open);
+                            functionArguments[paramIndex] = prices.GetOpen(numData, Bars, Open);
                             break;
                         case "inHigh":
-                            arguments[paramIndex] = prices.GetHigh(numData, Bars, High);
+                            functionArguments[paramIndex] = prices.GetHigh(numData, Bars, High);
                             break;
                         case "inLow":
-                            arguments[paramIndex] = prices.GetLow(numData, Bars, Low);
+                            functionArguments[paramIndex] = prices.GetLow(numData, Bars, Low);
                             break;
                         case "inClose":
-                            arguments[paramIndex] = prices.GetClose(numData, Bars, Close);
+                            functionArguments[paramIndex] = prices.GetClose(numData, Bars, Close);
                             break;
                         case "inVolume":
-                            arguments[paramIndex] = prices.GetVolume(numData, Bars, Volume);
+                            functionArguments[paramIndex] = prices.GetVolume(numData, Bars, Volume);
                             break;
                         case "outBegIdx":
-                            arguments[paramIndex] = OutBegIdx;
+                            functionArguments[paramIndex] = OutBegIdx;
                             nOutBegIdx = paramIndex;
                             break;
                         case "outNBElement":
-                            arguments[paramIndex] = OutNbElement;
+                            functionArguments[paramIndex] = OutNbElement;
                             OutNbElement = pOutNbElement = paramIndex;
                             break;
                         case "outInteger":
-                            arguments[paramIndex] = new int[numData];
+                            functionArguments[paramIndex] = new int[numData];
                             OutIndex = paramIndex;
                             typeOut = 0;
                             break;
                         case "outReal":
-                            arguments[paramIndex] = new double[numData];
+                            functionArguments[paramIndex] = new double[numData];
                             OutIndex = paramIndex;
                             typeOut = 1;
                             break;
                         case "outAroonUp":
-                            arguments[paramIndex] = new double[11];
+                            functionArguments[paramIndex] = new double[11];
                             break;
                         case "outAroonDown":
-                            arguments[paramIndex] = new double[11];
+                            functionArguments[paramIndex] = new double[11];
                             break;
                         case "outSlowD":
                         case "outSlowK":
                         case "outFastD":
                         case "outFastK":
-                            arguments[paramIndex] = new double[11];
+                            functionArguments[paramIndex] = new double[11];
                             break;
 
                         default:
@@ -289,13 +289,13 @@ namespace forexAI
                 }
 
                 if (!reassemblingCompleted)
-                    log($"=> {functionName} arguments({arguments.Length})={SerializeObject(arguments)}");
+                    log($"=> {functionName} arguments({functionArguments.Length})={SerializeObject(functionArguments)}");
 
-                arguments[OutIndex] = new double[inputDimension];
+                functionArguments[OutIndex] = new double[inputDimension];
 
                 Type[] functionTypes = new Type[conf.parameters.parametersMap.Count];
                 int idx = 0;
-                foreach (var arg in arguments)
+                foreach (var arg in functionArguments)
                 {
                     if (arg.GetType().IsByRef || arg.GetType().IsMarshalByRef)
                         functionTypes[idx] = arg.GetType().MakeByRefType();
@@ -318,12 +318,12 @@ namespace forexAI
                 }
                 else
                 {
-                    ret = (Core.RetCode) AIPartFunction.Invoke(null, arguments);
+                    ret = (Core.RetCode) AIPartFunction.Invoke(null, functionArguments);
                     int idxS = 0;
 
                     if (typeOut == 0)
                     {
-                        resultDataInt = (int[]) arguments[OutIndex];
+                        resultDataInt = (int[]) functionArguments[OutIndex];
                         Array.Resize<double>(ref resultDataDouble, OutNbElement);
 
                         for (int i = 0; i < OutNbElement; i++)
@@ -339,7 +339,7 @@ namespace forexAI
                     }
                     else
                     {
-                        resultDataDouble = (double[]) arguments[OutIndex];
+                        resultDataDouble = (double[]) functionArguments[OutIndex];
                         for (int i = 0; i < OutNbElement; i++)
                         {
                             if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblingCompleted)
@@ -347,7 +347,7 @@ namespace forexAI
                         }
                     }
 
-                    startIdx = (int) arguments[nOutBegIdx];
+                    startIdx = (int) functionArguments[nOutBegIdx];
                     if (!reassemblingCompleted && startIdx != 0)
                         warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
 

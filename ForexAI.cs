@@ -108,7 +108,7 @@ namespace forexAI
                     inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
                     TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), out networkFunctionsCount);
 
-                EnterPositions();
+                TryEnterTrade();
             }
 
             if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
@@ -297,7 +297,7 @@ namespace forexAI
                 + (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
         }
 
-        void EnterPositions()
+        void TryEnterTrade()
         {
             if (!IsStableTrend()
                 || stableTrendBar < Configuration.minStableTrendBarForEnter
@@ -306,11 +306,11 @@ namespace forexAI
 
             if (BuyProbability() >= 0.8
                     && SellProbability() <= -0.6
-                    && CountBuys() <= Configuration.maxSellBuyOrdersParallel)
+                    && CountBuys() <= Configuration.maxSellBuyOrdersInParallel)
                 SendBuy(BuyProbability().ToString("0.000"));
             if (SellProbability() >= 0.8
                     && BuyProbability() <= -0.6
-                    && CountSells() <= Configuration.maxSellBuyOrdersParallel)
+                    && CountSells() <= Configuration.maxSellBuyOrdersInParallel)
                 SendSell(SellProbability().ToString("0.000"));
         }
 
@@ -629,7 +629,7 @@ namespace forexAI
             if (networkOutput == null)
                 return 0.0;
 
-            return networkOutput[1];
+            return networkOutput[0];
         }
 
         double SellProbability()
@@ -637,7 +637,7 @@ namespace forexAI
             if (networkOutput == null)
                 return 0.0;
 
-            return networkOutput[0];
+            return networkOutput[1];
         }
 
         double GetActiveIncome()
