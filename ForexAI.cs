@@ -306,11 +306,11 @@ namespace forexAI
 
             if (BuyProbability() >= 0.8
                     && SellProbability() <= -0.6
-                    && CountBuys() <= Configuration.maxOrdersInParallel)
+                    && CountBuys() <= Configuration.maxOrdersParallel)
                 SendBuy(BuyProbability().ToString("0.000"));
             if (SellProbability() >= 0.8
                     && BuyProbability() <= -0.6
-                    && CountSells() <= Configuration.maxOrdersInParallel)
+                    && CountSells() <= Configuration.maxOrdersParallel)
                 SendSell(SellProbability().ToString("0.000"));
         }
 
