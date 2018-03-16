@@ -38,8 +38,8 @@ namespace forexAI
         public static int memcachedPort = 11211;
         public static int magickNumber = 0xC34;
         public static int maxOrdersParallel = 0;
-        public static int minStableTrendBarForEnter = 3;
-        public static int maxStableTrendBarForEnter = 6;
+        public static int minStableTrendBarForEnter = 2;
+        public static int maxStableTrendBarForEnter = 4;
 
         // ♫ ♫ ♫ √
         // audio/FX

@@ -806,7 +806,7 @@ namespace forexAI
 
             for (int x = 0; x < prevBuyProbability.Length; x++)
             {
-                if (Math.Abs(prevBuyProbability[x] - BuyProbability()) >= 0.4)
+                if (Math.Abs(prevBuyProbability[x] - BuyProbability()) >= 0.2)
                 {
                     stableTrend = false;
                     stableTrendBar = 0;
@@ -828,10 +828,11 @@ namespace forexAI
 
             for (int x = 0; x < prevSellProbability.Length; x++)
             {
-                if (Math.Abs(prevSellProbability[x] - SellProbability()) >= 0.4)
+                if (Math.Abs(prevSellProbability[x] - SellProbability()) >= 0.2)
                 {
                     stableTrend = false;
                     stableTrendBar = 0;
+
                     if (stableTrendCurrentBar != Bars && !hasIncreasedUnstableTrendBar)
                     {
                         unstableTrendBar++;
@@ -877,7 +878,7 @@ namespace forexAI
                     newStopLoss = Bid - TrailingStop * Point;
                     if ((OrderStopLoss() == 0.0 || newStopLoss > OrderStopLoss())
                         && Bid - (TrailingBorder * Point) > OrderOpenPrice()
-                        && OrderProfit() + OrderCommission() + OrderSwap() >= 0.01)
+                        && OrderProfit() + OrderCommission() + OrderSwap() >= 0.04)
                     {
                         log($"modify buy {OrderTicket()} newStopLoss={newStopLoss}");
                         OrderModify(OrderTicket(), OrderOpenPrice(), newStopLoss, OrderTakeProfit(),
@@ -890,7 +891,7 @@ namespace forexAI
                     newStopLoss = Ask + TrailingStop * Point;
                     if ((OrderStopLoss() == 0.0 || newStopLoss < OrderStopLoss())
                         && Ask + (TrailingBorder * Point) < OrderOpenPrice()
-                        && OrderProfit() + OrderCommission() + OrderSwap() >= 0.01)
+                        && OrderProfit() + OrderCommission() + OrderSwap() >= 0.04)
                     {
                         log($"modify sell {OrderTicket()} newStopLoss={newStopLoss}");
                         OrderModify(OrderTicket(), OrderOpenPrice(), newStopLoss, OrderTakeProfit(),

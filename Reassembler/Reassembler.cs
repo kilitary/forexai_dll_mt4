@@ -58,22 +58,22 @@ namespace forexAI
         static double[] entireSet = null;
         static object[] functionArguments = null;
         static bool failedReassemble = false;
-        static bool reassemblingCompleted = false;
+        static bool reassemblyCompleted = false;
 
         public static double[] Execute(string functionConfigurationString, int inputDimension,
             IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
             IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet forexNetwork,
             bool reassemblingCompletedOverride, string timeCurrent, out int networkFunctionsCount)
         {
-            reassemblingCompleted = reassemblingCompletedOverride;
+            reassemblyCompleted = reassemblingCompletedOverride;
 
-            if (!reassemblingCompleted)
+            if (!reassemblyCompleted)
                 log($"=> Reassembling input sequence ...");
 
             entireSet = null;
 
             if (failedReassemble)
-                reassemblingCompleted = false;
+                reassemblyCompleted = false;
 
             failedReassemble = false;
 
@@ -89,7 +89,7 @@ namespace forexAI
                 log($"hash of configuration: {hashOfFunctionConfiguration}");
             }
 
-            if (!reassemblingCompleted)
+            if (!reassemblyCompleted)
                 log($"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
 
             networkFunctionsCount = functionConfigurationInput.Count;
@@ -288,7 +288,7 @@ namespace forexAI
                     paramIndex++;
                 }
 
-                if (!reassemblingCompleted)
+                if (!reassemblyCompleted)
                     log($"=> {functionName} arguments({functionArguments.Length})={SerializeObject(functionArguments)}");
 
                 functionArguments[OutIndex] = new double[inputDimension];
@@ -331,9 +331,9 @@ namespace forexAI
 
                         for (int i = 0; i < OutNbElement; i++)
                         {
-                            if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblingCompleted)
+                            if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblyCompleted)
                                 warning($"fucking function {functionName} starts with zero");
-                            if (resultDataDouble[i] == 0.0 && i == OutNbElement - 1 && !reassemblingCompleted)
+                            if (resultDataDouble[i] == 0.0 && i == OutNbElement - 1 && !reassemblyCompleted)
                                 warning($"fucking function {functionName} ends with zero");
                         }
                     }
@@ -342,16 +342,16 @@ namespace forexAI
                         resultDataDouble = (double[]) functionArguments[OutIndex];
                         for (int i = 0; i < OutNbElement; i++)
                         {
-                            if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblingCompleted)
+                            if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblyCompleted)
                                 warning($"fucking function {functionName} starts with zero");
                         }
                     }
 
                     startIdx = (int) functionArguments[nOutBegIdx];
-                    if (!reassemblingCompleted && startIdx != 0)
+                    if (!reassemblyCompleted && startIdx != 0)
                         warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
 
-                    if (!reassemblingCompleted)
+                    if (!reassemblyCompleted)
                         log($"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
                     int prevLen = entireSet == null ? 0 : entireSet.Length;
@@ -363,19 +363,19 @@ namespace forexAI
                 }
             }
 
-            if (!reassemblingCompleted)
+            if (!reassemblyCompleted)
                 log($"=> ret={ret} entireset={SerializeObject(entireSet)}");
 
             if (forexNetwork.InputCount != entireSet.Length)
             {
                 error($"=> reassembler FAILED to reassemble input sequence: diff in input count of network is " +
                     $"{Math.Abs(entireSet.Length - forexNetwork.InputCount)}");
-                reassemblingCompleted = false;
+                reassemblyCompleted = false;
                 failedReassemble = true;
                 return null;
             }
 
-            if (!reassemblingCompleted)
+            if (!reassemblyCompleted)
                 log($"=> Reassembling [ SUCCESS ] ");
 
             //forexNetwork.ScaleInput()
@@ -386,7 +386,7 @@ namespace forexAI
             forexNetwork.DescaleOutput(networkOutput);
 
             //debug($"{timeCurrent} networkOutput = {networkOutput[0].ToString("0.0000")} : {networkOutput[1].ToString("0.0000")}");
-            reassemblingCompleted = true;
+            reassemblyCompleted = true;
             return networkOutput;
         }
     }
