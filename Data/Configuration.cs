@@ -30,16 +30,17 @@ namespace forexAI
         public static string memcachedIP = "192.168.10.10";
         public static double orderLots = 0.01;
         public static double minNegativeSpendProfit = -3.0;
-        public static double trailingBorder = 20;
-        public static double trailingStop = 24;
+        public static double trailingBorder = 30;
+        public static double trailingStop = 20;
         public static bool useMemcached = false;
         public static bool useMysql = false;
         public static bool useAudio = true;
         public static int memcachedPort = 11211;
         public static int magickNumber = 0xC34;
         public static int maxOrdersParallel = 0;
-        public static int minStableTrendBarForEnter = 2;
-        public static int maxStableTrendBarForEnter = 4;
+        public static int minStableTrendBarForEnter = 4;
+        public static int maxStableTrendBarForEnter = 10;
+        public static int resetStableTrendBarAtBar = 110;
 
         // ♫ ♫ ♫ √
         // audio/FX
