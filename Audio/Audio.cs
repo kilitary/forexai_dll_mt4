@@ -35,9 +35,9 @@ namespace forexAI
             Play(Configuration.brokenWAV);
         }
 
-        public static void GoodWork()
+        public static void GoodJob()
         {
-            Play(Configuration.goodWorkWAV);
+            Play(Configuration.goodJobWAV);
         }
         public static void LowBalance()
         {

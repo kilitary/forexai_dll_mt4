@@ -159,7 +159,7 @@ namespace forexAI
                 FX.LowBalance();
             }
             else if (hasNoticedLowBalance && YRandom.Next(0, 6) == 3)
-                FX.GoodWork();
+                FX.GoodJob();
 
             previousBars = Bars;
             barsPerDay += 1;
