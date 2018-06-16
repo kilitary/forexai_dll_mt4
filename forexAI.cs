@@ -66,8 +66,8 @@ namespace forexAI
         bool hasNightReported = false;
         bool hasMorningReported = false;
         bool networkBootstrapped = false;
-        bool notTrading = false;
-        bool hasIncreasedUnstableTrendBar = false;
+		bool notTrading = false;
+		bool hasIncreasedUnstableTrendBar = false;
         int stableTrendCurrentBar = 0;
         int spendSells = 0, spendBuys = 0, profitSells = 0, profitBuys = 0, totalSpends = 0, totalProfits = 0;
         int openedBuys = 0, openedSells = 0;
@@ -173,7 +173,9 @@ namespace forexAI
             networkBootstrapped = false;
             reassembleCompletedOverride = false;
 
-            console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
+			Logger.ClearLogs();
+
+			console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
                 ConsoleColor.Black, ConsoleColor.Cyan);
 
             Core.SetCompatibility(Core.Compatibility.Metastock);
@@ -181,7 +183,6 @@ namespace forexAI
 
             TruncateLog(Configuration.randomLogFileName);
             TruncateLog(Configuration.yrandomLogFileName);
-            TruncateLog(Configuration.logFileName);
 
             #region matters
             if ((Environment.MachineName == "USER-PC" ||
@@ -235,40 +236,43 @@ namespace forexAI
 
         double LotsOptimized()
         {
-            double MaximumRisk = 0.03;
-            double DecreaseFactor = 3;
-            // history orders total
-            int orders = OrdersHistoryTotal();
-            // number of losses orders without a break
-            int losses = 0;
-            //---- select lot size
-            double lot = NormalizeDouble(AccountFreeMargin() * MaximumRisk / 1000.0, 1);
-            //---- calcuulate number of losses orders without a break
-            if (DecreaseFactor > 0)
-            {
-                for (int i = orders - 1; i >= 0; i--)
-                {
-                    if (!OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
-                    {
-                        error("Error in history!");
-                        continue;
-                    }
-                    if (OrderSymbol() != Symbol() || OrderType() > OP_SELL)
-                        continue;
+			if(!Configuration.useDynamicLots)
+				return Configuration.orderLots;
 
-                    if (OrderProfit() > 0)
-                        break;
-                    if (OrderProfit() < 0)
-                        losses++;
-                }
-                if (losses > 1)
-                    lot = NormalizeDouble(lot - lot * losses / DecreaseFactor, 1);
-            }
-            //---- return lot size
-            if (lot < Configuration.orderLots)
-                lot = Configuration.orderLots;
-            return lot;
-        }
+			double MaximumRisk = 0.03;
+			double DecreaseFactor = 3;
+			// history orders total
+			int orders = OrdersHistoryTotal();
+			// number of losses orders without a break
+			int losses = 0;
+			//---- select lot size
+			double lot = NormalizeDouble(AccountFreeMargin() * MaximumRisk / 1000.0, 1);
+			//---- calcuulate number of losses orders without a break
+			if (DecreaseFactor > 0)
+			{
+				for (int i = orders - 1; i >= 0; i--)
+				{
+					if (!OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
+					{
+						error("Error in history!");
+						continue;
+					}
+					if (OrderSymbol() != Symbol() || OrderType() > OP_SELL)
+						continue;
+
+					if (OrderProfit() > 0)
+						break;
+					if (OrderProfit() < 0)
+						losses++;
+				}
+				if (losses > 1)
+					lot = NormalizeDouble(lot - lot * losses / DecreaseFactor, 1);
+			}
+			//---- return lot size
+			if (lot < Configuration.orderLots)
+				lot = Configuration.orderLots;
+			return lot;
+		}
 
         public void InitVariables()
         {
@@ -366,7 +370,7 @@ namespace forexAI
             log($"Network: hash={forexNetwork.GetHashCode()} inputs={forexNetwork.InputCount} layers={forexNetwork.LayerCount}" +
                 $" outputs={forexNetwork.OutputCount} neurons={forexNetwork.TotalNeurons} connections={forexNetwork.TotalConnections}");
 
-            string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
+            string fileTextData = File.ReadAllText($@"{Configuration.rootDirectory}\{dirName}\configuration.txt");
 
             Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
             int.TryParse(match2.Groups[1].Value, out inputDimension);
@@ -392,7 +396,7 @@ namespace forexAI
         void ScanNetworks()
         {
             DirectoryInfo d = new DirectoryInfo(Configuration.rootDirectory);
-            networkDirs = d.GetDirectories("*");
+            networkDirs = d.GetDirectories("NET_*");
 
             log($"Looking for networks in {Configuration.rootDirectory}: found {networkDirs.Length} networks.");
 
