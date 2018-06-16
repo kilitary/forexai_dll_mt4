@@ -19,19 +19,19 @@ namespace forexAI
 
     public class FunctionParams
     {
-        int ParamIndex;
+		public int ParamIndex;
         public int NumData;
-        int OutBegIdx;
-        int Offset;
+		public int OutBegIdx;
+		public int Offset;
         public List<string> parametersMap;
-        object Arguments;
-        int OutIndex;
-        int OutNbElement;
+		public object Arguments;
+		public int OutIndex;
+		public int OutNbElement;
     }
 
     public class FunctionsConfiguration
     {
         public FunctionParams parameters;
-        ExMethodInfo methodInfo;
+		public ExMethodInfo methodInfo;
     }
 }

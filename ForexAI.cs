@@ -36,7 +36,7 @@ namespace forexAI
 		NeuralNet forexNetwork = null;
 		TrainingData trainData = null;
 		TrainingData testData = null;
-		Storage storage = new Storage();
+		Storage storage;
 		Settings settings = new Settings();
 		DirectoryInfo[] networkDirs = null;
 		string networkName = string.Empty;
@@ -86,6 +86,58 @@ namespace forexAI
 		int stableTrendBar = 0;
 		int networkFunctionsCount = 0;
 		int unstableTrendBar = 0;
+
+		public override int init()
+		{
+			currentDay = (int) System.DateTime.Now.DayOfWeek;
+			networkBootstrapped = false;
+			reassembleCompletedOverride = false;
+			Logger.ClearLogs();
+
+			storage = new Storage();
+
+			console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
+				ConsoleColor.Black, ConsoleColor.Cyan);
+
+			Core.SetCompatibility(Core.Compatibility.Metastock);
+			// Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 4);
+
+			TruncateLog(Configuration.randomLogFileName);
+			TruncateLog(Configuration.yrandomLogFileName);
+			TruncateLog(Configuration.logFileName);
+
+			#region matters
+			if ((Environment.MachineName == "USER-PC" ||
+				(Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused())) &&
+				(currentDay == 0))
+				Configuration.tryExperimentalFeatures = true;
+			#endregion
+
+			InitVariables();
+			ShowBanner();
+			DumpInfo();
+			ListGlobalVariables();
+			ScanNetworks();
+
+			if (networkDirs.Length > 0)
+			{
+				LoadNetwork(networkDirs[random.Next(networkDirs.Length - 1)].Name);
+				if (forexNetwork != null)
+				{
+					TestNetworkMSE();
+					TestNetworkHitRatio();
+				}
+			}
+
+			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) ";
+			log(initStr);
+			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
+
+			reassembleCompletedOverride = true;
+			networkBootstrapped = true;
+
+			return 0;
+		}
 
 		//+------------------------------------------------------------------+
 		//| Start function                                                   |
@@ -163,56 +215,6 @@ namespace forexAI
 
 			previousBars = Bars;
 			barsPerDay += 1;
-
-			return 0;
-		}
-
-		public override int init()
-		{
-			currentDay = (int) System.DateTime.Now.DayOfWeek;
-			networkBootstrapped = false;
-			reassembleCompletedOverride = false;
-			Logger.ClearLogs();
-
-			console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
-				ConsoleColor.Black, ConsoleColor.Cyan);
-
-			Core.SetCompatibility(Core.Compatibility.Metastock);
-			// Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 4);
-
-			TruncateLog(Configuration.randomLogFileName);
-			TruncateLog(Configuration.yrandomLogFileName);
-			TruncateLog(Configuration.logFileName);
-
-			#region matters
-			if ((Environment.MachineName == "USER-PC" ||
-				(Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused())) &&
-				(currentDay == 0))
-				Configuration.tryExperimentalFeatures = true;
-			#endregion
-
-			InitVariables();
-			ShowBanner();
-			DumpInfo();
-			ListGlobalVariables();
-			ScanNetworks();
-
-			if (networkDirs.Length > 0)
-			{
-				LoadNetwork(networkDirs[random.Next(networkDirs.Length - 1)].Name);
-				if (forexNetwork != null)
-				{
-					TestNetworkMSE();
-					TestNetworkHitRatio();
-				}
-			}
-
-			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) ";
-			log(initStr);
-			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
-
-			reassembleCompletedOverride = true;
-			networkBootstrapped = true;
 
 			return 0;
 		}

@@ -27,7 +27,7 @@ namespace forexAI
         public static string mysqlPassword = "secret";
         public static string mysqlServer = "192.168.10.10";
         public static string mysqlUid = "homestead";
-        public static string memcachedIP = "192.168.10.10";
+        public static string memcachedIP = "192.168.0.100";
         public static double orderLots = 0.01;
         public static double minNegativeSpendProfit = -3.0;
         public static double trailingBorder = 30;

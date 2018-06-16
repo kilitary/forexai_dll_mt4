@@ -16,73 +16,76 @@ using Color = System.Drawing.Color;
 
 namespace forexAI
 {
-    class Storage
-    {
-        MemcachedClient mc = null;
-        Dictionary<string, object> properties = new Dictionary<string, object>();
+	class Storage
+	{
+		MemcachedClient mc = null;
+		Dictionary<string, object> properties = new Dictionary<string, object>();
 
-        public Storage()
-        {
-            if (Configuration.useMemcached)
-                InitMemcached();
-        }
+		public Storage()
+		{
+			debug($"storage INIT");
+			if (Configuration.useMemcached)
+				InitMemcached();
+		}
 
-        ~Storage()
-        {
-            log("Storage DESTROY CALLED! but i am died already....");
-            SyncData();
-        }
+		~Storage()
+		{
+			log("Storage DESTROY CALLED! but i am died already....");
+			SyncData();
+		}
 
-        public object this[string name]
-        {
-            get
-            {
-                if (properties.ContainsKey(name))
-                    return properties[name];
+		public object this[string name]
+		{
+			get
+			{
+				if (properties.ContainsKey(name))
+					return properties[name];
 
-                if (!Configuration.useMysql)
-                    return string.Empty;
+				if (!Configuration.useMysql)
+					return string.Empty;
 
-                string retrievedValue = string.Empty;
-                retrievedValue = (string) Data.db.GetSetting(name);
-                properties[name] = retrievedValue;
-                return (retrievedValue != null && retrievedValue.Length > 0)
-                    ? retrievedValue
-                    : string.Empty;
-            }
-            set
-            {
-                properties[name] = value;
-                if (Configuration.useMemcached)
-                    mc.Store(StoreMode.Set, name, value);
-            }
-        }
+				string retrievedValue = string.Empty;
+				retrievedValue = (string) Data.db.GetSetting(name);
+				properties[name] = retrievedValue;
+				return (retrievedValue != null && retrievedValue.Length > 0)
+					? retrievedValue
+					: string.Empty;
+			}
+			set
+			{
+				properties[name] = value;
+				if (Configuration.useMemcached)
+					mc.Store(StoreMode.Set, name, value);
+			}
+		}
 
-        public void SyncData()
-        {
-            if (properties.Count <= 0)
-                return;
+		public void SyncData()
+		{
+			if (properties.Count <= 0)
+				return;
 
-            debug($"storage: storing {properties.Count} key-value pairs.");
-            foreach (KeyValuePair<string, object> o in properties)
-            {
-                if (Configuration.useMysql)
-                    Data.db.SetSetting(o.Key, o.Value);
-                if (Configuration.useMemcached)
-                    mc.Store(StoreMode.Set, o.Key, o.Value);
-            }
-        }
+			debug($"storage: storing {properties.Count} key-value pairs.");
+			foreach (KeyValuePair<string, object> o in properties)
+			{
+				if (Configuration.useMysql)
+					Data.db.SetSetting(o.Key, o.Value);
+				if (Configuration.useMemcached)
+					mc.Store(StoreMode.Set, o.Key, o.Value);
+			}
+		}
 
-        public void InitMemcached()
-        {
-            MemcachedClientConfiguration config = new MemcachedClientConfiguration();
-            IPEndPoint ipEndpoint = new IPEndPoint(IPAddress.Parse(Configuration.memcachedIP),
-                                                   Configuration.memcachedPort);
-            config.Servers.Add(ipEndpoint);
-            config.Protocol = MemcachedProtocol.Text;
-            mc = new MemcachedClient(config);
-            if (mc != null)
-                log($"memcached up [0x{mc.GetHashCode()}]");
-        }
-    }
+		public void InitMemcached()
+		{
+			MemcachedClientConfiguration config = new MemcachedClientConfiguration();
+			IPEndPoint ipEndpoint = new IPEndPoint(IPAddress.Parse(Configuration.memcachedIP),
+												   Configuration.memcachedPort);
+			config.Servers.Add(ipEndpoint);
+			config.Protocol = MemcachedProtocol.Text;
+			mc = new MemcachedClient(config);
+			if (mc != null)
+				debug($"memcached up [0x{mc.GetHashCode()}]");
+			else
+				debug($"fail to init memcached: {mc.ToString()}");
+		}
+	}
 }
