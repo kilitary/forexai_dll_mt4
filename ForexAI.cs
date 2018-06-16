@@ -362,7 +362,7 @@ namespace forexAI
 
 			forexNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net");
 
-			forexNetwork.ErrorLog = new FANNCSharp.FannFile($"{Configuration.rootDirectory}\\FANN.log", "a+");
+			//forexNetwork.ErrorLog = new FANNCSharp.FannFile($"{Configuration.rootDirectory}\\FANN.log", "a+");
 
 			log($"Network: hash={forexNetwork.GetHashCode()} inputs={forexNetwork.InputCount} layers={forexNetwork.LayerCount}" +
 				$" outputs={forexNetwork.OutputCount} neurons={forexNetwork.TotalNeurons} connections={forexNetwork.TotalConnections}");
@@ -393,7 +393,7 @@ namespace forexAI
 		void ScanNetworks()
 		{
 			DirectoryInfo d = new DirectoryInfo(Configuration.rootDirectory);
-			networkDirs = d.GetDirectories("*");
+			networkDirs = d.GetDirectories("NET_*");
 
 			log($"Looking for networks in {Configuration.rootDirectory}: found {networkDirs.Length} networks.");
 

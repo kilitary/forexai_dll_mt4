@@ -27,7 +27,13 @@ namespace forexAI
 
 		public static void ClearLogs()
 		{
-			File.WriteAllText($@"{Configuration.logFileName}", "clear\r\n");
+			DirectoryInfo d = new DirectoryInfo(Configuration.rootDirectory);
+			var logs = d.GetFiles("*.log");
+			foreach(var log in logs)
+			{
+
+				File.WriteAllText($@"{log.FullName}", "clear\r\n");
+			}
 		}
 
 		public static void dump(object data, string prefix = "", int maxDepth = 255)
@@ -66,53 +72,71 @@ namespace forexAI
 		}
 
 
-		public static void debug(string lines)
+		public static void debug(string lines, string fileName = null)
 		{
-			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
+			if (fileName == null)
+				fileName = "debug";
+
+			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
 			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "debug: " + lines);
+				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
 			file.Close();
 		}
 
-		public static void error(string lines)
+		public static void error(string lines, string fileName = null)
 		{
+			if (fileName == null)
+				fileName = "error";
+
 			StackFrame callStack = new StackFrame(1, true);
-			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
+			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
 			file.WriteLine(DateTime.Now.ToString("h:mm:ss.ffff") + " <" +
 				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "ERROR: " +
 				callStack.GetFileName() + ":" + callStack.GetFileLineNumber() + $" in {callStack.GetMethod().Name}(): " + lines);
 			file.Close();
 		}
 
-		public static void info(string lines)
+		public static void info(string lines, string fileName = null)
 		{
-			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
-			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "info: " + lines);
-			file.Close();
-		}
+			if (fileName == null)
+				fileName = "info";
 
-		public static void log(string lines)
-		{
-			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
+			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
 			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
 				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
 			file.Close();
 		}
 
-		public static void warning(string lines)
+		public static void log(string lines, string fileName = null)
 		{
-			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
+			if (fileName == null)
+				fileName = Configuration.logFileName;
+
+			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
+			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
+			file.Close();
+		}
+
+		public static void warning(string lines, string fileName = null)
+		{
+			if (fileName == null)
+				fileName = "warning";
+
+			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
 			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
 				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "warning: " + lines);
 			file.Close();
 		}
 
-		public static void notice(string lines)
+		public static void notice(string lines, string fileName = null)
 		{
-			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
+			if (fileName == null)
+				fileName = "notice";
+
+			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
 			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "notice: " + lines);
+				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "warning: " + lines);
 			file.Close();
 		}
 	}
