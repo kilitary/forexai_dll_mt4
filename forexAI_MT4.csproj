@@ -14,7 +14,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.0.14.0</AssemblyVersion>
+    <AssemblyVersion>0.0.19.0</AssemblyVersion>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>

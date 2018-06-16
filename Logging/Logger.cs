@@ -27,26 +27,25 @@ namespace forexAI
 
 		public static void ClearLogs()
 		{
-			DirectoryInfo d = new DirectoryInfo(Configuration.rootDirectory);
-			var logs = d.GetFiles("*.log");
-			foreach(var log in logs)
-			{
+			DirectoryInfo directory = new DirectoryInfo(Configuration.rootDirectory);
+			var logs = directory.GetFiles("*.log");
 
-				File.WriteAllText($@"{log.FullName}", "clear\r\n");
-			}
+			foreach (var log in logs)
+				File.WriteAllText($@"{log.FullName}", "***\r\n");
 		}
 
-		public static void dump(object data, string prefix = "", int maxDepth = 255)
+		public static void dump(object data, string prefix = "", int maxDepth = 3)
 		{
-			JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
-
-			jsonSettings.MaxDepth = maxDepth;
-			jsonSettings.Formatting = Formatting.Indented;
-			jsonSettings.PreserveReferencesHandling = PreserveReferencesHandling.All;
+			JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+			{
+				MaxDepth = maxDepth,
+				Formatting = Formatting.Indented,
+				PreserveReferencesHandling = PreserveReferencesHandling.All
+			};
 
 			try
 			{
-				using (StreamWriter file = new StreamWriter(Configuration.logFileName, true))
+				using (StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/debug.log", true))
 				{
 					file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
 						Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " +
