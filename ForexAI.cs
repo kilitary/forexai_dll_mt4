@@ -172,6 +172,7 @@ namespace forexAI
 			currentDay = (int) System.DateTime.Now.DayOfWeek;
 			networkBootstrapped = false;
 			reassembleCompletedOverride = false;
+			Logger.ClearLogs();
 
 			console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
 				ConsoleColor.Black, ConsoleColor.Cyan);
@@ -366,7 +367,7 @@ namespace forexAI
 			log($"Network: hash={forexNetwork.GetHashCode()} inputs={forexNetwork.InputCount} layers={forexNetwork.LayerCount}" +
 				$" outputs={forexNetwork.OutputCount} neurons={forexNetwork.TotalNeurons} connections={forexNetwork.TotalConnections}");
 
-			string fileTextData = File.ReadAllText($"d:\\temp\\forexAI\\{dirName}\\configuration.txt");
+			string fileTextData = File.ReadAllText($"{Configuration.rootDirectory}\\{dirName}\\configuration.txt");
 
 			Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
 			int.TryParse(match2.Groups[1].Value, out inputDimension);

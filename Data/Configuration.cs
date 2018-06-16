@@ -18,7 +18,7 @@ namespace forexAI
     public static class Configuration
     {
         // common configuration    
-        public static string rootDirectory = @"d:\temp\forexAI";
+        public static string rootDirectory = @"d:\forexAI";
         public static string logFileName = $@"{Configuration.rootDirectory}\mt4EA.log";
         public static string settingsPath = $@"{Configuration.rootDirectory}\mt4EA.cfg";
         public static string randomLogFileName = $@"{Configuration.rootDirectory}\seed";
@@ -44,7 +44,7 @@ namespace forexAI
 
         // ♫ ♫ ♫ √
         // audio/FX
-        public static string audioDirectory = @"d:\Audio_FX";
+        public static string audioDirectory = @"e:\Audio_FX";
         public static string newDayWAV = $@"{Configuration.audioDirectory}\17130__noisecollector__ak47-chamber-round.wav";
         public static string profitWAV = $@"{Configuration.audioDirectory}\209578__zott820__cash-register-purchase.wav";
         public static string brokenWAV = $@"{Configuration.audioDirectory}\115276__xdrav__broken-bulb.wav";

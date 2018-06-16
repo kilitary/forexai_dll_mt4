@@ -14,101 +14,106 @@ using static Newtonsoft.Json.JsonConvert;
 
 namespace forexAI
 {
-    public static class Logger
-    {
-        [DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
-        private static extern int GetCurrentThreadId();
+	public static class Logger
+	{
+		[DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
+		private static extern int GetCurrentThreadId();
 
-        public static void TruncateLog(string fileName = null)
-        {
-            if (fileName != null && File.Exists(fileName))
-                File.Delete(fileName);
-        }
+		public static void TruncateLog(string fileName = null)
+		{
+			if (fileName != null && File.Exists(fileName))
+				File.Delete(fileName);
+		}
 
-        public static void dump(object data, string prefix = "", int maxDepth = 255)
-        {
-            JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
+		public static void ClearLogs()
+		{
+			File.WriteAllText($@"{Configuration.logFileName}", "clear\r\n");
+		}
 
-            jsonSettings.MaxDepth = maxDepth;
-            jsonSettings.Formatting = Formatting.Indented;
-            jsonSettings.PreserveReferencesHandling = PreserveReferencesHandling.All;
+		public static void dump(object data, string prefix = "", int maxDepth = 255)
+		{
+			JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
 
-            try
-            {
-                using (StreamWriter file = new StreamWriter(Configuration.logFileName, true))
-                {
-                    file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-                        Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " +
-                        ((prefix.Length > 0 ? "[" + prefix + "] \r\n" : "") +
-                        SerializeObject(data, jsonSettings)));
-                }
-            }
-            catch (Exception e)
-            {
-                error($"dump(): {e.Message}");
-            }
-        }
+			jsonSettings.MaxDepth = maxDepth;
+			jsonSettings.Formatting = Formatting.Indented;
+			jsonSettings.PreserveReferencesHandling = PreserveReferencesHandling.All;
 
-        public static string console(string lines, ConsoleColor bgcolor = Black, ConsoleColor fgcolor = White)
-        {
-            Console.BackgroundColor = bgcolor;
-            Console.ForegroundColor = fgcolor;
-            string logString = DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines;
-            Console.WriteLine(logString);
-            Console.ResetColor();
-            return logString;
-        }
+			try
+			{
+				using (StreamWriter file = new StreamWriter(Configuration.logFileName, true))
+				{
+					file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+						Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " +
+						((prefix.Length > 0 ? "[" + prefix + "] \r\n" : "") +
+						SerializeObject(data, jsonSettings)));
+				}
+			}
+			catch (Exception e)
+			{
+				error($"dump(): {e.Message}");
+			}
+		}
+
+		public static string console(string lines, ConsoleColor bgcolor = Black, ConsoleColor fgcolor = White)
+		{
+			Console.BackgroundColor = bgcolor;
+			Console.ForegroundColor = fgcolor;
+			string logString = DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines;
+			Console.WriteLine(logString);
+			Console.ResetColor();
+			return logString;
+		}
 
 
-        public static void debug(string lines)
-        {
-            StreamWriter file = new StreamWriter(Configuration.logFileName, true);
-            file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "debug: " + lines);
-            file.Close();
-        }
+		public static void debug(string lines)
+		{
+			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
+			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "debug: " + lines);
+			file.Close();
+		}
 
-        public static void error(string lines)
-        {
-            StackFrame callStack = new StackFrame(1, true);
-            StreamWriter file = new StreamWriter(Configuration.logFileName, true);
-            file.WriteLine(DateTime.Now.ToString("h:mm:ss.ffff") + " <" +
-                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "ERROR: " +
-                callStack.GetFileName() + ":" + callStack.GetFileLineNumber() + $" in {callStack.GetMethod().Name}(): " + lines);
-            file.Close();
-        }
+		public static void error(string lines)
+		{
+			StackFrame callStack = new StackFrame(1, true);
+			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
+			file.WriteLine(DateTime.Now.ToString("h:mm:ss.ffff") + " <" +
+				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "ERROR: " +
+				callStack.GetFileName() + ":" + callStack.GetFileLineNumber() + $" in {callStack.GetMethod().Name}(): " + lines);
+			file.Close();
+		}
 
-        public static void info(string lines)
-        {
-            StreamWriter file = new StreamWriter(Configuration.logFileName, true);
-            file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "info: " + lines);
-            file.Close();
-        }
+		public static void info(string lines)
+		{
+			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
+			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "info: " + lines);
+			file.Close();
+		}
 
-        public static void log(string lines)
-        {
-            StreamWriter file = new StreamWriter(Configuration.logFileName, true);
-            file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
-            file.Close();
-        }
+		public static void log(string lines)
+		{
+			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
+			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
+			file.Close();
+		}
 
-        public static void warning(string lines)
-        {
-            StreamWriter file = new StreamWriter(Configuration.logFileName, true);
-            file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "warning: " + lines);
-            file.Close();
-        }
+		public static void warning(string lines)
+		{
+			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
+			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "warning: " + lines);
+			file.Close();
+		}
 
-        public static void notice(string lines)
-        {
-            StreamWriter file = new StreamWriter(Configuration.logFileName, true);
-            file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-                Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "notice: " + lines);
-            file.Close();
-        }
-    }
+		public static void notice(string lines)
+		{
+			StreamWriter file = new StreamWriter(Configuration.logFileName, true);
+			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "notice: " + lines);
+			file.Close();
+		}
+	}
 }
