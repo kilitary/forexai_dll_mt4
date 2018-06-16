@@ -30,8 +30,9 @@ namespace forexAI
 			DirectoryInfo directory = new DirectoryInfo(Configuration.rootDirectory);
 			var logs = directory.GetFiles("*.log");
 
-			foreach (var log in logs)
-				File.WriteAllText($@"{log.FullName}", "***\r\n");
+			foreach (var logFile in logs)
+				if (!Tools.Helpers.IsFileLocked(logFile.FullName))
+					File.WriteAllText($@"{logFile.FullName}", "***\r\n");
 		}
 
 		public static void dump(object data, string prefix = "", int maxDepth = 3)

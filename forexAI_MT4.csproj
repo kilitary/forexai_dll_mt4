@@ -14,7 +14,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.0.20.0</AssemblyVersion>
+    <AssemblyVersion>0.0.25.0</AssemblyVersion>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
@@ -162,6 +162,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Tools\Hash.cs" />
+    <Compile Include="Tools\Helpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
