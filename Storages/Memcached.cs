@@ -23,7 +23,8 @@ namespace forexAI
 
 		public Storage()
 		{
-			debug($"storage INIT");
+			debug($"storage INIT (Configuration.useMemcached={Configuration.useMemcached}, useMysql={Configuration.useMysql})");
+
 			if (Configuration.useMemcached)
 				InitMemcached();
 		}
