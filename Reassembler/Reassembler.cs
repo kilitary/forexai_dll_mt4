@@ -80,9 +80,11 @@ namespace forexAI
             if (hashOfFunctionConfiguration != Hash.MD5(functionConfigurationString))
             {
                 log($"hashOfFunctionConfiguration ({hashOfFunctionConfiguration}) not match content, deserializing {functionConfigurationString.Length} bytes ...");
-                var jsonSettings = new JsonSerializerSettings();
-                jsonSettings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
-                functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
+				var jsonSettings = new JsonSerializerSettings
+				{
+					MetadataPropertyHandling = MetadataPropertyHandling.Ignore
+				};
+				functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
                     (functionConfigurationString, jsonSettings);
 
                 hashOfFunctionConfiguration = Hash.MD5(functionConfigurationString);

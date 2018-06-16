@@ -37,7 +37,7 @@ namespace forexAI
 		public static bool useAudio = true;
 		public static int memcachedPort = 11211;
 		public static int magickNumber = 0xC34;
-		public static int maxOrdersInParallel = 2;
+		public static int maxOrdersInParallel = 12;
 		public static int minStableTrendBarForEnter = 4;
 		public static int maxStableTrendBarForEnter = 10;
 		public static int resetStableTrendBarAtBar = 110;
@@ -45,7 +45,7 @@ namespace forexAI
 
 		// ♫ ♫ ♫ √
 		// audio/FX
-		public static string audioDirectory = @"d:\forexAI\Audio_FX";
+		public static string audioDirectory = $@"{Configuration.rootDirectory}\Audio_FX";
 		public static string newDayWAV = $@"{Configuration.audioDirectory}\17130__noisecollector__ak47-chamber-round.wav";
 		public static string profitWAV = $@"{Configuration.audioDirectory}\209578__zott820__cash-register-purchase.wav";
 		public static string brokenWAV = $@"{Configuration.audioDirectory}\115276__xdrav__broken-bulb.wav";

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace forexAI
 {
-	public struct ExMethodInfo
+	public struct ExtendedMethodInfo
 	{
 		public string Name;
 		public string AssemblyName;
@@ -17,7 +17,7 @@ namespace forexAI
 		public object GenericArguments;
 	}
 
-	public struct FunctionParams
+	public struct FunctionParameters
 	{
 		public int ParamIndex;
 		public int NumData;
@@ -31,7 +31,7 @@ namespace forexAI
 
 	public struct FunctionsConfiguration
 	{
-		public FunctionParams parameters;
-		public ExMethodInfo methodInfo;
+		public FunctionParameters parameters;
+		public ExtendedMethodInfo methodInfo;
 	}
 }

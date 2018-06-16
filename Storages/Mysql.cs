@@ -117,9 +117,11 @@ namespace forexAI
 
             try
             {
-                var command = new MySqlCommand(myInsertQuery, connection);
-                command.Connection = connection;
-                command.ExecuteNonQuery();
+				var command = new MySqlCommand(myInsertQuery, connection)
+				{
+					Connection = connection
+				};
+				command.ExecuteNonQuery();
             }
             catch (Exception e)
             {

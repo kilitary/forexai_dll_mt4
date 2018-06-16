@@ -334,9 +334,10 @@ namespace forexAI
 
 			networkName = fannNetworkDirName = dirName;
 
-			forexNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net");
-
-			forexNetwork.ErrorLog = new FANNCSharp.FannFile($"{Configuration.rootDirectory}\\FANN.log", "a+");
+			forexNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net")
+			{
+				ErrorLog = new FANNCSharp.FannFile($"{Configuration.rootDirectory}\\FANN.log", "a+")
+			};
 
 			log($"Network: hash={forexNetwork.GetHashCode()} inputs={forexNetwork.InputCount} layers={forexNetwork.LayerCount}" +
 				$" outputs={forexNetwork.OutputCount} neurons={forexNetwork.TotalNeurons} connections={forexNetwork.TotalConnections}");
