@@ -310,15 +310,15 @@ namespace forexAI
                     idx++;
                 }
 
-                MethodInfo AIPartFunction = typeof(Core).GetMethod(functionName, functionTypes);
-                if (AIPartFunction == null)
+                MethodInfo FunctionPointer = typeof(Core).GetMethod(functionName, functionTypes);
+                if (FunctionPointer == null)
                 {
                     error($"fail to load method [{functionName}] from TICTAC");
                     failedReassemble = true;
                 }
                 else
                 {
-                    ret = (Core.RetCode) AIPartFunction.Invoke(null, functionArguments);
+                    ret = (Core.RetCode) FunctionPointer.Invoke(null, functionArguments);
                     int idxS = 0;
 
                     if (typeOut == 0)

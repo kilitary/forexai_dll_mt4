@@ -99,7 +99,6 @@ namespace forexAI
 				return 0;
 
 			BuildCharizedHistory();
-			// AddVerticalLabel($"SP {SellProbability().ToString("0.000")} BP {BuyProbability().ToString("0.000")}");
 			CheckForClose();
 
 			if (networkBootstrapped)

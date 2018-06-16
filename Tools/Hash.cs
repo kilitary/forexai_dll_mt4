@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace forexAI
 {
-    static class Hash
-    {
-        public static string MD5(string input)
-        {
-            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+	public static class Hash
+	{
+		public static string MD5(string input)
+		{
+			MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
 
-            byte[] originalBytes = ASCIIEncoding.Default.GetBytes(input);
-            byte[] encodedBytes = md5.ComputeHash(originalBytes);
+			byte[] originalBytes = ASCIIEncoding.Default.GetBytes(input);
+			byte[] encodedBytes = md5.ComputeHash(originalBytes);
 
-            return BitConverter.ToString(encodedBytes).Replace("-", "").ToLower();
-        }
-    }
+			return BitConverter.ToString(encodedBytes).Replace("-", "").ToLower();
+		}
+	}
 }
