@@ -72,6 +72,7 @@ namespace forexAI
 		[ExternVariable]
 		public bool counterTrading = false;
 
+
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
 		Version version = null;
@@ -389,6 +390,12 @@ namespace forexAI
 			console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
 				ConsoleColor.Black, ConsoleColor.Cyan);
 
+			log($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
+				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={EnteringTradeProbability} BlockingTradeProbability={BlockingTradeProbability}" +
+				$" MinLossForCounterTrade={MinLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersInParallel}" +
+				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
+				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", "dev");
+
 			Core.SetCompatibility(Core.Compatibility.Metastock);
 			//			Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 8);
 
@@ -483,7 +490,7 @@ namespace forexAI
 			if (previousBankDay != Day())
 			{
 				previousBankDay = Day();
-				log($"-> Day {previousBankDay.ToString("0")} [opsDone={dayOperationsCount} barsPerDay={barsPerDay}] "
+				log($"-> Day {previousBankDay.ToString("0")} [opsDone={dayOperationsCount} barsPerDay={barsPerDay}] accountBanalce={AccountBalance()} "
 					+ (forexNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 				totalOperationsCount += dayOperationsCount;
 				dayOperationsCount = barsPerDay = stableTrendBar = unstableTrendBar = 0;
@@ -503,8 +510,7 @@ namespace forexAI
 			File.AppendAllText(Configuration.YYYrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
 
 
-			if (AccountBalance() <= 20)
-				TerminalClose(0);
+
 
 			log($"=> Probability: Buy={buyProbability.ToString("0.0000")} Sell={sellProbability.ToString("0.0000")}", "debug");
 
@@ -515,6 +521,9 @@ namespace forexAI
 
 			previousBars = Bars;
 			barsPerDay += 1;
+
+			if (AccountBalance() <= 20)
+				TerminalClose(0);
 
 			return 0;
 		}
