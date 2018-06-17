@@ -29,7 +29,7 @@ namespace forexAI
 		public static string mysqlUid = "homestead";
 		public static string memcachedIP = "192.168.0.100";
 		public static double orderLots = 0.01;
-		public static double maxNegativeSpend = -3.0;
+		public static double maxNegativeSpend = -2.5;
 		public static double trailingBorder = 30;
 		public static double trailingStop = 20;
 		public static double stableBigChangeFactor = 0.3;
@@ -41,10 +41,10 @@ namespace forexAI
 		public static int magickNumber = 0xC34;
 		public static int maxOrdersInParallel = 6;
 		public static int minStableTrendBarForEnter = 2;
-		public static int maxStableTrendBarForEnter = 10;
-		public static int resetStableTrendBarAtBar = 110;
+		public static int maxStableTrendBarForEnter = 100;
 		public static int minTradePeriodBars = 4;
-		
+		public static double EnteringTradeProbability = 0.7;
+		public static double BlockingTradeProbability = -0.2;
 		// ♫ ♫ ♫ √
 		// audio/FX
 		public static string audioDirectory = $@"{rootDirectory}\Audio_FX";
@@ -67,8 +67,9 @@ namespace forexAI
 		//[!]░░░▀▄▄▄▄▄█▄▄▄▄▄▄▄▄▄▄▄▀▄ 
 		// Experimental features [!]
 		public static bool tryExperimentalFeatures = false; // √
-		//░░░░░░░░░░░▌▌░▌▌░░░░░  
+															//░░░░░░░░░░░▌▌░▌▌░░░░░  
 		public static int experimentalAlliedRandomUpperBound = 4498; // √
+		
 		//░[!]░░░░░░░▌▌░▌▌░░░░░  
 		//░░░░░░░░░░░▌▌░▌▌░░░░░  
 		//░[!]░░░░░░░▌▌░▌▌░░░░░  

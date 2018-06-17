@@ -39,6 +39,7 @@ namespace forexAI
 		Storage storage = new Storage();
 		Settings settings = new Settings();
 		DirectoryInfo[] networkDirs = null;
+		List<int> orders = new List<int>();
 		string networkName = string.Empty;
 		string fannNetworkDirName = string.Empty;
 		string inputLayerActivationFunction = string.Empty;
@@ -87,7 +88,6 @@ namespace forexAI
 		int networkFunctionsCount = 0;
 		int unstableTrendBar = 0;
 		int lastTradeBar = 0;
-		public List<int> orders = new List<int>();
 
 		int buysCount
 		{
@@ -431,9 +431,9 @@ namespace forexAI
 			if (Bars == previousBars)
 				return 0;
 
-			SyncOrders();
+			PopulateOrders();
 			BuildCharizedHistory();
-			CheckForClose();
+			CloseNegativeOrders();
 
 			if (neuralNetworkBootstrapped)
 			{
@@ -518,37 +518,36 @@ namespace forexAI
 			return 0;
 		}
 
-		public void SyncOrders()
+		public void PopulateOrders()
 		{
-			lock (orders)
+			var newOrders = new List<int>(orders);
+			var zeroTime = new DateTime(0);
+
+			orders.ForEach(delegate (int order)
 			{
-				var newOrders = new List<int>(orders);
-				var nullTime = new DateTime(0);
-
-				orders.ForEach(delegate (int order)
+				if (!OrderSelect(order, SELECT_BY_TICKET) || OrderCloseTime() != zeroTime)
 				{
-					if (!OrderSelect(order, SELECT_BY_TICKET) || OrderCloseTime() != nullTime)
-					{
-						newOrders.Remove(order);
-						log($"remove order {order}", "dev");
-					}
-				});
+					newOrders.Remove(order);
+					log($"remove order {order}", "dev");
+				}
+			});
 
-				orders = newOrders;
+			orders = newOrders;
 
-				for (int i = 0; i < OrdersTotal(); i++)
+			for (int index = 0; index < OrdersTotal(); index++)
+			{
+				if (!OrderSelect(index, SELECT_BY_POS, MODE_TRADES))
+					break;
+
+				if (!orders.Contains(OrderTicket()))
 				{
-					if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
-						break;
-
-					if (!orders.Contains(OrderTicket()))
-					{
-						log($"add order {OrderTicket()}", "dev");
-						orders.Add(OrderTicket());
-					}
+					log($"add order {OrderTicket()}", "dev");
+					orders.Add(OrderTicket());
 				}
 			}
-			dump(orders, "orders", "dev");
+
+			if (orders.Count > 0)
+				dump(orders, "orders", "dev");
 		}
 
 		public void InitVariables()
@@ -569,21 +568,20 @@ namespace forexAI
 		void EnterTrade()
 		{
 			if (!isTrendStable || stableTrendBar < Configuration.minStableTrendBarForEnter || stableTrendBar > Configuration.maxStableTrendBarForEnter)
-			{
-				log($"non-stable trend, skipping trade (stableTrendBar={stableTrendBar})", "trade");
 				return;
-			}
 
-			if (buyProbability >= 0.7
-					&& sellProbability <= -0.2
+			if (buyProbability >= Configuration.EnteringTradeProbability
+					&& sellProbability <= Configuration.BlockingTradeProbability
 					&& ordersCount < Configuration.maxOrdersInParallel
-					&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
+					&& tradeBarPeriodGone > Configuration.minTradePeriodBars
+					&& buysProfit >= 0.0)
 				SendBuy(buyProbability.ToString("0.000"));
 
-			if (sellProbability >= 0.7
-					&& buyProbability <= -0.2
+			if (sellProbability >= Configuration.EnteringTradeProbability
+					&& buyProbability <= Configuration.BlockingTradeProbability
 					&& ordersCount < Configuration.maxOrdersInParallel
-					&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
+					&& tradeBarPeriodGone > Configuration.minTradePeriodBars
+					&& sellsProfit >= 0.0)
 				SendSell(sellProbability.ToString("0.000"));
 		}
 
@@ -593,14 +591,14 @@ namespace forexAI
 				&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
 			{
 				log($"opening counter-buy [{ordersCount}]");
-				SendSell("");
+				SendSell();
 			}
 
 			if (sellsProfit <= -1.0 && sellsCount > buysCount && ordersCount < Configuration.maxOrdersInParallel
 				&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
 			{
 				log($"opening counter-sell [{ordersCount}]");
-				SendBuy("");
+				SendBuy();
 			}
 		}
 
@@ -723,7 +721,7 @@ namespace forexAI
 			return ((double) hits / (double) inputs.Length) * 100.0;
 		}
 
-		void CheckForClose()
+		void CloseNegativeOrders()
 		{
 			for (int i = 0; i < OrdersTotal(); i++)
 			{
@@ -745,20 +743,6 @@ namespace forexAI
 						log("close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
 						dayOperationsCount++;
 					}
-					/* else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
-                     {
-                         if (Configuration.tryExperimentalFeatures)
-                             console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
-                                 ConsoleColor.Black, ConsoleColor.Green);
-
-                         FX.Profit();
-                         profitBuys++;
-
-                         OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
-                         debug("- close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" + OrderProfit());
-                         dayOperationsCount++;
-                         charizedOrdersHistory += "x";
-                     }*/
 				}
 				if (OrderType() == OP_SELL)
 				{
@@ -776,21 +760,6 @@ namespace forexAI
 							" profit=" + OrderProfit());
 						dayOperationsCount++;
 					}
-					/*  else if (OrderProfit() + OrderSwap() + OrderCommission() >= 0.1)
-                      {
-                          if (Configuration.tryExperimentalFeatures)
-                              console($"{new String('е', random.Next(1, 5))} профит {OrderProfit()}$",
-                                  ConsoleColor.Black, ConsoleColor.Green);
-
-                          FX.Profit();
-                          profitSells++;
-
-                          OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
-                          debug("- close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
-                              " profit=" + OrderProfit());
-                          dayOperationsCount++;
-                          charizedOrdersHistory += "x";
-                      }*/
 				}
 			}
 		}
@@ -832,7 +801,7 @@ namespace forexAI
 			return (0);
 		}
 
-		void SendSell(string comment)
+		void SendSell(string comment = null)
 		{
 			RefreshRates();
 			double stopLoss = 0;// Ask - ordersStopPoints * Point;
@@ -846,7 +815,7 @@ namespace forexAI
 			lastTradeBar = Bars;
 		}
 
-		void SendBuy(string comment)
+		void SendBuy(string comment = null)
 		{
 			RefreshRates();
 			double stopLoss = 0;//Bid - ordersStopPoints * Point;
