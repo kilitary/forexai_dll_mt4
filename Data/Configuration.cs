@@ -37,10 +37,11 @@ namespace forexAI
 		public static bool useAudio = true;
 		public static int memcachedPort = 11211;
 		public static int magickNumber = 0xC34;
-		public static int maxOrdersInParallel = 12;
+		public static int maxOrdersInParallel = 6;
 		public static int minStableTrendBarForEnter = 4;
 		public static int maxStableTrendBarForEnter = 10;
 		public static int resetStableTrendBarAtBar = 110;
+		public static int minTradePeriodBars = 4;
 		public static bool useDynamicLots = false;
 
 		// ♫ ♫ ♫ √

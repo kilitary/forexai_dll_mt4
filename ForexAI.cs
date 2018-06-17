@@ -86,6 +86,56 @@ namespace forexAI
 		int stableTrendBar = 0;
 		int networkFunctionsCount = 0;
 		int unstableTrendBar = 0;
+		int lastTradeBar = 0;
+
+		public override int init()
+		{
+			currentDay = (int) System.DateTime.Now.DayOfWeek;
+			networkBootstrapped = false;
+			reassembleCompletedOverride = false;
+
+			Logger.ClearLogs();
+
+			console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
+				ConsoleColor.Black, ConsoleColor.Cyan);
+
+			Core.SetCompatibility(Core.Compatibility.Metastock);
+			// Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 4);
+
+			TruncateLog(Configuration.randomLogFileName);
+			TruncateLog(Configuration.yrandomLogFileName);
+
+			#region matters
+			if ((Environment.MachineName == "USER-PC" || (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused()))
+				&& (currentDay == 0))
+				Configuration.tryExperimentalFeatures = true;
+			#endregion
+
+			InitVariables();
+			ShowBanner();
+			DumpInfo();
+			ListGlobalVariables();
+			ScanNetworks();
+
+			if (networkDirs.Length > 0)
+			{
+				LoadNetwork(networkDirs[random.Next(networkDirs.Length - 1)].Name);
+				if (forexNetwork != null)
+				{
+					TestNetworkMSE();
+					TestNetworkHitRatio();
+				}
+			}
+
+			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) ";
+			log(initStr);
+			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
+
+			reassembleCompletedOverride = true;
+			networkBootstrapped = true;
+
+			return 0;
+		}
 
 		//+------------------------------------------------------------------+
 		//| Start function                                                   |
@@ -100,6 +150,7 @@ namespace forexAI
 
 			BuildCharizedHistory();
 			CheckForClose();
+			EnterCounterTrade();
 
 			if (networkBootstrapped)
 			{
@@ -162,55 +213,6 @@ namespace forexAI
 
 			previousBars = Bars;
 			barsPerDay += 1;
-
-			return 0;
-		}
-
-		public override int init()
-		{
-			currentDay = (int) System.DateTime.Now.DayOfWeek;
-			networkBootstrapped = false;
-			reassembleCompletedOverride = false;
-
-			Logger.ClearLogs();
-
-			console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
-				ConsoleColor.Black, ConsoleColor.Cyan);
-
-			Core.SetCompatibility(Core.Compatibility.Metastock);
-			// Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 4);
-
-			TruncateLog(Configuration.randomLogFileName);
-			TruncateLog(Configuration.yrandomLogFileName);
-
-			#region matters
-			if ((Environment.MachineName == "USER-PC" || (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused()))
-				&& (currentDay == 0))
-				Configuration.tryExperimentalFeatures = true;
-			#endregion
-
-			InitVariables();
-			ShowBanner();
-			DumpInfo();
-			ListGlobalVariables();
-			ScanNetworks();
-
-			if (networkDirs.Length > 0)
-			{
-				LoadNetwork(networkDirs[random.Next(networkDirs.Length - 1)].Name);
-				if (forexNetwork != null)
-				{
-					TestNetworkMSE();
-					TestNetworkHitRatio();
-				}
-			}
-
-			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) ";
-			log(initStr);
-			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
-
-			reassembleCompletedOverride = true;
-			networkBootstrapped = true;
 
 			return 0;
 		}
@@ -297,15 +299,33 @@ namespace forexAI
 				return;
 			}
 
-			if (BuyProbability() >= 0.5
+			if (BuyProbability() >= 0.8
 					&& SellProbability() <= -0.2
-					&& CountBuys() <= Configuration.maxOrdersInParallel)
+					&& CountBuys() + CountSells() <= Configuration.maxOrdersInParallel
+					&& Bars - lastTradeBar >= Configuration.minTradePeriodBars)
 				SendBuy(BuyProbability().ToString("0.000"));
 
-			if (SellProbability() >= 0.5
+			if (SellProbability() >= 0.8
 					&& BuyProbability() <= -0.2
-					&& CountSells() <= Configuration.maxOrdersInParallel)
+					&& CountSells() + CountBuys() <= Configuration.maxOrdersInParallel
+					&& Bars - lastTradeBar >= Configuration.minTradePeriodBars)
 				SendSell(SellProbability().ToString("0.000"));
+		}
+
+		public void EnterCounterTrade()
+		{
+			return;
+			if (BuysProfit() <= -3.0 && CountSells() < CountBuys() && CountSells() + CountBuys() < Configuration.maxOrdersInParallel)
+			{
+				log($"opening counter-buy [{CountSells() + CountBuys()}]");
+				SendSell("");
+			}
+
+			if (SellsProfit() <= -3.0 && CountSells() > CountBuys() && CountSells() + CountBuys() < Configuration.maxOrdersInParallel)
+			{
+				log($"opening counter-sell [{CountSells() + CountBuys()}]");
+				SendBuy("");
+			}
 		}
 
 		void ListGlobalVariables()
@@ -434,7 +454,7 @@ namespace forexAI
 			return ((double) hits / (double) inputs.Length) * 100.0;
 		}
 
-		bool BuysProfitable()
+		double BuysProfit()
 		{
 			double buyIncome = 0.0;
 			for (int idx = OrdersTotal() - 1; idx >= 0; idx--)
@@ -446,13 +466,10 @@ namespace forexAI
 					buyIncome += OrderProfit();
 			}
 
-			if (buyIncome >= 0.0)
-				return true;
-
-			return false;
+			return buyIncome;
 		}
 
-		bool SellsProfitable()
+		double SellsProfit()
 		{
 			double sellIncome = 0.0;
 			for (int idx = OrdersTotal() - 1; idx >= 0; idx--)
@@ -464,10 +481,7 @@ namespace forexAI
 					sellIncome += OrderProfit();
 			}
 
-			if (sellIncome >= 0.0)
-				return true;
-
-			return false;
+			return sellIncome;
 		}
 
 		////+------------------------------------------------------------------+
@@ -704,6 +718,7 @@ namespace forexAI
 			log($"open sell  prob:{comment} @" + Bid);
 			AddLabel($"SP {SellProbability().ToString("0.0")} BP {BuyProbability().ToString("0.0")}", Color.Red);
 			dayOperationsCount++;
+			lastTradeBar = Bars;
 		}
 
 		void SendBuy(string comment)
@@ -717,6 +732,7 @@ namespace forexAI
 			log($"open buy prob:{comment} @" + Ask);
 			AddLabel($"BP {BuyProbability().ToString("0.0")} SP {SellProbability().ToString("0.0")}", Color.Blue);
 			dayOperationsCount++;
+			lastTradeBar = Bars;
 		}
 
 		void TrailOrders()
