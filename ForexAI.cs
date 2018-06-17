@@ -94,9 +94,9 @@ namespace forexAI
 			get
 			{
 				int count = 0;
-				for (int cur_order = OrdersTotal() - 1; cur_order >= 0; cur_order--)
+				for (int currentOrder = OrdersTotal() - 1; currentOrder >= 0; currentOrder--)
 				{
-					if (!(OrderSelect(cur_order, SELECT_BY_POS, MODE_TRADES)))
+					if (!(OrderSelect(currentOrder, SELECT_BY_POS, MODE_TRADES)))
 						break;
 
 					if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
@@ -111,9 +111,9 @@ namespace forexAI
 			get
 			{
 				int count = 0;
-				for (int l_pos_216 = OrdersTotal() - 1; l_pos_216 >= 0; l_pos_216--)
+				for (int currentOrder = OrdersTotal() - 1; currentOrder >= 0; currentOrder--)
 				{
-					if (!(OrderSelect(l_pos_216, SELECT_BY_POS, MODE_TRADES)))
+					if (!(OrderSelect(currentOrder, SELECT_BY_POS, MODE_TRADES)))
 						break;
 
 					if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
@@ -123,7 +123,7 @@ namespace forexAI
 			}
 		}
 
-		public int tradeBarPeriodGone
+		int tradeBarPeriodGone
 		{
 			get
 			{
@@ -475,7 +475,7 @@ namespace forexAI
 				FX.TheNewDay();
 			}
 
-			log($"=> Probability: Buy={buyProbability.ToString("0.0000")} Sell={sellProbability.ToString("0.0000")}");
+			log($"=> Probability: Buy={buyProbability.ToString("0.0000")} Sell={sellProbability.ToString("0.0000")}", "debug");
 
 			File.AppendAllText(Configuration.randomLogFileName, random.Next(99).ToString("00") + " ");
 			File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");

@@ -48,6 +48,7 @@ namespace forexAI
 				string retrievedValue = string.Empty;
 				retrievedValue = (string) Data.db.GetSetting(name);
 				properties[name] = retrievedValue;
+
 				return (retrievedValue != null && retrievedValue.Length > 0)
 					? retrievedValue
 					: string.Empty;

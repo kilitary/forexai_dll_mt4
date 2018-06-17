@@ -21,7 +21,7 @@ namespace forexAI.Tools
 			{
 				try
 				{
-					using (File.Open(filePath, FileMode.Open)) { }
+					using (File.OpenWrite(filePath)) { }
 					return false;
 				}
 				catch (IOException e)

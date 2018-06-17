@@ -14,8 +14,8 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.0.60.0</AssemblyVersion>
-    <ShouldCreateLogs>True</ShouldCreateLogs>
+    <AssemblyVersion>0.0.65.0</AssemblyVersion>
+    <ShouldCreateLogs>False</ShouldCreateLogs>
     <AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
     <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
@@ -138,6 +138,7 @@
   <ItemGroup>
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Data\Configuration.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Pool\NetworkPool.cs" />
     <Compile Include="Reassembler\FunctionJsonConfig.cs" />
     <Compile Include="Reassembler\Reassembler.cs" />
