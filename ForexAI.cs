@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web.UI;
 using FANNCSharp.Double;
+using forexAI.Tools;
 using Newtonsoft.Json;
 using NQuotes;
 using TicTacTec.TA.Library;
@@ -246,31 +247,15 @@ namespace forexAI
 			}
 		}
 
-		private int ordersCount
+		int ordersCount
 		{
 			get
 			{
-				for (int i = 0; i < OrdersTotal(); i++)
-				{
-					if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
-						break;
-					if (OrderSymbol() == Symbol() && OrderMagicNumber() == Configuration.magickNumber)
-					{
-						if (OrderType() == OP_BUY)
-							openedBuys++;
-						if (OrderType() == OP_SELL)
-							openedSells++;
-					}
-				}
-
-				if (openedBuys > 0)
-					return (openedBuys);
-
-				return -openedSells;
+				return sellsCount + buysCount;
 			}
 		}
 
-		public double ordersProfit
+		double ordersProfit
 		{
 			get
 			{
@@ -318,6 +303,71 @@ namespace forexAI
 				if (lot < Configuration.orderLots)
 					lot = Configuration.orderLots;
 				return lot;
+			}
+		}
+
+		bool isTrendStable
+		{
+			get
+			{
+				bool stableTrend = true;
+
+				for (int x = 0; x < prevBuyProbability.Length; x++)
+				{
+					if (Math.Abs(prevBuyProbability[x] - buyProbability) >= Configuration.probabilityBigChangeFactor)
+					{
+						stableTrend = false;
+						stableTrendBar = 0;
+
+						if (stableTrendCurrentBar != Bars && !hasIncreasedUnstableTrendBar)
+						{
+							unstableTrendBar++;
+							hasIncreasedUnstableTrendBar = true;
+						}
+					}
+				}
+
+				if (stableTrendCurrentBar != Bars)
+				{
+					prevBuyProbability[0] = prevBuyProbability[1];
+					prevBuyProbability[1] = prevBuyProbability[2];
+					prevBuyProbability[2] = buyProbability;
+				}
+
+				for (int x = 0; x < prevSellProbability.Length; x++)
+				{
+					if (Math.Abs(prevSellProbability[x] - sellProbability) >= Configuration.probabilityBigChangeFactor)
+					{
+						stableTrend = false;
+						stableTrendBar = 0;
+						if (stableTrendCurrentBar != Bars && !hasIncreasedUnstableTrendBar)
+						{
+							unstableTrendBar++;
+							hasIncreasedUnstableTrendBar = true;
+						}
+					}
+				}
+
+				if (stableTrendCurrentBar != Bars)
+				{
+					prevSellProbability[0] = prevSellProbability[1];
+					prevSellProbability[1] = prevSellProbability[2];
+					prevSellProbability[2] = sellProbability;
+				}
+
+				if (stableTrend && stableTrendCurrentBar != Bars)
+				{
+					unstableTrendBar = 0;
+					stableTrendBar++;
+				}
+
+				if (stableTrendCurrentBar != Bars)
+				{
+					stableTrendCurrentBar = Bars;
+					hasIncreasedUnstableTrendBar = false;
+				}
+
+				return stableTrend;
 			}
 		}
 
@@ -484,9 +534,7 @@ namespace forexAI
 
 		void EnterTrade()
 		{
-			if (!IsStableTrend()
-				|| stableTrendBar < Configuration.minStableTrendBarForEnter
-				|| stableTrendBar > Configuration.maxStableTrendBarForEnter)
+			if (!isTrendStable || stableTrendBar < Configuration.minStableTrendBarForEnter || stableTrendBar > Configuration.maxStableTrendBarForEnter)
 			{
 				log($"non-stable trend, skipping trade (stableTrendBar={stableTrendBar})", "trade");
 				return;
@@ -508,16 +556,16 @@ namespace forexAI
 		public void EnterCounterTrade()
 		{
 			if (buysProfit <= -3.0 && sellsCount < buysCount && ordersCount < Configuration.maxOrdersInParallel
-				&& Bars - lastTradeBar >= Configuration.minTradePeriodBars)
+				&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
 			{
-				log($"opening counter-buy [{sellsCount + buysCount}]");
+				log($"opening counter-buy [{ordersCount}]");
 				SendSell("");
 			}
 
 			if (sellsProfit <= -3.0 && sellsCount > buysCount && ordersCount < Configuration.maxOrdersInParallel
-				&& Bars - lastTradeBar >= Configuration.minTradePeriodBars)
+				&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
 			{
-				log($"opening counter-sell [{sellsCount + buysCount}]");
+				log($"opening counter-sell [{ordersCount}]");
 				SendBuy("");
 			}
 		}
@@ -533,13 +581,6 @@ namespace forexAI
 			}
 		}
 
-		private void ShowMemoryUsage()
-		{
-			console($"WorkingSet={(currentProcess.WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
-				 $"PrivateMemory={(currentProcess.PrivateMemorySize64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
-				 $"Threads={currentProcess.Threads.Count} FileName={currentProcess.MainModule.ModuleName}",
-				 ConsoleColor.Black, ConsoleColor.Yellow);
-		}
 
 		void LoadNetwork(string dirName)
 		{
@@ -828,68 +869,6 @@ namespace forexAI
 			}
 		}
 
-		private bool IsStableTrend()
-		{
-			bool stableTrend = true;
-
-			for (int x = 0; x < prevBuyProbability.Length; x++)
-			{
-				if (Math.Abs(prevBuyProbability[x] - buyProbability) >= 0.3)
-				{
-					stableTrend = false;
-					stableTrendBar = 0;
-
-					if (stableTrendCurrentBar != Bars && !hasIncreasedUnstableTrendBar)
-					{
-						unstableTrendBar++;
-						hasIncreasedUnstableTrendBar = true;
-					}
-				}
-			}
-
-			if (stableTrendCurrentBar != Bars)
-			{
-				prevBuyProbability[0] = prevBuyProbability[1];
-				prevBuyProbability[1] = prevBuyProbability[2];
-				prevBuyProbability[2] = buyProbability;
-			}
-
-			for (int x = 0; x < prevSellProbability.Length; x++)
-			{
-				if (Math.Abs(prevSellProbability[x] - sellProbability) >= 0.3)
-				{
-					stableTrend = false;
-					stableTrendBar = 0;
-					if (stableTrendCurrentBar != Bars && !hasIncreasedUnstableTrendBar)
-					{
-						unstableTrendBar++;
-						hasIncreasedUnstableTrendBar = true;
-					}
-				}
-			}
-
-			if (stableTrendCurrentBar != Bars)
-			{
-				prevSellProbability[0] = prevSellProbability[1];
-				prevSellProbability[1] = prevSellProbability[2];
-				prevSellProbability[2] = sellProbability;
-			}
-
-			if (stableTrend && stableTrendCurrentBar != Bars)
-			{
-				unstableTrendBar = 0;
-				stableTrendBar++;
-			}
-
-			if (stableTrendCurrentBar != Bars)
-			{
-				stableTrendCurrentBar = Bars;
-				hasIncreasedUnstableTrendBar = false;
-			}
-
-			return stableTrend;
-		}
-
 		void AddLabel(string text, Color clr)
 		{
 			string on;
@@ -1095,9 +1074,9 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 318);
 			}
-			ObjectSetText(labelID, "[" + (IsStableTrend() ? "STABLE" : "UNSTABLE") +
-				$" {(IsStableTrend() ? stableTrendBar : unstableTrendBar)}" + "]", 15, "lucida console",
-				IsStableTrend() ? Color.LightGreen : Color.Red);
+			ObjectSetText(labelID, "[" + (isTrendStable ? "STABLE" : "UNSTABLE") +
+				$" {(isTrendStable ? stableTrendBar : unstableTrendBar)}" + "]", 15, "lucida console",
+				isTrendStable ? Color.LightGreen : Color.Red);
 
 			totalSpends = spendSells + spendBuys;
 			totalProfits = profitSells + profitBuys;
@@ -1253,7 +1232,7 @@ namespace forexAI
 			debug($"  Period={Period()}");
 			debug($"  minstoplevel={minStopLevel}");
 
-			ShowMemoryUsage();
+			Helpers.ShowMemoryUsage();
 		}
 
 	}

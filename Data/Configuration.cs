@@ -43,6 +43,7 @@ namespace forexAI
 		public static int maxStableTrendBarForEnter = 10;
 		public static int resetStableTrendBarAtBar = 110;
 		public static int minTradePeriodBars = 4;
+		public static double probabilityBigChangeFactor = 0.3;
 
 		// ♫ ♫ ♫ √
 		// audio/FX

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static forexAI.Logger;
 
 namespace forexAI.Tools
 {
@@ -34,6 +36,13 @@ namespace forexAI.Tools
 			}
 
 			return isLocked;
+		}
+
+		public static void ShowMemoryUsage()
+		{
+			log($"WorkingSet={(Process.GetCurrentProcess().WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
+				 $"PrivateMemory={(Process.GetCurrentProcess().PrivateMemorySize64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
+				 $"Threads={Process.GetCurrentProcess().Threads.Count} FileName={Process.GetCurrentProcess().MainModule.ModuleName}");
 		}
 	}
 }
