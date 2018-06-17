@@ -314,7 +314,7 @@ namespace forexAI
 
 				for (int x = 0; x < prevBuyProbability.Length; x++)
 				{
-					if (Math.Abs(prevBuyProbability[x] - buyProbability) >= Configuration.probabilityBigChangeFactor)
+					if (Math.Abs(prevBuyProbability[x] - buyProbability) >= Configuration.stableBigChangeFactor)
 					{
 						stableTrend = false;
 						stableTrendBar = 0;
@@ -336,7 +336,7 @@ namespace forexAI
 
 				for (int x = 0; x < prevSellProbability.Length; x++)
 				{
-					if (Math.Abs(prevSellProbability[x] - sellProbability) >= Configuration.probabilityBigChangeFactor)
+					if (Math.Abs(prevSellProbability[x] - sellProbability) >= Configuration.stableBigChangeFactor)
 					{
 						stableTrend = false;
 						stableTrendBar = 0;
