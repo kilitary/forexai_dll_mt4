@@ -55,7 +55,7 @@ namespace forexAI
 		public double MinLossForCounterTrade = -4.0;
 
 		[ExternVariable]
-		public bool useOptimizedLots = true;
+		public bool useOptimizedLots = false;
 
 		[ExternVariable]
 		public int maxOrdersInParallel = 6;
@@ -68,6 +68,9 @@ namespace forexAI
 
 		[ExternVariable]
 		public int minTradePeriodBars = 4;
+
+		[ExternVariable]
+		public bool counterTrading = false;
 
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
@@ -378,6 +381,9 @@ namespace forexAI
 			reassembleCompletedOverride = false;
 			mqlApi = this;
 
+			if (IsTesting())
+				Configuration.useAudio = false;
+
 			ClearLogs();
 
 			console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
@@ -445,56 +451,60 @@ namespace forexAI
 					TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), out networkFunctionsCount);
 
 				EnterTrade();
-				EnterCounterTrade();
+
+				if (counterTrading)
+					EnterCounterTrade();
 			}
 
 			if (!IsTesting())
-			{
 				RenderCharizedHistory();
 
-				if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
-				{
-					stableTrendBar = unstableTrendBar = 0;
-					hasNightReported = true;
-					console($"Night....", ConsoleColor.Black, ConsoleColor.Gray);
-					AddLabel($"[kNIGHT]", Color.White);
-				}
-				else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
-					hasNightReported = false;
-
-				if (!hasMorningReported && TimeHour(TimeCurrent()) == 7)
-				{
-					stableTrendBar = unstableTrendBar = 0;
-					hasMorningReported = true;
-					console($"Morning!", ConsoleColor.Black, ConsoleColor.Yellow);
-					AddLabel($"[MORNING]", Color.Yellow);
-					buysPermitted = sellsPermitted = 3;
-				}
-				else if (hasMorningReported && TimeHour(TimeCurrent()) == 8)
-					hasMorningReported = false;
-
-				if (previousBankDay != Day())
-				{
-					previousBankDay = Day();
-					log($"-> Day {previousBankDay.ToString("0")} [opsDone={dayOperationsCount} barsPerDay={barsPerDay}] "
-						+ (forexNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
-					totalOperationsCount += dayOperationsCount;
-					dayOperationsCount = barsPerDay = stableTrendBar = unstableTrendBar = 0;
-					FX.TheNewDay();
-				}
-
-				if (AccountBalance() <= 5.0 && !hasNoticedLowBalance)
-				{
-					hasNoticedLowBalance = true;
-					console($"всё пизда, кеш весь слит нахуй, бабок: {AccountBalance()}$", ConsoleColor.Red, ConsoleColor.White);
-					FX.LowBalance();
-				}
-				else if (hasNoticedLowBalance && YRandom.Next(0, 6) == 3)
-					FX.GoodWork();
-
-				File.AppendAllText(Configuration.XXrandomLogFileName, random.Next(99).ToString("00") + " ");
-				File.AppendAllText(Configuration.YYYrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
+			if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
+			{
+				stableTrendBar = unstableTrendBar = 0;
+				hasNightReported = true;
+				console($"Night....", ConsoleColor.Black, ConsoleColor.Gray);
+				AddLabel($"[kNIGHT]", Color.White);
 			}
+			else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
+				hasNightReported = false;
+
+			if (!hasMorningReported && TimeHour(TimeCurrent()) == 7)
+			{
+				stableTrendBar = unstableTrendBar = 0;
+				hasMorningReported = true;
+				console($"Morning!", ConsoleColor.Black, ConsoleColor.Yellow);
+				AddLabel($"[MORNING]", Color.Yellow);
+				buysPermitted = sellsPermitted = 3;
+			}
+			else if (hasMorningReported && TimeHour(TimeCurrent()) == 8)
+				hasMorningReported = false;
+
+			if (previousBankDay != Day())
+			{
+				previousBankDay = Day();
+				log($"-> Day {previousBankDay.ToString("0")} [opsDone={dayOperationsCount} barsPerDay={barsPerDay}] "
+					+ (forexNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
+				totalOperationsCount += dayOperationsCount;
+				dayOperationsCount = barsPerDay = stableTrendBar = unstableTrendBar = 0;
+				FX.TheNewDay();
+			}
+
+			if (AccountBalance() <= 5.0 && !hasNoticedLowBalance)
+			{
+				hasNoticedLowBalance = true;
+				console($"всё пизда, кеш весь слит нахуй, бабок: {AccountBalance()}$", ConsoleColor.Red, ConsoleColor.White);
+				FX.LowBalance();
+			}
+			else if (hasNoticedLowBalance && YRandom.Next(0, 6) == 3)
+				FX.GoodWork();
+
+			File.AppendAllText(Configuration.XXrandomLogFileName, random.Next(99).ToString("00") + " ");
+			File.AppendAllText(Configuration.YYYrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
+
+
+			if (AccountBalance() <= 20)
+				TerminalClose(0);
 
 			log($"=> Probability: Buy={buyProbability.ToString("0.0000")} Sell={sellProbability.ToString("0.0000")}", "debug");
 
@@ -801,9 +811,13 @@ namespace forexAI
 			double stopLoss = 0;// Ask - ordersStopPoints * Point;
 			DateTime expirationTime = TimeCurrent();
 			expirationTime = expirationTime.AddHours(3);
-			OrderSend(symbol, OP_SELL, lotsOptimized, Bid, 50, stopLoss, 0, $"Probability: {comment}",
-				Configuration.magickNumber, expirationTime, Color.Red);
-			log($"open sell  prob:{comment} @" + Bid);
+
+			if (OrderSend(symbol, OP_SELL, lotsOptimized, Bid, 50, stopLoss, 0, $"Probability: {comment}",
+				Configuration.magickNumber, expirationTime, Color.Red) <= 0)
+				log($"error sending sell: {GetLastError()} balance={AccountBalance()} lots={lotsOptimized}");
+			else
+				log($"open sell  prob:{sellProbability} @" + Bid);
+
 			AddLabel($"SP {sellProbability.ToString("0.0")} BP {buyProbability.ToString("0.0")}", Color.Red);
 			dayOperationsCount++;
 			lastTradeBar = Bars;
@@ -815,9 +829,13 @@ namespace forexAI
 			double stopLoss = 0;//Bid - ordersStopPoints * Point;
 			DateTime expirationTime = TimeCurrent();
 			expirationTime = expirationTime.AddHours(3);
-			OrderSend(symbol, OP_BUY, lotsOptimized, Ask, 50, stopLoss, 0, $"Probability: {comment}",
-				Configuration.magickNumber, expirationTime, Color.Blue);
-			log($"open buy prob:{comment} @" + Ask);
+
+			if (OrderSend(symbol, OP_BUY, lotsOptimized, Ask, 50, stopLoss, 0, $"Probability: {comment}",
+				Configuration.magickNumber, expirationTime, Color.Blue) <= 0)
+				log($"error sending buy: {GetLastError()} balance={AccountBalance()} lots={lotsOptimized}");
+			else
+				log($"open buy  prob:{buyProbability} @" + Ask);
+
 			AddLabel($"BP {buyProbability.ToString("0.0")} SP {sellProbability.ToString("0.0")}", Color.Blue);
 			dayOperationsCount++;
 			lastTradeBar = Bars;
