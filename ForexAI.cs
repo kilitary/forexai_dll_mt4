@@ -382,7 +382,7 @@ namespace forexAI
 			reassembleCompletedOverride = false;
 			mqlApi = this;
 
-			if (IsTesting())
+			if (IsTesting() || IsOptimization())
 				Configuration.useAudio = false;
 
 			ClearLogs();
@@ -439,7 +439,7 @@ namespace forexAI
 		//+------------------------------------------------------------------+
 		public override int start()
 		{
-			if (!IsTesting())
+			if (!IsTesting() && !IsOptimization())
 			{
 				PopulateOrders();
 				DrawStats();
@@ -463,7 +463,7 @@ namespace forexAI
 					EnterCounterTrade();
 			}
 
-			if (!IsTesting())
+			if (!IsTesting() && !IsOptimization())
 				RenderCharizedHistory();
 
 			if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
