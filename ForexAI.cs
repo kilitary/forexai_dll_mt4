@@ -314,14 +314,15 @@ namespace forexAI
 
 		public void EnterCounterTrade()
 		{
-			return;
-			if (BuysProfit() <= -3.0 && CountSells() < CountBuys() && CountSells() + CountBuys() < Configuration.maxOrdersInParallel)
+			if (BuysProfit() <= -3.0 && CountSells() < CountBuys() && CountSells() + CountBuys() < Configuration.maxOrdersInParallel
+				&& Bars - lastTradeBar >= Configuration.minTradePeriodBars)
 			{
 				log($"opening counter-buy [{CountSells() + CountBuys()}]");
 				SendSell("");
 			}
 
-			if (SellsProfit() <= -3.0 && CountSells() > CountBuys() && CountSells() + CountBuys() < Configuration.maxOrdersInParallel)
+			if (SellsProfit() <= -3.0 && CountSells() > CountBuys() && CountSells() + CountBuys() < Configuration.maxOrdersInParallel
+				&& Bars - lastTradeBar >= Configuration.minTradePeriodBars)
 			{
 				log($"opening counter-sell [{CountSells() + CountBuys()}]");
 				SendBuy("");
