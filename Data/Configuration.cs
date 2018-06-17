@@ -20,9 +20,9 @@ namespace forexAI
 		// common configuration    
 		public static string rootDirectory = @"d:\forexAI";
 		public static string logFileName = $@"mt4EA";
-		public static string settingsPath = $@"{Configuration.rootDirectory}\mt4EA.cfg";
-		public static string randomLogFileName = $@"{Configuration.rootDirectory}\seed";
-		public static string yrandomLogFileName = $@"{Configuration.rootDirectory}\Yseed";
+		public static string settingsPath = $@"{rootDirectory}\mt4EA.cfg";
+		public static string randomLogFileName = $@"{rootDirectory}\seed";
+		public static string yrandomLogFileName = $@"{rootDirectory}\Yseed";
 		public static string mysqlDatabase = "forex";
 		public static string mysqlPassword = "secret";
 		public static string mysqlServer = "192.168.10.10";
@@ -35,7 +35,7 @@ namespace forexAI
 		public static bool useMemcached = false;
 		public static bool useMysql = false;
 		public static bool useAudio = true;
-		public static bool useDynamicLots = false;
+		public static bool useDynamicOptimizedLots = false;
 		public static int memcachedPort = 11211;
 		public static int magickNumber = 0xC34;
 		public static int maxOrdersInParallel = 6;
@@ -46,12 +46,12 @@ namespace forexAI
 
 		// ♫ ♫ ♫ √
 		// audio/FX
-		public static string audioDirectory = $@"{Configuration.rootDirectory}\Audio_FX";
-		public static string newDayWAV = $@"{Configuration.audioDirectory}\17130__noisecollector__ak47-chamber-round.wav";
-		public static string profitWAV = $@"{Configuration.audioDirectory}\209578__zott820__cash-register-purchase.wav";
-		public static string brokenWAV = $@"{Configuration.audioDirectory}\115276__xdrav__broken-bulb.wav";
-		public static string lowBalanceWAV = $@"{Configuration.audioDirectory}\0838.wav";
-		public static string goodJobWAV = $@"{Configuration.audioDirectory}\0816.wav";
+		public static string audioDirectory = $@"{rootDirectory}\Audio_FX";
+		public static string newDayWAV = $@"{audioDirectory}\17130__noisecollector__ak47-chamber-round.wav";
+		public static string profitWAV = $@"{audioDirectory}\209578__zott820__cash-register-purchase.wav";
+		public static string brokenWAV = $@"{audioDirectory}\115276__xdrav__broken-bulb.wav";
+		public static string lowBalanceWAV = $@"{audioDirectory}\0838.wav";
+		public static string goodJobWAV = $@"{audioDirectory}\0816.wav";
 
 		// ♥ ♥ ♥ ♥ √
 		//[! ♡ ▄▀▀▀▄░░░ !] 

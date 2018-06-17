@@ -19,7 +19,7 @@ namespace forexAI.Tools
 			{
 				try
 				{
-					using (File.Open(filePath, FileMode.OpenOrCreate)) { }
+					using (File.Open(filePath, FileMode.Open)) { }
 					return false;
 				}
 				catch (IOException e)

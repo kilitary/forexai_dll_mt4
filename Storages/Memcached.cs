@@ -18,7 +18,7 @@ namespace forexAI
 {
 	class Storage
 	{
-		MemcachedClient mc = null;
+		MemcachedClient memcachedServer = null;
 		Dictionary<string, object> properties = new Dictionary<string, object>();
 
 		public Storage()
@@ -56,7 +56,7 @@ namespace forexAI
 			{
 				properties[name] = value;
 				if (Configuration.useMemcached)
-					mc.Store(StoreMode.Set, name, value);
+					memcachedServer.Store(StoreMode.Set, name, value);
 			}
 		}
 
@@ -70,8 +70,9 @@ namespace forexAI
 			{
 				if (Configuration.useMysql)
 					Data.db.SetSetting(o.Key, o.Value);
+
 				if (Configuration.useMemcached)
-					mc.Store(StoreMode.Set, o.Key, o.Value);
+					memcachedServer.Store(StoreMode.Set, o.Key, o.Value);
 			}
 		}
 
@@ -82,11 +83,12 @@ namespace forexAI
 												   Configuration.memcachedPort);
 			config.Servers.Add(ipEndpoint);
 			config.Protocol = MemcachedProtocol.Text;
-			mc = new MemcachedClient(config);
-			if (mc != null)
-				debug($"memcached up [0x{mc.GetHashCode()}]");
+			memcachedServer = new MemcachedClient(config);
+
+			if (memcachedServer != null)
+				debug($"memcached up [0x{memcachedServer.GetHashCode()}]");
 			else
-				debug($"fail to init memcached: {mc.ToString()}");
+				debug($"fail to init memcached: {memcachedServer.ToString()}");
 		}
 	}
 }
