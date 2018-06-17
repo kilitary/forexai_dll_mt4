@@ -40,6 +40,7 @@ namespace forexAI
 		Settings settings = new Settings();
 		DirectoryInfo[] networkDirs = null;
 		List<int> orders = new List<int>();
+		static public MqlApi mqlApi;
 		string networkName = string.Empty;
 		string fannNetworkDirName = string.Empty;
 		string inputLayerActivationFunction = string.Empty;
@@ -89,6 +90,12 @@ namespace forexAI
 		int unstableTrendBar = 0;
 		int lastTradeBar = 0;
 
+		int tradeBarPeriodGone => Bars - lastTradeBar;
+		double buyProbability => networkOutput == null ? 0.0 : networkOutput[0];
+		double sellProbability => networkOutput == null ? 0.0 : networkOutput[1];
+		int ordersCount => sellsCount + buysCount;
+		double ordersProfit => buysProfit + sellsProfit;
+
 		int buysCount
 		{
 			get
@@ -122,37 +129,6 @@ namespace forexAI
 				return count;
 			}
 		}
-
-		int tradeBarPeriodGone
-		{
-			get
-			{
-				return Bars - lastTradeBar;
-			}
-		}
-
-		double buyProbability
-		{
-			get
-			{
-				if (networkOutput == null)
-					return 0.0;
-
-				return networkOutput[0];
-			}
-		}
-
-		double sellProbability
-		{
-			get
-			{
-				if (networkOutput == null)
-					return 0.0;
-
-				return networkOutput[1];
-			}
-		}
-
 
 		double activeIncome
 		{
@@ -247,22 +223,6 @@ namespace forexAI
 			}
 		}
 
-		int ordersCount
-		{
-			get
-			{
-				return sellsCount + buysCount;
-			}
-		}
-
-		double ordersProfit
-		{
-			get
-			{
-				return buysProfit + sellsProfit;
-			}
-		}
-
 		double lotsOptimized
 		{
 			get
@@ -302,6 +262,7 @@ namespace forexAI
 				//---- return lot size
 				if (lot < Configuration.orderLots)
 					lot = Configuration.orderLots;
+				log($"lotsOpzimied={lot}", "dev");
 				return lot;
 			}
 		}
@@ -376,6 +337,7 @@ namespace forexAI
 			currentDay = (int) System.DateTime.Now.DayOfWeek;
 			neuralNetworkBootstrapped = false;
 			reassembleCompletedOverride = false;
+			mqlApi = this;
 
 			ClearLogs();
 
@@ -428,13 +390,7 @@ namespace forexAI
 			DrawStats();
 			TrailPositions();
 			CloseNegativeOrders();
-			EnterCounterTrade();
-
-			if (Bars == previousBars)
-				return 0;
-
 			PopulateOrders();
-			BuildCharizedHistory();
 
 			if (neuralNetworkBootstrapped)
 			{
@@ -443,7 +399,13 @@ namespace forexAI
 					TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), out networkFunctionsCount);
 
 				EnterTrade();
+				EnterCounterTrade();
 			}
+
+			if (Bars == previousBars)
+				return 0;
+
+			RenderCharizedHistory();
 
 			if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
 			{
@@ -520,19 +482,9 @@ namespace forexAI
 
 		public void PopulateOrders()
 		{
-			var newOrders = new List<int>(orders);
 			var zeroTime = new DateTime(0);
 
-			orders.ForEach(delegate (int order)
-			{
-				if (!OrderSelect(order, SELECT_BY_TICKET) || OrderCloseTime() != zeroTime)
-				{
-					newOrders.Remove(order);
-					log($"remove order {order}", "dev");
-				}
-			});
-
-			orders = newOrders;
+			orders = orders.Where(order => OrderSelect(order, SELECT_BY_TICKET) == true && OrderCloseTime() == zeroTime).ToList();
 
 			for (int index = 0; index < OrdersTotal(); index++)
 			{
@@ -540,14 +492,8 @@ namespace forexAI
 					break;
 
 				if (!orders.Contains(OrderTicket()))
-				{
-					log($"add order {OrderTicket()}", "dev");
 					orders.Add(OrderTicket());
-				}
 			}
-
-			if (orders.Count > 0)
-				dump(orders.ToArray(), "orders", "dev");
 		}
 
 		public void InitVariables()
@@ -567,29 +513,27 @@ namespace forexAI
 
 		void EnterTrade()
 		{
-			if (!isTrendStable 
-				|| stableTrendBar < Configuration.minStableTrendBarForEnter 
+			if (!isTrendStable
+				|| stableTrendBar < Configuration.minStableTrendBarForEnter
 				|| stableTrendBar > Configuration.maxStableTrendBarForEnter)
 				return;
 
 			if (buyProbability >= Configuration.EnteringTradeProbability
 					&& sellProbability <= Configuration.BlockingTradeProbability
 					&& ordersCount < Configuration.maxOrdersInParallel
-					&& tradeBarPeriodGone > Configuration.minTradePeriodBars
-					&& buysProfit >= 0.0)
-				SendBuy(buyProbability.ToString("0.000"));
+					&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
+				SendBuy();
 
 			if (sellProbability >= Configuration.EnteringTradeProbability
 					&& buyProbability <= Configuration.BlockingTradeProbability
 					&& ordersCount < Configuration.maxOrdersInParallel
-					&& tradeBarPeriodGone > Configuration.minTradePeriodBars
-					&& sellsProfit >= 0.0)
-				SendSell(sellProbability.ToString("0.000"));
+					&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
+				SendSell();
 		}
 
 		public void EnterCounterTrade()
 		{
-			if (buysProfit <= -1.0
+			if (buysProfit <= Configuration.MinLossForCounterTrade
 				&& sellsCount < buysCount
 				&& ordersCount < Configuration.maxOrdersInParallel)
 			{
@@ -597,7 +541,7 @@ namespace forexAI
 				SendSell();
 			}
 
-			if (sellsProfit <= -1.0
+			if (sellsProfit <= Configuration.MinLossForCounterTrade
 				&& sellsCount > buysCount
 				&& ordersCount < Configuration.maxOrdersInParallel)
 			{
@@ -1185,7 +1129,7 @@ namespace forexAI
 				+ (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
 		}
 
-		void BuildCharizedHistory()
+		void RenderCharizedHistory()
 		{
 			profitBuys = profitSells = spendSells = spendBuys = 0;
 			charizedOrdersHistory = "";

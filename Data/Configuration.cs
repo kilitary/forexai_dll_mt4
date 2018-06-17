@@ -33,18 +33,20 @@ namespace forexAI
 		public static double trailingBorder = 30;
 		public static double trailingStop = 20;
 		public static double stableBigChangeFactor = 0.3;
+		public static double EnteringTradeProbability = 0.7;
+		public static double BlockingTradeProbability = -0.2;
+		public static double MinLossForCounterTrade = -4.0;
 		public static bool useMemcached = false;
 		public static bool useMysql = false;
 		public static bool useAudio = true;
-		public static bool useOptimizedLots = false;
+		public static bool useOptimizedLots = true;
 		public static int memcachedPort = 11211;
 		public static int magickNumber = 0xC34;
 		public static int maxOrdersInParallel = 6;
 		public static int minStableTrendBarForEnter = 2;
 		public static int maxStableTrendBarForEnter = 100;
 		public static int minTradePeriodBars = 4;
-		public static double EnteringTradeProbability = 0.7;
-		public static double BlockingTradeProbability = -0.2;
+
 		// ♫ ♫ ♫ √
 		// audio/FX
 		public static string audioDirectory = $@"{rootDirectory}\Audio_FX";

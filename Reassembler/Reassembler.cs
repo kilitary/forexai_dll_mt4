@@ -58,22 +58,22 @@ namespace forexAI
 		static double[] fullInputSet = null;
 		static object[] functionArguments = null;
 		static bool failedReassemble = false;
-		static bool reassemblyCompleted = false;
+		static bool reassemblyCompleteLogged = false;
 
 		public static double[] Execute(string functionConfigurationString, int inputDimension,
 			IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
 			IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet neuralNetwork,
 			bool reassemblingCompletedOverride, string timeCurrent, out int networkFunctionsCount)
 		{
-			reassemblyCompleted = reassemblingCompletedOverride;
+			reassemblyCompleteLogged = reassemblingCompletedOverride;
 
-			if (!reassemblyCompleted)
+			if (!reassemblyCompleteLogged)
 				log($"=> Reassembling input sequence ...");
 
 			fullInputSet = null;
 
 			if (failedReassemble)
-				reassemblyCompleted = false;
+				reassemblyCompleteLogged = false;
 
 			failedReassemble = false;
 
@@ -91,7 +91,7 @@ namespace forexAI
 				log($"hash of configuration: {hashOfFunctionConfiguration}");
 			}
 
-			if (!reassemblyCompleted)
+			if (!reassemblyCompleteLogged)
 				log($"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
 
 			networkFunctionsCount = functionConfigurationInput.Count;
@@ -290,7 +290,7 @@ namespace forexAI
 					paramIndex++;
 				}
 
-				if (!reassemblyCompleted)
+				if (!reassemblyCompleteLogged)
 					log($"=> {functionName} arguments({functionArguments.Length})={SerializeObject(functionArguments)}");
 
 				functionArguments[OutIndex] = new double[inputDimension];
@@ -333,9 +333,9 @@ namespace forexAI
 
 						for (int i = 0; i < OutNbElement; i++)
 						{
-							if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblyCompleted)
+							if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblyCompleteLogged)
 								warning($"fucking function {functionName} starts with zero");
-							if (resultDataDouble[i] == 0.0 && i == OutNbElement - 1 && !reassemblyCompleted)
+							if (resultDataDouble[i] == 0.0 && i == OutNbElement - 1 && !reassemblyCompleteLogged)
 								warning($"fucking function {functionName} ends with zero");
 						}
 					}
@@ -344,16 +344,16 @@ namespace forexAI
 						resultDataDouble = (double[]) functionArguments[OutIndex];
 						for (int i = 0; i < OutNbElement; i++)
 						{
-							if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblyCompleted)
+							if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblyCompleteLogged)
 								warning($"fucking function {functionName} starts with zero");
 						}
 					}
 
 					startIdx = (int) functionArguments[nOutBegIdx];
-					if (!reassemblyCompleted && startIdx != 0)
+					if (!reassemblyCompleteLogged && startIdx != 0)
 						warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
 
-					if (!reassemblyCompleted)
+					if (!reassemblyCompleteLogged)
 						log($"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
 					int prevLen = fullInputSet == null ? 0 : fullInputSet.Length;
@@ -365,19 +365,19 @@ namespace forexAI
 				}
 			}
 
-			if (!reassemblyCompleted)
+			if (!reassemblyCompleteLogged)
 				log($"=> ret={ret} entireset={SerializeObject(fullInputSet)}");
 
 			if (neuralNetwork.InputCount != fullInputSet.Length)
 			{
 				error($"=> reassembler FAILED to reassemble input sequence: diff in input count of network is " +
 					$"{Math.Abs(fullInputSet.Length - neuralNetwork.InputCount)}");
-				reassemblyCompleted = false;
+				reassemblyCompleteLogged = false;
 				failedReassemble = true;
 				return null;
 			}
 
-			if (!reassemblyCompleted)
+			if (!reassemblyCompleteLogged)
 				log($"=> Reassembling [ SUCCESS ] ");
 
 			//forexNetwork.ClearScalingParams();
@@ -387,7 +387,7 @@ namespace forexAI
 			neuralNetwork.DescaleOutput(networkOutput);
 
 			//debug($"{timeCurrent} networkOutput = {networkOutput[0].ToString("0.0000")} : {networkOutput[1].ToString("0.0000")}");
-			reassemblyCompleted = true;
+			reassemblyCompleteLogged = true;
 			return networkOutput;
 		}
 	}
