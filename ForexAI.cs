@@ -426,10 +426,14 @@ namespace forexAI
 		//+------------------------------------------------------------------+
 		public override int start()
 		{
-			DrawStats();
+			if (!IsTesting())
+			{
+				PopulateOrders();
+				DrawStats();
+			}
+
 			TrailPositions();
 			CloseNegativeOrders();
-			PopulateOrders();
 
 			if (Bars == previousBars)
 				return 0;
@@ -444,57 +448,60 @@ namespace forexAI
 				EnterCounterTrade();
 			}
 
-			RenderCharizedHistory();
-
-			if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
+			if (!IsTesting())
 			{
-				stableTrendBar = unstableTrendBar = 0;
-				hasNightReported = true;
-				console($"Night....", ConsoleColor.Black, ConsoleColor.Gray);
-				AddLabel($"[kNIGHT]", Color.White);
-			}
-			else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
-				hasNightReported = false;
+				RenderCharizedHistory();
 
-			if (!hasMorningReported && TimeHour(TimeCurrent()) == 7)
-			{
-				stableTrendBar = unstableTrendBar = 0;
-				hasMorningReported = true;
-				console($"Morning!", ConsoleColor.Black, ConsoleColor.Yellow);
-				AddLabel($"[MORNING]", Color.Yellow);
-				buysPermitted = sellsPermitted = 3;
-			}
-			else if (hasMorningReported && TimeHour(TimeCurrent()) == 8)
-				hasMorningReported = false;
+				if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
+				{
+					stableTrendBar = unstableTrendBar = 0;
+					hasNightReported = true;
+					console($"Night....", ConsoleColor.Black, ConsoleColor.Gray);
+					AddLabel($"[kNIGHT]", Color.White);
+				}
+				else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
+					hasNightReported = false;
 
-			if (previousBankDay != Day())
-			{
-				previousBankDay = Day();
-				log($"-> Day {previousBankDay.ToString("0")} [opsDone={dayOperationsCount} barsPerDay={barsPerDay}] "
-					+ (forexNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
-				totalOperationsCount += dayOperationsCount;
-				dayOperationsCount = barsPerDay = stableTrendBar = unstableTrendBar = 0;
-				FX.TheNewDay();
+				if (!hasMorningReported && TimeHour(TimeCurrent()) == 7)
+				{
+					stableTrendBar = unstableTrendBar = 0;
+					hasMorningReported = true;
+					console($"Morning!", ConsoleColor.Black, ConsoleColor.Yellow);
+					AddLabel($"[MORNING]", Color.Yellow);
+					buysPermitted = sellsPermitted = 3;
+				}
+				else if (hasMorningReported && TimeHour(TimeCurrent()) == 8)
+					hasMorningReported = false;
+
+				if (previousBankDay != Day())
+				{
+					previousBankDay = Day();
+					log($"-> Day {previousBankDay.ToString("0")} [opsDone={dayOperationsCount} barsPerDay={barsPerDay}] "
+						+ (forexNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
+					totalOperationsCount += dayOperationsCount;
+					dayOperationsCount = barsPerDay = stableTrendBar = unstableTrendBar = 0;
+					FX.TheNewDay();
+				}
+
+				if (AccountBalance() <= 5.0 && !hasNoticedLowBalance)
+				{
+					hasNoticedLowBalance = true;
+					console($"всё пизда, кеш весь слит нахуй, бабок: {AccountBalance()}$", ConsoleColor.Red, ConsoleColor.White);
+					FX.LowBalance();
+				}
+				else if (hasNoticedLowBalance && YRandom.Next(0, 6) == 3)
+					FX.GoodWork();
+
+				File.AppendAllText(Configuration.XXrandomLogFileName, random.Next(99).ToString("00") + " ");
+				File.AppendAllText(Configuration.YYYrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
 			}
 
 			log($"=> Probability: Buy={buyProbability.ToString("0.0000")} Sell={sellProbability.ToString("0.0000")}", "debug");
-
-			File.AppendAllText(Configuration.XXrandomLogFileName, random.Next(99).ToString("00") + " ");
-			File.AppendAllText(Configuration.YYYrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
 
 			#region matters
 			if (Configuration.tryExperimentalFeatures)
 				AlliedInstructions();
 			#endregion
-
-			if (AccountBalance() <= 5.0 && !hasNoticedLowBalance)
-			{
-				hasNoticedLowBalance = true;
-				console($"всё пизда, кеш весь слит нахуй, бабок: {AccountBalance()}$", ConsoleColor.Red, ConsoleColor.White);
-				FX.LowBalance();
-			}
-			else if (hasNoticedLowBalance && YRandom.Next(0, 6) == 3)
-				FX.GoodWork();
 
 			previousBars = Bars;
 			barsPerDay += 1;
