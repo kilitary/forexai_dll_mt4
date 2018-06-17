@@ -17,7 +17,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web.UI;
 using FANNCSharp.Double;
-using forexAI.Tools;
 using Newtonsoft.Json;
 using NQuotes;
 using TicTacTec.TA.Library;
@@ -378,7 +377,7 @@ namespace forexAI
 			neuralNetworkBootstrapped = false;
 			reassembleCompletedOverride = false;
 
-			Logger.ClearLogs();
+			ClearLogs();
 
 			console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
 				ConsoleColor.Black, ConsoleColor.Cyan);
@@ -426,16 +425,15 @@ namespace forexAI
 		//+------------------------------------------------------------------+
 		public override int start()
 		{
-
 			DrawStats();
 			TrailOrders();
 
 			if (Bars == previousBars)
 				return 0;
+
 			SyncOrders();
 			BuildCharizedHistory();
 			CheckForClose();
-			EnterCounterTrade();
 
 			if (neuralNetworkBootstrapped)
 			{
@@ -444,6 +442,7 @@ namespace forexAI
 					TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), out networkFunctionsCount);
 
 				EnterTrade();
+				EnterCounterTrade();
 			}
 
 			if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
@@ -523,22 +522,19 @@ namespace forexAI
 		{
 			lock (orders)
 			{
-				var ordersToRemove = new List<int>();
+				var newOrders = new List<int>(orders);
+				var nullTime = new DateTime(0);
 
-				foreach (var order in orders)
+				orders.ForEach(delegate (int order)
 				{
-					var dt = new DateTime(0);
-					if (OrderSelect(order, SELECT_BY_TICKET) && OrderCloseTime() != dt)
+					if (!OrderSelect(order, SELECT_BY_TICKET) || OrderCloseTime() != nullTime)
 					{
-						ordersToRemove.Add(order);
+						newOrders.Remove(order);
 						log($"remove order {order}", "dev");
 					}
-				}
+				});
 
-				foreach (var item in ordersToRemove)
-					orders.Remove(item);
-
-				ordersToRemove = null;
+				orders = newOrders;
 
 				for (int i = 0; i < OrdersTotal(); i++)
 				{
@@ -593,14 +589,14 @@ namespace forexAI
 
 		public void EnterCounterTrade()
 		{
-			if (buysProfit <= -3.0 && sellsCount < buysCount && ordersCount < Configuration.maxOrdersInParallel
+			if (buysProfit <= -1.0 && sellsCount < buysCount && ordersCount < Configuration.maxOrdersInParallel
 				&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
 			{
 				log($"opening counter-buy [{ordersCount}]");
 				SendSell("");
 			}
 
-			if (sellsProfit <= -3.0 && sellsCount > buysCount && ordersCount < Configuration.maxOrdersInParallel
+			if (sellsProfit <= -1.0 && sellsCount > buysCount && ordersCount < Configuration.maxOrdersInParallel
 				&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
 			{
 				log($"opening counter-sell [{ordersCount}]");
@@ -737,7 +733,7 @@ namespace forexAI
 				if (OrderType() == OP_BUY)
 				{
 					if (OrderProfit() + OrderSwap() + OrderCommission()
-						<= Configuration.minNegativeSpendProfit)
+						<= Configuration.maxNegativeSpend)
 					{
 						if (Configuration.tryExperimentalFeatures)
 							console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -767,7 +763,7 @@ namespace forexAI
 				if (OrderType() == OP_SELL)
 				{
 					if (OrderProfit() + OrderSwap() + OrderCommission()
-						<= Configuration.minNegativeSpendProfit)
+						<= Configuration.maxNegativeSpend)
 					{
 						if (Configuration.tryExperimentalFeatures)
 							console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",

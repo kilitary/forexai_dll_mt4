@@ -21,7 +21,7 @@ namespace forexAI
 
 		public static void TruncateLog(string fileName = null)
 		{
-			if (fileName != null && File.Exists(fileName) && !Tools.Helpers.IsFileLocked(fileName))
+			if (fileName != null && File.Exists(fileName) && !Helpers.IsFileLocked(fileName))
 				File.Delete(fileName);
 		}
 
@@ -31,7 +31,7 @@ namespace forexAI
 			var logs = directory.GetFiles("*.log");
 
 			foreach (var logFile in logs)
-				if (!Tools.Helpers.IsFileLocked(logFile.FullName))
+				if (!Helpers.IsFileLocked(logFile.FullName))
 					File.WriteAllText($@"{logFile.FullName}", "***\r\n");
 		}
 

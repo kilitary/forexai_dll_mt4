@@ -8,18 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using static forexAI.Logger;
 
-namespace forexAI.Tools
+namespace forexAI
 {
 	public static class Helpers
 	{
 		public static bool IsFileLocked(string fileName)
 		{
-			FileInfo targetFileInfo = new FileInfo(fileName);
+			var targetFileInfo = new FileInfo(fileName);
 			FileStream stream = null;
 
 			try
 			{
-				stream = targetFileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+				stream = targetFileInfo.Open(FileMode.Open, FileAccess.Write, FileShare.None);
 			}
 			catch (IOException)
 			{
@@ -35,7 +35,6 @@ namespace forexAI.Tools
 					stream.Close();
 			}
 
-			//file is not locked
 			return false;
 		}
 
