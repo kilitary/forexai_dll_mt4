@@ -426,14 +426,15 @@ namespace forexAI
 		public override int start()
 		{
 			DrawStats();
-			TrailOrders();
+			TrailPositions();
+			CloseNegativeOrders();
+			EnterCounterTrade();
 
 			if (Bars == previousBars)
 				return 0;
 
 			PopulateOrders();
 			BuildCharizedHistory();
-			CloseNegativeOrders();
 
 			if (neuralNetworkBootstrapped)
 			{
@@ -442,7 +443,6 @@ namespace forexAI
 					TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), out networkFunctionsCount);
 
 				EnterTrade();
-				EnterCounterTrade();
 			}
 
 			if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
@@ -547,7 +547,7 @@ namespace forexAI
 			}
 
 			if (orders.Count > 0)
-				dump(orders, "orders", "dev");
+				dump(orders.ToArray(), "orders", "dev");
 		}
 
 		public void InitVariables()
@@ -567,7 +567,9 @@ namespace forexAI
 
 		void EnterTrade()
 		{
-			if (!isTrendStable || stableTrendBar < Configuration.minStableTrendBarForEnter || stableTrendBar > Configuration.maxStableTrendBarForEnter)
+			if (!isTrendStable 
+				|| stableTrendBar < Configuration.minStableTrendBarForEnter 
+				|| stableTrendBar > Configuration.maxStableTrendBarForEnter)
 				return;
 
 			if (buyProbability >= Configuration.EnteringTradeProbability
@@ -589,8 +591,7 @@ namespace forexAI
 		{
 			if (buysProfit <= -1.0
 				&& sellsCount < buysCount
-				&& ordersCount < Configuration.maxOrdersInParallel
-				&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
+				&& ordersCount < Configuration.maxOrdersInParallel)
 			{
 				log($"opening counter-buy [{ordersCount}]");
 				SendSell();
@@ -598,8 +599,7 @@ namespace forexAI
 
 			if (sellsProfit <= -1.0
 				&& sellsCount > buysCount
-				&& ordersCount < Configuration.maxOrdersInParallel
-				&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
+				&& ordersCount < Configuration.maxOrdersInParallel)
 			{
 				log($"opening counter-sell [{ordersCount}]");
 				SendBuy();
@@ -833,7 +833,7 @@ namespace forexAI
 			lastTradeBar = Bars;
 		}
 
-		void TrailOrders()
+		void TrailPositions()
 		{
 			double TrailingStop = Configuration.trailingStop;
 			double TrailingBorder = Configuration.trailingBorder;
