@@ -88,6 +88,7 @@ namespace forexAI
 		int networkFunctionsCount = 0;
 		int unstableTrendBar = 0;
 		int lastTradeBar = 0;
+		public List<int> orders = new List<int>();
 
 		int buysCount
 		{
@@ -425,12 +426,13 @@ namespace forexAI
 		//+------------------------------------------------------------------+
 		public override int start()
 		{
+
 			DrawStats();
 			TrailOrders();
 
 			if (Bars == previousBars)
 				return 0;
-
+			SyncOrders();
 			BuildCharizedHistory();
 			CheckForClose();
 			EnterCounterTrade();
@@ -515,6 +517,42 @@ namespace forexAI
 			console("... shutted down.", ConsoleColor.Black, ConsoleColor.Red);
 
 			return 0;
+		}
+
+		public void SyncOrders()
+		{
+			lock (orders)
+			{
+				var ordersToRemove = new List<int>();
+
+				foreach (var order in orders)
+				{
+					var dt = new DateTime(0);
+					if (OrderSelect(order, SELECT_BY_TICKET) && OrderCloseTime() != dt)
+					{
+						ordersToRemove.Add(order);
+						log($"remove order {order}", "dev");
+					}
+				}
+
+				foreach (var item in ordersToRemove)
+					orders.Remove(item);
+
+				ordersToRemove = null;
+
+				for (int i = 0; i < OrdersTotal(); i++)
+				{
+					if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+						break;
+
+					if (!orders.Contains(OrderTicket()))
+					{
+						log($"add order {OrderTicket()}", "dev");
+						orders.Add(OrderTicket());
+					}
+				}
+			}
+			dump(orders, "orders", "dev");
 		}
 
 		public void InitVariables()
@@ -647,7 +685,7 @@ namespace forexAI
 			log($" * trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
 			trainMse = forexNetwork.TestDataParallel(trainData, 4);
-			testMse = forexNetwork.TestDataParallel(testData, 2);
+			testMse = forexNetwork.TestDataParallel(testData, 4);
 
 			log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={forexNetwork.BitFail}");
 		}
@@ -689,11 +727,7 @@ namespace forexAI
 			return ((double) hits / (double) inputs.Length) * 100.0;
 		}
 
-
-		////+------------------------------------------------------------------+
-		////| Check for close order conditions                                 |
-		////+------------------------------------------------------------------+
-		private void CheckForClose()
+		void CheckForClose()
 		{
 			for (int i = 0; i < OrdersTotal(); i++)
 			{

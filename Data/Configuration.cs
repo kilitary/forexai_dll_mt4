@@ -32,6 +32,7 @@ namespace forexAI
 		public static double minNegativeSpendProfit = -8.0;
 		public static double trailingBorder = 30;
 		public static double trailingStop = 20;
+		public static double stableBigChangeFactor = 0.3;
 		public static bool useMemcached = false;
 		public static bool useMysql = false;
 		public static bool useAudio = true;
@@ -43,8 +44,7 @@ namespace forexAI
 		public static int maxStableTrendBarForEnter = 10;
 		public static int resetStableTrendBarAtBar = 110;
 		public static int minTradePeriodBars = 4;
-		public static double stableBigChangeFactor = 0.3;
-
+		
 		// ♫ ♫ ♫ √
 		// audio/FX
 		public static string audioDirectory = $@"{rootDirectory}\Audio_FX";

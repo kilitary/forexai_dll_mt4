@@ -35,18 +35,21 @@ namespace forexAI
 					File.WriteAllText($@"{logFile.FullName}", "***\r\n");
 		}
 
-		public static void dump(object data, string prefix = "", int maxDepth = 3)
+		public static void dump(object data, string prefix = "", string fileName = null)
 		{
+			if (fileName == null)
+				fileName = "debug";
+
 			JsonSerializerSettings jsonSettings = new JsonSerializerSettings
 			{
-				MaxDepth = maxDepth,
+				MaxDepth = 5,
 				Formatting = Formatting.Indented,
 				PreserveReferencesHandling = PreserveReferencesHandling.All
 			};
 
 			try
 			{
-				using (StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/debug.log", true))
+				using (StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true))
 				{
 					file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
 						Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " +

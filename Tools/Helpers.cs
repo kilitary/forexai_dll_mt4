@@ -12,30 +12,31 @@ namespace forexAI.Tools
 {
 	public static class Helpers
 	{
-		public static bool IsFileLocked(string filePath, int secondsToWait = 0)
+		public static bool IsFileLocked(string fileName)
 		{
-			bool isLocked = true;
-			int iterator = 0;
+			FileInfo targetFileInfo = new FileInfo(fileName);
+			FileStream stream = null;
 
-			while (isLocked && ((iterator < secondsToWait) || (secondsToWait == 0)))
+			try
 			{
-				try
-				{
-					using (File.OpenWrite(filePath)) { }
-					return false;
-				}
-				catch (IOException e)
-				{
-					var errorCode = Marshal.GetHRForException(e) & ((1 << 16) - 1);
-					isLocked = errorCode == 32 || errorCode == 33;
-					iterator++;
-
-					if (secondsToWait != 0)
-						new System.Threading.ManualResetEvent(false).WaitOne(1000);
-				}
+				stream = targetFileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+			}
+			catch (IOException)
+			{
+				//the file is unavailable because it is:
+				//still being written to
+				//or being processed by another thread
+				//or does not exist (has already been processed)
+				return true;
+			}
+			finally
+			{
+				if (stream != null)
+					stream.Close();
 			}
 
-			return isLocked;
+			//file is not locked
+			return false;
 		}
 
 		public static void ShowMemoryUsage()
