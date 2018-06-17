@@ -30,6 +30,45 @@ namespace forexAI
 {
 	public class ForexAI : MqlApi
 	{
+		[ExternVariable]
+		public double orderLots = 0.01;
+
+		[ExternVariable]
+		public double maxNegativeSpend = -6.5;
+
+		[ExternVariable]
+		public double trailingBorder = 30;
+
+		[ExternVariable]
+		public double trailingStop = 20;
+
+		[ExternVariable]
+		public double stableBigChangeFactor = 0.3;
+
+		[ExternVariable]
+		public double EnteringTradeProbability = 0.7;
+
+		[ExternVariable]
+		public double BlockingTradeProbability = -0.2;
+
+		[ExternVariable]
+		public double MinLossForCounterTrade = -4.0;
+
+		[ExternVariable]
+		public bool useOptimizedLots = true;
+
+		[ExternVariable]
+		public int maxOrdersInParallel = 6;
+
+		[ExternVariable]
+		public int minStableTrendBarForEnter = 2;
+
+		[ExternVariable]
+		public int maxStableTrendBarForEnter = 100;
+
+		[ExternVariable]
+		public int minTradePeriodBars = 4;
+
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
 		Version version = null;
@@ -227,8 +266,8 @@ namespace forexAI
 		{
 			get
 			{
-				if (!Configuration.useOptimizedLots)
-					return Configuration.orderLots;
+				if (!useOptimizedLots)
+					return orderLots;
 
 				double MaximumRisk = 0.03;
 				double DecreaseFactor = 3;
@@ -260,8 +299,8 @@ namespace forexAI
 						lot = NormalizeDouble(lot - lot * losses / DecreaseFactor, 1);
 				}
 				//---- return lot size
-				if (lot < Configuration.orderLots)
-					lot = Configuration.orderLots;
+				if (lot < orderLots)
+					lot = orderLots;
 				log($"lotsOpzimied={lot}", "dev");
 				return lot;
 			}
@@ -275,7 +314,7 @@ namespace forexAI
 
 				for (int x = 0; x < prevBuyProbability.Length; x++)
 				{
-					if (Math.Abs(prevBuyProbability[x] - buyProbability) >= Configuration.stableBigChangeFactor)
+					if (Math.Abs(prevBuyProbability[x] - buyProbability) >= stableBigChangeFactor)
 					{
 						stableTrend = false;
 						stableTrendBar = 0;
@@ -297,7 +336,7 @@ namespace forexAI
 
 				for (int x = 0; x < prevSellProbability.Length; x++)
 				{
-					if (Math.Abs(prevSellProbability[x] - sellProbability) >= Configuration.stableBigChangeFactor)
+					if (Math.Abs(prevSellProbability[x] - sellProbability) >= stableBigChangeFactor)
 					{
 						stableTrend = false;
 						stableTrendBar = 0;
@@ -352,7 +391,7 @@ namespace forexAI
 
 			#region matters
 			if ((Environment.MachineName == "USER-PC" || (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused()))
-				&& (currentDay == 0))
+				&& (currentDay == 0) && false)
 				Configuration.tryExperimentalFeatures = true;
 			#endregion
 
@@ -392,6 +431,9 @@ namespace forexAI
 			CloseNegativeOrders();
 			PopulateOrders();
 
+			if (Bars == previousBars)
+				return 0;
+
 			if (neuralNetworkBootstrapped)
 			{
 				networkOutput = Reassembler.Execute(functionsTextContent,
@@ -401,9 +443,6 @@ namespace forexAI
 				EnterTrade();
 				EnterCounterTrade();
 			}
-
-			if (Bars == previousBars)
-				return 0;
 
 			RenderCharizedHistory();
 
@@ -514,36 +553,36 @@ namespace forexAI
 		void EnterTrade()
 		{
 			if (!isTrendStable
-				|| stableTrendBar < Configuration.minStableTrendBarForEnter
-				|| stableTrendBar > Configuration.maxStableTrendBarForEnter)
+				|| stableTrendBar < minStableTrendBarForEnter
+				|| stableTrendBar > maxStableTrendBarForEnter)
 				return;
 
-			if (buyProbability >= Configuration.EnteringTradeProbability
-					&& sellProbability <= Configuration.BlockingTradeProbability
-					&& ordersCount < Configuration.maxOrdersInParallel
-					&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
+			if (buyProbability >= EnteringTradeProbability
+					&& sellProbability <= BlockingTradeProbability
+					&& ordersCount < maxOrdersInParallel
+					&& tradeBarPeriodGone > minTradePeriodBars)
 				SendBuy();
 
-			if (sellProbability >= Configuration.EnteringTradeProbability
-					&& buyProbability <= Configuration.BlockingTradeProbability
-					&& ordersCount < Configuration.maxOrdersInParallel
-					&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
+			if (sellProbability >= EnteringTradeProbability
+					&& buyProbability <= BlockingTradeProbability
+					&& ordersCount < maxOrdersInParallel
+					&& tradeBarPeriodGone > minTradePeriodBars)
 				SendSell();
 		}
 
 		public void EnterCounterTrade()
 		{
-			if (buysProfit <= Configuration.MinLossForCounterTrade
+			if (buysProfit <= MinLossForCounterTrade
 				&& sellsCount < buysCount
-				&& ordersCount < Configuration.maxOrdersInParallel)
+				&& ordersCount < maxOrdersInParallel)
 			{
 				log($"opening counter-buy [{ordersCount}]");
 				SendSell();
 			}
 
-			if (sellsProfit <= Configuration.MinLossForCounterTrade
+			if (sellsProfit <= MinLossForCounterTrade
 				&& sellsCount > buysCount
-				&& ordersCount < Configuration.maxOrdersInParallel)
+				&& ordersCount < maxOrdersInParallel)
 			{
 				log($"opening counter-sell [{ordersCount}]");
 				SendBuy();
@@ -679,7 +718,7 @@ namespace forexAI
 				if (OrderType() == OP_BUY)
 				{
 					if (OrderProfit() + OrderSwap() + OrderCommission()
-						<= Configuration.maxNegativeSpend)
+						<= maxNegativeSpend)
 					{
 						if (Configuration.tryExperimentalFeatures)
 							console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -695,7 +734,7 @@ namespace forexAI
 				if (OrderType() == OP_SELL)
 				{
 					if (OrderProfit() + OrderSwap() + OrderCommission()
-						<= Configuration.maxNegativeSpend)
+						<= maxNegativeSpend)
 					{
 						if (Configuration.tryExperimentalFeatures)
 							console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -779,8 +818,8 @@ namespace forexAI
 
 		void TrailPositions()
 		{
-			double TrailingStop = Configuration.trailingStop;
-			double TrailingBorder = Configuration.trailingBorder;
+			double TrailingStop = trailingStop;
+			double TrailingBorder = trailingBorder;
 			double newStopLoss = 0;
 
 			for (int current_order = 0; current_order < OrdersTotal(); current_order++)
