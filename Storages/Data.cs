@@ -19,6 +19,6 @@ namespace forexAI
         public static Dictionary<string, Dictionary<string, string>> nnFunctions =
             new Dictionary<string, Dictionary<string, string>>();
 
-        public static DB db = null;
+        public static Database database = null;
     }
 }

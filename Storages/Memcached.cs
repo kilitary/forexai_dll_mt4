@@ -46,7 +46,7 @@ namespace forexAI
 					return string.Empty;
 
 				string retrievedValue = string.Empty;
-				retrievedValue = (string) Data.db.GetSetting(name);
+				retrievedValue = (string) Data.database.GetSetting(name);
 				properties[name] = retrievedValue;
 
 				return (retrievedValue != null && retrievedValue.Length > 0)
@@ -70,7 +70,7 @@ namespace forexAI
 			foreach (KeyValuePair<string, object> o in properties)
 			{
 				if (Configuration.useMysql)
-					Data.db.SetSetting(o.Key, o.Value);
+					Data.database.SetSetting(o.Key, o.Value);
 
 				if (Configuration.useMemcached)
 					memcachedServer.Store(StoreMode.Set, o.Key, o.Value);

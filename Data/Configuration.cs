@@ -21,22 +21,22 @@ namespace forexAI
 		public static string rootDirectory = @"d:\forexAI";
 		public static string logFileName = $@"mt4EA";
 		public static string settingsPath = $@"{rootDirectory}\mt4EA.cfg";
-		public static string randomLogFileName = $@"{rootDirectory}\seed";
-		public static string yrandomLogFileName = $@"{rootDirectory}\Yseed";
+		public static string XXrandomLogFileName = $@"{rootDirectory}\seed";
+		public static string YYYrandomLogFileName = $@"{rootDirectory}\Yseed";
 		public static string mysqlDatabase = "forex";
 		public static string mysqlPassword = "secret";
 		public static string mysqlServer = "192.168.10.10";
 		public static string mysqlUid = "homestead";
 		public static string memcachedIP = "192.168.0.100";
 		public static double orderLots = 0.01;
-		public static double maxNegativeSpend = -2.5;
+		public static double maxNegativeSpend = -6.5;
 		public static double trailingBorder = 30;
 		public static double trailingStop = 20;
 		public static double stableBigChangeFactor = 0.3;
 		public static bool useMemcached = false;
 		public static bool useMysql = false;
 		public static bool useAudio = true;
-		public static bool useDynamicOptimizedLots = false;
+		public static bool useOptimizedLots = false;
 		public static int memcachedPort = 11211;
 		public static int magickNumber = 0xC34;
 		public static int maxOrdersInParallel = 6;
@@ -67,9 +67,7 @@ namespace forexAI
 		//[!]░░░▀▄▄▄▄▄█▄▄▄▄▄▄▄▄▄▄▄▀▄ 
 		// Experimental features [!]
 		public static bool tryExperimentalFeatures = false; // √
-															//░░░░░░░░░░░▌▌░▌▌░░░░░  
 		public static int experimentalAlliedRandomUpperBound = 4498; // √
-		
 		//░[!]░░░░░░░▌▌░▌▌░░░░░  
 		//░░░░░░░░░░░▌▌░▌▌░░░░░  
 		//░[!]░░░░░░░▌▌░▌▌░░░░░  

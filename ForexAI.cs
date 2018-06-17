@@ -267,7 +267,7 @@ namespace forexAI
 		{
 			get
 			{
-				if (!Configuration.useDynamicOptimizedLots)
+				if (!Configuration.useOptimizedLots)
 					return Configuration.orderLots;
 
 				double MaximumRisk = 0.03;
@@ -383,10 +383,10 @@ namespace forexAI
 				ConsoleColor.Black, ConsoleColor.Cyan);
 
 			Core.SetCompatibility(Core.Compatibility.Metastock);
-			// Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 4);
+			//			Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 8);
 
-			TruncateLog(Configuration.randomLogFileName);
-			TruncateLog(Configuration.yrandomLogFileName);
+			TruncateLog(Configuration.XXrandomLogFileName);
+			TruncateLog(Configuration.YYYrandomLogFileName);
 
 			#region matters
 			if ((Environment.MachineName == "USER-PC" || (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused()))
@@ -478,8 +478,8 @@ namespace forexAI
 
 			log($"=> Probability: Buy={buyProbability.ToString("0.0000")} Sell={sellProbability.ToString("0.0000")}", "debug");
 
-			File.AppendAllText(Configuration.randomLogFileName, random.Next(99).ToString("00") + " ");
-			File.AppendAllText(Configuration.yrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
+			File.AppendAllText(Configuration.XXrandomLogFileName, random.Next(99).ToString("00") + " ");
+			File.AppendAllText(Configuration.YYYrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
 
 			#region matters
 			if (Configuration.tryExperimentalFeatures)
@@ -559,7 +559,7 @@ namespace forexAI
 			ordersStopPoints = minStopLevel > 0 ? minStopLevel * 2 : 60;
 
 			if (Configuration.useMysql)
-				Data.db = new DB();
+				Data.database = new Database();
 
 			settings["yrandom"] = YRandom.Next(int.MaxValue);
 			settings["random"] = random.Next(int.MaxValue);
@@ -587,14 +587,18 @@ namespace forexAI
 
 		public void EnterCounterTrade()
 		{
-			if (buysProfit <= -1.0 && sellsCount < buysCount && ordersCount < Configuration.maxOrdersInParallel
+			if (buysProfit <= -1.0
+				&& sellsCount < buysCount
+				&& ordersCount < Configuration.maxOrdersInParallel
 				&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
 			{
 				log($"opening counter-buy [{ordersCount}]");
 				SendSell();
 			}
 
-			if (sellsProfit <= -1.0 && sellsCount > buysCount && ordersCount < Configuration.maxOrdersInParallel
+			if (sellsProfit <= -1.0
+				&& sellsCount > buysCount
+				&& ordersCount < Configuration.maxOrdersInParallel
 				&& tradeBarPeriodGone > Configuration.minTradePeriodBars)
 			{
 				log($"opening counter-sell [{ordersCount}]");
