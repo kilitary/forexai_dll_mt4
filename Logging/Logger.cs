@@ -19,20 +19,26 @@ namespace forexAI
 		[DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
 		private static extern int GetCurrentThreadId();
 
-		public static void TruncateLog(string fileName = null)
+		public static void TruncateLog(params string[] fileNames)
 		{
-			if (fileName != null && File.Exists(fileName) && !Helpers.IsFileLocked(fileName))
-				File.Delete(fileName);
+			foreach (var fileName in fileNames)
+			{
+				if (fileName != null
+					&& File.Exists(fileName)
+					&& !Helpers.IsFileLocked(fileName))
+					File.Delete(fileName);
+			}
 		}
 
 		public static void ClearLogs()
 		{
-			DirectoryInfo directory = new DirectoryInfo(Configuration.rootDirectory);
-			var logs = directory.GetFiles("*.log");
+			var logs = new DirectoryInfo(Configuration.rootDirectory).GetFiles("*.log").ToList<FileInfo>();
 
-			foreach (var logFile in logs)
+			logs.ForEach(delegate (FileInfo logFile)
+			{
 				if (!Helpers.IsFileLocked(logFile.FullName))
 					File.WriteAllText($@"{logFile.FullName}", "***\r\n");
+			});
 		}
 
 		public static void dump(object data, string prefix = "", string fileName = null)
@@ -88,6 +94,7 @@ namespace forexAI
 			}
 			catch (Exception e)
 			{
+				console($"exception: {e.Message}");
 			}
 		}
 
@@ -106,6 +113,7 @@ namespace forexAI
 			}
 			catch (Exception e)
 			{
+				console($"exception: {e.Message}");
 			}
 		}
 
@@ -122,6 +130,7 @@ namespace forexAI
 			}
 			catch (Exception e)
 			{
+				console($"exception: {e.Message}");
 			}
 		}
 
@@ -138,6 +147,7 @@ namespace forexAI
 			}
 			catch (Exception e)
 			{
+				console($"exception: {e.Message}");
 			}
 		}
 
@@ -154,6 +164,7 @@ namespace forexAI
 			}
 			catch (Exception e)
 			{
+				console($"exception: {e.Message}");
 			}
 		}
 
@@ -170,6 +181,7 @@ namespace forexAI
 			}
 			catch (Exception e)
 			{
+				console($"exception: {e.Message}");
 			}
 		}
 	}

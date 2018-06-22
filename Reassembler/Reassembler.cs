@@ -48,6 +48,7 @@ namespace forexAI
 		static int startIdx = 0;
 		static int fidx = 0;
 		static int iReal = 0;
+		static int networkFunctionsCount = 0;
 		static int[] resultDataInt = null;
 		static string paramName = String.Empty;
 		static string comment = string.Empty;
@@ -59,7 +60,6 @@ namespace forexAI
 		static object[] functionArguments = null;
 		static bool failedReassemble = false;
 		static bool reassemblyCompleteLogged = false;
-		static int networkFunctionsCount = 0;
 
 		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork,
 			bool reassemblingCompletedOverride, string timeCurrent,  MqlApi mqlApi)
