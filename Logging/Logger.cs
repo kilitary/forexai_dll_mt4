@@ -25,7 +25,7 @@ namespace forexAI
 			{
 				if (fileName != null
 					&& File.Exists(fileName)
-					&& !Helpers.IsFileLocked(fileName))
+					&& !Helpers.IsFileBusy(fileName))
 					File.Delete(fileName);
 			}
 		}
@@ -36,7 +36,7 @@ namespace forexAI
 
 			logs.ForEach(delegate (FileInfo logFile)
 			{
-				if (!Helpers.IsFileLocked(logFile.FullName))
+				if (!Helpers.IsFileBusy(logFile.FullName))
 					File.WriteAllText($@"{logFile.FullName}", "***\r\n");
 			});
 		}

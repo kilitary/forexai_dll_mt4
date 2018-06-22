@@ -465,6 +465,8 @@ namespace forexAI
 			if (Bars == previousBars)
 				return 0;
 
+			CheckForCollapse();
+
 			if (forexNetwork != null && neuralNetworkBootstrapped)
 			{
 				(networkFunctionsCount, networkOutput) = Reassembler.Execute(functionsTextContent,
@@ -535,6 +537,19 @@ namespace forexAI
 			barsPerDay += 1;
 
 			return 0;
+		}
+		
+		private void CheckForCollapse()
+		{
+			if (Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1]) >= 0.005)
+			{
+				console("waterfall detect on " + TimeCurrent());
+				AddLabel("waterfall", Color.Red);
+			}
+			else
+			{
+				console($"change: {(Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1])).ToString("0.00000")}");
+			}
 		}
 
 		public override int deinit()

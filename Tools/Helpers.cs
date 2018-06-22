@@ -12,7 +12,7 @@ namespace forexAI
 {
 	public static class Helpers
 	{
-		public static bool IsFileLocked(string fileName)
+		public static bool IsFileBusy(string fileName)
 		{
 			var targetFileInfo = new FileInfo(fileName);
 			FileStream stream = null;
