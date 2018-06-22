@@ -34,19 +34,19 @@ namespace forexAI
 		public double orderLots = 0.01;
 
 		[ExternVariable]
-		public double maxNegativeSpend = -6.5;
+		public double maxNegativeSpend = -10;
 
 		[ExternVariable]
-		public double trailingBorder = 30;
+		public double trailingBorder = 24;
 
 		[ExternVariable]
-		public double trailingStop = 20;
+		public double trailingStop = 2;
 
 		[ExternVariable]
-		public double stableBigChangeFactor = 0.3;
+		public double stableBigChangeFactor = 0.2;
 
 		[ExternVariable]
-		public double EnteringTradeProbability = 0.7;
+		public double EnteringTradeProbability = 0.9;
 
 		[ExternVariable]
 		public double BlockingTradeProbability = -0.2;
@@ -58,20 +58,19 @@ namespace forexAI
 		public bool useOptimizedLots = false;
 
 		[ExternVariable]
-		public int maxOrdersInParallel = 6;
+		public int maxOrdersInParallel = 10;
 
 		[ExternVariable]
 		public int minStableTrendBarForEnter = 2;
 
 		[ExternVariable]
-		public int maxStableTrendBarForEnter = 100;
+		public int maxStableTrendBarForEnter = 10;
 
 		[ExternVariable]
-		public int minTradePeriodBars = 4;
+		public int minTradePeriodBars = 6;
 
 		[ExternVariable]
 		public bool counterTrading = false;
-
 
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
@@ -382,7 +381,7 @@ namespace forexAI
 			reassembleCompletedOverride = false;
 			mqlApi = this;
 
-			if (IsTesting() || IsOptimization())
+			if (IsOptimization())
 				Configuration.useAudio = false;
 
 			ClearLogs();
@@ -439,7 +438,7 @@ namespace forexAI
 		//+------------------------------------------------------------------+
 		public override int start()
 		{
-			if (!IsTesting() && !IsOptimization())
+			if (!IsOptimization())
 			{
 				PopulateOrders();
 				DrawStats();
@@ -463,7 +462,7 @@ namespace forexAI
 					EnterCounterTrade();
 			}
 
-			if (!IsTesting() && !IsOptimization())
+			if (!IsOptimization())
 				RenderCharizedHistory();
 
 			if (!hasNightReported && TimeHour(TimeCurrent()) == 0)
@@ -897,7 +896,7 @@ namespace forexAI
 			pos = Open[0];
 			on = (pos.ToString());
 			ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
-			ObjectSetText(on, text, 8, "lucida console", clr);
+			ObjectSetText(on, text, 8, "liberation mono", clr);
 		}
 
 		void AddVerticalLabel(string text)
@@ -909,7 +908,7 @@ namespace forexAI
 			on = (pos.ToString());
 			ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
 			ObjectSet(on, OBJPROP_ANGLE, 90.0);
-			ObjectSetText(on, text, 8, "lucida console", Color.White);
+			ObjectSetText(on, text, 8, "liberation mono", Color.White);
 		}
 
 		void DrawStats(bool commentsOnly = false)
@@ -927,7 +926,7 @@ namespace forexAI
 					ObjectSet(labelID, OBJPROP_YDISTANCE, i * 18);
 				}
 
-				ObjectSetText(labelID, "                                    ", 8, "lucida console", Color.White);
+				ObjectSetText(labelID, "                                    ", 8, "liberation mono", Color.White);
 			}
 
 			for (i = 0; i < OrdersTotal(); i++)
@@ -954,7 +953,7 @@ namespace forexAI
 					labelID = "order" + i;
 
 					ObjectSetText(labelID, type + " " +
-						OrderProfit().ToString(), 10, "lucida console", OrderProfit() > 0.0 ? Color.LightGreen : Color.Red);
+						OrderProfit().ToString(), 10, "liberation mono", OrderProfit() > 0.0 ? Color.LightGreen : Color.Red);
 				}
 			}
 
@@ -971,7 +970,7 @@ namespace forexAI
 			ObjectSetText(labelID,
 						  "AccountEquity: " + DoubleToStr(AccountEquity(), 2),
 						  8,
-						  "lucida console",
+						  "liberation mono",
 						  Color.Yellow);
 
 			labelID = gs_80 + "5";
@@ -987,7 +986,7 @@ namespace forexAI
 			ObjectSetText(labelID,
 						  "ActiveProfit: " + DoubleToStr(total, 2),
 						  8,
-						  "lucida console",
+						  "liberation mono",
 						  Color.Yellow);
 
 			labelID = gs_80 + "6";
@@ -999,7 +998,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 608);
 			}
 
-			ObjectSetText(labelID, "ActiveSpend: " + DoubleToStr(activeSpend, 2), 8, "lucida console", Color.Red);
+			ObjectSetText(labelID, "ActiveSpend: " + DoubleToStr(activeSpend, 2), 8, "liberation mono", Color.Red);
 
 			labelID = gs_80 + "7";
 			if (ObjectFind(labelID) == -1)
@@ -1012,7 +1011,7 @@ namespace forexAI
 			ObjectSetText(labelID,
 						  "ActiveIncome: " + DoubleToStr(activeIncome, 2),
 						  8,
-						  "lucida console",
+						  "liberation mono",
 						  Color.LightGreen);
 
 			spends = activeSpend;
@@ -1047,7 +1046,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 50);
 			}
 
-			ObjectSetText(labelID, "Total operations: " + (totalOperationsCount + dayOperationsCount), 8, "lucida console", Color.Yellow);
+			ObjectSetText(labelID, "Total operations: " + (totalOperationsCount + dayOperationsCount), 8, "liberation mono", Color.Yellow);
 
 			labelID = gs_80 + "10";
 			if (ObjectFind(labelID) == -1)
@@ -1060,7 +1059,7 @@ namespace forexAI
 			ObjectSetText(labelID,
 						  "Live Orders: " + OrdersTotal(),
 						  8,
-						  "lucida console",
+						  "liberation mono",
 						  Color.Yellow);
 
 			string dirtext = string.Empty, dirtext2 = string.Empty;
@@ -1072,7 +1071,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 191);
 			}
-			ObjectSetText(labelID, "Buy Prob. " + buyProbability.ToString("0.0000"), 14, "lucida console",
+			ObjectSetText(labelID, "Buy Prob. " + buyProbability.ToString("0.0000"), 14, "liberation mono",
 				buyProbability > 0.0 ? Color.LightCyan : Color.Gray);
 
 			labelID = gs_80 + "12";
@@ -1083,7 +1082,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 442);
 			}
-			ObjectSetText(labelID, "Sell Prob. " + sellProbability.ToString("0.0000"), 14, "lucida console",
+			ObjectSetText(labelID, "Sell Prob. " + sellProbability.ToString("0.0000"), 14, "liberation mono",
 				sellProbability > 0.0 ? Color.LightCyan : Color.Gray);
 
 			labelID = gs_80 + "13";
@@ -1095,7 +1094,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 318);
 			}
 			ObjectSetText(labelID, "[" + (isTrendStable ? "STABLE" : "UNSTABLE") +
-				$" {(isTrendStable ? stableTrendBar : unstableTrendBar)}" + "]", 15, "lucida console",
+				$" {(isTrendStable ? stableTrendBar : unstableTrendBar)}" + "]", 15, "liberation mono",
 				isTrendStable ? Color.LightGreen : Color.Red);
 
 			totalSpends = spendSells + spendBuys;
