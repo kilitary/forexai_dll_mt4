@@ -414,7 +414,6 @@ namespace forexAI
 
 			InitVariables();
 			ShowBanner();
-			DumpInfo();
 			ListGlobalVariables();
 			ScanNetworks();
 
@@ -431,6 +430,8 @@ namespace forexAI
 			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) ";
 			log(initStr);
 			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
+
+			DumpInfo();
 
 			reassembleCompletedOverride = true;
 			neuralNetworkBootstrapped = true;
@@ -455,16 +456,16 @@ namespace forexAI
 			if (Bars == previousBars)
 				return 0;
 
-			if (neuralNetworkBootstrapped)
+			if (forexNetwork != null && neuralNetworkBootstrapped)
 			{
 				(networkFunctionsCount, networkOutput) = Reassembler.Execute(functionsTextContent,
 					inputDimension, forexNetwork, reassembleCompletedOverride,
 					TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), mqlApi);
 
-				EnterTrade();
+				CheckConditionsToEnterTrade();
 
 				if (counterTrading)
-					EnterCounterTrade();
+					CheckConditionsToEnterCounterTrade();
 			}
 
 			if (!IsOptimization())
@@ -474,7 +475,7 @@ namespace forexAI
 			{
 				stableTrendBar = unstableTrendBar = 0;
 				hasNightReported = true;
-				console($"Night....", ConsoleColor.Black, ConsoleColor.Gray);
+				log($"Night....");
 				AddLabel($"[kNIGHT]", Color.White);
 			}
 			else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
@@ -484,7 +485,7 @@ namespace forexAI
 			{
 				stableTrendBar = unstableTrendBar = 0;
 				hasMorningReported = true;
-				console($"Morning!", ConsoleColor.Black, ConsoleColor.Yellow);
+				log($"Morning!");
 				AddLabel($"[MORNING]", Color.Yellow);
 				buysPermitted = sellsPermitted = 3;
 			}
@@ -501,20 +502,18 @@ namespace forexAI
 				FX.TheNewDay();
 			}
 
-			if (AccountBalance() <= 5.0 && !hasNoticedLowBalance)
+			if (AccountBalance() <= 35.0 && !hasNoticedLowBalance)
 			{
 				hasNoticedLowBalance = true;
 				console($"всё пизда, кеш весь слит нахуй, бабок: {AccountBalance()}$", ConsoleColor.Red, ConsoleColor.White);
 				FX.LowBalance();
+				TerminalClose(0);
 			}
-			else if (hasNoticedLowBalance && YRandom.Next(0, 6) == 3)
+			else if (hasNoticedLowBalance && YRandom.Next(6) == 3)
 				FX.GoodWork();
 
 			File.AppendAllText(Configuration.XXrandomLogFileName, random.Next(99).ToString("00") + " ");
 			File.AppendAllText(Configuration.YYYrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
-
-
-
 
 			log($"=> Probability: Buy={buyProbability.ToString("0.0000")} Sell={sellProbability.ToString("0.0000")}", "debug");
 
@@ -525,9 +524,6 @@ namespace forexAI
 
 			previousBars = Bars;
 			barsPerDay += 1;
-
-			if (AccountBalance() <= 20)
-				TerminalClose(0);
 
 			return 0;
 		}
@@ -580,7 +576,7 @@ namespace forexAI
 			settings["random"] = random.Next(int.MaxValue);
 		}
 
-		void EnterTrade()
+		void CheckConditionsToEnterTrade()
 		{
 			if (!isTrendStable
 				|| stableTrendBar < minStableTrendBarForEnter
@@ -600,7 +596,7 @@ namespace forexAI
 				SendSell();
 		}
 
-		public void EnterCounterTrade()
+		public void CheckConditionsToEnterCounterTrade()
 		{
 			if (buysProfit <= MinLossForCounterTrade
 				&& sellCount < buyCount
@@ -640,7 +636,7 @@ namespace forexAI
 
 			forexNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net")
 			{
-				ErrorLog = new FANNCSharp.FannFile($"{Configuration.rootDirectory}\\FANN.log", "a+")
+				ErrorLog = new FANNCSharp.FannFile($"{Configuration.rootDirectory}\\error.log", "a+")
 			};
 
 			log($"Network: hash={forexNetwork.GetHashCode()} inputs={forexNetwork.InputCount} layers={forexNetwork.LayerCount}" +
@@ -918,7 +914,7 @@ namespace forexAI
 		void RenderCharizedHistory()
 		{
 			profitBuys = profitSells = spendSells = spendBuys = 0;
-			charizedOrdersHistory = "";
+			charizedOrdersHistory = string.Empty;
 
 			for (int i = 0; i < OrdersHistoryTotal(); i++)
 			{
@@ -967,6 +963,9 @@ namespace forexAI
 			debug($"  minstoplevel={minStopLevel}");
 
 			Helpers.ShowMemoryUsage();
+
+			Console.Title = $"Automated MT4 trading expert debug console. Version {version}. Network: {networkName} "
+				+ (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
 		}
 
 		void ShowBanner()
@@ -976,9 +975,6 @@ namespace forexAI
 
 			version = Assembly.GetExecutingAssembly().GetName().Version;
 			log($"Initializing version {version} ...");
-
-			Console.Title = $"Automated MT4 trading expert debug console. Version {version}. "
-				+ (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
 		}
 
 		void DrawStats()
@@ -1184,8 +1180,8 @@ namespace forexAI
 				ObjectSet("statyys", OBJPROP_YDISTANCE, 16);
 			}
 
-			var sellProb = "";
-			var buyProb = "";
+			var sellProb = string.Empty;
+			var buyProb = string.Empty;
 
 			for (var u = 0; u < prevBuyProbability.Length - 1; u++)
 				buyProb += prevBuyProbability[u].ToString("0.00") + " ";
@@ -1195,8 +1191,6 @@ namespace forexAI
 
 			Process proc = Process.GetCurrentProcess();
 			var memoryUsage = (proc.PrivateMemorySize64 / 1024 / 1024).ToString("0.00");
-
-			
 
 			if (forexNetwork != null)
 			{
@@ -1272,7 +1266,7 @@ namespace forexAI
 			   ($"{ networkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ networkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : "") +
 			   $"\r\nBuyProb: [{buyProb}]" +
 			   $"\r\nSellProb: [{sellProb}]" +
-			   $"\r\nMemory: {memoryUsage} MB"+
+			   $"\r\n\r\nMemory: {memoryUsage} MB" +
 			   $"\r\nCPU: {(cpuCounter.NextValue()).ToString("0.00") + "%"}"
 			   );
 

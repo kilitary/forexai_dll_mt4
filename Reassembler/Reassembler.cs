@@ -62,7 +62,7 @@ namespace forexAI
 		static int networkFunctionsCount = 0;
 
 		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork,
-			bool reassemblingCompletedOverride, string timeCurrent,  MqlApi api)
+			bool reassemblingCompletedOverride, string timeCurrent,  MqlApi mqlApi)
 		{
 			reassemblyCompleteLogged = reassemblingCompletedOverride;
 
@@ -170,16 +170,16 @@ namespace forexAI
 							switch (iReal)
 							{
 								case 0:
-									functionArguments[paramIndex] = prices.GetOpen(numData, api.Bars, api.Open);
+									functionArguments[paramIndex] = prices.GetOpen(numData, mqlApi.Bars, mqlApi.Open);
 									break;
 								case 1:
-									functionArguments[paramIndex] = prices.GetClose(numData, api.Bars, api.Close);
+									functionArguments[paramIndex] = prices.GetClose(numData, mqlApi.Bars, mqlApi.Close);
 									break;
 								case 2:
-									functionArguments[paramIndex] = prices.GetHigh(numData, api.Bars, api.High);
+									functionArguments[paramIndex] = prices.GetHigh(numData, mqlApi.Bars, mqlApi.High);
 									break;
 								case 3:
-									functionArguments[paramIndex] = prices.GetLow(numData, api.Bars, api.Low);
+									functionArguments[paramIndex] = prices.GetLow(numData, mqlApi.Bars, mqlApi.Low);
 									break;
 							}
 
@@ -237,19 +237,19 @@ namespace forexAI
 							functionArguments[paramIndex] = numData - 1;
 							break;
 						case "inOpen":
-							functionArguments[paramIndex] = prices.GetOpen(numData, api.Bars, api.Open);
+							functionArguments[paramIndex] = prices.GetOpen(numData, mqlApi.Bars, mqlApi.Open);
 							break;
 						case "inHigh":
-							functionArguments[paramIndex] = prices.GetHigh(numData, api.Bars, api.High);
+							functionArguments[paramIndex] = prices.GetHigh(numData, mqlApi.Bars, mqlApi.High);
 							break;
 						case "inLow":
-							functionArguments[paramIndex] = prices.GetLow(numData, api.Bars, api.Low);
+							functionArguments[paramIndex] = prices.GetLow(numData, mqlApi.Bars, mqlApi.Low);
 							break;
 						case "inClose":
-							functionArguments[paramIndex] = prices.GetClose(numData, api.Bars, api.Close);
+							functionArguments[paramIndex] = prices.GetClose(numData, mqlApi.Bars, mqlApi.Close);
 							break;
 						case "inVolume":
-							functionArguments[paramIndex] = prices.GetVolume(numData, api.Bars, api.Volume);
+							functionArguments[paramIndex] = prices.GetVolume(numData, mqlApi.Bars, mqlApi.Volume);
 							break;
 						case "outBegIdx":
 							functionArguments[paramIndex] = OutBegIdx;
