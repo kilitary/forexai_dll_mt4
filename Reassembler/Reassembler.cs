@@ -59,11 +59,10 @@ namespace forexAI
 		static object[] functionArguments = null;
 		static bool failedReassemble = false;
 		static bool reassemblyCompleteLogged = false;
+		static int networkFunctionsCount = 0;
 
-		public static double[] Execute(string functionConfigurationString, int inputDimension,
-			IMqlArray<double> Open, IMqlArray<double> Close, IMqlArray<double> High,
-			IMqlArray<double> Low, IMqlArray<double> Volume, int Bars, NeuralNet neuralNetwork,
-			bool reassemblingCompletedOverride, string timeCurrent, out int networkFunctionsCount)
+		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork,
+			bool reassemblingCompletedOverride, string timeCurrent,  MqlApi api)
 		{
 			reassemblyCompleteLogged = reassemblingCompletedOverride;
 
@@ -171,16 +170,16 @@ namespace forexAI
 							switch (iReal)
 							{
 								case 0:
-									functionArguments[paramIndex] = prices.GetOpen(numData, Bars, Open);
+									functionArguments[paramIndex] = prices.GetOpen(numData, api.Bars, api.Open);
 									break;
 								case 1:
-									functionArguments[paramIndex] = prices.GetClose(numData, Bars, Close);
+									functionArguments[paramIndex] = prices.GetClose(numData, api.Bars, api.Close);
 									break;
 								case 2:
-									functionArguments[paramIndex] = prices.GetHigh(numData, Bars, High);
+									functionArguments[paramIndex] = prices.GetHigh(numData, api.Bars, api.High);
 									break;
 								case 3:
-									functionArguments[paramIndex] = prices.GetLow(numData, Bars, Low);
+									functionArguments[paramIndex] = prices.GetLow(numData, api.Bars, api.Low);
 									break;
 							}
 
@@ -238,19 +237,19 @@ namespace forexAI
 							functionArguments[paramIndex] = numData - 1;
 							break;
 						case "inOpen":
-							functionArguments[paramIndex] = prices.GetOpen(numData, Bars, Open);
+							functionArguments[paramIndex] = prices.GetOpen(numData, api.Bars, api.Open);
 							break;
 						case "inHigh":
-							functionArguments[paramIndex] = prices.GetHigh(numData, Bars, High);
+							functionArguments[paramIndex] = prices.GetHigh(numData, api.Bars, api.High);
 							break;
 						case "inLow":
-							functionArguments[paramIndex] = prices.GetLow(numData, Bars, Low);
+							functionArguments[paramIndex] = prices.GetLow(numData, api.Bars, api.Low);
 							break;
 						case "inClose":
-							functionArguments[paramIndex] = prices.GetClose(numData, Bars, Close);
+							functionArguments[paramIndex] = prices.GetClose(numData, api.Bars, api.Close);
 							break;
 						case "inVolume":
-							functionArguments[paramIndex] = prices.GetVolume(numData, Bars, Volume);
+							functionArguments[paramIndex] = prices.GetVolume(numData, api.Bars, api.Volume);
 							break;
 						case "outBegIdx":
 							functionArguments[paramIndex] = OutBegIdx;
@@ -374,7 +373,7 @@ namespace forexAI
 					$"{Math.Abs(fullInputSet.Length - neuralNetwork.InputCount)}");
 				reassemblyCompleteLogged = false;
 				failedReassemble = true;
-				return null;
+				return (0, null);
 			}
 
 			if (!reassemblyCompleteLogged)
@@ -388,7 +387,7 @@ namespace forexAI
 
 			//debug($"{timeCurrent} networkOutput = {networkOutput[0].ToString("0.0000")} : {networkOutput[1].ToString("0.0000")}");
 			reassemblyCompleteLogged = true;
-			return networkOutput;
+			return (networkFunctionsCount, networkOutput);
 		}
 	}
 }

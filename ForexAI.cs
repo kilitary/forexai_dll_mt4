@@ -72,6 +72,9 @@ namespace forexAI
 		[ExternVariable]
 		public bool counterTrading = false;
 
+		[ExternVariable]
+		public static int countedMeasuredProbabilityBars = 5;
+
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
 		Version version = null;
@@ -80,9 +83,10 @@ namespace forexAI
 		TrainingData testData = null;
 		Storage storage = new Storage();
 		Settings settings = new Settings();
+		PerformanceCounter cpuCounter;
 		DirectoryInfo[] networkDirs = null;
 		List<int> orders = new List<int>();
-		static public MqlApi mqlApi;
+		MqlApi mqlApi;
 		string networkName = string.Empty;
 		string fannNetworkDirName = string.Empty;
 		string inputLayerActivationFunction = string.Empty;
@@ -100,8 +104,8 @@ namespace forexAI
 		double minStopLevel = 0;
 		double ordersStopPoints = 0;
 		double[] networkOutput = null;
-		double[] prevBuyProbability = new double[3];
-		double[] prevSellProbability = new double[3];
+		double[] prevBuyProbability = new double[countedMeasuredProbabilityBars];
+		double[] prevSellProbability = new double[countedMeasuredProbabilityBars];
 		float testMse = 0.0f;
 		float trainMse = 0.0f;
 		bool reassembleCompletedOverride = false;
@@ -135,10 +139,10 @@ namespace forexAI
 		int tradeBarPeriodGone => Bars - lastTradeBar;
 		double buyProbability => networkOutput == null ? 0.0 : networkOutput[0];
 		double sellProbability => networkOutput == null ? 0.0 : networkOutput[1];
-		int ordersCount => sellsCount + buysCount;
-		double ordersProfit => buysProfit + sellsProfit;
+		int orderCount => sellCount + buyCount;
+		double orderProfit => buysProfit + sellsProfit;
 
-		int buysCount
+		int buyCount
 		{
 			get
 			{
@@ -155,7 +159,7 @@ namespace forexAI
 			}
 		}
 
-		int sellsCount
+		int sellCount
 		{
 			get
 			{
@@ -332,9 +336,9 @@ namespace forexAI
 
 				if (stableTrendCurrentBar != Bars)
 				{
-					prevBuyProbability[0] = prevBuyProbability[1];
-					prevBuyProbability[1] = prevBuyProbability[2];
-					prevBuyProbability[2] = buyProbability;
+					for (var i = 0; i < prevBuyProbability.Length - 1; i++)
+						prevBuyProbability[i] = prevBuyProbability[i + 1];
+					prevBuyProbability[prevBuyProbability.Length - 1] = buyProbability;
 				}
 
 				for (int x = 0; x < prevSellProbability.Length; x++)
@@ -353,9 +357,9 @@ namespace forexAI
 
 				if (stableTrendCurrentBar != Bars)
 				{
-					prevSellProbability[0] = prevSellProbability[1];
-					prevSellProbability[1] = prevSellProbability[2];
-					prevSellProbability[2] = sellProbability;
+					for (var i = 0; i < prevSellProbability.Length - 1; i++)
+						prevSellProbability[i] = prevSellProbability[i + 1];
+					prevSellProbability[prevSellProbability.Length - 1] = sellProbability;
 				}
 
 				if (stableTrend && stableTrendCurrentBar != Bars)
@@ -395,6 +399,7 @@ namespace forexAI
 				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
 				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", "dev");
 
+			cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 			Core.SetCompatibility(Core.Compatibility.Metastock);
 			//			Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 8);
 
@@ -452,9 +457,9 @@ namespace forexAI
 
 			if (neuralNetworkBootstrapped)
 			{
-				networkOutput = Reassembler.Execute(functionsTextContent,
-					inputDimension, Open, Close, High, Low, Volume, Bars, forexNetwork, reassembleCompletedOverride,
-					TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), out networkFunctionsCount);
+				(networkFunctionsCount, networkOutput) = Reassembler.Execute(functionsTextContent,
+					inputDimension, forexNetwork, reassembleCompletedOverride,
+					TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), mqlApi);
 
 				EnterTrade();
 
@@ -584,13 +589,13 @@ namespace forexAI
 
 			if (buyProbability >= EnteringTradeProbability
 					&& sellProbability <= BlockingTradeProbability
-					&& ordersCount < maxOrdersInParallel
+					&& orderCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars)
 				SendBuy();
 
 			if (sellProbability >= EnteringTradeProbability
 					&& buyProbability <= BlockingTradeProbability
-					&& ordersCount < maxOrdersInParallel
+					&& orderCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars)
 				SendSell();
 		}
@@ -598,18 +603,18 @@ namespace forexAI
 		public void EnterCounterTrade()
 		{
 			if (buysProfit <= MinLossForCounterTrade
-				&& sellsCount < buysCount
-				&& ordersCount < maxOrdersInParallel)
+				&& sellCount < buyCount
+				&& orderCount < maxOrdersInParallel)
 			{
-				log($"opening counter-buy [{ordersCount}]");
+				log($"opening counter-buy [{orderCount}]");
 				SendSell();
 			}
 
 			if (sellsProfit <= MinLossForCounterTrade
-				&& sellsCount > buysCount
-				&& ordersCount < maxOrdersInParallel)
+				&& sellCount > buyCount
+				&& orderCount < maxOrdersInParallel)
 			{
-				log($"opening counter-sell [{ordersCount}]");
+				log($"opening counter-sell [{orderCount}]");
 				SendBuy();
 			}
 		}
@@ -659,9 +664,8 @@ namespace forexAI
 
 			functionsTextContent = File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json");
 
-			networkOutput = Reassembler.Execute(functionsTextContent, inputDimension,
-				Open, Close, High, Low, Volume, Bars, forexNetwork, false,
-				TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), out networkFunctionsCount);
+			(networkFunctionsCount, networkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexNetwork, false,
+				TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), mqlApi);
 		}
 
 		void ScanNetworks()
@@ -911,7 +915,73 @@ namespace forexAI
 			ObjectSetText(on, text, 8, "liberation mono", Color.White);
 		}
 
-		void DrawStats(bool commentsOnly = false)
+		void RenderCharizedHistory()
+		{
+			profitBuys = profitSells = spendSells = spendBuys = 0;
+			charizedOrdersHistory = "";
+
+			for (int i = 0; i < OrdersHistoryTotal(); i++)
+			{
+				if (OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
+				{
+					if (OrderProfit() > 0.0)
+					{
+						if (OrderType() == OP_BUY)
+						{
+							profitBuys++;
+							charizedOrdersHistory += "B";
+						}
+						if (OrderType() == OP_SELL)
+						{
+							profitSells++;
+							charizedOrdersHistory += "S";
+						}
+					}
+					else
+					{
+						charizedOrdersHistory += ".";
+						if (OrderType() == OP_BUY)
+							spendBuys++;
+						if (OrderType() == OP_SELL)
+							spendSells++;
+					}
+
+				}
+			}
+		}
+
+		void DumpInfo()
+		{
+			console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)} Machine={Environment.MachineName}" +
+				$" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@0x{currentProcess.Modules[0].BaseAddress}",
+				ConsoleColor.Black, ConsoleColor.Yellow);
+
+			debug($"  AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
+			debug($"  Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
+			debug($"  Equity={AccountEquity()} FreeMarginMode={AccountFreeMarginMode()} Expert={WindowExpertName()}");
+			debug($"  Leverage={AccountLeverage()} Server=[{AccountServer()}] StopoutLev={AccountStopoutLevel()} StopoutMod={AccountStopoutMode()}");
+			debug($"  TickValue={MarketInfo(symbol, MODE_TICKVALUE)} TickSize={MarketInfo(symbol, MODE_TICKSIZE)} Minlot={MarketInfo(symbol, MODE_MINLOT)}" + $" LotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
+			debug($"  Orders={OrdersTotal()} TimeForexCurrent=[{TimeCurrent()}] Digits={MarketInfo(symbol, MODE_DIGITS)} Spread={MarketInfo(symbol, MODE_SPREAD)}");
+			debug($"  IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
+			debug($"  Period={Period()}");
+			debug($"  minstoplevel={minStopLevel}");
+
+			Helpers.ShowMemoryUsage();
+		}
+
+		void ShowBanner()
+		{
+			log($"> Automated Expert for MT4 using neural network with strategy created by code/data fuzzing. [met8]");
+			log($"> (c) 2018 Deconf (kilitary@gmail.com teleg:@deconf skype:serjnah icq:401112)");
+
+			version = Assembly.GetExecutingAssembly().GetName().Version;
+			log($"Initializing version {version} ...");
+
+			Console.Title = $"Automated MT4 trading expert debug console. Version {version}. "
+				+ (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
+		}
+
+		void DrawStats()
 		{
 			int i;
 
@@ -1114,6 +1184,20 @@ namespace forexAI
 				ObjectSet("statyys", OBJPROP_YDISTANCE, 16);
 			}
 
+			var sellProb = "";
+			var buyProb = "";
+
+			for (var u = 0; u < prevBuyProbability.Length - 1; u++)
+				buyProb += prevBuyProbability[u].ToString("0.00") + " ";
+
+			for (var u = 0; u < prevSellProbability.Length - 1; u++)
+				sellProb += prevSellProbability[u].ToString("0.00") + " ";
+
+			Process proc = Process.GetCurrentProcess();
+			var memoryUsage = (proc.PrivateMemorySize64 / 1024 / 1024).ToString("0.00");
+
+			
+
 			if (forexNetwork != null)
 			{
 				Comment(
@@ -1185,73 +1269,14 @@ namespace forexAI
 			   "%\r\n" +
 			   "Network Output: " +
 			   ((networkOutput != null && networkOutput[0] != 0.0 && networkOutput[1] != 0.0) ?
-			   ($"{ networkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ networkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : ""));
+			   ($"{ networkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ networkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : "") +
+			   $"\r\nBuyProb: [{buyProb}]" +
+			   $"\r\nSellProb: [{sellProb}]" +
+			   $"\r\nMemory: {memoryUsage} MB"+
+			   $"\r\nCPU: {(cpuCounter.NextValue()).ToString("0.00") + "%"}"
+			   );
+
 			}
-		}
-
-		void ShowBanner()
-		{
-			log($"> Automated Expert for MT4 using neural network with strategy created by code/data fuzzing. [met8]");
-			log($"> (c) 2018 Deconf (kilitary@gmail.com teleg:@deconf skype:serjnah icq:401112)");
-
-			version = Assembly.GetExecutingAssembly().GetName().Version;
-			log($"Initializing version {version} ...");
-
-			Console.Title = $"Automated MT4 trading expert debug console. Version {version}. "
-				+ (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
-		}
-
-		void RenderCharizedHistory()
-		{
-			profitBuys = profitSells = spendSells = spendBuys = 0;
-			charizedOrdersHistory = "";
-			for (int i = 0; i < OrdersHistoryTotal(); i++)
-			{
-				if (OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
-				{
-					if (OrderProfit() > 0.0)
-					{
-						if (OrderType() == OP_BUY)
-						{
-							profitBuys++;
-							charizedOrdersHistory += "B";
-						}
-						if (OrderType() == OP_SELL)
-						{
-							profitSells++;
-							charizedOrdersHistory += "S";
-						}
-					}
-					else
-					{
-						charizedOrdersHistory += ".";
-						if (OrderType() == OP_BUY)
-							spendBuys++;
-						if (OrderType() == OP_SELL)
-							spendSells++;
-					}
-
-				}
-			}
-		}
-
-		void DumpInfo()
-		{
-			console($"Symbol={symbol} random.Next={random.Next(0, 100)} Yrandom.Next={YRandom.Next(0, 100)} Machine={Environment.MachineName}" +
-				$" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@0x{currentProcess.Modules[0].BaseAddress}",
-				ConsoleColor.Black, ConsoleColor.Yellow);
-
-			debug($"  AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
-			debug($"  Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
-			debug($"  Equity={AccountEquity()} FreeMarginMode={AccountFreeMarginMode()} Expert={WindowExpertName()}");
-			debug($"  Leverage={AccountLeverage()} Server=[{AccountServer()}] StopoutLev={AccountStopoutLevel()} StopoutMod={AccountStopoutMode()}");
-			debug($"  TickValue={MarketInfo(symbol, MODE_TICKVALUE)} TickSize={MarketInfo(symbol, MODE_TICKSIZE)} Minlot={MarketInfo(symbol, MODE_MINLOT)}" + $" LotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
-			debug($"  Orders={OrdersTotal()} TimeForexCurrent=[{TimeCurrent()}] Digits={MarketInfo(symbol, MODE_DIGITS)} Spread={MarketInfo(symbol, MODE_SPREAD)}");
-			debug($"  IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
-			debug($"  Period={Period()}");
-			debug($"  minstoplevel={minStopLevel}");
-
-			Helpers.ShowMemoryUsage();
 		}
 
 	}

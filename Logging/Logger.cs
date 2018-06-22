@@ -51,7 +51,7 @@ namespace forexAI
 			{
 				using (StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true))
 				{
-					file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+					file.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " <" +
 						Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " +
 						((prefix.Length > 0 ? (" " + prefix + ": \r\n") : "") +
 						SerializeObject(data, jsonSettings)));
@@ -67,7 +67,7 @@ namespace forexAI
 		{
 			Console.BackgroundColor = bgcolor;
 			Console.ForegroundColor = fgcolor;
-			string logString = DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
+			string logString = DateTime.Now.ToString("HH:mm:ss.fff") + " <" +
 				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines;
 			Console.WriteLine(logString);
 			Console.ResetColor();
@@ -79,68 +79,98 @@ namespace forexAI
 		{
 			if (fileName == null)
 				fileName = "debug";
-
-			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
-			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
-			file.Close();
+			try
+			{
+				StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
+				file.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " <" +
+					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
+				file.Close();
+			}
+			catch (Exception e)
+			{
+			}
 		}
 
 		public static void error(string lines, string fileName = null)
 		{
 			if (fileName == null)
 				fileName = "error";
-
-			StackFrame callStack = new StackFrame(1, true);
-			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
-			file.WriteLine(DateTime.Now.ToString("h:mm:ss.ffff") + " <" +
-				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "ERROR: " +
-				callStack.GetFileName() + ":" + callStack.GetFileLineNumber() + $" in {callStack.GetMethod().Name}(): " + lines);
-			file.Close();
+			try
+			{
+				StackFrame callStack = new StackFrame(1, true);
+				StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
+				file.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " <" +
+					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "ERROR: " +
+					callStack.GetFileName() + ":" + callStack.GetFileLineNumber() + $" in {callStack.GetMethod().Name}(): " + lines);
+				file.Close();
+			}
+			catch (Exception e)
+			{
+			}
 		}
 
 		public static void info(string lines, string fileName = null)
 		{
 			if (fileName == null)
 				fileName = "info";
-
-			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
-			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
-			file.Close();
+			try
+			{
+				StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
+				file.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " <" +
+					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
+				file.Close();
+			}
+			catch (Exception e)
+			{
+			}
 		}
 
 		public static void log(string lines, string fileName = null)
 		{
 			if (fileName == null)
 				fileName = Configuration.logFileName;
-
-			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
-			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
-			file.Close();
+			try
+			{
+				StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
+				file.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " <" +
+					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
+				file.Close();
+			}
+			catch (Exception e)
+			{
+			}
 		}
 
 		public static void warning(string lines, string fileName = null)
 		{
 			if (fileName == null)
 				fileName = "warning";
-
-			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
-			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "warning: " + lines);
-			file.Close();
+			try
+			{
+				StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
+				file.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " <" +
+					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "warning: " + lines);
+				file.Close();
+			}
+			catch (Exception e)
+			{
+			}
 		}
 
 		public static void notice(string lines, string fileName = null)
 		{
 			if (fileName == null)
 				fileName = "notice";
-
-			StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
-			file.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff") + " <" +
-				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "warning: " + lines);
-			file.Close();
+			try
+			{
+				StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
+				file.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " <" +
+					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + "warning: " + lines);
+				file.Close();
+			}
+			catch (Exception e)
+			{
+			}
 		}
 	}
 }
