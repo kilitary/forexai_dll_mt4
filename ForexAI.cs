@@ -47,13 +47,13 @@ namespace forexAI
 		public double stableBigChangeFactor = 0.2;
 
 		[ExternVariable]
-		public double EnteringTradeProbability = 0.9;
+		public double enteringTradeProbability = 0.9;
 
 		[ExternVariable]
-		public double BlockingTradeProbability = -0.2;
+		public double blockingTradeProbability = -0.2;
 
 		[ExternVariable]
-		public double MinLossForCounterTrade = -5.0;
+		public double minLossForCounterTrade = -5.0;
 
 		[ExternVariable]
 		public bool useOptimizedLots = true;
@@ -83,7 +83,7 @@ namespace forexAI
 		public double minOrderDistance = 0.003;
 
 		[ExternVariable]
-		public double orderAliveHours = 24 * 2;
+		public double orderAliveHours = 4;
 
 		[ExternVariable]
 		public double collapseEnterLots = 1.0;
@@ -98,7 +98,7 @@ namespace forexAI
 		NeuralNet forexFannNetwork = null;
 		DirectoryInfo[] networkDirs = null;
 		Storage storage = new Storage();
-		PerformanceCounter cpuCounter;
+		PerformanceCounter cpuCounter = null;
 		Process currentProcess = null;
 		TrainingData trainData = null;
 		TrainingData testData = null;
@@ -106,7 +106,7 @@ namespace forexAI
 		Version version = null;
 
 		// MqlApi object (this)
-		MqlApi mqlApi;
+		MqlApi mqlApi = null;
 
 		string networkName = string.Empty;
 		string fannNetworkDirName = string.Empty;
@@ -128,8 +128,8 @@ namespace forexAI
 		double Risky2_Lots = 0.04;
 		double Risky2_LotDigits = 2;
 		double[] fannNetworkOutput = null;
-		double[] prevBuyProbability;
-		double[] prevSellProbability;
+		double[] prevBuyProbability = null;
+		double[] prevSellProbability = null;
 		float testMse = 0.0f;
 		float trainMse = 0.0f;
 		long lastDrawStatsTimestamp = 0;
@@ -166,7 +166,7 @@ namespace forexAI
 		int networkFunctionsCount = 0;
 		int unstableTrendBar = 0;
 		int lastTradeBar = 0;
-		int marketCollapsedBar;
+		int marketCollapsedBar = 0;
 
 		// computed properties
 		int ordersCount => sellCount + buyCount;
@@ -295,7 +295,7 @@ namespace forexAI
 					if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == false)
 						continue;
 
-					if (OrderProfit() < 0.0)
+					if (OrderProfit() + OrderCommission() + OrderSwap() < 0.0)
 						loss += OrderProfit() + OrderCommission() + OrderSwap();
 				}
 
@@ -514,8 +514,8 @@ namespace forexAI
 			EraseLogs(Configuration.XXRandomLogFileName, Configuration.YYYRandomLogFileName);
 
 			console($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
-				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={EnteringTradeProbability} BlockingTradeProbability={BlockingTradeProbability}" +
-				$" MinLossForCounterTrade={MinLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersInParallel}" +
+				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={enteringTradeProbability} BlockingTradeProbability={blockingTradeProbability}" +
+				$" MinLossForCounterTrade={minLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersInParallel}" +
 				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
 				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", ConsoleColor.Black, ConsoleColor.DarkYellow);
 
@@ -573,7 +573,7 @@ namespace forexAI
 
 			if (!IsOptimization())
 			{
-				if (runTimer.ElapsedMilliseconds - lastDrawStatsTimestamp >= 500)
+				if (runTimer.ElapsedMilliseconds - lastDrawStatsTimestamp >= 300)
 				{
 					DrawStats();
 					lastDrawStatsTimestamp = runTimer.ElapsedMilliseconds;
@@ -603,6 +603,14 @@ namespace forexAI
 
 				if (counterTrading)
 					TryEnterCounterTrade();
+			}
+
+			if(activeLoss - activeProfit > 0.0 && (buyProfit < 0.0 || sellProfit < 0.0) && ordersCount >= 2)
+			{
+				log($"auto-close profit activeIncome:{activeIncome} activeLoss:{activeLoss} "+
+					$" buyProft:{buyProfit} sellProfit:{sellProfit} ordersCount:{ordersCount}", "debug");
+				CloseBuys();
+				CloseSells();
 			}
 
 			if (!IsOptimization())
@@ -690,7 +698,7 @@ namespace forexAI
 				console($"Market collapse detected on {TimeCurrent()} change: {change.ToString("0.00000")}, going {collapseDirection}",
 					ConsoleColor.Black, ConsoleColor.Green);
 
-				AddVerticalLabel($"Collapse {collapseDirection}", Color.Aquamarine);
+				AddVerticalLabel($"Market collapse {collapseDirection}", Color.Aquamarine);
 
 				marketCollapsedBar = Bars;
 				if (collapseDirection == TrendDirection.Up)
@@ -755,15 +763,15 @@ namespace forexAI
 				|| stableTrendBar > maxStableTrendBarForEnter)
 				return;
 
-			if (buyProbability >= EnteringTradeProbability
-					&& sellProbability <= BlockingTradeProbability
+			if (buyProbability >= enteringTradeProbability
+					&& sellProbability <= blockingTradeProbability
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
 				SendBuy(riskyLots);
 
-			if (sellProbability >= EnteringTradeProbability
-					&& buyProbability <= BlockingTradeProbability
+			if (sellProbability >= enteringTradeProbability
+					&& buyProbability <= blockingTradeProbability
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
@@ -772,23 +780,23 @@ namespace forexAI
 
 		public void TryEnterCounterTrade()
 		{
-			if (buyProfit <= MinLossForCounterTrade
-				&& sellCount < buyCount
+			if (buyProfit <= minLossForCounterTrade
 				&& ordersCount < maxOrdersInParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Down
-				&& closestSellDistance >= minOrderDistance)
+				&& closestSellDistance >= minOrderDistance
+				&& sellProbability >= 0.2)
 			{
 				consolelog($"opening counter-sell [{sellCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
 				SendSell(riskyLots);
 			}
 
-			if (sellProfit <= MinLossForCounterTrade
-				&& sellCount > buyCount
+			if (sellProfit <= minLossForCounterTrade
 				&& ordersCount < maxOrdersInParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Up
-				&& closestBuyDistance >= minOrderDistance)
+				&& closestBuyDistance >= minOrderDistance
+				&& buyProbability >= 0.2)
 			{
 				consolelog($"opening counter-buy [{buyCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
 				SendBuy(riskyLots);
@@ -1059,6 +1067,10 @@ namespace forexAI
 
 				if (OrderType() == OP_BUY)
 				{
+					log($"sellProfit: {sellProfit}");
+					if (sellProfit < 0.0)
+						continue;
+
 					newStopLoss = Bid - TrailingStop * Point;
 					if ((OrderStopLoss() == 0.0 || newStopLoss > OrderStopLoss())
 						&& Bid - (TrailingBorder * Point) > OrderOpenPrice()
@@ -1072,6 +1084,9 @@ namespace forexAI
 				}
 				if (OrderType() == OP_SELL)
 				{
+					if (buyProfit < 0.0)
+						continue;
+
 					newStopLoss = Ask + TrailingStop * Point;
 					if ((OrderStopLoss() == 0.0 || newStopLoss < OrderStopLoss())
 						&& Ask + (TrailingBorder * Point) < OrderOpenPrice()
@@ -1223,7 +1238,7 @@ namespace forexAI
 
 					ObjectSetText(labelID, type + " " +
 						profit.ToString("0.00") + $" ({OrderLots().ToString("0.00")} lots, " +
-						$" age {elapsed.TotalHours.ToString("0.0")} hours)", 8, "liberation mono",
+						$" age {elapsed.TotalHours.ToString("0.0")} hours)", 8, "lucida console",
 						profit > 0.0 ? Color.LightGreen : Color.Red);
 				}
 			}
@@ -1269,7 +1284,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 608);
 			}
 
-			ObjectSetText(labelID, "ActiveSpend: " + DoubleToStr(activeLoss, 2), 8, "liberation mono", Color.Red);
+			ObjectSetText(labelID, "activeLoss: " + DoubleToStr(activeLoss, 2), 8, "liberation mono", Color.Red);
 
 			labelID = gs_80 + "7";
 			if (ObjectFind(labelID) == -1)
