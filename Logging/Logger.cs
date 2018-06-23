@@ -32,9 +32,9 @@ namespace forexAI
 
 		public static void ClearLogs()
 		{
-			var logs = new DirectoryInfo(Configuration.rootDirectory).GetFiles("*.log").ToList<FileInfo>();
+			var logFiles = new DirectoryInfo(Configuration.rootDirectory).GetFiles("*.log").ToList<FileInfo>();
 
-			logs.ForEach(delegate (FileInfo logFile)
+			logFiles.ForEach(delegate (FileInfo logFile)
 			{
 				if (!Helpers.IsFileBusy(logFile.FullName))
 					File.WriteAllText($@"{logFile.FullName}", "***\r\n");
@@ -65,7 +65,7 @@ namespace forexAI
 			}
 			catch (Exception e)
 			{
-				error($"dump(): {e.Message}");
+				console($"dump() exception: {e.Message}");
 			}
 		}
 

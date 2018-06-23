@@ -85,7 +85,7 @@ namespace forexAI
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
 		Version version = null;
-		NeuralNet forexNetwork = null;
+		NeuralNet forexFannNetwork = null;
 		TrainingData trainData = null;
 		TrainingData testData = null;
 		Storage storage = new Storage();
@@ -425,21 +425,25 @@ namespace forexAI
 		{
 			startTime = GetTickCount();
 			currentDay = (int) DateTime.Now.DayOfWeek;
+
 			console($"--------------[ START tick={startTime} day={currentDay} ]-----------------",
 				ConsoleColor.Black, ConsoleColor.Cyan);
+
+			mqlApi = this;
 
 			neuralNetworkBootstrapped = false;
 			reassembleCompletedOverride = false;
 
+			version = Assembly.GetExecutingAssembly().GetName().Version;
+
 			prevBuyProbability = new double[countedMeasuredProbabilityBars];
 			prevSellProbability = new double[countedMeasuredProbabilityBars];
-
-			mqlApi = this;
 
 			if (IsOptimization())
 				Configuration.useAudio = false;
 
 			ClearLogs();
+			EraseLogs(Configuration.XXrandomLogFileName, Configuration.YYYrandomLogFileName);
 
 			log($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
 				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={EnteringTradeProbability} BlockingTradeProbability={BlockingTradeProbability}" +
@@ -451,8 +455,6 @@ namespace forexAI
 
 			Core.SetCompatibility(Core.Compatibility.Metastock);
 			//Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 3);
-
-			EraseLogs(Configuration.XXrandomLogFileName, Configuration.YYYrandomLogFileName);
 
 			#region matters
 			if ((Environment.MachineName == "USER-PC" || (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused()))
@@ -468,14 +470,14 @@ namespace forexAI
 			if (networkDirs.Length > 0)
 			{
 				LoadNetwork(networkDirs[random.Next(networkDirs.Length - 1)].Name);
-				if (forexNetwork != null)
+				if (forexFannNetwork != null)
 				{
 					TestNetworkMSE();
 					TestNetworkHitRatio();
 				}
 			}
 
-			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) ";
+			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) (v{version})";
 			log(initStr);
 			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
 
@@ -501,19 +503,18 @@ namespace forexAI
 				}
 			}
 
+			SyncOrders();
 			TrailPositions();
 			CloseNegativeOrders();
-			SyncOrders();
+			CheckForMarketCollapse();
 
 			if (Bars == previousBars)
 				return 0;
 
-			CheckForMarketCollapse();
-
-			if (forexNetwork != null && neuralNetworkBootstrapped)
+			if (forexFannNetwork != null && neuralNetworkBootstrapped)
 			{
 				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent,
-					inputDimension, forexNetwork, reassembleCompletedOverride, mqlApi);
+					inputDimension, forexFannNetwork, reassembleCompletedOverride, mqlApi);
 
 				TryEnterTrade();
 
@@ -549,7 +550,7 @@ namespace forexAI
 			{
 				previousBankDay = Day();
 				log($"-> Day {previousBankDay.ToString("0")} [opsDone={dayOperationsCount} barsPerDay={barsPerDay}] accountBanalce={AccountBalance()} "
-					+ (forexNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
+					+ (forexFannNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 				totalOperationsCount += dayOperationsCount;
 				dayOperationsCount = barsPerDay = stableTrendBar = unstableTrendBar = 0;
 				FX.TheNewDay();
@@ -704,7 +705,6 @@ namespace forexAI
 			}
 		}
 
-
 		void LoadNetwork(string dirName)
 		{
 			long fileLength = new FileInfo($"{Configuration.rootDirectory}\\{dirName}\\FANN.net").Length;
@@ -712,13 +712,13 @@ namespace forexAI
 
 			networkName = fannNetworkDirName = dirName;
 
-			forexNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net")
+			forexFannNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net")
 			{
 				ErrorLog = new FANNCSharp.FannFile($"{Configuration.rootDirectory}\\error.log", "a+")
 			};
 
-			log($"Network: hash={forexNetwork.GetHashCode()} inputs={forexNetwork.InputCount} layers={forexNetwork.LayerCount}" +
-				$" outputs={forexNetwork.OutputCount} neurons={forexNetwork.TotalNeurons} connections={forexNetwork.TotalConnections}");
+			log($"Network: hash={forexFannNetwork.GetHashCode()} inputs={forexFannNetwork.InputCount} layers={forexFannNetwork.LayerCount}" +
+				$" outputs={forexFannNetwork.OutputCount} neurons={forexFannNetwork.TotalNeurons} connections={forexFannNetwork.TotalConnections}");
 
 			string fileTextData = File.ReadAllText($@"{Configuration.rootDirectory}\{dirName}\configuration.txt");
 
@@ -738,7 +738,7 @@ namespace forexAI
 
 			functionsTextContent = File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json");
 
-			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexNetwork, false, mqlApi);
+			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexFannNetwork, false, mqlApi);
 		}
 
 		void ScanNetworks()
@@ -767,10 +767,10 @@ namespace forexAI
 
 			log($" * trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
-			trainMse = forexNetwork.TestDataParallel(trainData, 4);
-			testMse = forexNetwork.TestDataParallel(testData, 4);
+			trainMse = forexFannNetwork.TestDataParallel(trainData, 4);
+			testMse = forexFannNetwork.TestDataParallel(testData, 4);
 
-			log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={forexNetwork.BitFail}");
+			log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={forexFannNetwork.BitFail}");
 		}
 
 		void TestNetworkHitRatio()
@@ -786,9 +786,9 @@ namespace forexAI
 			int hits = 0, curX = 0;
 			foreach (double[] input in inputs)
 			{
-				double[] output = forexNetwork.Run(input);
+				double[] output = forexFannNetwork.Run(input);
 
-				forexNetwork.DescaleOutput(output);
+				forexFannNetwork.DescaleOutput(output);
 
 				double output0 = 0;
 				if (output[0] > output[1])
@@ -819,8 +819,8 @@ namespace forexAI
 				if (!OrderSelect(orderIndex, SELECT_BY_POS, MODE_TRADES))
 					break;
 
-				if (OrderProfit() + OrderSwap() + OrderCommission()
-						>= maxNegativeSpend)
+				if (OrderProfit() + OrderSwap() + OrderCommission() >= maxNegativeSpend
+						&& (currentTime.Subtract(OrderOpenTime())).TotalHours <= 48)
 					continue;
 
 				if (OrderType() == OP_BUY)
@@ -1064,7 +1064,6 @@ namespace forexAI
 			log($"> Automated Expert for MT4 using neural network with strategy created by code/data fuzzing. [met8]");
 			log($"> (c) 2018 Deconf (kilitary@gmail.com teleg:@deconf skype:serjnah icq:401112)");
 
-			version = Assembly.GetExecutingAssembly().GetName().Version;
 			log($"Initializing version {version} ...");
 		}
 
@@ -1289,7 +1288,7 @@ namespace forexAI
 			Process proc = Process.GetCurrentProcess();
 			var memoryUsage = (proc.PrivateMemorySize64 / 1024 / 1024).ToString("0.00");
 
-			if (forexNetwork != null)
+			if (forexFannNetwork != null)
 			{
 				Comment(
 			  "Profit sells: " +
@@ -1324,10 +1323,10 @@ namespace forexAI
 			   inputDimension +
 			   "\r\n" +
 			  "TotalNeurons: " +
-			   forexNetwork.TotalNeurons +
+			   forexFannNetwork.TotalNeurons +
 			   "\r\n" +
 			  "InputCount: " +
-			   forexNetwork.InputCount +
+			   forexFannNetwork.InputCount +
 			   "\r\n" +
 			  "InputActFunc: " +
 			   inputLayerActivationFunction +
@@ -1336,13 +1335,13 @@ namespace forexAI
 			   middleLayerActivationFunction +
 			   "\r\n" +
 			  "ConnRate: " +
-			   forexNetwork.ConnectionRate +
+			   forexFannNetwork.ConnectionRate +
 			   "\r\n" +
 			  "Connections: " +
-			   forexNetwork.TotalConnections +
+			   forexFannNetwork.TotalConnections +
 			   "\r\n" +
 			  "LayerCount: " +
-			   forexNetwork.LayerCount +
+			   forexFannNetwork.LayerCount +
 			   "\r\n" +
 			  "Train/Test MSE: " +
 			   trainMse +
@@ -1350,7 +1349,7 @@ namespace forexAI
 			   testMse +
 			   "\r\n" +
 			  "LearningRate: " +
-			   forexNetwork.LearningRate +
+			   forexFannNetwork.LearningRate +
 			   "\r\n" +
 			  "Test Hit Ratio: " +
 			   testHitRatio.ToString("0.00") +
