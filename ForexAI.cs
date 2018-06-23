@@ -303,6 +303,44 @@ namespace forexAI
 			}
 		}
 
+		public double riskyLots
+		{
+			get
+			{
+				double lots = MathMin(AccountBalance(), AccountFreeMargin()) * 0.01 / 50 / (MarketInfo(Symbol(), MODE_TICKVALUE));
+				return lots;
+			}
+		}
+
+		public double riskyLots2
+		{
+			get
+			{
+				double minlot = MarketInfo(Symbol(), MODE_MINLOT);
+				double maxlot = MarketInfo(Symbol(), MODE_MAXLOT);
+				double leverage = AccountLeverage();
+				double lotsize = MarketInfo(Symbol(), MODE_LOTSIZE);
+				double stoplevel = MarketInfo(Symbol(), MODE_STOPLEVEL);
+
+				double MinLots = 0.01;
+				double MaximalLots = 2.0;
+				double lots = Risky_Lots;
+
+				lots = NormalizeDouble(AccountFreeMargin() * Risky_Risk / 100 / 1000.0, 5);
+
+				if (lots < minlot) lots = minlot;
+
+				if (lots > MaximalLots) lots = MaximalLots;
+
+				if (AccountFreeMargin() < Ask * lots * lotsize / leverage)
+					consolelog("fail to calc lots, too les money");
+				else
+					lots = NormalizeDouble(Risky_Lots, Digits);
+
+				return lots;
+			}
+		}
+
 		double lotsOptimized
 		{
 			get
@@ -654,43 +692,12 @@ namespace forexAI
 
 				marketCollapsedBar = Bars;
 				if (collapseDirection == TrendDirection.Up)
-					SendBuy(GetRiskyLots());
+					SendBuy(riskyLots);
 				else
-					SendSell(GetRiskyLots());
+					SendSell(riskyLots);
 			}
 		}
 
-		public double GetRiskyLots()
-		{
-			double lots = MathMin(AccountBalance(), AccountFreeMargin()) * 0.01 / 50 / (MarketInfo(Symbol(), MODE_TICKVALUE));
-			return lots;
-		}
-
-		public double GetRiskyLots2()
-		{
-			double minlot = MarketInfo(Symbol(), MODE_MINLOT);
-			double maxlot = MarketInfo(Symbol(), MODE_MAXLOT);
-			double leverage = AccountLeverage();
-			double lotsize = MarketInfo(Symbol(), MODE_LOTSIZE);
-			double stoplevel = MarketInfo(Symbol(), MODE_STOPLEVEL);
-
-			double MinLots = 0.01;
-			double MaximalLots = 2.0;
-			double lots = Risky_Lots;
-
-			lots = NormalizeDouble(AccountFreeMargin() * Risky_Risk / 100 / 1000.0, 5);
-
-			if (lots < minlot) lots = minlot;
-
-			if (lots > MaximalLots) lots = MaximalLots;
-
-			if (AccountFreeMargin() < Ask * lots * lotsize / leverage)
-				consolelog("fail to calc lots, too les money");
-			else
-				lots = NormalizeDouble(Risky_Lots, Digits);
-
-			return lots;
-		}
 
 		public void SyncOrders()
 		{
@@ -757,14 +764,14 @@ namespace forexAI
 					&& orderCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
-				SendBuy(GetRiskyLots());
+				SendBuy(riskyLots);
 
 			if (sellProbability >= EnteringTradeProbability
 					&& buyProbability <= BlockingTradeProbability
 					&& orderCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
-				SendSell(GetRiskyLots());
+				SendSell(riskyLots);
 		}
 
 		public void TryEnterCounterTrade()
@@ -777,7 +784,7 @@ namespace forexAI
 				&& closestSellDistance >= minOrderDistance)
 			{
 				consolelog($"opening counter-sell [{sellCount}/{orderCount}] lastOrder@{tradeBarPeriodGone}");
-				SendSell(GetRiskyLots());
+				SendSell(riskyLots);
 			}
 
 			if (sellProfit <= MinLossForCounterTrade
@@ -788,7 +795,7 @@ namespace forexAI
 				&& closestBuyDistance >= minOrderDistance)
 			{
 				consolelog($"opening counter-buy [{buyCount}/{orderCount}] lastOrder@{tradeBarPeriodGone}");
-				SendBuy(GetRiskyLots());
+				SendBuy(riskyLots);
 			}
 		}
 
