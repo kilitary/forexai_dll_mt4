@@ -79,6 +79,9 @@ namespace forexAI
 		[ExternVariable]
 		public double maxOrderOpenHours = 8.5;
 
+		[ExternVariable]
+		public double minOrderDistane = 0.002;
+
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
 		Version version = null;
@@ -145,7 +148,7 @@ namespace forexAI
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double orderProfit => buyProfit + sellProfit;
-		TrendDirection trendDirection => Open[0] - Open[1] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
+		TrendDirection collapseDirection => Open[0] - Open[1] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
 
 		int buyCount
 		{
@@ -157,7 +160,7 @@ namespace forexAI
 					if (!(OrderSelect(currentOrder, SELECT_BY_POS, MODE_TRADES)))
 						break;
 
-					if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
+					if (OrderType() == OP_BUY)
 						count++;
 				}
 				return count;
@@ -174,7 +177,7 @@ namespace forexAI
 					if (!(OrderSelect(currentOrder, SELECT_BY_POS, MODE_TRADES)))
 						break;
 
-					if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
+					if (OrderType() == OP_SELL)
 						count++;
 				}
 				return count;
@@ -292,9 +295,9 @@ namespace forexAI
 				//---- calcuulate number of losses orders without a break
 				if (DecreaseFactor > 0)
 				{
-					for (int i = orders - 1; i >= 0; i--)
+					for (int index = orders - 1; index >= 0; index--)
 					{
-						if (!OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
+						if (!OrderSelect(index, SELECT_BY_POS, MODE_HISTORY))
 						{
 							error("Error in history!");
 							continue;
@@ -383,10 +386,53 @@ namespace forexAI
 			}
 		}
 
+		public double closestBuyDistance
+		{
+			get
+			{
+				double nearDistance = 1110.0;
+				foreach (var order in orders)
+				{
+					if (!OrderSelect(order, SELECT_BY_TICKET))
+						continue;
+
+					if (OrderType() != OP_BUY)
+						continue;
+
+					if (Math.Abs(OrderOpenPrice() - Bid) < nearDistance)
+						nearDistance = Math.Abs(OrderOpenPrice() - Bid);
+				}
+				log($"buy near {nearDistance}");
+				return nearDistance;
+			}
+		}
+
+		public double closestSellDistance
+		{
+			get
+			{
+				double nearDistance = 1110.0;
+				foreach (var order in orders)
+				{
+					if (!OrderSelect(order, SELECT_BY_TICKET))
+						continue;
+
+					if (OrderType() != OP_SELL)
+						continue;
+
+					if (Math.Abs(OrderOpenPrice() - Bid) < nearDistance)
+						nearDistance = Math.Abs(OrderOpenPrice() - Bid);
+				}
+				log($"sell near {nearDistance}");
+				return nearDistance;
+			}
+		}
+
 		public override int init()
 		{
+			startTime = GetTickCount();
 			currentDay = (int) DateTime.Now.DayOfWeek;
-			console($"--------------[ START tick={startTime = GetTickCount()} day={currentDay} ]-----------------",
+			console($"--------------[ START tick={startTime} day={currentDay} ]-----------------",
 				ConsoleColor.Black, ConsoleColor.Cyan);
 
 			neuralNetworkBootstrapped = false;
@@ -401,8 +447,6 @@ namespace forexAI
 				Configuration.useAudio = false;
 
 			ClearLogs();
-
-
 
 			log($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
 				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={EnteringTradeProbability} BlockingTradeProbability={BlockingTradeProbability}" +
@@ -567,11 +611,12 @@ namespace forexAI
 			var change = Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1]);
 			if (change >= Configuration.collapseChangePoints)
 			{
-				console($"Market collapse detected on {TimeCurrent()} change: {change.ToString("0.00000")}, going {trendDirection}",
+				console($"Market collapse detected on {TimeCurrent()} change: {change.ToString("0.00000")}, going {collapseDirection}",
 					ConsoleColor.Black, ConsoleColor.Green);
-				AddLabel($"Collapse {trendDirection}", Color.Aquamarine);
 
-				if (trendDirection == TrendDirection.Up)
+				AddVerticalLabel($"Collapse {collapseDirection}", Color.Aquamarine);
+
+				if (collapseDirection == TrendDirection.Up)
 				{
 					SendBuy(0.02);
 					//CloseSells();
@@ -625,13 +670,15 @@ namespace forexAI
 			if (buyProbability >= EnteringTradeProbability
 					&& sellProbability <= BlockingTradeProbability
 					&& orderCount < maxOrdersInParallel
-					&& tradeBarPeriodGone > minTradePeriodBars)
+					&& tradeBarPeriodGone > minTradePeriodBars
+					&& closestBuyDistance >= minOrderDistance)
 				SendBuy();
 
 			if (sellProbability >= EnteringTradeProbability
 					&& buyProbability <= BlockingTradeProbability
 					&& orderCount < maxOrdersInParallel
-					&& tradeBarPeriodGone > minTradePeriodBars)
+					&& tradeBarPeriodGone > minTradePeriodBars
+					&& closestSellDistance >= minOrderDistane)
 				SendSell();
 		}
 
@@ -748,7 +795,8 @@ namespace forexAI
 			foreach (double[] input in inputs)
 			{
 				double[] output = forexNetwork.Run(input);
-				//forexNetwork.DescaleOutput(output);
+
+				forexNetwork.DescaleOutput(output);
 
 				double output0 = 0;
 				if (output[0] > output[1])
@@ -947,10 +995,10 @@ namespace forexAI
 			pos = Open[0];
 			on = (pos.ToString());
 			ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
-			ObjectSetText(on, text, 8, "liberation mono", clr);
+			ObjectSetText(on, text, 11, "liberation mono", clr);
 		}
 
-		void AddVerticalLabel(string text)
+		void AddVerticalLabel(string text, Color clr)
 		{
 			string on;
 			double pos = Math.Max(Bid, Ask);
@@ -959,7 +1007,7 @@ namespace forexAI
 			on = (pos.ToString());
 			ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
 			ObjectSet(on, OBJPROP_ANGLE, 90.0);
-			ObjectSetText(on, text, 8, "liberation mono", Color.White);
+			ObjectSetText(on, text, 11, "liberation mono", clr);
 		}
 
 		void RenderCharizedHistory()
