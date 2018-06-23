@@ -21,10 +21,9 @@ namespace forexAI
 
 		public static void EraseLogs(params string[] fileNames)
 		{
-			Helpers.Each(fileNames, fileName => console($"erasing {fileName}"));
-
 			foreach (var fileName in fileNames)
 			{
+				console($"erasing {fileName}");
 				if (fileName != null
 					&& File.Exists(fileName)
 					&& !Helpers.IsFileBusy(fileName))

@@ -53,7 +53,7 @@ namespace forexAI
 		public double BlockingTradeProbability = -0.2;
 
 		[ExternVariable]
-		public double MinLossForCounterTrade = -2.0;
+		public double MinLossForCounterTrade = -5.0;
 
 		[ExternVariable]
 		public bool useOptimizedLots = true;
@@ -83,7 +83,7 @@ namespace forexAI
 		public double minOrderDistance = 0.003;
 
 		[ExternVariable]
-		public double orderAliveHours = 24 * 4;
+		public double orderAliveHours = 24 * 2;
 
 		[ExternVariable]
 		public double collapseEnterLots = 1.0;
@@ -124,9 +124,9 @@ namespace forexAI
 		double prevVolume;
 		double minStopLevel = 0;
 		double ordersStopPoints = 0;
-		double Risky_Risk = 2;
-		double Risky_Lots = 0.04;
-		double Risky_LotDigits = 2;
+		double Risky2_Risk = 2;
+		double Risky2_Lots = 0.04;
+		double Risky2_LotDigits = 2;
 		double[] fannNetworkOutput = null;
 		double[] prevBuyProbability;
 		double[] prevSellProbability;
@@ -169,7 +169,7 @@ namespace forexAI
 		int marketCollapsedBar;
 
 		// computed properties
-		int orderCount => sellCount + buyCount;
+		int ordersCount => sellCount + buyCount;
 		int tradeBarPeriodGone => Bars - lastTradeBar;
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
@@ -307,7 +307,9 @@ namespace forexAI
 		{
 			get
 			{
-				double lots = MathMin(AccountBalance(), AccountFreeMargin()) * 0.01 / 50 / (MarketInfo(Symbol(), MODE_TICKVALUE));
+				double lots = MathMin(AccountBalance(), AccountFreeMargin()) * 0.01 / 100 / (MarketInfo(Symbol(), MODE_TICKVALUE));
+				if (lots < 0.01)
+					lots = 0.01;
 				return lots;
 			}
 		}
@@ -324,9 +326,9 @@ namespace forexAI
 
 				double MinLots = 0.01;
 				double MaximalLots = 2.0;
-				double lots = Risky_Lots;
+				double lots = Risky2_Lots;
 
-				lots = NormalizeDouble(AccountFreeMargin() * Risky_Risk / 100 / 1000.0, 5);
+				lots = NormalizeDouble(AccountFreeMargin() * Risky2_Risk / 100 / 1000.0, 5);
 
 				if (lots < minlot) lots = minlot;
 
@@ -335,7 +337,7 @@ namespace forexAI
 				if (AccountFreeMargin() < Ask * lots * lotsize / leverage)
 					consolelog("fail to calc lots, too les money");
 				else
-					lots = NormalizeDouble(Risky_Lots, Digits);
+					lots = NormalizeDouble(Risky2_Lots, Digits);
 
 				return lots;
 			}
@@ -457,7 +459,7 @@ namespace forexAI
 				double nearDistance = 1110.0;
 				foreach (var order in orders)
 				{
-					if (!OrderSelect(order, SELECT_BY_TICKET) || OrderType() != OP_BUY)
+					if (!OrderSelect(order, SELECT_BY_TICKET) || OrderType() != OP_BUY || OrderCloseTime() != new DateTime(0))
 						continue;
 
 					if (Math.Abs(OrderOpenPrice() - Bid) < nearDistance)
@@ -474,7 +476,7 @@ namespace forexAI
 				double nearDistance = 1110.0;
 				foreach (var order in orders)
 				{
-					if (!OrderSelect(order, SELECT_BY_TICKET) || OrderType() != OP_SELL)
+					if (!OrderSelect(order, SELECT_BY_TICKET) || OrderType() != OP_SELL || OrderCloseTime() != new DateTime(0))
 						continue;
 
 					if (Math.Abs(OrderOpenPrice() - Bid) < nearDistance)
@@ -509,15 +511,15 @@ namespace forexAI
 				Configuration.useAudio = false;
 
 			ClearLogs();
-			EraseLogs(Configuration.XXrandomLogFileName, Configuration.YYYrandomLogFileName);
-
-			console($"Scanning resources ...");
+			EraseLogs(Configuration.XXRandomLogFileName, Configuration.YYYRandomLogFileName);
 
 			console($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
 				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={EnteringTradeProbability} BlockingTradeProbability={BlockingTradeProbability}" +
 				$" MinLossForCounterTrade={MinLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersInParallel}" +
 				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
 				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", ConsoleColor.Black, ConsoleColor.DarkYellow);
+
+			console($"Scanning resources ...");
 
 			cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
@@ -706,22 +708,16 @@ namespace forexAI
 			foreach (var orderTicket in orders)
 			{
 				if (OrderSelect(orderTicket, SELECT_BY_TICKET) == true
-					&& OrderCloseTime() != zeroTime && OrderProfit() > 5.0)
-				{
-					FX.BigProfit();
-					consolelog($"big profit {OrderProfit()}$ lots {OrderLots()} (total={AccountBalance()})");
-				}
-				else if (OrderSelect(orderTicket, SELECT_BY_TICKET) == true
 					&& OrderCloseTime() != zeroTime && OrderProfit() > 0.01)
 				{
 					FX.Profit();
-					consolelog($"profit {OrderProfit()}$ lots {OrderLots()} (total={AccountBalance()})");
+					consolelog($"profit {OrderProfit()}$ lots {OrderLots()} (total={AccountBalance().ToString("0.00")})");
 				}
 				else if (OrderSelect(orderTicket, SELECT_BY_TICKET) == true
 					&& OrderCloseTime() != zeroTime && OrderProfit() <= 0.0)
 				{
 					FX.TheFail();
-					consolelog($"loss {OrderProfit()}$ lots {OrderLots()} (total={AccountBalance()})");
+					consolelog($"loss {OrderProfit()}$ lots {OrderLots()} (total={AccountBalance().ToString("0.00")})");
 				}
 			}
 
@@ -761,14 +757,14 @@ namespace forexAI
 
 			if (buyProbability >= EnteringTradeProbability
 					&& sellProbability <= BlockingTradeProbability
-					&& orderCount < maxOrdersInParallel
+					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
 				SendBuy(riskyLots);
 
 			if (sellProbability >= EnteringTradeProbability
 					&& buyProbability <= BlockingTradeProbability
-					&& orderCount < maxOrdersInParallel
+					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
 				SendSell(riskyLots);
@@ -778,23 +774,23 @@ namespace forexAI
 		{
 			if (buyProfit <= MinLossForCounterTrade
 				&& sellCount < buyCount
-				&& orderCount < maxOrdersInParallel
+				&& ordersCount < maxOrdersInParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Down
 				&& closestSellDistance >= minOrderDistance)
 			{
-				consolelog($"opening counter-sell [{sellCount}/{orderCount}] lastOrder@{tradeBarPeriodGone}");
+				consolelog($"opening counter-sell [{sellCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
 				SendSell(riskyLots);
 			}
 
 			if (sellProfit <= MinLossForCounterTrade
 				&& sellCount > buyCount
-				&& orderCount < maxOrdersInParallel
+				&& ordersCount < maxOrdersInParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Up
 				&& closestBuyDistance >= minOrderDistance)
 			{
-				consolelog($"opening counter-buy [{buyCount}/{orderCount}] lastOrder@{tradeBarPeriodGone}");
+				consolelog($"opening counter-buy [{buyCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
 				SendBuy(riskyLots);
 			}
 		}
@@ -940,7 +936,7 @@ namespace forexAI
 
 					OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
 
-					log("close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" +
+					consolelog("close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" +
 						(OrderProfit() + OrderSwap() + OrderCommission()));
 
 					dayOperationsCount++;
@@ -955,7 +951,7 @@ namespace forexAI
 
 					OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
 
-					log("close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
+					consolelog("close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
 						" profit=" + (OrderProfit() + OrderSwap() + OrderCommission()));
 
 					dayOperationsCount++;

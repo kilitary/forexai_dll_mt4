@@ -13,12 +13,6 @@ namespace forexAI
 {
 	public static class FX
 	{
-		[DllImport("winmm.dll")]
-		public static extern int waveOutGetVolume(IntPtr hwo, out uint dwVolume);
-
-		[DllImport("winmm.dll")]
-		public static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
-
 		public static void Play(string audioFileName)
 		{
 			if (!Configuration.useAudio)
@@ -41,15 +35,6 @@ namespace forexAI
 
 		public static void Profit()
 		{
-			Play(Configuration.profitWAV);
-		}
-
-		public static void BigProfit()
-		{
-			Task.Factory.StartNew(() => Profit());
-			Thread.Sleep(50);
-			Task.Factory.StartNew(() => Profit());
-			Thread.Sleep(150);
 			Play(Configuration.profitWAV);
 		}
 
