@@ -38,7 +38,7 @@ namespace forexAI
 
 		// ♫ ♫ ♫ √
 		// audio/FX
-		public static string audioDirectory = $@"{rootDirectory}\Audio_FX";
+		public static string audioDirectory = $@"{rootDirectory}\AudioFX";
 		public static string newDayWAV = $@"{audioDirectory}\1023.wav";
 		public static string profitWAV = $@"{audioDirectory}\209578__zott820__cash-register-purchase.wav";
 		public static string brokenWAV = $@"{audioDirectory}\115276__xdrav__broken-bulb.wav";

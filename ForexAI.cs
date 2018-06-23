@@ -35,7 +35,7 @@ namespace forexAI
 		public double orderLots = 0.01;
 
 		[ExternVariable]
-		public double maxNegativeSpend = -10;
+		public double maxNegativeSpend = -20;
 
 		[ExternVariable]
 		public double trailingBorder = 24;
@@ -139,6 +139,7 @@ namespace forexAI
 		int networkFunctionsCount = 0;
 		int unstableTrendBar = 0;
 		int lastTradeBar = 0;
+		long lastDrawStatsTime;
 
 		int orderCount => sellCount + buyCount;
 		int tradeBarPeriodGone => Bars - lastTradeBar;
@@ -458,7 +459,12 @@ namespace forexAI
 			if (!IsOptimization())
 			{
 				PopulateOrders();
-				DrawStats();
+				if (Stopwatch.GetTimestamp() - lastDrawStatsTime >= 600000)
+				{
+					DrawStats();
+					lastDrawStatsTime = Stopwatch.GetTimestamp();
+				}
+
 			}
 
 			TrailPositions();
@@ -475,10 +481,10 @@ namespace forexAI
 					inputDimension, forexNetwork, reassembleCompletedOverride,
 					TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), mqlApi);
 
-				CheckConditionsToEnterTrade();
+				TryEnterTrade();
 
 				if (counterTrading)
-					CheckConditionsToEnterCounterTrade();
+					TryEnterCounterTrade();
 			}
 
 			if (!IsOptimization())
@@ -563,7 +569,8 @@ namespace forexAI
 			var change = Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1]);
 			if (change >= Configuration.collapseChange)
 			{
-				console("Collapse detect on " + TimeCurrent() + $" change: {change} {trendDirection}");
+				console("Collapse detect on " + TimeCurrent() + $" change: {change.ToString("0.00000")} {trendDirection}",
+					ConsoleColor.Black, ConsoleColor.Green);
 				AddLabel($"Collapse {trendDirection}", Color.YellowGreen);
 
 				if (trendDirection == TrendDirection.Up)
@@ -604,7 +611,7 @@ namespace forexAI
 			settings["random"] = random.Next(int.MaxValue);
 		}
 
-		void CheckConditionsToEnterTrade()
+		void TryEnterTrade()
 		{
 			if (!isTrendStable
 				|| stableTrendBar < minStableTrendBarForEnter
@@ -624,7 +631,7 @@ namespace forexAI
 				SendSell();
 		}
 
-		public void CheckConditionsToEnterCounterTrade()
+		public void TryEnterCounterTrade()
 		{
 			if (buyProfit <= MinLossForCounterTrade
 				&& sellCount < buyCount
@@ -772,7 +779,8 @@ namespace forexAI
 				if (OrderType() == OP_BUY)
 				{
 					if (OrderProfit() + OrderSwap() + OrderCommission()
-						<= maxNegativeSpend || currentTime.Subtract(OrderOpenTime()).TotalHours >= maxOrderOpenHours)
+						<= maxNegativeSpend
+						/* || currentTime.Subtract(OrderOpenTime()).TotalHours >= maxOrderOpenHours*/)
 					{
 						if (Configuration.tryExperimentalFeatures)
 							console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
@@ -788,7 +796,8 @@ namespace forexAI
 				if (OrderType() == OP_SELL)
 				{
 					if (OrderProfit() + OrderSwap() + OrderCommission()
-						<= maxNegativeSpend || currentTime.Subtract(OrderOpenTime()).TotalHours >= maxOrderOpenHours)
+						<= maxNegativeSpend
+						/* || currentTime.Subtract(OrderOpenTime()).TotalHours >= maxOrderOpenHours*/)
 					{
 						if (Configuration.tryExperimentalFeatures)
 							console($"с{new String('y', random.Next(1, 3))}{new String('ч', random.Next(0, 2))}к{new String('a', random.Next(1, 2))} бля проёбано {OrderProfit()}$",
