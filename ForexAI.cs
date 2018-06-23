@@ -107,7 +107,7 @@ namespace forexAI
 		double prevVolume;
 		double minStopLevel = 0;
 		double ordersStopPoints = 0;
-		double[] networkOutput = null;
+		double[] fannNetworkOutput = null;
 		double[] prevBuyProbability;
 		double[] prevSellProbability;
 		float testMse = 0.0f;
@@ -140,11 +140,10 @@ namespace forexAI
 		int unstableTrendBar = 0;
 		int lastTradeBar = 0;
 		long lastDrawStatsTimestamp;
-
 		int orderCount => sellCount + buyCount;
 		int tradeBarPeriodGone => Bars - lastTradeBar;
-		double buyProbability => networkOutput == null ? 0.0 : networkOutput[0];
-		double sellProbability => networkOutput == null ? 0.0 : networkOutput[1];
+		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
+		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double orderProfit => buyProfit + sellProfit;
 		TrendDirection trendDirection => Open[0] - Open[1] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
 
@@ -187,7 +186,7 @@ namespace forexAI
 			get
 			{
 				double total = 0.0;
-				double spends = activeSpend;
+				double spends = activeLoss;
 				double profit = activeProfit;
 
 				if (profit + spends >= 0.0)
@@ -211,8 +210,8 @@ namespace forexAI
 					if (OrderSelect(pos, SELECT_BY_POS, MODE_TRADES) == false)
 						continue;
 
-					if (OrderProfit() > 0.0)
-						total += OrderProfit();
+					if (OrderProfit() + OrderCommission() + OrderSwap() > 0.0)
+						total += OrderProfit() + OrderCommission() + OrderSwap();
 				}
 
 				return total;
@@ -230,7 +229,7 @@ namespace forexAI
 						continue;
 
 					if (OrderType() == OP_BUY && OrderSymbol() == Symbol())
-						buyIncome += OrderProfit();
+						buyIncome += OrderProfit() + OrderCommission() + OrderSwap();
 				}
 
 				return buyIncome;
@@ -248,19 +247,19 @@ namespace forexAI
 						continue;
 
 					if (OrderType() == OP_SELL && OrderSymbol() == Symbol())
-						sellIncome += OrderProfit();
+						sellIncome += OrderProfit() + OrderCommission() + OrderSwap();
 				}
 
 				return sellIncome;
 			}
 		}
 
-		double activeSpend
+		double activeLoss
 		{
 			get
 			{
 				ordersTotal = OrdersTotal();
-				double total = 0.0;
+				double loss = 0.0;
 
 				for (int i = 0; i < ordersTotal; i++)
 				{
@@ -268,10 +267,10 @@ namespace forexAI
 						continue;
 
 					if (OrderProfit() < 0.0)
-						total += OrderProfit();
+						loss += OrderProfit() + OrderCommission() + OrderSwap();
 				}
 
-				return total;
+				return loss;
 			}
 		}
 
@@ -468,7 +467,7 @@ namespace forexAI
 
 			TrailPositions();
 			CloseNegativeOrders();
-			PopulateOrders();
+			SyncOrders();
 
 			if (Bars == previousBars)
 				return 0;
@@ -477,7 +476,7 @@ namespace forexAI
 
 			if (forexNetwork != null && neuralNetworkBootstrapped)
 			{
-				(networkFunctionsCount, networkOutput) = Reassembler.Execute(functionsTextContent,
+				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent,
 					inputDimension, forexNetwork, reassembleCompletedOverride,
 					TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), mqlApi);
 
@@ -569,24 +568,24 @@ namespace forexAI
 			var change = Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1]);
 			if (change >= Configuration.collapseChangePoints)
 			{
-				console("Collapse detect on " + TimeCurrent() + $" change: {change.ToString("0.00000")} {trendDirection}",
+				console($"Market collapse detected on {TimeCurrent()} change: {change.ToString("0.00000")}, going {trendDirection}",
 					ConsoleColor.Black, ConsoleColor.Green);
-				AddLabel($"Collapse {trendDirection}", Color.YellowGreen);
+				AddLabel($"Collapse {trendDirection}", Color.Aquamarine);
 
 				if (trendDirection == TrendDirection.Up)
 				{
 					SendBuy(0.02);
-					CloseSells();
+					//CloseSells();
 				}
 				else
 				{
 					SendSell(0.02);
-					CloseBuys();
+					//CloseBuys();
 				}
 			}
 		}
 
-		public void PopulateOrders()
+		public void SyncOrders()
 		{
 			var zeroTime = new DateTime(0);
 
@@ -701,7 +700,7 @@ namespace forexAI
 
 			functionsTextContent = File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json");
 
-			(networkFunctionsCount, networkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexNetwork, false,
+			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexNetwork, false,
 				TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), mqlApi);
 		}
 
@@ -1122,7 +1121,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 608);
 			}
 
-			ObjectSetText(labelID, "ActiveSpend: " + DoubleToStr(activeSpend, 2), 8, "liberation mono", Color.Red);
+			ObjectSetText(labelID, "ActiveSpend: " + DoubleToStr(activeLoss, 2), 8, "liberation mono", Color.Red);
 
 			labelID = gs_80 + "7";
 			if (ObjectFind(labelID) == -1)
@@ -1138,7 +1137,7 @@ namespace forexAI
 						  "liberation mono",
 						  Color.LightGreen);
 
-			spends = activeSpend;
+			spends = activeLoss;
 			profit = activeProfit;
 			spends = (0 - (spends));
 			// Print("profit:",profit," spends:", spends);
@@ -1320,8 +1319,8 @@ namespace forexAI
 			   trainHitRatio.ToString("0.00") +
 			   "%\r\n" +
 			   "Network Output: " +
-			   ((networkOutput != null && networkOutput[0] != 0.0 && networkOutput[1] != 0.0) ?
-			   ($"{ networkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ networkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : "") +
+			   ((fannNetworkOutput != null && fannNetworkOutput[0] != 0.0 && fannNetworkOutput[1] != 0.0) ?
+			   ($"{ fannNetworkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ fannNetworkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : "") +
 			   $"\r\nBuyProb: [{buyProb}]" +
 			   $"\r\nSellProb: [{sellProb}]" +
 			   $"\r\n\r\nMemory: {memoryUsage} MB" +
