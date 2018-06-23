@@ -662,9 +662,7 @@ namespace forexAI
 
 		public double GetRiskyLots()
 		{
-			double lots = MathMin(AccountBalance(), AccountFreeMargin()) * 0.01 / 11 / (MarketInfo(Symbol(), MODE_TICKVALUE));
-			//lots = lots ;
-			//log($"GetRiskyLots => {lots} lots", "dev");
+			double lots = MathMin(AccountBalance(), AccountFreeMargin()) * 0.01 / 50 / (MarketInfo(Symbol(), MODE_TICKVALUE));
 			return lots;
 		}
 
@@ -691,8 +689,7 @@ namespace forexAI
 			else
 				lots = NormalizeDouble(Risky_Lots, Digits);
 
-			log($"GetRiskyLots => {lots} lots", "dev");
-			return (lots);
+			return lots;
 		}
 
 		public void SyncOrders()
@@ -776,7 +773,8 @@ namespace forexAI
 				&& sellCount < buyCount
 				&& orderCount < maxOrdersInParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
-				&& collapseDirection == TrendDirection.Down)
+				&& collapseDirection == TrendDirection.Down
+				&& closestSellDistance >= minOrderDistance)
 			{
 				consolelog($"opening counter-sell [{sellCount}/{orderCount}] lastOrder@{tradeBarPeriodGone}");
 				SendSell(GetRiskyLots());
@@ -786,7 +784,8 @@ namespace forexAI
 				&& sellCount > buyCount
 				&& orderCount < maxOrdersInParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
-				&& collapseDirection == TrendDirection.Up)
+				&& collapseDirection == TrendDirection.Up
+				&& closestBuyDistance >= minOrderDistance)
 			{
 				consolelog($"opening counter-buy [{buyCount}/{orderCount}] lastOrder@{tradeBarPeriodGone}");
 				SendBuy(GetRiskyLots());
