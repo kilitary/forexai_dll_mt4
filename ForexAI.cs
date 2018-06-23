@@ -53,7 +53,7 @@ namespace forexAI
 		public double BlockingTradeProbability = -0.2;
 
 		[ExternVariable]
-		public double MinLossForCounterTrade = -4.0;
+		public double MinLossForCounterTrade = -2.0;
 
 		[ExternVariable]
 		public bool useOptimizedLots = true;
@@ -87,6 +87,9 @@ namespace forexAI
 
 		[ExternVariable]
 		public double collapseEnterLots = 1.0;
+
+		[ExternVariable]
+		public double counterTradeLots = 0.01;
 
 		// computed props
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 314);
@@ -467,11 +470,13 @@ namespace forexAI
 			ClearLogs();
 			EraseLogs(Configuration.XXrandomLogFileName, Configuration.YYYrandomLogFileName);
 
+			console($"Scanning resources ...");
+
 			console($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
 				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={EnteringTradeProbability} BlockingTradeProbability={BlockingTradeProbability}" +
 				$" MinLossForCounterTrade={MinLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersInParallel}" +
 				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
-				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", ConsoleColor.Black, ConsoleColor.Gray);
+				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", ConsoleColor.Black, ConsoleColor.DarkYellow);
 
 			cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
@@ -484,6 +489,7 @@ namespace forexAI
 				Configuration.tryExperimentalFeatures = true;
 			#endregion
 
+			
 			InitVariables();
 			ShowBanner();
 			ListGlobalVariables();
@@ -499,11 +505,11 @@ namespace forexAI
 				}
 			}
 
+			DumpInfo();
+
 			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) (v{version})";
 			log(initStr);
 			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
-
-			DumpInfo();
 
 			reassembleCompletedOverride = true;
 			neuralNetworkBootstrapped = true;
@@ -708,18 +714,22 @@ namespace forexAI
 		{
 			if (buyProfit <= MinLossForCounterTrade
 				&& sellCount < buyCount
-				&& orderCount < maxOrdersInParallel)
+				&& orderCount < maxOrdersInParallel
+				&& tradeBarPeriodGone > minTradePeriodBars
+				&& collapseDirection == TrendDirection.Down)
 			{
-				log($"opening counter-buy [{orderCount}]");
-				SendSell();
+				consolelog($"opening counter-buy [{sellCount}/{orderCount}] lastOrder@{tradeBarPeriodGone}");
+				SendSell(counterTradeLots);
 			}
 
 			if (sellProfit <= MinLossForCounterTrade
 				&& sellCount > buyCount
-				&& orderCount < maxOrdersInParallel)
+				&& orderCount < maxOrdersInParallel
+				&& tradeBarPeriodGone > minTradePeriodBars
+				&& collapseDirection == TrendDirection.Up)
 			{
-				log($"opening counter-sell [{orderCount}]");
-				SendBuy();
+				consolelog($"opening counter-sell [{buyCount}/{orderCount}] lastOrder@{tradeBarPeriodGone}");
+				SendBuy(counterTradeLots);
 			}
 		}
 
@@ -852,6 +862,8 @@ namespace forexAI
 						&& (currentTime.Subtract(OrderOpenTime())).TotalHours <= orderAliveHours)
 					continue;
 
+				FX.TheFail();
+
 				if (OrderType() == OP_BUY)
 				{
 					if (Configuration.tryExperimentalFeatures)
@@ -939,7 +951,6 @@ namespace forexAI
 
 		void SendSell(double exactLots = 0.0)
 		{
-			RefreshRates();
 			double stopLoss = 0;// Ask - ordersStopPoints * Point;
 			DateTime expirationTime = TimeCurrent();
 			expirationTime = expirationTime.AddHours(3);
@@ -958,7 +969,6 @@ namespace forexAI
 
 		void SendBuy(double exactLots = 0.0)
 		{
-			RefreshRates();
 			double stopLoss = 0;//Bid - ordersStopPoints * Point;
 			DateTime expirationTime = TimeCurrent();
 			expirationTime = expirationTime.AddHours(3);

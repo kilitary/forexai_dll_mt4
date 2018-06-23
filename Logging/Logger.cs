@@ -154,6 +154,25 @@ namespace forexAI
 			}
 		}
 
+		public static void consolelog(string lines, string fileName = null)
+		{
+			if (fileName == null)
+				fileName = Configuration.logFileName;
+			try
+			{
+				StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
+				file.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " <" +
+					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + "> " + lines);
+				file.Close();
+
+				console(lines);
+			}
+			catch (Exception e)
+			{
+				console($"exception: {e.Message}");
+			}
+		}
+
 		public static void warning(string lines, string fileName = null)
 		{
 			if (fileName == null)
