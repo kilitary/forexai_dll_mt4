@@ -34,6 +34,7 @@ namespace forexAI
 		public static bool useAudio = true;
 		public static int memcachedPort = 11211;
 		public static int magickNumber = 0xC34;
+		public static double collapseChange = 0.002;
 
 		// ♫ ♫ ♫ √
 		// audio/FX

@@ -25,6 +25,7 @@ using static System.ConsoleColor;
 using static forexAI.Experimental;
 using static forexAI.Logger;
 using Color = System.Drawing.Color;
+using static forexAI.Constants;
 
 namespace forexAI
 {
@@ -76,7 +77,7 @@ namespace forexAI
 		public int countedMeasuredProbabilityBars = 2;
 
 		[ExternVariable]
-		public double maxOrderOpenHours = 5.5;
+		public double maxOrderOpenHours = 8.5;
 
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
@@ -144,6 +145,7 @@ namespace forexAI
 		double buyProbability => networkOutput == null ? 0.0 : networkOutput[0];
 		double sellProbability => networkOutput == null ? 0.0 : networkOutput[1];
 		double orderProfit => buyProfit + sellProfit;
+		CollapseTrend collapseTrend => Open[0] - Open[1] > 0.0 ? CollapseTrend.Up : CollapseTrend.Down;
 
 		int buyCount
 		{
@@ -538,19 +540,6 @@ namespace forexAI
 
 			return 0;
 		}
-		
-		private void CheckForCollapse()
-		{
-			if (Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1]) >= 0.005)
-			{
-				console("waterfall detect on " + TimeCurrent());
-				AddLabel("waterfall", Color.Red);
-			}
-			else
-			{
-				console($"change: {(Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1])).ToString("0.00000")}");
-			}
-		}
 
 		public override int deinit()
 		{
@@ -567,6 +556,21 @@ namespace forexAI
 			console("... shutted down.", ConsoleColor.Black, ConsoleColor.Red);
 
 			return 0;
+		}
+
+		private void CheckForCollapse()
+		{
+			var change = Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1]);
+			if (change >= Configuration.collapseChange)
+			{
+				console("Collapse detect on " + TimeCurrent() + $" change: {change} {collapseTrend}");
+				AddLabel($"Collapse {collapseTrend}", Color.YellowGreen);
+
+				if (collapseTrend == CollapseTrend.Up)
+					SendBuy(0.05);
+				else
+					SendSell(0.05);
+			}
 		}
 
 		public void PopulateOrders()
@@ -838,14 +842,14 @@ namespace forexAI
 			return (0);
 		}
 
-		void SendSell(string comment = null)
+		void SendSell(double exactLots = 0.0)
 		{
 			RefreshRates();
 			double stopLoss = 0;// Ask - ordersStopPoints * Point;
 			DateTime expirationTime = TimeCurrent();
 			expirationTime = expirationTime.AddHours(3);
 
-			if (OrderSend(symbol, OP_SELL, lotsOptimized, Bid, 50, stopLoss, 0, $"Probability: {comment}",
+			if (OrderSend(symbol, OP_SELL, exactLots > 0.0 ? exactLots : lotsOptimized, Bid, 50, stopLoss, 0, $"Probability:",
 				Configuration.magickNumber, expirationTime, Color.Red) <= 0)
 				log($"error sending sell: {GetLastError()} balance={AccountBalance()} lots={lotsOptimized}");
 			else
@@ -856,14 +860,14 @@ namespace forexAI
 			lastTradeBar = Bars;
 		}
 
-		void SendBuy(string comment = null)
+		void SendBuy(double exactLots = 0.0)
 		{
 			RefreshRates();
 			double stopLoss = 0;//Bid - ordersStopPoints * Point;
 			DateTime expirationTime = TimeCurrent();
 			expirationTime = expirationTime.AddHours(3);
 
-			if (OrderSend(symbol, OP_BUY, lotsOptimized, Ask, 50, stopLoss, 0, $"Probability: {comment}",
+			if (OrderSend(symbol, OP_BUY, exactLots > 0.0 ? exactLots : lotsOptimized, Ask, 50, stopLoss, 0, $"Probability:",
 				Configuration.magickNumber, expirationTime, Color.Blue) <= 0)
 				log($"error sending buy: {GetLastError()} balance={AccountBalance()} lots={lotsOptimized}");
 			else
