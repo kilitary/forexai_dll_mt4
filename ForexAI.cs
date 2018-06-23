@@ -35,7 +35,7 @@ namespace forexAI
 		public double orderLots = 0.01;
 
 		[ExternVariable]
-		public double maxNegativeSpend = -5;
+		public double maxNegativeSpend = -8;
 
 		[ExternVariable]
 		public double trailingBorder = 24;
@@ -56,7 +56,7 @@ namespace forexAI
 		public double MinLossForCounterTrade = -4.0;
 
 		[ExternVariable]
-		public bool useOptimizedLots = false;
+		public bool useOptimizedLots = true;
 
 		[ExternVariable]
 		public int maxOrdersInParallel = 10;
@@ -71,7 +71,7 @@ namespace forexAI
 		public int minTradePeriodBars = 6;
 
 		[ExternVariable]
-		public bool counterTrading = false;
+		public bool counterTrading = true;
 
 		[ExternVariable]
 		public int countedMeasuredProbabilityBars = 2;
@@ -83,24 +83,28 @@ namespace forexAI
 		public double minOrderDistance = 0.003;
 
 		[ExternVariable]
-		public double orderAliveHours = 24 * 7;
+		public double orderAliveHours = 24 * 4;
 
 		[ExternVariable]
-		public double collapseEnterLots = 0.5;
+		public double collapseEnterLots = 1.0;
 
-		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
-		Process currentProcess = null;
-		Version version = null;
+		// computed props
+		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 314);
+		Settings settings = new Settings();
+		List<int> orders = new List<int>();
 		NeuralNet forexFannNetwork = null;
+		DirectoryInfo[] networkDirs = null;
+		Storage storage = new Storage();
+		PerformanceCounter cpuCounter;
+		Process currentProcess = null;
 		TrainingData trainData = null;
 		TrainingData testData = null;
-		Storage storage = new Storage();
-		Settings settings = new Settings();
-		PerformanceCounter cpuCounter;
-		DirectoryInfo[] networkDirs = null;
-		List<int> orders = new List<int>();
 		Stopwatch runTimer = null;
+		Version version = null;
+
+		// MqlApi object (this)
 		MqlApi mqlApi;
+
 		string networkName = string.Empty;
 		string fannNetworkDirName = string.Empty;
 		string inputLayerActivationFunction = string.Empty;
@@ -122,17 +126,24 @@ namespace forexAI
 		double[] prevSellProbability;
 		float testMse = 0.0f;
 		float trainMse = 0.0f;
+		long lastDrawStatsTimestamp = 0;
+		long lastMemoryStatsDump = 0;
 		bool reassembleCompletedOverride = false;
 		bool hasNoticedLowBalance = false;
 		bool ProfitTrailing = true;
 		bool hasNightReported = false;
 		bool hasMorningReported = false;
 		bool neuralNetworkBootstrapped = false;
-		bool notTrading = false;
 		bool hasIncreasedUnstableTrendBar = false;
 		int stableTrendCurrentBar = 0;
-		int spendSells = 0, spendBuys = 0, profitSells = 0, profitBuys = 0, totalSpends = 0, totalProfits = 0;
-		int openedBuys = 0, openedSells = 0;
+		int spendSells = 0;
+		int spendBuys = 0;
+		int profitSells = 0;
+		int profitBuys = 0;
+		int totalSpends = 0;
+		int totalProfits = 0;
+		int openedBuys = 0;
+		int openedSells = 0;
 		int inputDimension = 0;
 		int currentTicket = 0;
 		int dayOperationsCount = 0;
@@ -150,9 +161,8 @@ namespace forexAI
 		int unstableTrendBar = 0;
 		int lastTradeBar = 0;
 		int marketCollapsedBar;
-		long lastDrawStatsTimestamp;
-		long lastMemoryStatsDump;
 
+		// computed properties
 		int orderCount => sellCount + buyCount;
 		int tradeBarPeriodGone => Bars - lastTradeBar;
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
@@ -520,7 +530,7 @@ namespace forexAI
 					lastDrawStatsTimestamp = runTimer.ElapsedMilliseconds;
 				}
 
-				if(runTimer.ElapsedMilliseconds - lastMemoryStatsDump >= 380000)
+				if (runTimer.ElapsedMilliseconds - lastMemoryStatsDump >= 380000)
 				{
 					lastMemoryStatsDump = runTimer.ElapsedMilliseconds;
 					Helpers.ShowMemoryUsage();
@@ -672,7 +682,7 @@ namespace forexAI
 			settings["random"] = random.Next(int.MaxValue);
 		}
 
-		void TryEnterTrade()
+		public void TryEnterTrade()
 		{
 			if (!isTrendStable
 				|| stableTrendBar < minStableTrendBarForEnter
@@ -713,7 +723,7 @@ namespace forexAI
 			}
 		}
 
-		void ListGlobalVariables()
+		public void ListGlobalVariables()
 		{
 			int var_total = GlobalVariablesTotal();
 			string name;
@@ -851,8 +861,10 @@ namespace forexAI
 					spendBuys++;
 
 					OrderClose(OrderTicket(), OrderLots(), Bid, 3, Color.White);
+
 					log("close buy " + OrderTicket() + " bar " + Bars + " on " + symbol + " balance:" + AccountBalance() + " profit=" +
 						(OrderProfit() + OrderSwap() + OrderCommission()));
+
 					dayOperationsCount++;
 				}
 				if (OrderType() == OP_SELL)
@@ -864,8 +876,10 @@ namespace forexAI
 					spendSells++;
 
 					OrderClose(OrderTicket(), OrderLots(), Ask, 3, Color.White);
+
 					log("close sell " + OrderTicket() + "  bar " + Bars + " on " + symbol + " balance:" + AccountBalance() +
 						" profit=" + (OrderProfit() + OrderSwap() + OrderCommission()));
+
 					dayOperationsCount++;
 				}
 			}
@@ -937,6 +951,7 @@ namespace forexAI
 				log($"open sell  prob:{sellProbability} @" + Bid);
 
 			AddLabel($"SP {sellProbability.ToString("0.0")} BP {buyProbability.ToString("0.0")}", Color.Red);
+
 			dayOperationsCount++;
 			lastTradeBar = Bars;
 		}
@@ -955,6 +970,7 @@ namespace forexAI
 				log($"open buy  prob:{buyProbability} @" + Ask);
 
 			AddLabel($"BP {buyProbability.ToString("0.0")} SP {sellProbability.ToString("0.0")}", Color.Blue);
+
 			dayOperationsCount++;
 			lastTradeBar = Bars;
 		}
@@ -1026,7 +1042,7 @@ namespace forexAI
 			profitBuys = profitSells = spendSells = spendBuys = 0;
 			charizedOrdersHistory = string.Empty;
 
-			for (int index = OrdersHistoryTotal() - 10; index < OrdersHistoryTotal(); index++)
+			for (int index = OrdersHistoryTotal() - 3; index < OrdersHistoryTotal(); index++)
 			{
 				if (OrderSelect(index, SELECT_BY_POS, MODE_HISTORY))
 				{
@@ -1035,19 +1051,21 @@ namespace forexAI
 						if (OrderType() == OP_BUY)
 						{
 							profitBuys++;
-							charizedOrdersHistory += $"B({OrderProfit()}:{(OrderCloseTime() - OrderOpenTime()).TotalHours.ToString("0.00")}; {OrderLots()}l) ";
+							charizedOrdersHistory += $"[B={OrderProfit()}|{(OrderCloseTime() - OrderOpenTime()).TotalHours.ToString("0.00")}|{OrderLots()}] ";
 						}
 						if (OrderType() == OP_SELL)
 						{
 							profitSells++;
-							charizedOrdersHistory += $"S({OrderProfit()}:{(OrderCloseTime() - OrderOpenTime()).TotalHours.ToString("0.00")}; {OrderLots()}l) ";
+							charizedOrdersHistory += $"[S={OrderProfit()}|{(OrderCloseTime() - OrderOpenTime()).TotalHours.ToString("0.00")}|{OrderLots()}] ";
 						}
 					}
 					else
 					{
-						charizedOrdersHistory += OrderType() == OP_BUY ? "b" : "s";
+						charizedOrdersHistory += OrderType() == OP_BUY ? "-" : "-";
+
 						if (OrderType() == OP_BUY)
 							spendBuys++;
+
 						if (OrderType() == OP_SELL)
 							spendSells++;
 					}
@@ -1209,13 +1227,13 @@ namespace forexAI
 			{
 				ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
 				ObjectSet(labelID, OBJPROP_CORNER, 1);
-				ObjectSet(labelID, OBJPROP_XDISTANCE, 1485);
+				ObjectSet(labelID, OBJPROP_XDISTANCE, 1288);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 674);
 			}
 
 			ObjectSetText(labelID,
 						  $"{charizedOrdersHistory}",
-						  8,
+						  12,
 						  "consolas",
 						  Color.LimeGreen);
 
@@ -1275,7 +1293,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 318);
 			}
-			ObjectSetText(labelID, "[" + ((stableTrendBar > 10 || unstableTrendBar  > 10) ? "UNKNOWN " : "") + (isTrendStable ? "STABLE" : "UNSTABLE") +
+			ObjectSetText(labelID, "[" + ((stableTrendBar > 10 || unstableTrendBar > 10) ? "UNKNOWN " : "") + (isTrendStable ? "STABLE" : "UNSTABLE") +
 				$" {(isTrendStable ? stableTrendBar : unstableTrendBar)}" + "]", 16, "consolas",
 				isTrendStable ? Color.LightGreen : Color.Red);
 
