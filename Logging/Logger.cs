@@ -21,6 +21,8 @@ namespace forexAI
 
 		public static void EraseLogs(params string[] fileNames)
 		{
+			Helpers.Each(fileNames, fileName => console($"erasing {fileName}"));
+
 			foreach (var fileName in fileNames)
 			{
 				if (fileName != null
@@ -36,6 +38,7 @@ namespace forexAI
 
 			logFiles.ForEach(delegate (FileInfo logFile)
 			{
+				console($"clearing {logFile.FullName}");
 				if (!Helpers.IsFileBusy(logFile.FullName))
 					File.WriteAllText($@"{logFile.FullName}", "***\r\n");
 			});

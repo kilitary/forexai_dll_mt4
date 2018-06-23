@@ -38,6 +38,12 @@ namespace forexAI
 			return false;
 		}
 
+		public static void Each<T>(IEnumerable<T> items, Action<T> action)
+		{
+			foreach (var item in items)
+				action(item);
+		}
+
 		public static void ShowMemoryUsage()
 		{
 			log($"WorkingSet={(Process.GetCurrentProcess().WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}mb " +

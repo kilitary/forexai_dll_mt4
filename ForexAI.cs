@@ -82,6 +82,9 @@ namespace forexAI
 		[ExternVariable]
 		public double minOrderDistance = 0.003;
 
+		[ExternVariable]
+		public double orderAliveHours = 24 * 7;
+
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
 		Version version = null;
@@ -93,6 +96,7 @@ namespace forexAI
 		PerformanceCounter cpuCounter;
 		DirectoryInfo[] networkDirs = null;
 		List<int> orders = new List<int>();
+		Stopwatch runtimeClock = null;
 		MqlApi mqlApi;
 		string networkName = string.Empty;
 		string fannNetworkDirName = string.Empty;
@@ -142,7 +146,9 @@ namespace forexAI
 		int networkFunctionsCount = 0;
 		int unstableTrendBar = 0;
 		int lastTradeBar = 0;
+		int marketCollapsedBar;
 		long lastDrawStatsTimestamp;
+
 		int orderCount => sellCount + buyCount;
 		int tradeBarPeriodGone => Bars - lastTradeBar;
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
@@ -494,12 +500,18 @@ namespace forexAI
 		//+------------------------------------------------------------------+
 		public override int start()
 		{
+			if (runtimeClock == null)
+			{
+				runtimeClock = new Stopwatch();
+				runtimeClock.Start();
+			}
+
 			if (!IsOptimization())
 			{
-				if (Stopwatch.GetTimestamp() - lastDrawStatsTimestamp >= 900000)
+				if (runtimeClock.ElapsedMilliseconds - lastDrawStatsTimestamp >= 500)
 				{
 					DrawStats();
-					lastDrawStatsTimestamp = Stopwatch.GetTimestamp();
+					lastDrawStatsTimestamp = runtimeClock.ElapsedMilliseconds;
 				}
 			}
 
@@ -566,8 +578,8 @@ namespace forexAI
 			else if (hasNoticedLowBalance && YRandom.Next(6) == 3)
 				FX.GoodWork();
 
-			File.AppendAllText(Configuration.XXrandomLogFileName, random.Next(99).ToString("00") + " ");
-			File.AppendAllText(Configuration.YYYrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");
+			/*File.AppendAllText(Configuration.XXrandomLogFileName, random.Next(99).ToString("00") + " ");
+			File.AppendAllText(Configuration.YYYrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");*/
 
 			log($"=> Probability: Buy={buyProbability.ToString("0.0000")} Sell={sellProbability.ToString("0.0000")}", "debug");
 
@@ -602,13 +614,14 @@ namespace forexAI
 		private void CheckForMarketCollapse()
 		{
 			var change = Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1]);
-			if (change >= Configuration.collapseChangePoints)
+			if (change >= Configuration.collapseChangePoints && Bars - marketCollapsedBar >= 3)
 			{
 				console($"Market collapse detected on {TimeCurrent()} change: {change.ToString("0.00000")}, going {collapseDirection}",
 					ConsoleColor.Black, ConsoleColor.Green);
 
 				AddVerticalLabel($"Collapse {collapseDirection}", Color.Aquamarine);
 
+				marketCollapsedBar = Bars;
 				if (collapseDirection == TrendDirection.Up)
 				{
 					SendBuy(0.04);
@@ -820,7 +833,7 @@ namespace forexAI
 					break;
 
 				if (OrderProfit() + OrderSwap() + OrderCommission() >= maxNegativeSpend
-						&& (currentTime.Subtract(OrderOpenTime())).TotalHours <= 48)
+						&& (currentTime.Subtract(OrderOpenTime())).TotalHours <= orderAliveHours)
 					continue;
 
 				if (OrderType() == OP_BUY)
@@ -1007,21 +1020,21 @@ namespace forexAI
 			profitBuys = profitSells = spendSells = spendBuys = 0;
 			charizedOrdersHistory = string.Empty;
 
-			for (int i = 0; i < OrdersHistoryTotal(); i++)
+			for (int index = OrdersHistoryTotal() - 10; index < OrdersHistoryTotal(); index++)
 			{
-				if (OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
+				if (OrderSelect(index, SELECT_BY_POS, MODE_HISTORY))
 				{
 					if (OrderProfit() > 0.0)
 					{
 						if (OrderType() == OP_BUY)
 						{
 							profitBuys++;
-							charizedOrdersHistory += "B";
+							charizedOrdersHistory += $"B({OrderProfit()}:{(OrderCloseTime() - OrderOpenTime()).TotalHours.ToString("0.00")}) ";
 						}
 						if (OrderType() == OP_SELL)
 						{
 							profitSells++;
-							charizedOrdersHistory += "S";
+							charizedOrdersHistory += $"S({OrderProfit()}:{(OrderCloseTime() - OrderOpenTime()).TotalHours.ToString("0.00")}) ";
 						}
 					}
 					else
@@ -1193,11 +1206,12 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 7);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 669);
 			}
+
 			ObjectSetText(labelID,
 						  $"{charizedOrdersHistory}",
-						  15,
+						  8,
 						  "consolas",
-						  Color.OrangeRed);
+						  Color.DodgerBlue);
 
 			labelID = gs_80 + "9";
 			if (ObjectFind(labelID) == -1)
