@@ -472,13 +472,12 @@ namespace forexAI
 			if (Bars == previousBars)
 				return 0;
 
-			CheckForCollapse();
+			CheckForMarketCollapse();
 
 			if (forexNetwork != null && neuralNetworkBootstrapped)
 			{
 				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent,
-					inputDimension, forexNetwork, reassembleCompletedOverride,
-					TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), mqlApi);
+					inputDimension, forexNetwork, reassembleCompletedOverride, mqlApi);
 
 				TryEnterTrade();
 
@@ -563,7 +562,7 @@ namespace forexAI
 			return 0;
 		}
 
-		private void CheckForCollapse()
+		private void CheckForMarketCollapse()
 		{
 			var change = Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1]);
 			if (change >= Configuration.collapseChangePoints)
@@ -700,23 +699,21 @@ namespace forexAI
 
 			functionsTextContent = File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json");
 
-			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexNetwork, false,
-				TimeCurrent().ToLongDateString() + TimeCurrent().ToLongTimeString(), mqlApi);
+			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexNetwork, false, mqlApi);
 		}
 
 		void ScanNetworks()
 		{
-			DirectoryInfo d = new DirectoryInfo(Configuration.rootDirectory);
-			networkDirs = d.GetDirectories("NET_*");
+			networkDirs = new DirectoryInfo(Configuration.rootDirectory).GetDirectories("NET_*");
 
 			log($"Looking for networks in {Configuration.rootDirectory}: found {networkDirs.Length} networks.");
-
-			settings["networks"] = JsonConvert.SerializeObject(networkDirs);
 			if (networkDirs.Length == 0)
 			{
 				error("WHAT I SHOULD DO?? DO U KNOW????");
 				return;
 			}
+
+			settings["networks"] = JsonConvert.SerializeObject(networkDirs);
 		}
 
 		void TestNetworkMSE()
@@ -725,6 +722,7 @@ namespace forexAI
 			FileInfo fi2 = new FileInfo(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
 
 			log($" * loading {(((double) fi1.Length + fi2.Length) / 1024.0 / 1024.0).ToString("0.00")}mb of {fannNetworkDirName} data...");
+
 			trainData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
 			testData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
 
@@ -1041,7 +1039,7 @@ namespace forexAI
 				{
 					ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
 					ObjectSet(labelID, OBJPROP_CORNER, 1);
-					ObjectSet(labelID, OBJPROP_XDISTANCE, 1000);
+					ObjectSet(labelID, OBJPROP_XDISTANCE, 1344);
 					ObjectSet(labelID, OBJPROP_YDISTANCE, i * 18);
 				}
 
@@ -1073,10 +1071,12 @@ namespace forexAI
 
 					var now = TimeCurrent();
 					var elapsed = now.Subtract(OrderOpenTime());
+					var profit = OrderProfit() + OrderCommission() + OrderSwap();
 
 					ObjectSetText(labelID, type + " " +
-						OrderProfit().ToString() + $" ({elapsed.TotalHours.ToString("0.0")} hours)", 8, "liberation mono",
-						OrderProfit() > 0.0 ? Color.LightGreen : Color.Red);
+						profit.ToString("0.00") + $" ({OrderLots().ToString("0.00")} lots, " +
+						$" age {elapsed.TotalHours.ToString("0.0")} hours)", 8, "liberation mono",
+						profit > 0.0 ? Color.LightGreen : Color.Red);
 				}
 			}
 

@@ -62,7 +62,7 @@ namespace forexAI
 		static bool reassemblyCompleteLogged = false;
 
 		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork,
-			bool reassemblingCompletedOverride, string timeCurrent,  MqlApi mqlApi)
+			bool reassemblingCompletedOverride, MqlApi mqlApi)
 		{
 			reassemblyCompleteLogged = reassemblingCompletedOverride;
 
