@@ -8,7 +8,7 @@ namespace forexAI
 {
 	public static class Constants
 	{
-		public enum CollapseTrend
+		public enum TrendDirection
 		{
 			Up,
 			Down

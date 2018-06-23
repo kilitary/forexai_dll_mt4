@@ -145,7 +145,7 @@ namespace forexAI
 		double buyProbability => networkOutput == null ? 0.0 : networkOutput[0];
 		double sellProbability => networkOutput == null ? 0.0 : networkOutput[1];
 		double orderProfit => buyProfit + sellProfit;
-		CollapseTrend collapseTrend => Open[0] - Open[1] > 0.0 ? CollapseTrend.Up : CollapseTrend.Down;
+		TrendDirection trendDirection => Open[0] - Open[1] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
 
 		int buyCount
 		{
@@ -563,10 +563,10 @@ namespace forexAI
 			var change = Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1]);
 			if (change >= Configuration.collapseChange)
 			{
-				console("Collapse detect on " + TimeCurrent() + $" change: {change} {collapseTrend}");
-				AddLabel($"Collapse {collapseTrend}", Color.YellowGreen);
+				console("Collapse detect on " + TimeCurrent() + $" change: {change} {trendDirection}");
+				AddLabel($"Collapse {trendDirection}", Color.YellowGreen);
 
-				if (collapseTrend == CollapseTrend.Up)
+				if (trendDirection == TrendDirection.Up)
 					SendBuy(0.05);
 				else
 					SendSell(0.05);
