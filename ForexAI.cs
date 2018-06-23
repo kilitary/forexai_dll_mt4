@@ -80,7 +80,7 @@ namespace forexAI
 		public double maxOrderOpenHours = 8.5;
 
 		[ExternVariable]
-		public double minOrderDistance = 0.002;
+		public double minOrderDistance = 0.003;
 
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
@@ -393,16 +393,12 @@ namespace forexAI
 				double nearDistance = 1110.0;
 				foreach (var order in orders)
 				{
-					if (!OrderSelect(order, SELECT_BY_TICKET))
-						continue;
-
-					if (OrderType() != OP_BUY)
+					if (!OrderSelect(order, SELECT_BY_TICKET) || OrderType() != OP_BUY)
 						continue;
 
 					if (Math.Abs(OrderOpenPrice() - Bid) < nearDistance)
 						nearDistance = Math.Abs(OrderOpenPrice() - Bid);
 				}
-				log($"buy near {nearDistance}");
 				return nearDistance;
 			}
 		}
@@ -414,16 +410,13 @@ namespace forexAI
 				double nearDistance = 1110.0;
 				foreach (var order in orders)
 				{
-					if (!OrderSelect(order, SELECT_BY_TICKET))
-						continue;
-
-					if (OrderType() != OP_SELL)
+					if (!OrderSelect(order, SELECT_BY_TICKET) || OrderType() != OP_SELL)
 						continue;
 
 					if (Math.Abs(OrderOpenPrice() - Bid) < nearDistance)
 						nearDistance = Math.Abs(OrderOpenPrice() - Bid);
 				}
-				log($"sell near {nearDistance}");
+
 				return nearDistance;
 			}
 		}
@@ -506,7 +499,6 @@ namespace forexAI
 					DrawStats();
 					lastDrawStatsTimestamp = Stopwatch.GetTimestamp();
 				}
-
 			}
 
 			TrailPositions();
