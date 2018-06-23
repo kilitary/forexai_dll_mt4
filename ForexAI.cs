@@ -80,7 +80,7 @@ namespace forexAI
 		public double maxOrderOpenHours = 8.5;
 
 		[ExternVariable]
-		public double minOrderDistane = 0.002;
+		public double minOrderDistance = 0.002;
 
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
@@ -618,12 +618,12 @@ namespace forexAI
 
 				if (collapseDirection == TrendDirection.Up)
 				{
-					SendBuy(0.02);
+					SendBuy(0.04);
 					//CloseSells();
 				}
 				else
 				{
-					SendSell(0.02);
+					SendSell(0.04);
 					//CloseBuys();
 				}
 			}
@@ -678,7 +678,7 @@ namespace forexAI
 					&& buyProbability <= BlockingTradeProbability
 					&& orderCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
-					&& closestSellDistance >= minOrderDistane)
+					&& closestSellDistance >= minOrderDistance)
 				SendSell();
 		}
 
@@ -1007,7 +1007,7 @@ namespace forexAI
 			on = (pos.ToString());
 			ObjectCreate(on, OBJ_TEXT, 0, iTime(Symbol(), 0, 0), pos);
 			ObjectSet(on, OBJPROP_ANGLE, 90.0);
-			ObjectSetText(on, text, 11, "liberation mono", clr);
+			ObjectSetText(on, text, 16, "liberation mono", clr);
 		}
 
 		void RenderCharizedHistory()
