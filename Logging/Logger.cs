@@ -19,7 +19,7 @@ namespace forexAI
 		[DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
 		private static extern int GetCurrentThreadId();
 
-		public static void TruncateLog(params string[] fileNames)
+		public static void EraseLogs(params string[] fileNames)
 		{
 			foreach (var fileName in fileNames)
 			{
