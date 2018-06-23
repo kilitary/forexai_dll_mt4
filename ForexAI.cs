@@ -85,6 +85,9 @@ namespace forexAI
 		[ExternVariable]
 		public double orderAliveHours = 24 * 7;
 
+		[ExternVariable]
+		public double collapseEnterLots = 0.5;
+
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 33);
 		Process currentProcess = null;
 		Version version = null;
@@ -96,7 +99,7 @@ namespace forexAI
 		PerformanceCounter cpuCounter;
 		DirectoryInfo[] networkDirs = null;
 		List<int> orders = new List<int>();
-		Stopwatch runtimeClock = null;
+		Stopwatch runTimer = null;
 		MqlApi mqlApi;
 		string networkName = string.Empty;
 		string fannNetworkDirName = string.Empty;
@@ -148,6 +151,7 @@ namespace forexAI
 		int lastTradeBar = 0;
 		int marketCollapsedBar;
 		long lastDrawStatsTimestamp;
+		long lastMemoryStatsDump;
 
 		int orderCount => sellCount + buyCount;
 		int tradeBarPeriodGone => Bars - lastTradeBar;
@@ -435,6 +439,8 @@ namespace forexAI
 			console($"--------------[ START tick={startTime} day={currentDay} ]-----------------",
 				ConsoleColor.Black, ConsoleColor.Cyan);
 
+			console($"Initializing ...");
+
 			mqlApi = this;
 
 			neuralNetworkBootstrapped = false;
@@ -451,11 +457,11 @@ namespace forexAI
 			ClearLogs();
 			EraseLogs(Configuration.XXrandomLogFileName, Configuration.YYYrandomLogFileName);
 
-			log($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
+			console($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
 				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={EnteringTradeProbability} BlockingTradeProbability={BlockingTradeProbability}" +
 				$" MinLossForCounterTrade={MinLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersInParallel}" +
 				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
-				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", "dev");
+				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", ConsoleColor.Black, ConsoleColor.Gray);
 
 			cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
@@ -500,18 +506,24 @@ namespace forexAI
 		//+------------------------------------------------------------------+
 		public override int start()
 		{
-			if (runtimeClock == null)
+			if (runTimer == null)
 			{
-				runtimeClock = new Stopwatch();
-				runtimeClock.Start();
+				runTimer = new Stopwatch();
+				runTimer.Start();
 			}
 
 			if (!IsOptimization())
 			{
-				if (runtimeClock.ElapsedMilliseconds - lastDrawStatsTimestamp >= 500)
+				if (runTimer.ElapsedMilliseconds - lastDrawStatsTimestamp >= 500)
 				{
 					DrawStats();
-					lastDrawStatsTimestamp = runtimeClock.ElapsedMilliseconds;
+					lastDrawStatsTimestamp = runTimer.ElapsedMilliseconds;
+				}
+
+				if(runTimer.ElapsedMilliseconds - lastMemoryStatsDump >= 380000)
+				{
+					lastMemoryStatsDump = runTimer.ElapsedMilliseconds;
+					Helpers.ShowMemoryUsage();
 				}
 			}
 
@@ -623,15 +635,9 @@ namespace forexAI
 
 				marketCollapsedBar = Bars;
 				if (collapseDirection == TrendDirection.Up)
-				{
-					SendBuy(0.04);
-					//CloseSells();
-				}
+					SendBuy(collapseEnterLots);
 				else
-				{
-					SendSell(0.04);
-					//CloseBuys();
-				}
+					SendSell(collapseEnterLots);
 			}
 		}
 
@@ -1029,12 +1035,12 @@ namespace forexAI
 						if (OrderType() == OP_BUY)
 						{
 							profitBuys++;
-							charizedOrdersHistory += $"B({OrderProfit()}:{(OrderCloseTime() - OrderOpenTime()).TotalHours.ToString("0.00")}) ";
+							charizedOrdersHistory += $"B({OrderProfit()}:{(OrderCloseTime() - OrderOpenTime()).TotalHours.ToString("0.00")}; {OrderLots()}l) ";
 						}
 						if (OrderType() == OP_SELL)
 						{
 							profitSells++;
-							charizedOrdersHistory += $"S({OrderProfit()}:{(OrderCloseTime() - OrderOpenTime()).TotalHours.ToString("0.00")}) ";
+							charizedOrdersHistory += $"S({OrderProfit()}:{(OrderCloseTime() - OrderOpenTime()).TotalHours.ToString("0.00")}; {OrderLots()}l) ";
 						}
 					}
 					else
@@ -1203,15 +1209,15 @@ namespace forexAI
 			{
 				ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
 				ObjectSet(labelID, OBJPROP_CORNER, 1);
-				ObjectSet(labelID, OBJPROP_XDISTANCE, 7);
-				ObjectSet(labelID, OBJPROP_YDISTANCE, 669);
+				ObjectSet(labelID, OBJPROP_XDISTANCE, 1485);
+				ObjectSet(labelID, OBJPROP_YDISTANCE, 674);
 			}
 
 			ObjectSetText(labelID,
 						  $"{charizedOrdersHistory}",
 						  8,
 						  "consolas",
-						  Color.DodgerBlue);
+						  Color.LimeGreen);
 
 			labelID = gs_80 + "9";
 			if (ObjectFind(labelID) == -1)
@@ -1269,7 +1275,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 318);
 			}
-			ObjectSetText(labelID, "[" + (isTrendStable ? "STABLE" : "UNSTABLE") +
+			ObjectSetText(labelID, "[" + ((stableTrendBar > 10 || unstableTrendBar  > 10) ? "UNKNOWN " : "") + (isTrendStable ? "STABLE" : "UNSTABLE") +
 				$" {(isTrendStable ? stableTrendBar : unstableTrendBar)}" + "]", 16, "consolas",
 				isTrendStable ? Color.LightGreen : Color.Red);
 

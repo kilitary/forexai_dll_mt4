@@ -46,9 +46,9 @@ namespace forexAI
 
 		public static void ShowMemoryUsage()
 		{
-			log($"WorkingSet={(Process.GetCurrentProcess().WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
+			console($"WorkingSet={(Process.GetCurrentProcess().WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
 				 $"PrivateMemory={(Process.GetCurrentProcess().PrivateMemorySize64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
-				 $"Threads={Process.GetCurrentProcess().Threads.Count} FileName={Process.GetCurrentProcess().MainModule.ModuleName}");
+				 $"Threads={Process.GetCurrentProcess().Threads.Count}");
 		}
 	}
 }
