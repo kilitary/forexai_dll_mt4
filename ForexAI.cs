@@ -38,10 +38,10 @@ namespace forexAI
 		public double maxNegativeSpend = -8;
 
 		[ExternVariable]
-		public double trailingBorder = 24;
+		public double trailingBorder = 30;
 
 		[ExternVariable]
-		public double trailingStop = 2;
+		public double trailingStop = 15;
 
 		[ExternVariable]
 		public double stableBigChangeFactor = 0.2;
@@ -169,7 +169,7 @@ namespace forexAI
 		int marketCollapsedBar = 0;
 
 		// computed properties
-		int ordersCount => sellCount + buyCount;
+		int ordersCount => OrdersTotal();
 		int tradeBarPeriodGone => Bars - lastTradeBar;
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
@@ -605,9 +605,9 @@ namespace forexAI
 					TryEnterCounterTrade();
 			}
 
-			if(activeLoss - activeProfit > 0.0 && (buyProfit < 0.0 || sellProfit < 0.0) && ordersCount >= 2)
+			if (activeLoss - activeProfit > 0.0 && (buyProfit < 0.0 || sellProfit < 0.0) && ordersCount >= 2)
 			{
-				log($"auto-close profit activeIncome:{activeIncome} activeLoss:{activeLoss} "+
+				log($"auto-close profit activeIncome:{activeIncome} activeLoss:{activeLoss} " +
 					$" buyProft:{buyProfit} sellProfit:{sellProfit} ordersCount:{ordersCount}", "debug");
 				CloseBuys();
 				CloseSells();
@@ -1061,14 +1061,16 @@ namespace forexAI
 			double TrailingBorder = trailingBorder;
 			double newStopLoss = 0;
 
+			RefreshRates();
+
 			for (int current_order = 0; current_order < OrdersTotal(); current_order++)
 			{
 				OrderSelect(current_order, SELECT_BY_POS, MODE_TRADES);
 
 				if (OrderType() == OP_BUY)
 				{
-					log($"sellProfit: {sellProfit}");
-					if (sellProfit < 0.0)
+					//log($"sellProfit: {sellProfit}");
+					if (sellProfit <= 0 && ordersCount < 2)
 						continue;
 
 					newStopLoss = Bid - TrailingStop * Point;
@@ -1081,10 +1083,15 @@ namespace forexAI
 							OrderExpiration(), Color.BlueViolet);
 						dayOperationsCount++;
 					}
+					else
+					{
+						//	log($"no mod buy {newStopLoss}");
+					}
 				}
 				if (OrderType() == OP_SELL)
 				{
-					if (buyProfit < 0.0)
+					//log($"buyProfit: {buyProfit}");
+					if (buyProfit <= 0 && ordersCount < 2)
 						continue;
 
 					newStopLoss = Ask + TrailingStop * Point;
@@ -1096,6 +1103,10 @@ namespace forexAI
 						OrderModify(OrderTicket(), OrderOpenPrice(), newStopLoss, OrderTakeProfit(),
 							OrderExpiration(), Color.MediumVioletRed);
 						dayOperationsCount++;
+					}
+					else
+					{
+						//	log($"no mod sell {newStopLoss}");
 					}
 				}
 			}
