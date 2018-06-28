@@ -741,11 +741,11 @@ namespace forexAI
 				if (!OrderSelect(index, SELECT_BY_POS, MODE_TRADES))
 					break;
 
-				var activeOrder = (from currentOrder in orders
-								   where currentOrder.ticket == OrderTicket()
-								   select currentOrder).DefaultIfEmpty(null).FirstOrDefault();
+				var currentOrder = (from order in orders
+								   where order.ticket == OrderTicket()
+								   select order).DefaultIfEmpty(null).FirstOrDefault();
 
-				if (activeOrder == null)
+				if (currentOrder == null)
 				{
 					var order = new Order
 					{
@@ -770,10 +770,10 @@ namespace forexAI
 				}
 				else
 				{
-					activeOrder.profit = OrderProfit();
-					activeOrder.commission = OrderCommission();
-					activeOrder.swap = OrderSwap();
-					activeOrder.stopLoss = OrderStopLoss();
+					currentOrder.profit = OrderProfit();
+					currentOrder.commission = OrderCommission();
+					currentOrder.swap = OrderSwap();
+					currentOrder.stopLoss = OrderStopLoss();
 				}
 			}
 		}
