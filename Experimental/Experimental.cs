@@ -91,7 +91,7 @@ namespace forexAI
             if (random.Next(Configuration.experimentalAlliedRandomUpperBound) == random.Next(Configuration.experimentalAlliedRandomUpperBound))
             {
                 console($"bLACK HATE CHECKPOINt +---{random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)} {random.Next(Configuration.experimentalAlliedRandomUpperBound)}---+", ConsoleColor.Yellow, ConsoleColor.Red);
-                forexAI.FX.TheBroken();
+                forexAI.AudioFX.TheBroken();
                 return true;
             }
             return false;

@@ -20,6 +20,8 @@ namespace forexAI
 		public double stopLoss;
 		public double openPrice;
 		public string comment;
+		public double ageInMinutes;
+		public double takeProfit;
 
 		public double currentProfit
 		{

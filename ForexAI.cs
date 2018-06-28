@@ -307,7 +307,7 @@ namespace forexAI
 		{
 			get
 			{
-				double lots = MathMin(AccountBalance(), AccountFreeMargin()) * 0.01 / 100 / (MarketInfo(Symbol(), MODE_TICKVALUE));
+				double lots = MathMin(AccountBalance(), AccountFreeMargin()) * 0.01 / 1000 / (MarketInfo(Symbol(), MODE_TICKVALUE));
 				if (lots < 0.01)
 					lots = 0.01;
 				return lots;
@@ -519,9 +519,9 @@ namespace forexAI
 				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
 				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", ConsoleColor.Black, ConsoleColor.DarkYellow);
 
-			console($"Scanning resources ...");
-
+			console($"Scanning processor resources ...");
 			cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+
 			console($"Set Core.Compatibility.Metastock");
 			Core.SetCompatibility(Core.Compatibility.Metastock);
 			//Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 3);
@@ -548,7 +548,7 @@ namespace forexAI
 				{
 					console($"Testing network MSE ...");
 					TestNetworkMSE();
-					console($"Testing network HIT ratio ...");
+					console($"Testing network hit ratio ...");
 					TestNetworkHitRatio();
 				}
 			}
@@ -610,12 +610,11 @@ namespace forexAI
 					TryEnterCounterTrade();
 			}
 
-			if (activeLoss - activeProfit > 0.0 && (buyProfit < 0.0 || sellProfit < 0.0) && ordersCount >= 2)
+			if (activeLoss + activeProfit >= 0.0 && (buyProfit < 0.0 || sellProfit < 0.0) && ordersCount >= 2)
 			{
 				log($"auto-close profit activeIncome:{activeIncome} activeLoss:{activeLoss} " +
 					$" buyProft:{buyProfit} sellProfit:{sellProfit} ordersCount:{ordersCount}", "debug");
-				CloseBuys();
-				CloseSells();
+				CloseAllOrders();
 			}
 
 			if (!IsOptimization())
@@ -649,18 +648,18 @@ namespace forexAI
 					+ (forexFannNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 				totalOperationsCount += dayOperationsCount;
 				dayOperationsCount = barsPerDay = stableTrendBar = unstableTrendBar = 0;
-				FX.TheNewDay();
+				AudioFX.TheNewDay();
 			}
 
 			if (AccountBalance() <= 35.0 && !hasNoticedLowBalance)
 			{
 				hasNoticedLowBalance = true;
 				console($"всё пизда, кеш весь слит нахуй, бабок: {AccountBalance()}$", ConsoleColor.Red, ConsoleColor.White);
-				FX.LowBalance();
+				AudioFX.LowBalance();
 				TerminalClose(0);
 			}
 			else if (hasNoticedLowBalance && YRandom.Next(6) == 3)
-				FX.GoodWork();
+				AudioFX.GoodWork();
 
 			/*File.AppendAllText(Configuration.XXrandomLogFileName, random.Next(99).ToString("00") + " ");
 			File.AppendAllText(Configuration.YYYrandomLogFileName, YRandom.Next(100, 200).ToString("000") + " ");*/
@@ -676,6 +675,12 @@ namespace forexAI
 			barsPerDay += 1;
 
 			return 0;
+		}
+
+		private void CloseAllOrders()
+		{
+			CloseBuys();
+			CloseSells();
 		}
 
 		public override int deinit()
@@ -717,19 +722,20 @@ namespace forexAI
 		public void SyncOrders()
 		{
 			var zeroTime = new DateTime(0);
+			var now = TimeCurrent();
 
 			foreach (var order in orders)
 			{
 				if (OrderSelect(order.ticket, SELECT_BY_TICKET) == true
-					&& OrderCloseTime() != zeroTime && OrderProfit() > 0.01)
+					&& OrderCloseTime() != zeroTime && OrderProfit() > 0.0)
 				{
-					FX.Profit();
+					AudioFX.Profit();
 					consolelog($"profit {OrderProfit()}$ lots {OrderLots()} (total={AccountBalance().ToString("0.00")})");
 				}
 				else if (OrderSelect(order.ticket, SELECT_BY_TICKET) == true
-					&& OrderCloseTime() != zeroTime && OrderProfit() <= 0.0)
+					&& OrderCloseTime() != zeroTime && OrderProfit() < 0.0)
 				{
-					FX.TheFail();
+					AudioFX.TheFail();
 					consolelog($"loss {OrderProfit()}$ lots {OrderLots()} (total={AccountBalance().ToString("0.00")})");
 				}
 			}
@@ -741,15 +747,17 @@ namespace forexAI
 				if (!OrderSelect(index, SELECT_BY_POS, MODE_TRADES))
 					break;
 
+				int orderTicket = OrderTicket();
+
 				var currentOrder = (from order in orders
-								   where order.ticket == OrderTicket()
-								   select order).DefaultIfEmpty(null).FirstOrDefault();
+									where order.ticket == orderTicket
+									select order).DefaultIfEmpty(null).FirstOrDefault();
 
 				if (currentOrder == null)
 				{
 					var order = new Order
 					{
-						ticket = OrderTicket(),
+						ticket = orderTicket,
 						openTime = OrderOpenTime(),
 						symbol = OrderSymbol(),
 						lots = OrderLots(),
@@ -758,7 +766,9 @@ namespace forexAI
 						swap = OrderSwap(),
 						openPrice = OrderOpenPrice(),
 						stopLoss = OrderStopLoss(),
-						comment = OrderComment()
+						comment = OrderComment(),
+						takeProfit = OrderTakeProfit(),
+						ageInMinutes = now.Subtract(OrderOpenTime()).TotalMinutes
 					};
 
 					if (OrderType() == OP_BUY)
@@ -774,6 +784,8 @@ namespace forexAI
 					currentOrder.commission = OrderCommission();
 					currentOrder.swap = OrderSwap();
 					currentOrder.stopLoss = OrderStopLoss();
+					currentOrder.takeProfit = OrderTakeProfit();
+					currentOrder.ageInMinutes = now.Subtract(currentOrder.openTime).TotalMinutes;
 				}
 			}
 		}
@@ -805,14 +817,14 @@ namespace forexAI
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
-				SendBuy(riskyLots);
+				SendBuy(riskyLots2);
 
 			if (sellProbability >= enteringTradeProbability
 					&& buyProbability <= blockingTradeProbability
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
-				SendSell(riskyLots);
+				SendSell(riskyLots2);
 		}
 
 		public void TryEnterCounterTrade()
@@ -969,7 +981,7 @@ namespace forexAI
 						&& (currentTime.Subtract(OrderOpenTime())).TotalHours <= orderAliveHours)
 					continue;
 
-				FX.TheFail();
+				AudioFX.TheFail();
 
 				if (OrderType() == OP_BUY)
 				{
@@ -1098,8 +1110,6 @@ namespace forexAI
 			double TrailingBorder = trailingBorder;
 			double newStopLoss = 0;
 
-			RefreshRates();
-
 			foreach (var order in orders)
 			{
 				OrderSelect(order.ticket, SELECT_BY_TICKET, MODE_TRADES);
@@ -1116,10 +1126,6 @@ namespace forexAI
 							OrderExpiration(), Color.BlueViolet);
 						dayOperationsCount++;
 					}
-					else
-					{
-						//	log($"no mod buy {newStopLoss}");
-					}
 				}
 				if (order.type == Constants.OrderType.Sell)
 				{
@@ -1132,10 +1138,6 @@ namespace forexAI
 						OrderModify(order.ticket, order.openPrice, newStopLoss, OrderTakeProfit(),
 							OrderExpiration(), Color.MediumVioletRed);
 						dayOperationsCount++;
-					}
-					else
-					{
-						//	log($"no mod sell {newStopLoss}");
 					}
 				}
 			}
@@ -1275,7 +1277,7 @@ namespace forexAI
 
 				ObjectSetText(labelID, type + " " +
 					profit.ToString("0.00") + $" ({order.lots.ToString("0.00")} lots, " +
-					$" age {elapsed.TotalHours.ToString("0.0")} hours)", 8, "consolas",
+					$" age {(order.ageInMinutes / 60).ToString("0.0")} hours)", 8, "consolas",
 					profit > 0.0 ? Color.LightGreen : Color.Red);
 				index++;
 			}

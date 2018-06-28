@@ -11,7 +11,7 @@ using forexAI;
 
 namespace forexAI
 {
-	public static class FX
+	public static class AudioFX
 	{
 		public static void Play(string audioFileName)
 		{
