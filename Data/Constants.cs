@@ -13,5 +13,16 @@ namespace forexAI
 			Up,
 			Down
 		}
+
+		public enum OrderType
+		{
+			Sell,
+			SellLimit,
+			SellStop,
+			Buy,
+			BuyLimit,
+			BuyStop
+
+		}
 	}
 }

@@ -14,7 +14,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.0.402.18</AssemblyVersion>
+    <AssemblyVersion>0.0.423.18</AssemblyVersion>
     <ShouldCreateLogs>False</ShouldCreateLogs>
     <AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
@@ -93,6 +93,7 @@
     <Compile Include="Data\Constants.cs" />
     <Compile Include="Data\Configuration.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="MetaTrader\Order.cs" />
     <Compile Include="Pool\NetworkPool.cs" />
     <Compile Include="Reassembler\FunctionJsonConfig.cs" />
     <Compile Include="Reassembler\Reassembler.cs" />
