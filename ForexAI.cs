@@ -92,7 +92,7 @@ namespace forexAI
 		public double counterTradeLots = 0.02;
 
 		[ExternVariable]
-		public double collapseChangePoints = 0.0023;
+		public double collapseChangePoints = 0.0028;
 
 		//  props
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 314);
@@ -183,7 +183,7 @@ namespace forexAI
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double orderProfit => buyProfit + sellProfit;
-		TrendDirection collapseDirection => High[0] - Low[0] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
+		TrendDirection collapseDirection => Open[0] - Open[1] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
 		double diffProbability => sellProbability + buyProbability;
 		int buyCount => activeOrders.Where(o => o.type == Constants.OrderType.Buy).Count();
 		int sellCount => activeOrders.Where(o => o.type == Constants.OrderType.Sell).Count();
@@ -458,6 +458,12 @@ namespace forexAI
 
 			console($"Initializing (framework={Environment.Version.ToString()}) ...");
 
+			if (runTimer == null)
+			{
+				runTimer = new Stopwatch();
+				runTimer.Start();
+			}
+
 			mqlApi = this;
 
 			neuralNetworkBootstrapped = false;
@@ -528,17 +534,13 @@ namespace forexAI
 
 		public override int start()
 		{
-			if (runTimer == null)
-			{
-				runTimer = new Stopwatch();
-				runTimer.Start();
-			}
-
 			if (!IsOptimization())
 			{
 				if (runTimer.ElapsedMilliseconds - lastDrawStatsTimestamp >= 600)
 				{
+					CalculateHistoryOrders();
 					DrawStats();
+
 					lastDrawStatsTimestamp = runTimer.ElapsedMilliseconds;
 				}
 
@@ -557,22 +559,22 @@ namespace forexAI
 			if (Bars == previousBars)
 				return 0;
 
-			if (forexFannNetwork != null && neuralNetworkBootstrapped)
-			{
-				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent,
-					inputDimension, forexFannNetwork, reassembleCompletedOverride, mqlApi);
-
-				EnterTrade();
-
-				if (counterTrading)
-					EnterCounterTrade();
-			}
-
 			if (activeLoss + activeProfit >= 0.0 && (buyProfit < 0.0 || sellProfit < 0.0) && ordersCount >= 2)
 			{
 				log($"auto-close profit activeIncome:{activeIncome} activeLoss:{activeLoss} " +
 					$" buyProft:{buyProfit} sellProfit:{sellProfit} ordersCount:{ordersCount}", "debug");
 				CloseAllOrders();
+			}
+
+			if (forexFannNetwork != null && neuralNetworkBootstrapped)
+			{
+				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent,
+					inputDimension, forexFannNetwork, reassembleCompletedOverride, mqlApi);
+
+				TryEnterTrade();
+
+				if (counterTrading)
+					TryEnterCounterTrade();
 			}
 
 			if (!IsOptimization())
@@ -644,15 +646,9 @@ namespace forexAI
 
 			string mins = ((((double) GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
 			log($"Uptime {mins} mins, has do {totalOperationsCount + dayOperationsCount} operations.");
-			console("... shutted down.", ConsoleColor.Black, ConsoleColor.Red);
+			console("... shutted down.", ConsoleColor.Black, ConsoleColor.DarkCyan);
 
 			return 0;
-		}
-
-		private void CloseAllOrders()
-		{
-			CloseBuys();
-			CloseSells();
 		}
 
 		private void CheckForMarketCollapse()
@@ -803,7 +799,13 @@ namespace forexAI
 			settings["random"] = random.Next(int.MaxValue);
 		}
 
-		public void EnterTrade()
+		private void CloseAllOrders()
+		{
+			CloseBuys();
+			CloseSells();
+		}
+
+		public void TryEnterTrade()
 		{
 			RefreshRates();
 
@@ -828,7 +830,7 @@ namespace forexAI
 				SendSell(riskyLots2);
 		}
 
-		public void EnterCounterTrade()
+		public void TryEnterCounterTrade()
 		{
 			RefreshRates();
 
@@ -1239,8 +1241,6 @@ namespace forexAI
 		void DrawStats()
 		{
 			int i;
-
-			CalculateHistoryOrders();
 
 			for (i = 0; i < 11; i++)
 			{
