@@ -22,6 +22,7 @@ namespace forexAI
 		public string comment;
 		public double ageInMinutes;
 		public double takeProfit;
+		internal DateTime expiration;
 
 		public double currentProfit
 		{
