@@ -28,7 +28,7 @@ namespace forexAI
 			Play(Configuration.newDayWAV);
 		}
 
-		public static void TheFail()
+		public static void Fail()
 		{
 			Play(Configuration.failWav);
 		}

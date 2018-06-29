@@ -48,12 +48,12 @@ namespace forexAI
 		public Settings()
 		{
 			settings = JsonConvert.DeserializeObject<Dictionary<string, object>>
-				(File.ReadAllText(Configuration.settingsPath));
+				(File.ReadAllText(Configuration.settingsFilePath));
 		}
 
 		public void Save()
 		{
-			File.WriteAllText(Configuration.settingsPath, JsonConvert.SerializeObject(settings, Formatting.Indented));
+			File.WriteAllText(Configuration.settingsFilePath, JsonConvert.SerializeObject(settings, Formatting.Indented));
 		}
 
 		~Settings()
