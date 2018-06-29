@@ -26,6 +26,7 @@ using static forexAI.Experimental;
 using static forexAI.Logger;
 using Color = System.Drawing.Color;
 using static forexAI.Constants;
+using DataType = System.Double;
 
 namespace forexAI
 {
@@ -131,10 +132,10 @@ namespace forexAI
 		double Risky2_Risk = 2;
 		double Risky2_Lots = 0.04;
 		double Risky2_LotDigits = 2;
-		double minlot = 0.0;
-		double maxlot = 0.0;
+		double minlot = 0.01;
+		double maxlot = 0.08;
 		double leverage = 0.0;
-		double lotsize = 0.0;
+		double lotsize = 0.01;
 		double stoplevel = 0.0;
 		double[] fannNetworkOutput = null;
 		double[] prevBuyProbability = null;
@@ -285,8 +286,8 @@ namespace forexAI
 			get
 			{
 				leverage = AccountLeverage();
-				double MinLots = 0.01;
-				double MaximalLots = 2.0;
+				double MinLots = lotsize;
+				double MaximalLots = 0.08;
 				double lots = Risky2_Lots;
 
 				lots = NormalizeDouble(AccountFreeMargin() * Risky2_Risk / 100 / 1000.0, 5);
@@ -538,6 +539,7 @@ namespace forexAI
 			{
 				if (runTimer.ElapsedMilliseconds - lastDrawStatsTimestamp >= 600)
 				{
+					CalculateHistoryOrders();
 					DrawStats();
 					lastDrawStatsTimestamp = runTimer.ElapsedMilliseconds;
 				}
@@ -658,7 +660,7 @@ namespace forexAI
 		private void CheckForMarketCollapse()
 		{
 			var change = Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1]);
-			var barChange = Math.Max(High[0], Low[0]) - Math.Min(High[0], Low[0]);
+			var barChange = Math.Max(High[0], Low[0]) - Math.Min(High[1], Low[1]);
 			if ((change >= collapseChangePoints || barChange >= collapseChangePoints) && Bars - marketCollapsedBar >= 3)
 			{
 				console($"Market collapse detected on {TimeCurrent()} change: {change.ToString("0.00000")}, going {collapseDirection}",
@@ -816,7 +818,7 @@ namespace forexAI
 
 			if (buyProbability >= enteringTradeProbability
 					&& sellProbability <= blockingTradeProbability
-					&& diffProbability > 0
+					&& diffProbability >= 0
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
@@ -824,7 +826,7 @@ namespace forexAI
 
 			if (sellProbability >= enteringTradeProbability
 					&& buyProbability <= blockingTradeProbability
-					&& diffProbability < 0
+					&& diffProbability <= 0
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
@@ -880,6 +882,8 @@ namespace forexAI
 			{
 				ErrorLog = new FANNCSharp.FannFile($"{Configuration.rootDirectory}\\fann.log", "a+")
 			};
+
+			forexFannNetwork.EnableSeedRand();
 
 			log($"Network: hash={forexFannNetwork.GetHashCode()} inputs={forexFannNetwork.InputCount} layers={forexFannNetwork.LayerCount}" +
 				$" outputs={forexFannNetwork.OutputCount} neurons={forexFannNetwork.TotalNeurons} connections={forexFannNetwork.TotalConnections}");
@@ -982,7 +986,7 @@ namespace forexAI
 			foreach (var order in activeOrders)
 			{
 				if (order.profit + order.commission + order.swap >= maxNegativeSpend
-						&& (currentTime.Subtract(order.openTime)).TotalHours <= orderAliveHours)
+						&& order.ageInMinutes / 60 <= orderAliveHours)
 					continue;
 
 				AudioFX.Fail();
@@ -1082,7 +1086,7 @@ namespace forexAI
 				Configuration.magickNumber, expirationTime, Color.Red) <= 0)
 				log($"error sending sell: {GetLastError()} balance={AccountBalance()} lots={lotsOptimized}");
 			else
-				log($"open sell  prob:{sellProbability} @" + Bid);
+				log($"open sell  prob:{sellProbability.ToString("0.00")} @" + Bid);
 
 			AddLabel($"SP {sellProbability.ToString("0.0")} BP {buyProbability.ToString("0.0")}", Color.Red);
 
@@ -1100,7 +1104,7 @@ namespace forexAI
 				Configuration.magickNumber, expirationTime, Color.Blue) <= 0)
 				log($"error sending buy: {GetLastError()} balance={AccountBalance()} lots={lotsOptimized}");
 			else
-				log($"open buy  prob:{buyProbability} @" + Ask);
+				log($"open buy  prob:{buyProbability.ToString("0.00")} @" + Ask);
 
 			AddLabel($"BP {buyProbability.ToString("0.0")} SP {sellProbability.ToString("0.0")}", Color.Blue);
 
@@ -1166,7 +1170,7 @@ namespace forexAI
 			string on;
 			double pos = Math.Max(Bid, Ask);
 
-			pos = Math.Max(Bid, Ask) + 0.0015;
+			pos = Math.Max(Bid, Ask) + 0.0025;
 			on = (pos.ToString());
 			ObjectCreate(on, OBJ_TEXT, 0, iTime(symbol, 0, 0), pos);
 			ObjectSet(on, OBJPROP_ANGLE, 90.0);
@@ -1242,8 +1246,6 @@ namespace forexAI
 		void DrawStats()
 		{
 			int i;
-
-			CalculateHistoryOrders();
 
 			for (i = 0; i < 11; i++)
 			{

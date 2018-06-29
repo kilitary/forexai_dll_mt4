@@ -379,10 +379,9 @@ namespace forexAI
 			if (!reassemblyCompleteLogged)
 				log($"=> Reassembling [ SUCCESS ] ");
 
-			//forexNetwork.ClearScalingParams();
 			File.WriteAllText($"{Configuration.rootDirectory}\\entireset.dat", SerializeObject(fullInputSet));
+			//neuralNetwork.ClearScalingParams();
 			double[] networkOutput = neuralNetwork.Run(fullInputSet);
-
 			neuralNetwork.DescaleOutput(networkOutput);
 
 			reassemblyCompleteLogged = true;
