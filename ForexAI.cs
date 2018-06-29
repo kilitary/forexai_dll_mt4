@@ -760,25 +760,22 @@ namespace forexAI
 
 			foreach (var order in historyOrders)
 			{
-				if (OrderSelect(order.ticket, SELECT_BY_TICKET, MODE_HISTORY))
+				if (OrderSelect(order.ticket, SELECT_BY_TICKET, MODE_HISTORY) && OrderCloseTime() != new DateTime(0))
 				{
-					if (OrderCloseTime() != new DateTime(0))
+					if (order.type == Constants.OrderType.Buy)
 					{
-						if (order.type == Constants.OrderType.Buy)
-						{
-							if (OrderProfit() + OrderCommission() + OrderSwap() > 0)
-								profitBuys++;
-							else
-								spendBuys++;
-						}
+						if (OrderProfit() + OrderCommission() + OrderSwap() > 0)
+							profitBuys++;
+						else
+							spendBuys++;
+					}
 
-						if (order.type == Constants.OrderType.Sell)
-						{
-							if (OrderProfit() + OrderCommission() + OrderSwap() > 0)
-								profitSells++;
-							else
-								spendSells++;
-						}
+					if (order.type == Constants.OrderType.Sell)
+					{
+						if (OrderProfit() + OrderCommission() + OrderSwap() > 0)
+							profitSells++;
+						else
+							spendSells++;
 					}
 				}
 			}
