@@ -93,7 +93,7 @@ namespace forexAI
 		public double counterTradeLots = 0.02;
 
 		[ExternVariable]
-		public double collapseChangePoints = 0.0023;
+		public double collapseChangePoints = 0.0043;
 
 		//  props
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 314);
@@ -659,9 +659,8 @@ namespace forexAI
 
 		private void CheckForMarketCollapse()
 		{
-			var change = Math.Max(Open[0], Open[1]) - Math.Min(Open[0], Open[1]);
-			var barChange = Math.Max(High[0], Low[0]) - Math.Min(High[1], Low[1]);
-			if ((change >= collapseChangePoints || barChange >= collapseChangePoints) && Bars - marketCollapsedBar >= 3)
+			var change = Math.Max(Open[0], Close[0]) - Math.Min(Open[1], Close[1]);
+			if ((change >= collapseChangePoints) && Bars - marketCollapsedBar >= 3)
 			{
 				console($"Market collapse detected on {TimeCurrent()} change: {change.ToString("0.00000")}, going {collapseDirection}",
 					ConsoleColor.Black, ConsoleColor.Green);
@@ -884,8 +883,6 @@ namespace forexAI
 			{
 				ErrorLog = new FANNCSharp.FannFile($"{Configuration.rootDirectory}\\fann.log", "a+")
 			};
-
-			forexFannNetwork.EnableSeedRand();
 
 			log($"Network: hash={forexFannNetwork.GetHashCode()} inputs={forexFannNetwork.InputCount} layers={forexFannNetwork.LayerCount}" +
 				$" outputs={forexFannNetwork.OutputCount} neurons={forexFannNetwork.TotalNeurons} connections={forexFannNetwork.TotalConnections}");
