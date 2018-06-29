@@ -60,11 +60,14 @@ namespace forexAI
 		static object[] functionArguments = null;
 		static bool failedReassemble = false;
 		static bool reassemblyCompleteLogged = false;
+		private static string allFunctionsMark;
 
 		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork,
 			bool reassemblingCompletedOverride, MqlApi mqlApi)
 		{
 			reassemblyCompleteLogged = reassemblingCompletedOverride;
+
+			allFunctionsMark = string.Empty;
 
 			if (!reassemblyCompleteLogged)
 				log($"=> Reassembling input sequence ...");
@@ -95,10 +98,10 @@ namespace forexAI
 
 			networkFunctionsCount = functionConfigurationInput.Count;
 
-			foreach (var item in functionConfigurationInput)
+			foreach (var function in functionConfigurationInput)
 			{
-				functionName = item.Key;
-				FunctionsConfiguration conf = item.Value;
+				functionName = function.Key;
+				FunctionsConfiguration conf = function.Value;
 
 				string stringOut = string.Empty;
 				functionArguments = new object[conf.parameters.parametersMap.Count];
@@ -327,8 +330,7 @@ namespace forexAI
 						resultDataInt = (int[]) functionArguments[OutIndex];
 						Array.Resize<double>(ref resultDataDouble, OutNbElement);
 
-						for (int i = 0; i < OutNbElement; i++)
-							resultDataDouble[i] = resultDataInt[i];
+						Array.Copy(resultDataInt, resultDataDouble, OutNbElement);
 
 						for (int i = 0; i < OutNbElement; i++)
 						{
@@ -358,9 +360,12 @@ namespace forexAI
 					int prevLen = fullInputSet == null ? 0 : fullInputSet.Length;
 					int newLen = (fullInputSet == null ? 0 : fullInputSet.Length) + resultDataDouble.Length - startIdx;
 
+					//	dump(resultDataDouble, function.Key, "dev");
 					Array.Resize<double>(ref fullInputSet, newLen);
-					Array.Copy(resultDataDouble, startIdx, fullInputSet, prevLen > 0 ? prevLen - 1 : prevLen,
+					Array.Copy(resultDataDouble, startIdx, fullInputSet, prevLen > 0 ? prevLen - 1 : 0,
 						resultDataDouble.Length - startIdx);
+
+					allFunctionsMark += (allFunctionsMark.Length > 0 ? "+" : "") + $"{function.Key}[{numData}]";
 				}
 			}
 
@@ -379,9 +384,24 @@ namespace forexAI
 			if (!reassemblyCompleteLogged)
 				log($"=> Reassembling [ SUCCESS ] ");
 
-			File.WriteAllText($"{Configuration.rootDirectory}\\entireset.dat", SerializeObject(fullInputSet));
-			//neuralNetwork.ClearScalingParams();
-			double[] networkOutput = neuralNetwork.Run(fullInputSet);
+			TrainingData trainData = new TrainingData();
+			trainData.SetTrainData((uint) 1, fullInputSet, fullInputSet);
+
+			JsonSerializerSettings jsonSettings2 = new JsonSerializerSettings
+			{
+				MaxDepth = 5,
+				Formatting = Formatting.Indented,
+				PreserveReferencesHandling = PreserveReferencesHandling.All
+			};
+
+			File.WriteAllText($"{Configuration.rootDirectory}\\unscaledset.dat", $"[Functions: {allFunctionsMark}]" +
+				"\r\n\r\n" + SerializeObject(fullInputSet, jsonSettings2));
+
+			neuralNetwork.ScaleInput(trainData.GetTrainInput(0));
+
+			File.WriteAllText($"{Configuration.rootDirectory}\\scaledset.dat", SerializeObject(trainData.Input[0], jsonSettings2));
+
+			double[] networkOutput = neuralNetwork.Run(trainData.GetTrainInput(0));
 			neuralNetwork.DescaleOutput(networkOutput);
 
 			reassemblyCompleteLogged = true;
