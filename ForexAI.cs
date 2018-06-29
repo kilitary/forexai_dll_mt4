@@ -270,7 +270,7 @@ namespace forexAI
 			}
 		}
 
-		public double riskyLots
+		public double lotsOptimized3
 		{
 			get
 			{
@@ -281,7 +281,7 @@ namespace forexAI
 			}
 		}
 
-		public double riskyLots2
+		public double lotsOptimized2
 		{
 			get
 			{
@@ -670,9 +670,9 @@ namespace forexAI
 
 				marketCollapsedBar = Bars;
 				if (collapseDirection == TrendDirection.Up)
-					SendBuy(riskyLots2);
+					SendBuy(lotsOptimized2);
 				else
-					SendSell(riskyLots2);
+					SendSell(lotsOptimized2);
 			}
 		}
 
@@ -795,6 +795,8 @@ namespace forexAI
 			symbol = Symbol();
 			currentProcess = Process.GetCurrentProcess();
 
+			consolelog($"machineName={currentProcess.MachineName}");
+
 			minStopLevel = MarketInfo(symbol, MODE_STOPLEVEL);
 			if (trailingStop < minStopLevel)
 				warning($"minStopLevel={minStopLevel}, while trailingStop={trailingStop}, reducing.");
@@ -822,7 +824,7 @@ namespace forexAI
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
-				SendBuy(riskyLots2);
+				SendBuy(lotsOptimized2);
 
 			if (sellProbability >= enteringTradeProbability
 					&& buyProbability <= blockingTradeProbability
@@ -830,7 +832,7 @@ namespace forexAI
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
-				SendSell(riskyLots2);
+				SendSell(lotsOptimized2);
 		}
 
 		public void EnterCounterTrade()
@@ -845,7 +847,7 @@ namespace forexAI
 				&& sellProbability >= 0.2)
 			{
 				consolelog($"opening counter-sell [{sellCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
-				SendSell(riskyLots);
+				SendSell(lotsOptimized3);
 			}
 
 			if (sellProfit <= minLossForCounterTrade
@@ -856,7 +858,7 @@ namespace forexAI
 				&& buyProbability >= 0.2)
 			{
 				consolelog($"opening counter-buy [{buyCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
-				SendBuy(riskyLots);
+				SendBuy(lotsOptimized3);
 			}
 		}
 
