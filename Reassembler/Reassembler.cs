@@ -76,7 +76,7 @@ namespace forexAI
 
 			failedReassemble = false;
 
-			if (hashOfFunctionConfiguration != Hash.MD5(functionConfigurationString))
+			if (hashOfFunctionConfiguration != Hash.md5(functionConfigurationString))
 			{
 				log($"hashOfFunctionConfiguration ({hashOfFunctionConfiguration}) not match content, deserializing {functionConfigurationString.Length} bytes ...");
 				var jsonSettings = new JsonSerializerSettings
@@ -86,7 +86,7 @@ namespace forexAI
 				functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
 					(functionConfigurationString, jsonSettings);
 
-				hashOfFunctionConfiguration = Hash.MD5(functionConfigurationString);
+				hashOfFunctionConfiguration = Hash.md5(functionConfigurationString);
 				log($"hash of configuration: {hashOfFunctionConfiguration}");
 			}
 
@@ -385,7 +385,6 @@ namespace forexAI
 
 			neuralNetwork.DescaleOutput(networkOutput);
 
-			//debug($"{timeCurrent} networkOutput = {networkOutput[0].ToString("0.0000")} : {networkOutput[1].ToString("0.0000")}");
 			reassemblyCompleteLogged = true;
 			return (networkFunctionsCount, networkOutput);
 		}

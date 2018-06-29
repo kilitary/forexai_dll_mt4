@@ -9,7 +9,7 @@ namespace forexAI
 {
 	public static class Hash
 	{
-		public static string MD5(string input)
+		public static string md5(string input)
 		{
 			MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
 
