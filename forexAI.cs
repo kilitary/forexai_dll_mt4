@@ -129,9 +129,9 @@ namespace forexAI
 		double prevVolume;
 		double minStopLevel = 0;
 		double ordersStopPoints = 0;
-		double Risky2_Risk = 2;
-		double Risky2_Lots = 0.04;
-		double Risky2_LotDigits = 2;
+		double risky2_Risk = 2;
+		double risky2_Lots = 0.04;
+		double risky2_LotDigits = 2;
 		double minlot = 0.01;
 		double maxlot = 0.08;
 		double leverage = 0.0;
@@ -144,9 +144,9 @@ namespace forexAI
 		float trainMse = 0.0f;
 		long lastDrawStatsTimestamp = 0;
 		long lastMemoryStatsDump = 0;
-		bool reassembleCompletedOverride = false;
+		bool reassembleStageOverride = true;
 		bool hasNoticedLowBalance = false;
-		bool ProfitTrailing = true;
+		bool profitTrailing = true;
 		bool hasNightReported = false;
 		bool hasMorningReported = false;
 		bool neuralNetworkBootstrapped = false;
@@ -288,9 +288,9 @@ namespace forexAI
 				leverage = AccountLeverage();
 				double MinLots = lotsize;
 				double MaximalLots = 0.08;
-				double lots = Risky2_Lots;
+				double lots = risky2_Lots;
 
-				lots = NormalizeDouble(AccountFreeMargin() * Risky2_Risk / 100 / 1000.0, 5);
+				lots = NormalizeDouble(AccountFreeMargin() * risky2_Risk / 100 / 1000.0, 5);
 
 				if (lots < minlot) lots = minlot;
 
@@ -299,7 +299,7 @@ namespace forexAI
 				if (AccountFreeMargin() < Ask * lots * lotsize / leverage)
 					consolelog("fail to calc lots, too les money");
 				else
-					lots = NormalizeDouble(Risky2_Lots, Digits);
+					lots = NormalizeDouble(risky2_Lots, Digits);
 
 				return lots;
 			}
@@ -462,7 +462,7 @@ namespace forexAI
 			mqlApi = this;
 
 			neuralNetworkBootstrapped = false;
-			reassembleCompletedOverride = false;
+			reassembleStageOverride = false;
 
 			version = Assembly.GetExecutingAssembly().GetName().Version;
 			ShowBanner();
@@ -487,7 +487,7 @@ namespace forexAI
 
 			console($"Set Core.Compatibility.Metastock");
 			Core.SetCompatibility(Core.Compatibility.Metastock);
-			//Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstAll, 3);
+			//Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstNone, 10);
 
 			#region matters
 			if ((Environment.MachineName == "USER-PC" || (Experimental.IsHardwareForcesConnected() == Experimental.IsBlackHateFocused()))
@@ -521,7 +521,7 @@ namespace forexAI
 			log(initStr);
 			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
 
-			reassembleCompletedOverride = true;
+			reassembleStageOverride = false;
 			neuralNetworkBootstrapped = true;
 
 			return 0;
@@ -562,10 +562,10 @@ namespace forexAI
 			if (forexFannNetwork != null && neuralNetworkBootstrapped)
 			{
 				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent,
-					inputDimension, forexFannNetwork, reassembleCompletedOverride, mqlApi);
+					inputDimension, forexFannNetwork, reassembleStageOverride, mqlApi);
 
 				EnterTrade();
-
+				`
 				if (counterTrading)
 					EnterCounterTrade();
 			}
@@ -905,7 +905,7 @@ namespace forexAI
 
 			functionsTextContent = File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json");
 
-			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexFannNetwork, false, mqlApi);
+			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexFannNetwork, true, mqlApi);
 		}
 
 		void ScanNetworks()
