@@ -24,9 +24,7 @@ namespace forexAI
 			foreach (var fileName in fileNames)
 			{
 				console($"Erasing {fileName} ... ");
-				if (fileName != null
-					&& File.Exists(fileName)
-					&& !Helpers.IsFileBusy(fileName))
+				if (fileName != null && File.Exists(fileName) && !Helpers.IsFileBusy(fileName))
 					File.Delete(fileName);
 			}
 		}
@@ -153,6 +151,12 @@ namespace forexAI
 			{
 				console($"exception: {e.Message}");
 			}
+		}
+
+		public static void logIf(bool ifCase, string lines, string fileName = null)
+		{
+			if (ifCase)
+				log(lines, fileName);
 		}
 
 		public static void consolelog(string lines, string fileName = null)

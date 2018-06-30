@@ -59,23 +59,22 @@ namespace forexAI
 		static double[] fullInputSet = null;
 		static object[] functionArguments = null;
 		static bool failedReassemble = false;
-		static bool reassemblyCompleteLogged = false;
+		static bool reassemblyStage = true;
 		private static string allFunctionsMark;
 
 		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork,
 			bool reassemblingCompletedOverride, MqlApi mqlApi)
 		{
-			reassemblyCompleteLogged = reassemblingCompletedOverride;
+			reassemblyStage = reassemblingCompletedOverride;
 
 			allFunctionsMark = string.Empty;
 
-			if (!reassemblyCompleteLogged)
-				log($"=> Reassembling input sequence ...");
+			logIf(reassemblyStage, $"=> Reassembling input sequence ...");
 
 			fullInputSet = null;
 
 			if (failedReassemble)
-				reassemblyCompleteLogged = false;
+				reassemblyStage = true;
 
 			failedReassemble = false;
 
@@ -93,8 +92,7 @@ namespace forexAI
 				log($"hash of configuration: {hashOfFunctionConfiguration}");
 			}
 
-			if (!reassemblyCompleteLogged)
-				log($"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
+			logIf(reassemblyStage, $"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
 
 			networkFunctionsCount = functionConfigurationInput.Count;
 
@@ -292,7 +290,7 @@ namespace forexAI
 					paramIndex++;
 				}
 
-				if (!reassemblyCompleteLogged)
+				if (reassemblyStage)
 					log($"=> {functionName} arguments({functionArguments.Length})={SerializeObject(functionArguments)}");
 
 				functionArguments[OutIndex] = new double[inputDimension];
@@ -334,9 +332,9 @@ namespace forexAI
 
 						for (int i = 0; i < OutNbElement; i++)
 						{
-							if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblyCompleteLogged)
+							if (resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
 								warning($"fucking function {functionName} starts with zero");
-							if (resultDataDouble[i] == 0.0 && i == OutNbElement - 1 && !reassemblyCompleteLogged)
+							if (resultDataDouble[i] == 0.0 && i == OutNbElement - 1 && reassemblyStage)
 								warning($"fucking function {functionName} ends with zero");
 						}
 					}
@@ -345,17 +343,16 @@ namespace forexAI
 						resultDataDouble = (double[]) functionArguments[OutIndex];
 						for (int i = 0; i < OutNbElement; i++)
 						{
-							if (resultDataDouble[i] == 0.0 && i == 0 && !reassemblyCompleteLogged)
+							if (resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
 								warning($"fucking function {functionName} starts with zero");
 						}
 					}
 
 					startIdx = (int) functionArguments[nOutBegIdx];
-					if (!reassemblyCompleteLogged && startIdx != 0)
+					if (reassemblyStage && startIdx != 0)
 						warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
 
-					if (!reassemblyCompleteLogged)
-						log($"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
+					logIf(reassemblyStage, $"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
 					int prevLen = fullInputSet == null ? 0 : fullInputSet.Length;
 					int newLen = (fullInputSet == null ? 0 : fullInputSet.Length) + resultDataDouble.Length - startIdx;
@@ -369,42 +366,40 @@ namespace forexAI
 				}
 			}
 
-			if (!reassemblyCompleteLogged)
-				log($"=> ret={ret} entireset={SerializeObject(fullInputSet)}");
+			logIf(reassemblyStage, $"=> ret={ret} entireset={SerializeObject(fullInputSet)}");
 
 			if (neuralNetwork.InputCount != fullInputSet.Length)
 			{
 				error($"=> reassembler FAILED to reassemble input sequence: diff in input count of network is " +
 					$"{Math.Abs(fullInputSet.Length - neuralNetwork.InputCount)}");
-				reassemblyCompleteLogged = false;
+				reassemblyStage = false;
 				failedReassemble = true;
 				return (0, null);
 			}
 
-			if (!reassemblyCompleteLogged)
-				log($"=> Reassembling [ SUCCESS ] ");
+			logIf(reassemblyStage, $"=> Reassembling [ SUCCESS ] ");
 
-			TrainingData trainData = new TrainingData();
-			trainData.SetTrainData((uint) 1, fullInputSet, fullInputSet);
+			//TrainingData trainData = new TrainingData();
+			//trainData.SetTrainData((uint) 1, fullInputSet, fullInputSet);
 
-			JsonSerializerSettings jsonSettings2 = new JsonSerializerSettings
-			{
-				MaxDepth = 5,
-				Formatting = Formatting.Indented,
-				PreserveReferencesHandling = PreserveReferencesHandling.All
-			};
+			//JsonSerializerSettings jsonSettings2 = new JsonSerializerSettings
+			//{
+			//	MaxDepth = 5,
+			//	Formatting = Formatting.Indented,
+			//	PreserveReferencesHandling = PreserveReferencesHandling.All
+			//};
 
-			File.WriteAllText($"{Configuration.rootDirectory}\\unscaledset.dat", $"[Functions: {allFunctionsMark}]" +
-				"\r\n\r\n" + SerializeObject(fullInputSet, jsonSettings2));
+			//File.WriteAllText($"{Configuration.rootDirectory}\\unscaledset.dat", $"[Functions: {allFunctionsMark}]" +
+			//	"\r\n\r\n" + SerializeObject(fullInputSet, jsonSettings2));
 
-			neuralNetwork.ScaleInput(trainData.GetTrainInput(0));
+			//neuralNetwork.ScaleInput(trainData.GetTrainInput(0));
 
-			File.WriteAllText($"{Configuration.rootDirectory}\\scaledset.dat", SerializeObject(trainData.Input[0], jsonSettings2));
+			//File.WriteAllText($"{Configuration.rootDirectory}\\scaledset.dat", SerializeObject(trainData.GetTrainInput(0).Array, jsonSettings2));
 
-			double[] networkOutput = neuralNetwork.Run(trainData.GetTrainInput(0));
+			double[] networkOutput = neuralNetwork.Run(fullInputSet);
 			neuralNetwork.DescaleOutput(networkOutput);
 
-			reassemblyCompleteLogged = true;
+			reassemblyStage = false;
 			return (networkFunctionsCount, networkOutput);
 		}
 	}
