@@ -20,7 +20,7 @@ namespace forexAI
 	{
 		// common configuration    
 		public static string rootDirectory = @"d:\forexAI";
-		public static string logFileName = $@"mt4EA";
+		public static string logFileName = "mt4EA";
 		public static string settingsFilePath = $@"{rootDirectory}\mt4EA.cfg";
 		public static string XXRandomLogFileName = $@"{rootDirectory}\seed";
 		public static string YYYRandomLogFileName = $@"{rootDirectory}\Yseed";
@@ -33,7 +33,7 @@ namespace forexAI
 		public static bool useMysql = false;
 		public static bool useAudio = true;
 		public static int memcachedPort = 11211;
-		public static int magickNumber = 0xC34;
+		public static int magickNumber = 0xc34;
 
 		// ♫ ♫ ♫ √
 		// audio/FX

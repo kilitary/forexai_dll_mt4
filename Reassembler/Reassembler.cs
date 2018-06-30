@@ -50,36 +50,35 @@ namespace forexAI
 		static LivePrices prices = new LivePrices();
 		static Dictionary<string, FunctionsConfiguration> functionConfigurationInput;
 		static Core.RetCode ret = Core.RetCode.UnknownErr;
-		static int OutBegIdx = 0;
-		static int OutNbElement = -1;
+		static Random random = new Random();
+		static bool failedReassemble = false;
+		static bool reassemblyStage = true;
+		static int outBegIdx = 0;
+		static int outNbElement = -1;
 		static int pOutNbElement = 0;
-		static int OutIndex = -1;
+		static int outIndex = -1;
 		static int typeOut = 0;
 		static int nOutBegIdx = 0;
 		static int startIdx = 0;
-		static int fidx = 0;
 		static int iReal = 0;
-		static Random random = new Random();
 		static int networkFunctionsCount = 0;
 		static int[] resultDataInt = null;
 		static string paramName = String.Empty;
 		static string comment = string.Empty;
 		static string functionName = string.Empty;
+		static string functionsNamesList;
 		static string functionConfigurationHash = string.Empty;
 		static double paramValue = 0.0;
 		static double[] resultDataDouble = null;
 		static double[] fullInputSet = null;
 		static object[] functionArguments = null;
-		static bool failedReassemble = false;
-		static bool reassemblyStage = true;
-		private static string allFunctionsMark;
 
 		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork,
 			bool reassemblingCompletedOverride, MqlApi mqlApi)
 		{
 			reassemblyStage = reassemblingCompletedOverride;
 
-			allFunctionsMark = string.Empty;
+			functionsNamesList = string.Empty;
 
 			logIf(reassemblyStage, $"=> Reassembling input sequence ...");
 
@@ -110,17 +109,18 @@ namespace forexAI
 
 			foreach (var function in functionConfigurationInput)
 			{
-				functionName = function.Key;
-				FunctionsConfiguration conf = function.Value;
-
 				string stringOut = string.Empty;
-				functionArguments = new object[conf.parameters.parametersMap.Count];
-				int paramIndex = 0;
 				string[] values = new string[4];
+				int paramIndex = 0;
 				int numFunctionDimension = inputDimension;
 				int internalIndex;
 
-				foreach (var param in conf.parameters.parametersMap)
+				functionName = function.Key;
+				FunctionsConfiguration functionConfiguration = function.Value;
+
+				functionArguments = new object[functionConfiguration.parameters.parametersMap.Count];
+
+				foreach (var param in functionConfiguration.parameters.parametersMap)
 				{
 					values = param.Split('|');
 					paramName = values[1];
@@ -265,21 +265,21 @@ namespace forexAI
 							functionArguments[paramIndex] = prices.GetVolume(numFunctionDimension, mqlApi.Bars, mqlApi.Volume);
 							break;
 						case "outBegIdx":
-							functionArguments[paramIndex] = OutBegIdx;
+							functionArguments[paramIndex] = outBegIdx;
 							nOutBegIdx = paramIndex;
 							break;
 						case "outNBElement":
-							functionArguments[paramIndex] = OutNbElement;
-							OutNbElement = pOutNbElement = paramIndex;
+							functionArguments[paramIndex] = outNbElement;
+							outNbElement = pOutNbElement = paramIndex;
 							break;
 						case "outInteger":
 							functionArguments[paramIndex] = new int[numFunctionDimension];
-							OutIndex = paramIndex;
+							outIndex = paramIndex;
 							typeOut = 0;
 							break;
 						case "outReal":
 							functionArguments[paramIndex] = new double[numFunctionDimension];
-							OutIndex = paramIndex;
+							outIndex = paramIndex;
 							typeOut = 1;
 							break;
 						case "outAroonUp":
@@ -304,9 +304,9 @@ namespace forexAI
 
 				logIf(reassemblyStage, $"=> {functionName} arguments({functionArguments.Length})={SerializeObject(functionArguments)}");
 
-				functionArguments[OutIndex] = new double[inputDimension];
+				functionArguments[outIndex] = new double[inputDimension];
 
-				Type[] functionTypes = new Type[conf.parameters.parametersMap.Count];
+				Type[] functionTypes = new Type[functionConfiguration.parameters.parametersMap.Count];
 				int idx = 0;
 				foreach (var arg in functionArguments)
 				{
@@ -315,7 +315,7 @@ namespace forexAI
 					else
 						functionTypes[idx] = arg.GetType();
 
-					if (OutNbElement == idx)
+					if (outNbElement == idx)
 						functionTypes[idx] = arg.GetType().MakeByRefType();
 
 					if (nOutBegIdx == idx)
@@ -332,27 +332,25 @@ namespace forexAI
 				else
 				{
 					ret = (Core.RetCode) FunctionPointer.Invoke(null, functionArguments);
-					int idxS = 0;
-
 					if (typeOut == 0)
 					{
-						resultDataInt = (int[]) functionArguments[OutIndex];
-						Array.Resize<double>(ref resultDataDouble, OutNbElement);
+						resultDataInt = (int[]) functionArguments[outIndex];
+						Array.Resize<double>(ref resultDataDouble, outNbElement);
 
-						Array.Copy(resultDataInt, resultDataDouble, OutNbElement);
+						Array.Copy(resultDataInt, resultDataDouble, outNbElement);
 
-						for (int i = 0; i < OutNbElement; i++)
+						for (int i = 0; i < outNbElement; i++)
 						{
 							if (resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
 								warning($"fucking function {functionName} starts with zero");
-							if (resultDataDouble[i] == 0.0 && i == OutNbElement - 1 && reassemblyStage)
+							if (resultDataDouble[i] == 0.0 && i == outNbElement - 1 && reassemblyStage)
 								warning($"fucking function {functionName} ends with zero");
 						}
 					}
 					else
 					{
-						resultDataDouble = (double[]) functionArguments[OutIndex];
-						for (int i = 0; i < OutNbElement; i++)
+						resultDataDouble = (double[]) functionArguments[outIndex];
+						for (int i = 0; i < outNbElement; i++)
 						{
 							if (resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
 								warning($"fucking function {functionName} starts with zero");
@@ -361,7 +359,7 @@ namespace forexAI
 
 					startIdx = (int) functionArguments[nOutBegIdx];
 					if (reassemblyStage && startIdx != 0)
-						warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={OutNbElement}, begIdx={OutBegIdx})");
+						warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={outNbElement}, begIdx={outBegIdx})");
 
 					logIf(reassemblyStage, $"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
@@ -373,7 +371,7 @@ namespace forexAI
 					Array.Copy(resultDataDouble, startIdx, fullInputSet, prevLen > 0 ? prevLen - 1 : 0,
 						resultDataDouble.Length - startIdx);
 
-					allFunctionsMark += (allFunctionsMark.Length > 0 ? "+" : "") + $"{function.Key}[{numFunctionDimension}]";
+					functionsNamesList += (functionsNamesList.Length > 0 ? "+" : "") + $"{function.Key}[{numFunctionDimension}]";
 				}
 			}
 

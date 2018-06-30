@@ -9,9 +9,11 @@ namespace forexAI
 {
 	class Order
 	{
-		public int ticket;
 		public OrderType type;
 		public DateTime openTime;
+		public DateTime expiration;
+		public int ticket;
+		public int magickNumber;
 		public string symbol;
 		public double lots;
 		public double profit;
@@ -22,15 +24,7 @@ namespace forexAI
 		public string comment;
 		public double ageInMinutes;
 		public double takeProfit;
-		public DateTime expiration;
-		public int magickNumber;
 
-		public double currentProfit
-		{
-			get
-			{
-				return profit + commission + swap;
-			}
-		}
+		public double currentProfit => profit + commission + swap;
 	}
 }

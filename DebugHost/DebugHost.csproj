@@ -37,7 +37,7 @@
     <UpdatePackageVersion>False</UpdatePackageVersion>
     <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
     <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
-    <AssemblyFileVersionSettings>None.DayOfYearStamp.Increment.None</AssemblyFileVersionSettings>
+    <AssemblyFileVersionSettings>None.DayOfYearStamp.IncrementOnDemand.None</AssemblyFileVersionSettings>
     <PrimaryVersionType>AssemblyFileVersionAttribute</PrimaryVersionType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

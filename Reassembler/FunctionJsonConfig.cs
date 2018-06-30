@@ -13,20 +13,20 @@ namespace forexAI
 		public string ClassName;
 		public string Signature;
 		public string Signature2;
-		public int MemberType;
 		public object GenericArguments;
+		public int MemberType;
 	}
 
 	public struct FunctionParameters
 	{
-		public int ParamIndex;
-		public int NumData;
-		public int OutBegIdx;
-		public int Offset;
 		public List<string> parametersMap;
 		public object Arguments;
 		public int OutIndex;
 		public int OutNbElement;
+		public int ParamIndex;
+		public int NumData;
+		public int OutBegIdx;
+		public int Offset;
 	}
 
 	public struct FunctionsConfiguration

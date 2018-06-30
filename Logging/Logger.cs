@@ -170,7 +170,7 @@ namespace forexAI
 					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " + lines);
 				file.Close();
 
-				console(lines, ConsoleColor.Black, ConsoleColor.Cyan);
+				console(lines, ConsoleColor.Black, ConsoleColor.White);
 			}
 			catch (Exception e)
 			{

@@ -59,6 +59,8 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <FileAlignment>8192</FileAlignment>
     <BaseAddress>1048576</BaseAddress>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>

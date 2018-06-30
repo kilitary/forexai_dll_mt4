@@ -126,7 +126,6 @@ namespace forexAI
 		double total = 0.0;
 		double spends = 0.0;
 		double profit = 0.0;
-		double prevVolume;
 		double minStopLevel = 0;
 		double ordersStopPoints = 0;
 		double risky2_Risk = 2;
@@ -179,7 +178,7 @@ namespace forexAI
 		int marketCollapsedBar = 0;
 
 		// computed properties
-		int ordersCount => OrdersTotal();
+		int ordersCount => activeOrders.Count();
 		int tradeBarPeriodGone => Bars - lastTradeBar;
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
@@ -462,7 +461,7 @@ namespace forexAI
 			console($"--------------[ START tick={startTime} day={currentDay} ]-----------------",
 				ConsoleColor.Black, ConsoleColor.Cyan);
 
-			console($"Initializing (framework={Environment.Version.ToString()}) ...");
+			console($"> Initializing (with Net.framework={Environment.Version.ToString()}) ...");
 
 			mqlApi = this;
 
@@ -731,7 +730,8 @@ namespace forexAI
 						comment = OrderComment(),
 						takeProfit = OrderTakeProfit(),
 						ageInMinutes = now.Subtract(OrderOpenTime()).TotalMinutes,
-						expiration = OrderExpiration()
+						expiration = OrderExpiration(),
+						magickNumber = OrderMagicNumber()
 					};
 
 					if (OrderType() == OP_BUY)
@@ -1249,7 +1249,7 @@ namespace forexAI
 		{
 			int i;
 
-			for (i = 0; i < 11; i++)
+			for (i = 0; i < ordersCount; i++)
 			{
 				labelID = "order" + i;
 				if (ObjectFind(labelID) == -1)
@@ -1259,8 +1259,7 @@ namespace forexAI
 					ObjectSet(labelID, OBJPROP_XDISTANCE, 1344);
 					ObjectSet(labelID, OBJPROP_YDISTANCE, i * 18);
 				}
-
-				ObjectSetText(labelID, "                                    ", 8, "consolas", Color.White);
+				ObjectSetText(labelID, "                                    ", 8, "lucida console", Color.White);
 			}
 
 			int index = 0;
