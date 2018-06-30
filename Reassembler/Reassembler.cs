@@ -65,7 +65,7 @@ namespace forexAI
 		static string paramName = String.Empty;
 		static string comment = string.Empty;
 		static string functionName = string.Empty;
-		static string hashOfFunctionConfiguration = string.Empty;
+		static string functionConfigurationHash = string.Empty;
 		static double paramValue = 0.0;
 		static double[] resultDataDouble = null;
 		static double[] fullInputSet = null;
@@ -90,9 +90,9 @@ namespace forexAI
 
 			failedReassemble = false;
 
-			if (hashOfFunctionConfiguration != Hash.md5(functionConfigurationString))
+			if (functionConfigurationHash != Hash.md5(functionConfigurationString))
 			{
-				log($"hashOfFunctionConfiguration ({hashOfFunctionConfiguration}) not match content, deserializing {functionConfigurationString.Length} bytes ...");
+				log($"hashOfFunctionConfiguration ({functionConfigurationHash}) not match content, deserializing {functionConfigurationString.Length} bytes ...");
 				var jsonSettings = new JsonSerializerSettings
 				{
 					MetadataPropertyHandling = MetadataPropertyHandling.Ignore
@@ -100,8 +100,8 @@ namespace forexAI
 				functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
 					(functionConfigurationString, jsonSettings);
 
-				hashOfFunctionConfiguration = Hash.md5(functionConfigurationString);
-				log($"hash of configuration: {hashOfFunctionConfiguration}");
+				functionConfigurationHash = Hash.md5(functionConfigurationString);
+				log($"hash of configuration: {functionConfigurationHash}");
 			}
 
 			logIf(reassemblyStage, $"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");

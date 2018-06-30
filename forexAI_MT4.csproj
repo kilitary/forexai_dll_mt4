@@ -55,8 +55,7 @@
     <DebugSymbols>false</DebugSymbols>
     <LangVersion>7.3</LangVersion>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <FileAlignment>8192</FileAlignment>
     <BaseAddress>1048576</BaseAddress>
@@ -144,7 +143,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
