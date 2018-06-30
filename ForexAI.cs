@@ -452,6 +452,11 @@ namespace forexAI
 		public override int init()
 		{
 			startTime = GetTickCount();
+			if (runTimer == null)
+			{
+				runTimer = new Stopwatch();
+				runTimer.Start();
+			}
 			currentDay = (int) DateTime.Now.DayOfWeek;
 
 			console($"--------------[ START tick={startTime} day={currentDay} ]-----------------",
@@ -529,11 +534,11 @@ namespace forexAI
 
 		public override int start()
 		{
-			if (runTimer == null)
-			{
-				runTimer = new Stopwatch();
-				runTimer.Start();
-			}
+			SyncOrders();
+			CheckForAutoClose();
+			CheckForMarketCollapse();
+			CloseNegativeOrders();
+			TrailPositions();
 
 			if (!IsOptimization())
 			{
@@ -551,11 +556,6 @@ namespace forexAI
 				}
 			}
 
-			SyncOrders();
-			CheckForMarketCollapse();
-			CloseNegativeOrders();
-			TrailPositions();
-
 			if (Bars == previousBars)
 				return 0;
 
@@ -565,16 +565,9 @@ namespace forexAI
 					inputDimension, forexFannNetwork, reassembleStageOverride, mqlApi);
 
 				EnterTrade();
-				`
+
 				if (counterTrading)
 					EnterCounterTrade();
-			}
-
-			if (activeLoss + activeProfit >= 0.0 && (buyProfit < 0.0 || sellProfit < 0.0) && ordersCount >= 2)
-			{
-				log($"auto-close profit activeIncome:{activeIncome} activeLoss:{activeLoss} " +
-					$" buyProft:{buyProfit} sellProfit:{sellProfit} ordersCount:{ordersCount}", "debug");
-				CloseAllOrders();
 			}
 
 			if (!IsOptimization())
@@ -634,6 +627,16 @@ namespace forexAI
 			return 0;
 		}
 
+		private void CheckForAutoClose()
+		{
+			if (activeLoss + activeProfit >= 0.0 && (buyProfit < 0.0 || sellProfit < 0.0) && ordersCount >= 2)
+			{
+				log($"auto-close profit activeIncome:{activeIncome} activeLoss:{activeLoss} " +
+					$" buyProft:{buyProfit} sellProfit:{sellProfit} ordersCount:{ordersCount}", "debug");
+				CloseAllOrders();
+			}
+		}
+
 		public override int deinit()
 		{
 			log("Deinitializing ...");
@@ -659,7 +662,7 @@ namespace forexAI
 
 		private void CheckForMarketCollapse()
 		{
-			var change = Math.Max(Open[0], Close[0]) - Math.Min(Open[1], Close[1]);
+			var change = Math.Max(High[0], Low[0]) - Math.Min(High[1], Low[1]);
 			if ((change >= collapseChangePoints) && Bars - marketCollapsedBar >= 3)
 			{
 				console($"Market collapse detected on {TimeCurrent()} change: {change.ToString("0.00000")}, going {collapseDirection}",
@@ -1406,7 +1409,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 191);
 			}
-			ObjectSetText(labelID, "Buy Prob. " + buyProbability.ToString("0.00"), 19, "consolas",
+			ObjectSetText(labelID, "Buy Prob. " + buyProbability.ToString("0.00"), 17, "liberation mono",
 				buyProbability > 0.0 ? Color.LightCyan : Color.Gray);
 
 			labelID = gs_80 + "12";
@@ -1417,7 +1420,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 442);
 			}
-			ObjectSetText(labelID, "Sell Prob. " + sellProbability.ToString("0.00"), 19, "consolas",
+			ObjectSetText(labelID, "Sell Prob. " + sellProbability.ToString("0.00"), 17, "liberation mono",
 				sellProbability > 0.0 ? Color.LightCyan : Color.Gray);
 
 			labelID = gs_80 + "13";
@@ -1430,7 +1433,7 @@ namespace forexAI
 			}
 			ObjectSetText(labelID, "[" + (isTrendStable ? "STABLE" : "UNSTABLE") +
 				$" {(isTrendStable ? stableTrendBar : unstableTrendBar)}" +
-				$" : {diffProbability.ToString("0.00")}]", 19, "consolas",
+				$" : {diffProbability.ToString("0.00")}]", 17, "liberation mono",
 				isTrendStable ? Color.LightGreen : Color.Red);
 
 			totalSpends = spendSells + spendBuys;
