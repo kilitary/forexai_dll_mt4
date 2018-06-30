@@ -1,2 +1,5 @@
-﻿0) random dimension on each function invocation (mt4trainer)
+﻿*** current version ***
+1) random dimension on each function generation (mt4trainer)
+
+*** further versions ***
 1) more math libs

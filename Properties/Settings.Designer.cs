@@ -22,5 +22,59 @@ namespace forexAI.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Settingdgfdfg {
+            get {
+                return ((bool)(this["Settingdgfdfg"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2018-06-15")]
+        public global::System.DateTime Settingsdfdsf {
+            get {
+                return ((global::System.DateTime)(this["Settingsdfdsf"]));
+            }
+            set {
+                this["Settingsdfdsf"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("sdfsdf")]
+        public string sdfdsf {
+            get {
+                return ((string)(this["sdfdsf"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::NQuotes.Config Setting {
+            get {
+                return ((global::NQuotes.Config)(this["Setting"]));
+            }
+            set {
+                this["Setting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("354")]
+        public short Setting1 {
+            get {
+                return ((short)(this["Setting1"]));
+            }
+            set {
+                this["Setting1"] = value;
+            }
+        }
     }
 }

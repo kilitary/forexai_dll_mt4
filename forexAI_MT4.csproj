@@ -14,9 +14,9 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>0.0.565.0</AssemblyVersion>
+    <AssemblyVersion>0.0.589.18</AssemblyVersion>
     <ShouldCreateLogs>False</ShouldCreateLogs>
-    <AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
+    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
     <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
     <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
     <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
@@ -43,7 +43,7 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>
@@ -52,14 +52,14 @@
     <WarningLevel>2</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>false</DebugSymbols>
     <LangVersion>7.3</LangVersion>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <FileAlignment>512</FileAlignment>
-    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>8192</FileAlignment>
+    <BaseAddress>1048576</BaseAddress>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>
@@ -68,8 +68,7 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>efgdfgf.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Enyim.Caching, Version=2.16.0.0, Culture=neutral, PublicKeyToken=cec98615db04012e, processorArchitecture=MSIL">
@@ -145,6 +144,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="ClassDiagram1.cd" />
+    <None Include="efgdfgf.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -154,13 +154,18 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
     <Content Include="Other\ideas.txt" />
+    <None Include="Resources\TextFile1.txt" />
+    <None Include="Resources\Icon1.ico" />
+    <None Include="Resources\QTAgent32_40.exe" />
+    <None Include="Resources\Image1.jpg" />
+    <None Include="Resources\api-ms-win-core-file-l1-2-0.dll" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />

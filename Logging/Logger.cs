@@ -37,7 +37,7 @@ namespace forexAI
 			{
 				console($"Clearing {logFile.FullName} ...");
 				if (!Helpers.IsFileBusy(logFile.FullName))
-					File.WriteAllText($@"{logFile.FullName}", "***\r\n");
+					File.WriteAllText($@"{logFile.FullName}", $"***{DateTime.Now.ToString("HH:mm:ss.fff")}***\r\n");
 				else
 					console($"file {logFile.FullName} busy!");
 			});

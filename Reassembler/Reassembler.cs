@@ -48,6 +48,7 @@ namespace forexAI
 		static int startIdx = 0;
 		static int fidx = 0;
 		static int iReal = 0;
+		static Random random = new Random();
 		static int networkFunctionsCount = 0;
 		static int[] resultDataInt = null;
 		static string paramName = String.Empty;
@@ -105,15 +106,15 @@ namespace forexAI
 				functionArguments = new object[conf.parameters.parametersMap.Count];
 				int paramIndex = 0;
 				string[] values = new string[4];
-				int numData = inputDimension;
-				int id;
+				int numFunctionDimension = inputDimension;
+				int internalIndex;
 
 				foreach (var param in conf.parameters.parametersMap)
 				{
 					values = param.Split('|');
 					paramName = values[1];
 
-					int.TryParse(values[0], out id);
+					int.TryParse(values[0], out internalIndex);
 					comment = values[3];
 					double.TryParse(values[2], out paramValue);
 
@@ -171,16 +172,16 @@ namespace forexAI
 							switch (iReal)
 							{
 								case 0:
-									functionArguments[paramIndex] = prices.GetOpen(numData, mqlApi.Bars, mqlApi.Open);
+									functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, mqlApi.Bars, mqlApi.Open);
 									break;
 								case 1:
-									functionArguments[paramIndex] = prices.GetClose(numData, mqlApi.Bars, mqlApi.Close);
+									functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, mqlApi.Bars, mqlApi.Close);
 									break;
 								case 2:
-									functionArguments[paramIndex] = prices.GetHigh(numData, mqlApi.Bars, mqlApi.High);
+									functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, mqlApi.Bars, mqlApi.High);
 									break;
 								case 3:
-									functionArguments[paramIndex] = prices.GetLow(numData, mqlApi.Bars, mqlApi.Low);
+									functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, mqlApi.Bars, mqlApi.Low);
 									break;
 							}
 
@@ -235,22 +236,22 @@ namespace forexAI
 							functionArguments[paramIndex] = 0;
 							break;
 						case "endIdx":
-							functionArguments[paramIndex] = numData - 1;
+							functionArguments[paramIndex] = numFunctionDimension - 1;
 							break;
 						case "inOpen":
-							functionArguments[paramIndex] = prices.GetOpen(numData, mqlApi.Bars, mqlApi.Open);
+							functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, mqlApi.Bars, mqlApi.Open);
 							break;
 						case "inHigh":
-							functionArguments[paramIndex] = prices.GetHigh(numData, mqlApi.Bars, mqlApi.High);
+							functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, mqlApi.Bars, mqlApi.High);
 							break;
 						case "inLow":
-							functionArguments[paramIndex] = prices.GetLow(numData, mqlApi.Bars, mqlApi.Low);
+							functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, mqlApi.Bars, mqlApi.Low);
 							break;
 						case "inClose":
-							functionArguments[paramIndex] = prices.GetClose(numData, mqlApi.Bars, mqlApi.Close);
+							functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, mqlApi.Bars, mqlApi.Close);
 							break;
 						case "inVolume":
-							functionArguments[paramIndex] = prices.GetVolume(numData, mqlApi.Bars, mqlApi.Volume);
+							functionArguments[paramIndex] = prices.GetVolume(numFunctionDimension, mqlApi.Bars, mqlApi.Volume);
 							break;
 						case "outBegIdx":
 							functionArguments[paramIndex] = OutBegIdx;
@@ -261,12 +262,12 @@ namespace forexAI
 							OutNbElement = pOutNbElement = paramIndex;
 							break;
 						case "outInteger":
-							functionArguments[paramIndex] = new int[numData];
+							functionArguments[paramIndex] = new int[numFunctionDimension];
 							OutIndex = paramIndex;
 							typeOut = 0;
 							break;
 						case "outReal":
-							functionArguments[paramIndex] = new double[numData];
+							functionArguments[paramIndex] = new double[numFunctionDimension];
 							OutIndex = paramIndex;
 							typeOut = 1;
 							break;
@@ -290,8 +291,7 @@ namespace forexAI
 					paramIndex++;
 				}
 
-				if (reassemblyStage)
-					log($"=> {functionName} arguments({functionArguments.Length})={SerializeObject(functionArguments)}");
+				logIf(reassemblyStage, $"=> {functionName} arguments({functionArguments.Length})={SerializeObject(functionArguments)}");
 
 				functionArguments[OutIndex] = new double[inputDimension];
 
@@ -362,11 +362,11 @@ namespace forexAI
 					Array.Copy(resultDataDouble, startIdx, fullInputSet, prevLen > 0 ? prevLen - 1 : 0,
 						resultDataDouble.Length - startIdx);
 
-					allFunctionsMark += (allFunctionsMark.Length > 0 ? "+" : "") + $"{function.Key}[{numData}]";
+					allFunctionsMark += (allFunctionsMark.Length > 0 ? "+" : "") + $"{function.Key}[{numFunctionDimension}]";
 				}
 			}
 
-			logIf(reassemblyStage, $"=> ret={ret} entireset={SerializeObject(fullInputSet)}");
+			logIf(reassemblyStage && fullInputSet != null && fullInputSet.Length > 0, $"ret={ret} entireset={SerializeObject(fullInputSet)}");
 
 			if (neuralNetwork.InputCount != fullInputSet.Length)
 			{
