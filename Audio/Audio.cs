@@ -18,12 +18,10 @@ namespace forexAI
 			if (!Configuration.useAudio)
 				return;
 
-			SoundPlayer fileSound = new SoundPlayer(audioFileName);
-
-			fileSound.Play();
+			new SoundPlayer(audioFileName).Play();
 		}
 
-		public static void TheNewDay()
+		public static void NewDay()
 		{
 			Play(Configuration.newDayWAV);
 		}
@@ -45,7 +43,7 @@ namespace forexAI
 
 		public static void GoodWork()
 		{
-			Play(Configuration.goodJobWAV);
+			Play(Configuration.goodWorkWAV);
 		}
 		public static void LowBalance()
 		{

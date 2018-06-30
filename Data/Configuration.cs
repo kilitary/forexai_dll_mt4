@@ -42,7 +42,7 @@ namespace forexAI
 		public static string profitWAV = $@"{audioDirectory}\209578__zott820__cash-register-purchase.wav";
 		public static string brokenWAV = $@"{audioDirectory}\115276__xdrav__broken-bulb.wav";
 		public static string lowBalanceWAV = $@"{audioDirectory}\0838.wav";
-		public static string goodJobWAV = $@"{audioDirectory}\0816.wav";
+		public static string goodWorkWAV = $@"{audioDirectory}\0816.wav";
 		public static string failWav = $@"{audioDirectory}\fail.wav";
 
 		// ♥ ♥ ♥ ♥ √

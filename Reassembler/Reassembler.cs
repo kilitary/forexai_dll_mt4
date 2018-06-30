@@ -386,7 +386,7 @@ namespace forexAI
 				return (0, null);
 			}
 
-			logIf(reassemblyStage, $"=> Reassembling [ SUCCESS ] ");
+			logIf(reassemblyStage, $"=> Reassembling [ SUCCESS ] Functions: {functionsNamesList}");
 
 			//TrainingData trainData = new TrainingData();
 			//trainData.SetTrainData((uint) 1, fullInputSet, fullInputSet);

@@ -15,52 +15,56 @@ using static Newtonsoft.Json.JsonConvert;
 
 namespace forexAI
 {
-    public class LivePrices
-    {
-        public double[] GetOpen(int numData, int Bars, IMqlArray<double> Open)
-        {
-            double[] prices = new double[(Bars >= numData ? numData : Bars)];
+	public class LivePrices
+	{
+		public double[] GetOpen(int numData, int Bars, IMqlArray<double> Open)
+		{
+			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-            for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-                prices[i] = Open[i];
-            return prices;
-        }
+			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+				prices[i] = Open[i];
 
-        public double[] GetClose(int numData, int Bars, IMqlArray<double> Close)
-        {
-            double[] prices = new double[(Bars >= numData ? numData : Bars)];
+			return prices;
+		}
 
-            for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-                prices[i] = Close[i];
-            return prices;
-        }
+		public double[] GetClose(int numData, int Bars, IMqlArray<double> Close)
+		{
+			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-        public double[] GetHigh(int numData, int Bars, IMqlArray<double> High)
-        {
-            double[] prices = new double[(Bars >= numData ? numData : Bars)];
+			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+				prices[i] = Close[i];
 
-            for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-                prices[i] = High[i];
-            return prices;
-        }
+			return prices;
+		}
 
-        public double[] GetLow(int numData, int Bars, IMqlArray<double> Low)
-        {
-            double[] prices = new double[(Bars >= numData ? numData : Bars)];
+		public double[] GetHigh(int numData, int Bars, IMqlArray<double> High)
+		{
+			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-            for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-                prices[i] = Low[i];
+			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+				prices[i] = High[i];
 
-            return prices;
-        }
+			return prices;
+		}
 
-        public double[] GetVolume(int numData, int Bars, IMqlArray<double> Volume)
-        {
-            double[] prices = new double[(Bars >= numData ? numData : Bars)];
+		public double[] GetLow(int numData, int Bars, IMqlArray<double> Low)
+		{
+			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-            for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-                prices[i] = Volume[i];
-            return prices;
-        }
-    }
+			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+				prices[i] = Low[i];
+
+			return prices;
+		}
+
+		public double[] GetVolume(int numData, int Bars, IMqlArray<double> Volume)
+		{
+			double[] prices = new double[(Bars >= numData ? numData : Bars)];
+
+			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+				prices[i] = Volume[i];
+
+			return prices;
+		}
+	}
 }

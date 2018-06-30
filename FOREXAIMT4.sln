@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugHost", "DebugHost\DebugHost.csproj", "{43F97964-8547-40D0-A6F9-473F2D58C7D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "forexAI_MT4", "forexAI_MT4.csproj", "{B6F386BF-52F9-4B04-A68E-F98A55CEDCFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForexAI_MT4", "ForexAI_MT4.csproj", "{B6F386BF-52F9-4B04-A68E-F98A55CEDCFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +47,15 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {569968DF-B03E-4070-905C-30E0ADB2F7E2}
+	EndGlobalSection
+	GlobalSection(AutomaticVersions) = postSolution
+		UpdateAssemblyVersion = False
+		UpdateAssemblyFileVersion = True
+		UpdateAssemblyInfoVersion = False
+		AssemblyFileVersionSettings = None.None.Increment.IncrementOnDemand
+		UpdatePackageVersion = False
+		AssemblyInfoVersionType = SettingsVersion
+		InheritWinAppVersionFrom = None
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true

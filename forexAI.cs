@@ -75,7 +75,7 @@ namespace forexAI
 		public bool counterTrading = true;
 
 		[ExternVariable]
-		public int countedMeasuredProbabilityBars = 2;
+		public int countedMeasuredProbabilityBars = 4;
 
 		[ExternVariable]
 		public double maxOrderOpenHours = 8.5;
@@ -269,7 +269,7 @@ namespace forexAI
 			}
 		}
 
-		public double lotsOptimized3
+		public double lotsOptimizedV3
 		{
 			get
 			{
@@ -280,7 +280,7 @@ namespace forexAI
 			}
 		}
 
-		public double lotsOptimized2
+		public double lotsOptimizedV2
 		{
 			get
 			{
@@ -304,7 +304,7 @@ namespace forexAI
 			}
 		}
 
-		double lotsOptimized
+		double lotsOptimizedV1
 		{
 			get
 			{
@@ -451,6 +451,13 @@ namespace forexAI
 		public override int init()
 		{
 			startTime = GetTickCount();
+			version = Assembly.GetExecutingAssembly().GetName().Version;
+			console($"> Initializing (with Net.framework={Environment.Version.ToString()}) ...");
+			ShowBanner();
+
+			ClearLogs();
+			EraseLogs(Configuration.XXRandomLogFileName, Configuration.YYYRandomLogFileName);
+
 			if (runTimer == null)
 			{
 				runTimer = new Stopwatch();
@@ -458,35 +465,23 @@ namespace forexAI
 			}
 			currentDay = (int) DateTime.Now.DayOfWeek;
 
-			console($"--------------[ START tick={startTime} day={currentDay} ]-----------------",
-				ConsoleColor.Black, ConsoleColor.Cyan);
-
-			console($"> Initializing (with Net.framework={Environment.Version.ToString()}) ...");
-
 			mqlApi = this;
 
 			neuralNetworkBootstrapped = false;
 			reassembleStageOverride = false;
-
-			version = Assembly.GetExecutingAssembly().GetName().Version;
-			ShowBanner();
-
 			prevBuyProbability = new double[countedMeasuredProbabilityBars];
 			prevSellProbability = new double[countedMeasuredProbabilityBars];
 
 			if (IsOptimization())
 				Configuration.useAudio = false;
-
-			ClearLogs();
-			EraseLogs(Configuration.XXRandomLogFileName, Configuration.YYYRandomLogFileName);
-
+			
 			console($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
 				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={enteringTradeProbability} BlockingTradeProbability={blockingTradeProbability}" +
 				$" MinLossForCounterTrade={minLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersInParallel}" +
 				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
 				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", ConsoleColor.Black, ConsoleColor.Yellow);
 
-			console($"Scanning processor resources ...");
+			console($"Accessing processor performance counters ...");
 			cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
 			console($"Set Core.Compatibility.Metastock");
@@ -521,12 +516,12 @@ namespace forexAI
 
 			DumpInfo();
 
+			reassembleStageOverride = false;
+			neuralNetworkBootstrapped = true;
+
 			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) (v{version})";
 			log(initStr);
 			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
-
-			reassembleStageOverride = false;
-			neuralNetworkBootstrapped = true;
 
 			return 0;
 		}
@@ -563,10 +558,10 @@ namespace forexAI
 				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent,
 					inputDimension, forexFannNetwork, reassembleStageOverride, mqlApi);
 
-				EnterTrade();
+				TryEnterTrade();
 
 				if (counterTrading)
-					EnterCounterTrade();
+					TryEnterCounterTrade();
 			}
 
 			if (!IsOptimization())
@@ -600,7 +595,7 @@ namespace forexAI
 					+ (forexFannNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 				totalOperationsCount += dayOperationsCount;
 				dayOperationsCount = barsPerDay = stableTrendBar = unstableTrendBar = 0;
-				AudioFX.TheNewDay();
+				AudioFX.NewDay();
 			}
 
 			if (AccountBalance() <= 35.0 && !hasNoticedLowBalance)
@@ -630,7 +625,7 @@ namespace forexAI
 		{
 			if (activeLoss + activeProfit >= 0.0 && (buyProfit < 0.0 || sellProfit < 0.0) && ordersCount >= 2)
 			{
-				log($"auto-close profit activeIncome:{activeIncome} activeLoss:{activeLoss} " +
+				consolelog($"auto-close profit activeIncome:{activeIncome} activeLoss:{activeLoss} " +
 					$" buyProft:{buyProfit} sellProfit:{sellProfit} ordersCount:{ordersCount}", "debug");
 				CloseAllOrders();
 			}
@@ -648,8 +643,7 @@ namespace forexAI
 
 			string mins = ((((double) GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
 			log($"Uptime {mins} mins, has do {totalOperationsCount + dayOperationsCount} operations.");
-			console("... shutted down.", ConsoleColor.Black, ConsoleColor.Red);
-
+			console("... shutted down.", ConsoleColor.Black, ConsoleColor.Blue);
 			return 0;
 		}
 
@@ -671,9 +665,9 @@ namespace forexAI
 
 				marketCollapsedBar = Bars;
 				if (collapseDirection == TrendDirection.Up)
-					SendBuy(lotsOptimized2);
+					SendBuy(lotsOptimizedV2);
 				else
-					SendSell(lotsOptimized2);
+					SendSell(lotsOptimizedV2);
 			}
 		}
 
@@ -710,11 +704,11 @@ namespace forexAI
 
 				int orderTicket = OrderTicket();
 
-				var activeOrder = (from order in activeOrders
+				var currentOrder = (from order in activeOrders
 								   where order.ticket == orderTicket
 								   select order).DefaultIfEmpty(null).FirstOrDefault();
 
-				if (activeOrder == null)
+				if (currentOrder == null)
 				{
 					var order = new Order
 					{
@@ -744,13 +738,13 @@ namespace forexAI
 				}
 				else
 				{
-					activeOrder.profit = OrderProfit();
-					activeOrder.commission = OrderCommission();
-					activeOrder.swap = OrderSwap();
-					activeOrder.stopLoss = OrderStopLoss();
-					activeOrder.takeProfit = OrderTakeProfit();
-					activeOrder.ageInMinutes = now.Subtract(activeOrder.openTime).TotalMinutes;
-					activeOrder.expiration = OrderExpiration();
+					currentOrder.profit = OrderProfit();
+					currentOrder.commission = OrderCommission();
+					currentOrder.swap = OrderSwap();
+					currentOrder.stopLoss = OrderStopLoss();
+					currentOrder.takeProfit = OrderTakeProfit();
+					currentOrder.ageInMinutes = now.Subtract(currentOrder.openTime).TotalMinutes;
+					currentOrder.expiration = OrderExpiration();
 				}
 			}
 		}
@@ -797,8 +791,6 @@ namespace forexAI
 			symbol = Symbol();
 			currentProcess = Process.GetCurrentProcess();
 
-			consolelog($"machineName={currentProcess.MachineName}");
-
 			minStopLevel = MarketInfo(symbol, MODE_STOPLEVEL);
 			if (trailingStop < minStopLevel)
 				warning($"minStopLevel={minStopLevel}, while trailingStop={trailingStop}, reducing.");
@@ -812,7 +804,7 @@ namespace forexAI
 			settings["random"] = random.Next(int.MaxValue);
 		}
 
-		public void EnterTrade()
+		public void TryEnterTrade()
 		{
 			RefreshRates();
 
@@ -826,7 +818,7 @@ namespace forexAI
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
-				SendBuy(lotsOptimized2);
+				SendBuy(lotsOptimizedV2);
 
 			if (sellProbability >= enteringTradeProbability
 					&& buyProbability <= blockingTradeProbability
@@ -834,10 +826,10 @@ namespace forexAI
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
-				SendSell(lotsOptimized2);
+				SendSell(lotsOptimizedV2);
 		}
 
-		public void EnterCounterTrade()
+		public void TryEnterCounterTrade()
 		{
 			RefreshRates();
 
@@ -846,10 +838,10 @@ namespace forexAI
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Down
 				&& closestSellDistance >= minOrderDistance
-				&& sellProbability >= 0.2)
+				&& sellProbability >= 0.5)
 			{
 				consolelog($"opening counter-sell [{sellCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
-				SendSell(lotsOptimized3);
+				SendSell(lotsOptimizedV2);
 			}
 
 			if (sellProfit <= minLossForCounterTrade
@@ -857,10 +849,10 @@ namespace forexAI
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Up
 				&& closestBuyDistance >= minOrderDistance
-				&& buyProbability >= 0.2)
+				&& buyProbability >= 0.5)
 			{
 				consolelog($"opening counter-buy [{buyCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
-				SendBuy(lotsOptimized3);
+				SendBuy(lotsOptimizedV2);
 			}
 		}
 
@@ -871,7 +863,7 @@ namespace forexAI
 			for (int i = 0; i < var_total; i++)
 			{
 				name = GlobalVariableName(i);
-				debug($"global var #{i} [{name}={GlobalVariableGet(name)}]");
+				debug($"->var #{i} [{name}={GlobalVariableGet(name)}]");
 			}
 		}
 
@@ -1084,9 +1076,9 @@ namespace forexAI
 			DateTime expirationTime = TimeCurrent();
 			expirationTime = expirationTime.AddHours(3);
 
-			if (OrderSend(symbol, OP_SELL, exactLots > 0.0 ? exactLots : lotsOptimized, Bid, 50, stopLoss, 0, $"Probability:",
+			if (OrderSend(symbol, OP_SELL, exactLots > 0.0 ? exactLots : lotsOptimizedV1, Bid, 50, stopLoss, 0, $"Probability:",
 				Configuration.magickNumber, expirationTime, Color.Red) <= 0)
-				log($"error sending sell: {GetLastError()} balance={AccountBalance()} lots={lotsOptimized}");
+				log($"error sending sell: {GetLastError()} balance={AccountBalance()} lots={lotsOptimizedV1}");
 			else
 				log($"open sell  prob:{sellProbability.ToString("0.00")} @" + Bid);
 
@@ -1102,9 +1094,9 @@ namespace forexAI
 			DateTime expirationTime = TimeCurrent();
 			expirationTime = expirationTime.AddHours(3);
 
-			if (OrderSend(symbol, OP_BUY, exactLots > 0.0 ? exactLots : lotsOptimized, Ask, 50, stopLoss, 0, $"Probability:",
+			if (OrderSend(symbol, OP_BUY, exactLots > 0.0 ? exactLots : lotsOptimizedV1, Ask, 50, stopLoss, 0, $"Probability:",
 				Configuration.magickNumber, expirationTime, Color.Blue) <= 0)
-				log($"error sending buy: {GetLastError()} balance={AccountBalance()} lots={lotsOptimized}");
+				log($"error sending buy: {GetLastError()} balance={AccountBalance()} lots={lotsOptimizedV1}");
 			else
 				log($"open buy  prob:{buyProbability.ToString("0.00")} @" + Ask);
 
