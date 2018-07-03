@@ -54,11 +54,11 @@ namespace forexAI
 		static bool failedReassemble = false;
 		static bool reassemblyStage = true;
 		static int outBegIdx = 0;
-		static int outNumbElement = -1;
+		static int outNumberElement = -1;
 		static int pOutNbElement = 0;
 		static int outIndex = -1;
 		static int typeOut = 0;
-		static int nOutBegIdx = 0;
+		static int nOutStartIdx = 0;
 		static int startIdx = 0;
 		static int iReal = 0;
 		static int networkFunctionsCount = 0;
@@ -275,11 +275,11 @@ namespace forexAI
 							break;
 						case "outBegIdx":
 							functionArguments[paramIndex] = outBegIdx;
-							nOutBegIdx = paramIndex;
+							nOutStartIdx = paramIndex;
 							break;
 						case "outNBElement":
-							functionArguments[paramIndex] = outNumbElement;
-							outNumbElement = pOutNbElement = paramIndex;
+							functionArguments[paramIndex] = outNumberElement;
+							outNumberElement = pOutNbElement = paramIndex;
 							break;
 						case "outInteger":
 							functionArguments[paramIndex] = new int[numFunctionDimension];
@@ -324,10 +324,10 @@ namespace forexAI
 					else
 						functionTypes[idx] = arg.GetType();
 
-					if (outNumbElement == idx)
+					if (outNumberElement == idx)
 						functionTypes[idx] = arg.GetType().MakeByRefType();
 
-					if (nOutBegIdx == idx)
+					if (nOutStartIdx == idx)
 						functionTypes[idx] = arg.GetType().MakeByRefType();
 					idx++;
 				}
@@ -344,48 +344,48 @@ namespace forexAI
 					if (typeOut == 0)
 					{
 						resultDataInt = (int[]) functionArguments[outIndex];
-						Array.Resize<double>(ref resultDataDouble, (int) functionArguments[outNumbElement]);
-						Array.Copy(resultDataInt, resultDataDouble, (int) functionArguments[outNumbElement]);
+						Array.Resize<double>(ref resultDataDouble, (int) functionArguments[outNumberElement]);
+						Array.Copy(resultDataInt, resultDataDouble, (int) functionArguments[outNumberElement]);
 
-						for (int i = 0; i < (int) functionArguments[outNumbElement]; i++)
+						for (int i = 0; i < (int) functionArguments[outNumberElement]; i++)
 						{
 							if (resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
 								warning($"fucking function {functionName} starts with zero");
-							if (resultDataDouble[i] == 0.0 && i == outNumbElement - 1 && reassemblyStage)
+							if (resultDataDouble[i] == 0.0 && i == outNumberElement - 1 && reassemblyStage)
 								warning($"fucking function {functionName} ends with zero");
 						}
 					}
 					else
 					{
 						resultDataDouble = (double[]) functionArguments[outIndex];
-						for (int i = 0; i < (int) functionArguments[outNumbElement]; i++)
+						for (int i = 0; i < (int) functionArguments[outNumberElement]; i++)
 						{
 							if (resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
 								warning($"fucking function {functionName} starts with zero");
 						}
 					}
 
-					startIdx = (int) functionArguments[nOutBegIdx];
+					startIdx = (int) functionArguments[nOutStartIdx];
 					if (reassemblyStage && startIdx != 0)
-						warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={outNumbElement}, begIdx={outBegIdx})");
+						warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={outNumberElement}, begIdx={outBegIdx})");
 
 					logIf(reassemblyStage, $"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
-					consolelog($"point {currentFunctionIndex} {resultDataDouble.Length} {startIdx} {fullInputSet.Length} " +
-						$"{nextPtr} {resultDataDouble.Length - startIdx} {functionArguments[outNumbElement]}");
+					//consolelog($"point {currentFunctionIndex} {resultDataDouble.Length} {startIdx} {fullInputSet.Length} " +
+					//	$"{nextPtr} {resultDataDouble.Length - startIdx} {functionArguments[outNumbElement]}");
 
 					Array.Copy(resultDataDouble, startIdx, fullInputSet, nextPtr, resultDataDouble.Length - startIdx);
 
-					File.WriteAllText($"{Configuration.rootDirectory}\\in.{currentFunctionIndex}.dat",
-						SerializeObject(fullInputSet) + "\r\n" +
-						SerializeObject(resultDataDouble));
+					//File.WriteAllText($"{Configuration.rootDirectory}\\in.{currentFunctionIndex}.dat",
+					//	SerializeObject(fullInputSet) + "\r\n" +
+					//	SerializeObject(resultDataDouble));
 					functionsNamesList += (functionsNamesList.Length > 0 ? "+" : "") +
 						$"{function.Key}[{numFunctionDimension}={resultDataDouble.Length - startIdx}]";
 				}
 				currentFunctionIndex++;
 				nextPtr += resultDataDouble.Length - startIdx;
 
-				File.WriteAllText($"{Configuration.rootDirectory}\\{function.Key}.dat", SerializeObject(resultDataDouble));
+				//File.WriteAllText($"{Configuration.rootDirectory}\\{function.Key}.dat", SerializeObject(resultDataDouble));
 			}
 
 			logIf(reassemblyStage && fullInputSet != null && fullInputSet.Length > 0, $"ret={ret} entireset={SerializeObject(fullInputSet)}");
