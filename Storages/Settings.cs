@@ -19,44 +19,46 @@ using static forexAI.Logger;
 
 namespace forexAI
 {
-	class Settings
+	class Config
 	{
-		private readonly Dictionary<string, object> settings = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> config = new Dictionary<string, object>();
 
 		public object this[string name]
 		{
 			get
 			{
-				return (object) settings[name];
+				return (object) config[name];
 			}
 			set
 			{
-				settings[name] = value.ToString();
+				config[name] = value;
 			}
 		}
 
 		public void Set(string name, object obj)
 		{
-			settings[name] = JsonConvert.SerializeObject(obj, Formatting.Indented);
+			config[name] = obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
 		}
 
 		public object Get(string name)
 		{
-			return JsonConvert.DeserializeObject<object>(settings[name].ToString());
+			return config[name];// JsonConvert.DeserializeObject<object>(settings[name].ToString());
 		}
 
-		public Settings()
+		public Config()
 		{
-			settings = JsonConvert.DeserializeObject<Dictionary<string, object>>
-				(File.ReadAllText(Configuration.settingsFilePath));
+			if (File.Exists(Configuration.configFilePath))
+				config = JsonConvert.DeserializeObject<Dictionary<string, object>>
+					(File.ReadAllText(Configuration.configFilePath));
 		}
 
 		public void Save()
 		{
-			File.WriteAllText(Configuration.settingsFilePath, JsonConvert.SerializeObject(settings, Formatting.Indented));
+			log($"saving {JsonConvert.SerializeObject(config, Formatting.Indented)}", "dev");
+			File.WriteAllText(Configuration.configFilePath, JsonConvert.SerializeObject(config, Formatting.Indented));
 		}
 
-		~Settings()
+		~Config()
 		{
 			Save();
 		}

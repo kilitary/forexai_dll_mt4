@@ -97,7 +97,7 @@ namespace forexAI
 
 		//  props
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 314);
-		Settings settings = new Settings();
+		Config config = new Config();
 		List<Order> activeOrders = new List<Order>();
 		List<Order> historyOrders = new List<Order>();
 		NeuralNet forexFannNetwork = null;
@@ -452,7 +452,7 @@ namespace forexAI
 		{
 			startTime = GetTickCount();
 			version = Assembly.GetExecutingAssembly().GetName().Version;
-			console($"> Initializing (with Net.framework={Environment.Version.ToString()}) ...");
+			console($"> Initializing (with .NET framework={Environment.Version.ToString()}) ...");
 			ShowBanner();
 
 			ClearLogs();
@@ -636,9 +636,9 @@ namespace forexAI
 			log("Deinitializing ...");
 			log($"Balance={AccountBalance()} Orders={OrdersTotal()} UninitializeReason={UninitializeReason()}");
 
-			settings.Set("functions", Data.nnFunctions);
-			settings.Set("balance", AccountBalance());
-			settings.Save();
+			config.Set("functions", Data.nnFunctions);
+			config.Set("balance", AccountBalance());
+			config.Save();
 			storage.SyncData();
 
 			string mins = ((((double) GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
@@ -665,9 +665,9 @@ namespace forexAI
 
 				marketCollapsedBar = Bars;
 				if (collapseDirection == TrendDirection.Up)
-					SendBuy(lotsOptimizedV2);
+					OpenBuy(lotsOptimizedV2);
 				else
-					SendSell(lotsOptimizedV2);
+					OpenSell(lotsOptimizedV2);
 			}
 		}
 
@@ -800,8 +800,8 @@ namespace forexAI
 			if (Configuration.useMysql)
 				Data.database = new Database();
 
-			settings["yrandom"] = YRandom.Next(int.MaxValue);
-			settings["random"] = random.Next(int.MaxValue);
+			config["yrandom"] = YRandom.Next(int.MaxValue);
+			config["random"] = random.Next(int.MaxValue);
 		}
 
 		public void TryEnterTrade()
@@ -818,7 +818,7 @@ namespace forexAI
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
-				SendBuy(lotsOptimizedV2);
+				OpenBuy();
 
 			if (sellProbability >= enteringTradeProbability
 					&& buyProbability <= blockingTradeProbability
@@ -826,7 +826,7 @@ namespace forexAI
 					&& ordersCount < maxOrdersInParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
-				SendSell(lotsOptimizedV2);
+				OpenSell();
 		}
 
 		public void TryEnterCounterTrade()
@@ -841,7 +841,7 @@ namespace forexAI
 				&& sellProbability >= 0.5)
 			{
 				consolelog($"opening counter-sell [{sellCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
-				SendSell(lotsOptimizedV2);
+				OpenSell(lotsOptimizedV2);
 			}
 
 			if (sellProfit <= minLossForCounterTrade
@@ -852,7 +852,7 @@ namespace forexAI
 				&& buyProbability >= 0.5)
 			{
 				consolelog($"opening counter-buy [{buyCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
-				SendBuy(lotsOptimizedV2);
+				OpenBuy(lotsOptimizedV2);
 			}
 		}
 
@@ -914,7 +914,7 @@ namespace forexAI
 				return;
 			}
 
-			settings["networks"] = JsonConvert.SerializeObject(networkDirs);
+			config["networks"] = networkDirs;
 		}
 
 		void TestNetworkMSE()
@@ -1070,7 +1070,7 @@ namespace forexAI
 			return ops;
 		}
 
-		void SendSell(double exactLots = 0.0)
+		void OpenSell(double exactLots = 0.0)
 		{
 			double stopLoss = 0;// Ask - ordersStopPoints * Point;
 			DateTime expirationTime = TimeCurrent();
@@ -1088,7 +1088,7 @@ namespace forexAI
 			lastTradeBar = Bars;
 		}
 
-		void SendBuy(double exactLots = 0.0)
+		void OpenBuy(double exactLots = 0.0)
 		{
 			double stopLoss = 0;//Bid - ordersStopPoints * Point;
 			DateTime expirationTime = TimeCurrent();

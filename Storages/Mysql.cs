@@ -84,12 +84,12 @@ namespace forexAI
             }
         }
 
-        public object GetSetting(string key)
+        public object Get(string key)
         {
-            string myInsertQuery = $"SELECT value FROM settings WHERE name = '{key}'";
+            string mySelectQuery = $"SELECT value FROM settings WHERE name = '{key}'";
             string value = "";
 
-            using (var command = new MySqlCommand(myInsertQuery, connection))
+            using (var command = new MySqlCommand(mySelectQuery, connection))
             {
                 using (MySqlDataReader dataReader = command.ExecuteReader())
                 {
@@ -110,18 +110,17 @@ namespace forexAI
             return (string) value;
         }
 
-        public void SetSetting(string key, object value)
+        public void Set(string key, object value)
         {
             string myInsertQuery = $"INSERT INTO settings SET name = '{key}', value = '{value}' " +
                 $"ON DUPLICATE KEY UPDATE value = '{value}'";
 
             try
             {
-				var command = new MySqlCommand(myInsertQuery, connection)
+				new MySqlCommand(myInsertQuery, connection)
 				{
 					Connection = connection
-				};
-				command.ExecuteNonQuery();
+				}.ExecuteNonQuery();
             }
             catch (Exception e)
             {
