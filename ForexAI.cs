@@ -536,7 +536,7 @@ namespace forexAI
 
 			if (!IsOptimization())
 			{
-				if (runTimer.ElapsedMilliseconds - lastDrawStatsTimestamp >= 600)
+				if (runTimer.ElapsedMilliseconds - lastDrawStatsTimestamp >= 300)
 				{
 					CalculateHistoryOrders();
 					DrawStats();

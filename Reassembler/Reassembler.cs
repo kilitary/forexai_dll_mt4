@@ -371,21 +371,21 @@ namespace forexAI
 
 					logIf(reassemblyStage, $"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
-					//consolelog($"point {currentFunctionIndex} {resultDataDouble.Length} {startIdx} {fullInputSet.Length} " +
-					//	$"{nextPtr} {resultDataDouble.Length - startIdx} {functionArguments[outNumbElement]}");
+					consolelog($"point {currentFunctionIndex} {resultDataDouble.Length} {startIdx} {fullInputSet.Length} " +
+						$"{nextPtr} {resultDataDouble.Length - startIdx} {functionArguments[outNumbElement]}");
 
 					Array.Copy(resultDataDouble, startIdx, fullInputSet, nextPtr, resultDataDouble.Length - startIdx);
 
-					//File.WriteAllText($"{Configuration.rootDirectory}\\in.{currentFunctionIndex}.dat",
-					//	SerializeObject(fullInputSet) + "\r\n" +
-					//	SerializeObject(resultDataDouble));
+					File.WriteAllText($"{Configuration.rootDirectory}\\in.{currentFunctionIndex}.dat",
+						SerializeObject(fullInputSet) + "\r\n" +
+						SerializeObject(resultDataDouble));
 					functionsNamesList += (functionsNamesList.Length > 0 ? "+" : "") +
 						$"{function.Key}[{numFunctionDimension}={resultDataDouble.Length - startIdx}]";
 				}
 				currentFunctionIndex++;
 				nextPtr += resultDataDouble.Length - startIdx;
 
-				//File.WriteAllText($"{Configuration.rootDirectory}\\{function.Key}.dat", SerializeObject(resultDataDouble));
+				File.WriteAllText($"{Configuration.rootDirectory}\\{function.Key}.dat", SerializeObject(resultDataDouble));
 			}
 
 			logIf(reassemblyStage && fullInputSet != null && fullInputSet.Length > 0, $"ret={ret} entireset={SerializeObject(fullInputSet)}");
