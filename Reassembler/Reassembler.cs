@@ -54,7 +54,7 @@ namespace forexAI
 		static bool failedReassemble = false;
 		static bool reassemblyStage = true;
 		static int outBegIdx = 0;
-		static int outNbElement = -1;
+		static int outNumbElement = -1;
 		static int pOutNbElement = 0;
 		static int outIndex = -1;
 		static int typeOut = 0;
@@ -62,6 +62,8 @@ namespace forexAI
 		static int startIdx = 0;
 		static int iReal = 0;
 		static int networkFunctionsCount = 0;
+		static int currentFunctionIndex = 0;
+		static int nextPtr = 0;
 		static int[] resultDataInt = null;
 		static string paramName = String.Empty;
 		static string comment = string.Empty;
@@ -83,6 +85,8 @@ namespace forexAI
 			logIf(reassemblyStage, $"=> Reassembling input sequence ...");
 
 			fullInputSet = null;
+			nextPtr = 0;
+			currentFunctionIndex = 0;
 
 			if (failedReassemble)
 				reassemblyStage = true;
@@ -106,6 +110,11 @@ namespace forexAI
 			logIf(reassemblyStage, $"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
 
 			networkFunctionsCount = functionConfigurationInput.Count;
+
+			Array.Resize<double>(ref fullInputSet, (int) neuralNetwork.InputCount);
+			for (var i = 0; i < fullInputSet.Length; i++)
+				fullInputSet[i] = 0.0;
+			logIf(reassemblyStage, $"fullInputSet.Length = {fullInputSet.Length}");
 
 			foreach (var function in functionConfigurationInput)
 			{
@@ -269,8 +278,8 @@ namespace forexAI
 							nOutBegIdx = paramIndex;
 							break;
 						case "outNBElement":
-							functionArguments[paramIndex] = outNbElement;
-							outNbElement = pOutNbElement = paramIndex;
+							functionArguments[paramIndex] = outNumbElement;
+							outNumbElement = pOutNbElement = paramIndex;
 							break;
 						case "outInteger":
 							functionArguments[paramIndex] = new int[numFunctionDimension];
@@ -315,7 +324,7 @@ namespace forexAI
 					else
 						functionTypes[idx] = arg.GetType();
 
-					if (outNbElement == idx)
+					if (outNumbElement == idx)
 						functionTypes[idx] = arg.GetType().MakeByRefType();
 
 					if (nOutBegIdx == idx)
@@ -335,22 +344,21 @@ namespace forexAI
 					if (typeOut == 0)
 					{
 						resultDataInt = (int[]) functionArguments[outIndex];
-						Array.Resize<double>(ref resultDataDouble, outNbElement);
+						Array.Resize<double>(ref resultDataDouble, (int) functionArguments[outNumbElement]);
+						Array.Copy(resultDataInt, resultDataDouble, (int) functionArguments[outNumbElement]);
 
-						Array.Copy(resultDataInt, resultDataDouble, outNbElement);
-
-						for (int i = 0; i < outNbElement; i++)
+						for (int i = 0; i < (int) functionArguments[outNumbElement]; i++)
 						{
 							if (resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
 								warning($"fucking function {functionName} starts with zero");
-							if (resultDataDouble[i] == 0.0 && i == outNbElement - 1 && reassemblyStage)
+							if (resultDataDouble[i] == 0.0 && i == outNumbElement - 1 && reassemblyStage)
 								warning($"fucking function {functionName} ends with zero");
 						}
 					}
 					else
 					{
 						resultDataDouble = (double[]) functionArguments[outIndex];
-						for (int i = 0; i < outNbElement; i++)
+						for (int i = 0; i < (int) functionArguments[outNumbElement]; i++)
 						{
 							if (resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
 								warning($"fucking function {functionName} starts with zero");
@@ -359,20 +367,25 @@ namespace forexAI
 
 					startIdx = (int) functionArguments[nOutBegIdx];
 					if (reassemblyStage && startIdx != 0)
-						warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={outNbElement}, begIdx={outBegIdx})");
+						warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={outNumbElement}, begIdx={outBegIdx})");
 
 					logIf(reassemblyStage, $"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
-					int prevLen = fullInputSet == null ? 0 : fullInputSet.Length;
-					int newLen = (fullInputSet == null ? 0 : fullInputSet.Length) + resultDataDouble.Length - startIdx;
+					//consolelog($"point {currentFunctionIndex} {resultDataDouble.Length} {startIdx} {fullInputSet.Length} " +
+					//	$"{nextPtr} {resultDataDouble.Length - startIdx} {functionArguments[outNumbElement]}");
 
-					//	dump(resultDataDouble, function.Key, "dev");
-					Array.Resize<double>(ref fullInputSet, newLen);
-					Array.Copy(resultDataDouble, startIdx, fullInputSet, prevLen > 0 ? prevLen - 1 : 0,
-						resultDataDouble.Length - startIdx);
+					Array.Copy(resultDataDouble, startIdx, fullInputSet, nextPtr, resultDataDouble.Length - startIdx);
 
-					functionsNamesList += (functionsNamesList.Length > 0 ? "+" : "") + $"{function.Key}[{numFunctionDimension}]";
+					//File.WriteAllText($"{Configuration.rootDirectory}\\in.{currentFunctionIndex}.dat",
+					//	SerializeObject(fullInputSet) + "\r\n" +
+					//	SerializeObject(resultDataDouble));
+					functionsNamesList += (functionsNamesList.Length > 0 ? "+" : "") +
+						$"{function.Key}[{numFunctionDimension}={resultDataDouble.Length - startIdx}]";
 				}
+				currentFunctionIndex++;
+				nextPtr += resultDataDouble.Length - startIdx;
+
+				//File.WriteAllText($"{Configuration.rootDirectory}\\{function.Key}.dat", SerializeObject(resultDataDouble));
 			}
 
 			logIf(reassemblyStage && fullInputSet != null && fullInputSet.Length > 0, $"ret={ret} entireset={SerializeObject(fullInputSet)}");
@@ -391,15 +404,15 @@ namespace forexAI
 			//TrainingData trainData = new TrainingData();
 			//trainData.SetTrainData((uint) 1, fullInputSet, fullInputSet);
 
-			//JsonSerializerSettings jsonSettings2 = new JsonSerializerSettings
-			//{
-			//	MaxDepth = 5,
-			//	Formatting = Formatting.Indented,
-			//	PreserveReferencesHandling = PreserveReferencesHandling.All
-			//};
+			JsonSerializerSettings jsonSettings2 = new JsonSerializerSettings
+			{
+				MaxDepth = 5,
+				//Formatting = Formatting.Indented,
+				PreserveReferencesHandling = PreserveReferencesHandling.All
+			};
 
-			//File.WriteAllText($"{Configuration.rootDirectory}\\unscaledset.dat", $"[Functions: {allFunctionsMark}]" +
-			//	"\r\n\r\n" + SerializeObject(fullInputSet, jsonSettings2));
+			File.WriteAllText($"{Configuration.rootDirectory}\\unscaledset.dat", $"[Functions: {functionsNamesList}]" +
+				"\r\n\r\n" + SerializeObject(fullInputSet, jsonSettings2));
 
 			//neuralNetwork.ScaleInput(trainData.GetTrainInput(0));
 
