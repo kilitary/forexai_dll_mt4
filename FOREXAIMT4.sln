@@ -50,9 +50,9 @@ Global
 	EndGlobalSection
 	GlobalSection(AutomaticVersions) = postSolution
 		UpdateAssemblyVersion = False
-		UpdateAssemblyFileVersion = True
+		UpdateAssemblyFileVersion = False
 		UpdateAssemblyInfoVersion = False
-		AssemblyFileVersionSettings = None.None.Increment.IncrementOnDemand
+		ShouldCreateLogs = True
 		UpdatePackageVersion = False
 		AssemblyInfoVersionType = SettingsVersion
 		InheritWinAppVersionFrom = None
