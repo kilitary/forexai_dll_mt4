@@ -420,11 +420,11 @@ namespace forexAI
 				double nearDistance = 1110.0;
 				foreach (var order in activeOrders)
 				{
-					if (!OrderSelect(order.ticket, SELECT_BY_TICKET) || OrderType() != OP_BUY || OrderCloseTime() != new DateTime(0))
+					if (!OrderSelect(order.ticket, SELECT_BY_TICKET) || order.type != Constants.OrderType.Buy || OrderCloseTime() != new DateTime(0))
 						continue;
 
-					if (Math.Abs(OrderOpenPrice() - Bid) < nearDistance)
-						nearDistance = Math.Abs(OrderOpenPrice() - Bid);
+					if (Math.Abs(order.openPrice - Bid) < nearDistance)
+						nearDistance = Math.Abs(order.openPrice - Bid);
 				}
 				return nearDistance;
 			}
@@ -437,11 +437,11 @@ namespace forexAI
 				double nearDistance = 1110.0;
 				foreach (var order in activeOrders)
 				{
-					if (!OrderSelect(order.ticket, SELECT_BY_TICKET) || OrderType() != OP_SELL || OrderCloseTime() != new DateTime(0))
+					if (!OrderSelect(order.ticket, SELECT_BY_TICKET) || order.type != Constants.OrderType.Sell || OrderCloseTime() != new DateTime(0))
 						continue;
 
-					if (Math.Abs(OrderOpenPrice() - Bid) < nearDistance)
-						nearDistance = Math.Abs(OrderOpenPrice() - Bid);
+					if (Math.Abs(order.openPrice - Bid) < nearDistance)
+						nearDistance = Math.Abs(order.openPrice - Bid);
 				}
 
 				return nearDistance;
@@ -452,6 +452,7 @@ namespace forexAI
 		{
 			startTime = GetTickCount();
 			version = Assembly.GetExecutingAssembly().GetName().Version;
+
 			console($"> Initializing (with .NET framework={Environment.Version.ToString()}) ...");
 			ShowBanner();
 
@@ -474,7 +475,7 @@ namespace forexAI
 
 			if (IsOptimization())
 				Configuration.useAudio = false;
-			
+
 			console($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
 				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={enteringTradeProbability} BlockingTradeProbability={blockingTradeProbability}" +
 				$" MinLossForCounterTrade={minLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersInParallel}" +
@@ -505,14 +506,13 @@ namespace forexAI
 				string network = networkDirs[random.Next(networkDirs.Length - 1)].Name;
 				console($"Loading network {network} ...");
 				LoadNetwork(network);
+
 				if (forexFannNetwork != null)
 				{
 					console($"Testing network MSE ");
 					TestNetworkMSE();
 					console($"Testing network hit ratio ");
 					TestNetworkHitRatio();
-
-					neuralNetworkBootstrapped = true;
 				}
 			}
 
@@ -706,8 +706,8 @@ namespace forexAI
 				int orderTicket = OrderTicket();
 
 				var currentOrder = (from order in activeOrders
-								   where order.ticket == orderTicket
-								   select order).DefaultIfEmpty(null).FirstOrDefault();
+									where order.ticket == orderTicket
+									select order).DefaultIfEmpty(null).FirstOrDefault();
 
 				if (currentOrder == null)
 				{
@@ -903,6 +903,9 @@ namespace forexAI
 			functionsTextContent = File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json");
 
 			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexFannNetwork, true, mqlApi);
+
+			if (networkFunctionsCount > 0)
+				neuralNetworkBootstrapped = true;
 		}
 
 		void ScanNetworks()
