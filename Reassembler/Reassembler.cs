@@ -382,7 +382,7 @@ namespace forexAI
 					//	SerializeObject(fullInputSet) + "\r\n" +
 					//	SerializeObject(resultDataDouble));
 					functionsNamesList += (functionsNamesList.Length > 0 ? "+" : "") +
-						$"[{resultDataDouble.Length - startIdx}/{function.Key}[{numFunctionDimension}]";
+						$"[{function.Key}[{resultDataDouble.Length - startIdx}/{numFunctionDimension}]";
 				}
 				currentFunctionIndex++;
 				nextPtr += resultDataDouble.Length - startIdx;

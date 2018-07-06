@@ -50,10 +50,10 @@ namespace forexAI
 			return result;
 		}
 
-		public static string randomString()
+		public static string randomString(int length = 64)
 		{
 			// create a stronger hash code using RNGCryptoServiceProvider
-			byte[] randomLocal = new byte[64];
+			byte[] randomLocal = new byte[length];
 			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
 			// populate with random bytes
 			rng.GetBytes(randomLocal);
