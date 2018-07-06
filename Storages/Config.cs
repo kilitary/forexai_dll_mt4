@@ -21,13 +21,13 @@ namespace forexAI
 {
 	class Config
 	{
-		private readonly Dictionary<string, object> config = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> config = null;
 
 		public object this[string name]
 		{
 			get
 			{
-				return (object) config[name];
+				return config[name];
 			}
 			set
 			{
@@ -47,6 +47,7 @@ namespace forexAI
 
 		public Config()
 		{
+			config = new Dictionary<string, object>();
 			if (File.Exists(Configuration.configFilePath))
 				config = JsonConvert.DeserializeObject<Dictionary<string, object>>
 					(File.ReadAllText(Configuration.configFilePath));
@@ -54,12 +55,12 @@ namespace forexAI
 
 		public void Save()
 		{
-			log($"saving {JsonConvert.SerializeObject(config, Formatting.Indented)}", "dev");
 			try
 			{
+				log($"saving {JsonConvert.SerializeObject(config, Formatting.Indented)}", "dev");
 				File.WriteAllText(Configuration.configFilePath, JsonConvert.SerializeObject(config, Formatting.Indented));
 			}
-			catch(InvalidOperationException e)
+			catch (InvalidOperationException e)
 			{
 				error($"exception in save config: {e.Message}");
 			}

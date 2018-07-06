@@ -97,17 +97,17 @@ namespace forexAI
 
 		//  props
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 314);
-		Config config = new Config();
-		List<Order> activeOrders = new List<Order>();
 		List<Order> historyOrders = new List<Order>();
-		NeuralNet forexFannNetwork = null;
-		DirectoryInfo[] networkDirs = null;
+		List<Order> activeOrders = new List<Order>();
 		Storage storage = new Storage();
+		Config config = new Config();
 		PerformanceCounter cpuCounter = null;
+		DirectoryInfo[] networkDirs = null;
+		NeuralNet forexFannNetwork = null;
+		TrainingData trainingData = null;
 		Process currentProcess = null;
-		TrainingData trainData = null;
 		TrainingData testData = null;
-		Stopwatch runTimer = null;
+		Stopwatch runWatch = null;
 		Version version = null;
 
 		// MqlApi object (this)
@@ -180,9 +180,9 @@ namespace forexAI
 		// computed properties
 		int ordersCount => activeOrders.Count();
 		int tradeBarPeriodGone => Bars - lastTradeBar;
-		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
-		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
-		double orderProfit => buyProfit + sellProfit;
+		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
+		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
+		double ordersProfit => buyProfit + sellProfit;
 		TrendDirection collapseDirection => High[0] - Low[0] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
 		double diffProbability => sellProbability + buyProbability;
 		int buyCount => activeOrders.Where(o => o.type == Constants.OrderType.Buy).Count();
@@ -417,16 +417,16 @@ namespace forexAI
 		{
 			get
 			{
-				double nearDistance = 1110.0;
+				double minNearDistance = 1110.0;
 				foreach (var order in activeOrders)
 				{
 					if (!OrderSelect(order.ticket, SELECT_BY_TICKET) || order.type != Constants.OrderType.Buy || OrderCloseTime() != new DateTime(0))
 						continue;
 
-					if (Math.Abs(order.openPrice - Bid) < nearDistance)
-						nearDistance = Math.Abs(order.openPrice - Bid);
+					if (Math.Abs(order.openPrice - Bid) < minNearDistance)
+						minNearDistance = Math.Abs(order.openPrice - Bid);
 				}
-				return nearDistance;
+				return minNearDistance;
 			}
 		}
 
@@ -434,40 +434,36 @@ namespace forexAI
 		{
 			get
 			{
-				double nearDistance = 1110.0;
+				double minNearDistance = 1110.0;
 				foreach (var order in activeOrders)
 				{
 					if (!OrderSelect(order.ticket, SELECT_BY_TICKET) || order.type != Constants.OrderType.Sell || OrderCloseTime() != new DateTime(0))
 						continue;
 
-					if (Math.Abs(order.openPrice - Bid) < nearDistance)
-						nearDistance = Math.Abs(order.openPrice - Bid);
+					if (Math.Abs(order.openPrice - Bid) < minNearDistance)
+						minNearDistance = Math.Abs(order.openPrice - Bid);
 				}
 
-				return nearDistance;
+				return minNearDistance;
 			}
 		}
 
 		public override int init()
 		{
 			startTime = GetTickCount();
-			version = Assembly.GetExecutingAssembly().GetName().Version;
-
-			console($"> Initializing (with .NET framework={Environment.Version.ToString()}) ...");
 			ShowBanner();
-
+			version = Assembly.GetExecutingAssembly().GetName().Version;
+			console($"> Initializing (with .NET framework={Environment.Version.ToString()}) ...");
 			ClearLogs();
 			EraseLogs(Configuration.XXRandomLogFileName, Configuration.YYYRandomLogFileName);
 
-			if (runTimer == null)
+			if (runWatch == null)
 			{
-				runTimer = new Stopwatch();
-				runTimer.Start();
+				runWatch = new Stopwatch();
+				runWatch.Start();
 			}
 			currentDay = (int) DateTime.Now.DayOfWeek;
-
 			mqlApi = this;
-
 			neuralNetworkBootstrapped = false;
 			reassembleStageOverride = false;
 			prevBuyProbability = new double[countedMeasuredProbabilityBars];
@@ -481,8 +477,8 @@ namespace forexAI
 				$" MinLossForCounterTrade={minLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersInParallel}" +
 				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
 				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", ConsoleColor.Black, ConsoleColor.Yellow);
-
 			console($"Accessing processor performance counters ...");
+
 			cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
 			console($"Set Core.Compatibility.Metastock");
@@ -505,6 +501,7 @@ namespace forexAI
 			{
 				string network = networkDirs[random.Next(networkDirs.Length - 1)].Name;
 				console($"Loading network {network} ...");
+
 				LoadNetwork(network);
 
 				if (forexFannNetwork != null)
@@ -519,6 +516,8 @@ namespace forexAI
 			DumpInfo();
 
 			reassembleStageOverride = false;
+
+			TextSetFont("liberation mono", 8, 0, 0);
 
 			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) (v{version})";
 			log(initStr);
@@ -537,16 +536,16 @@ namespace forexAI
 
 			if (!IsOptimization())
 			{
-				if (runTimer.ElapsedMilliseconds - lastDrawStatsTimestamp >= 300)
+				if (runWatch.ElapsedMilliseconds - lastDrawStatsTimestamp >= 300)
 				{
 					CalculateHistoryOrders();
 					DrawStats();
-					lastDrawStatsTimestamp = runTimer.ElapsedMilliseconds;
+					lastDrawStatsTimestamp = runWatch.ElapsedMilliseconds;
 				}
 
-				if (runTimer.ElapsedMilliseconds - lastMemoryStatsDumpTimesamp >= 380000)
+				if (runWatch.ElapsedMilliseconds - lastMemoryStatsDumpTimesamp >= 380000)
 				{
-					lastMemoryStatsDumpTimesamp = runTimer.ElapsedMilliseconds;
+					lastMemoryStatsDumpTimesamp = runWatch.ElapsedMilliseconds;
 					Helpers.ShowMemoryUsage();
 				}
 			}
@@ -554,7 +553,7 @@ namespace forexAI
 			if (Bars == previousBars)
 				return 0;
 
-			if (forexFannNetwork != null && neuralNetworkBootstrapped)
+			if (neuralNetworkBootstrapped)
 			{
 				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent,
 					inputDimension, forexFannNetwork, reassembleStageOverride, mqlApi);
@@ -904,7 +903,7 @@ namespace forexAI
 
 			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexFannNetwork, true, mqlApi);
 
-			if (networkFunctionsCount > 0)
+			if (networkFunctionsCount > 0 && fannNetworkOutput.Length > 0)
 				neuralNetworkBootstrapped = true;
 		}
 
@@ -929,12 +928,12 @@ namespace forexAI
 
 			log($" * loading {(((double) fi1.Length + fi2.Length) / 1024.0 / 1024.0).ToString("0.00")}mb of {fannNetworkDirName} data...");
 
-			trainData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
+			trainingData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
 			testData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
 
-			log($" * trainDataLength={trainData.TrainDataLength} testDataLength={testData.TrainDataLength}");
+			log($" * trainDataLength={trainingData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
-			trainMse = forexFannNetwork.TestDataParallel(trainData, 4);
+			trainMse = forexFannNetwork.TestDataParallel(trainingData, 4);
 			testMse = forexFannNetwork.TestDataParallel(testData, 4);
 
 			log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={forexFannNetwork.BitFail}");
@@ -942,7 +941,7 @@ namespace forexAI
 
 		void TestNetworkHitRatio()
 		{
-			trainHitRatio = CalculateHitRatio(trainData.Input, trainData.Output);
+			trainHitRatio = CalculateHitRatio(trainingData.Input, trainingData.Output);
 			testHitRatio = CalculateHitRatio(testData.Input, testData.Output);
 
 			log($" * TrainHitRatio: {trainHitRatio.ToString("0.00")}% TestHitRatio: {testHitRatio.ToString("0.00")}%");
@@ -1131,7 +1130,7 @@ namespace forexAI
 						&& Bid - (TrailingBorder * Point) > order.openPrice
 						&& order.profit + order.commission + order.swap > 0)
 					{
-						log($"modify buy {order.ticket} newStopLoss={newStopLoss}");
+						log($"modify buy {order.ticket} newStopLoss={newStopLoss} profit={order.profit}");
 						OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
 							order.expiration, Color.BlueViolet);
 						dayOperationsCount++;
@@ -1144,7 +1143,7 @@ namespace forexAI
 						&& Ask + (TrailingBorder * Point) < order.openPrice
 						&& order.profit + order.commission + order.swap > 0)
 					{
-						log($"modify sell {OrderTicket()} newStopLoss={newStopLoss}");
+						log($"modify sell {OrderTicket()} newStopLoss={newStopLoss} profit={order.profit}");
 						OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
 							order.expiration, Color.MediumVioletRed);
 						dayOperationsCount++;

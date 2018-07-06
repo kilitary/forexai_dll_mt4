@@ -158,5 +158,11 @@ namespace forexAI
 
 			return result.ToString();
 		}
+
+		public static void ZeroArray(double[] input)
+		{
+			for (var i = 0; i < input.Length; i++)
+				input[i] = 0.0;
+		}
 	}
 }

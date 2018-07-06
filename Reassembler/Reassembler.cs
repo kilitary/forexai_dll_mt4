@@ -47,33 +47,33 @@ namespace forexAI
 {
 	public static class Reassembler
 	{
-		static LivePrices prices = new LivePrices();
 		static Dictionary<string, FunctionsConfiguration> functionConfigurationInput;
 		static Core.RetCode ret = Core.RetCode.UnknownErr;
+		static LivePrices prices = new LivePrices();
 		static Random random = new Random();
-		static bool failedReassemble = false;
-		static bool reassemblyStage = true;
-		static int outBegIdx = 0;
-		static int outNumberElement = -1;
-		static int pOutNbElement = 0;
-		static int outIndex = -1;
-		static int typeOut = 0;
-		static int nOutStartIdx = 0;
-		static int startIdx = 0;
-		static int iReal = 0;
-		static int networkFunctionsCount = 0;
-		static int currentFunctionIndex = 0;
-		static int nextPtr = 0;
-		static int[] resultDataInt = null;
-		static string paramName = String.Empty;
-		static string comment = string.Empty;
-		static string functionName = string.Empty;
-		static string functionsNamesList;
 		static string functionConfigurationHash = string.Empty;
+		static string functionName = string.Empty;
+		static string paramName = string.Empty;
+		static string comment = string.Empty;
+		static string functionsNamesList;
 		static double paramValue = 0.0;
 		static double[] resultDataDouble = null;
 		static double[] fullInputSet = null;
 		static object[] functionArguments = null;
+		static bool failedReassemble = false;
+		static bool reassemblyStage = true;
+		static int[] resultDataInt = null;
+		static int networkFunctionsCount = 0;
+		static int currentFunctionIndex = 0;
+		static int outBegIdx = 0;
+		static int outNumberElement = -1;
+		static int pOutNbElement = 0;
+		static int outIndex = -1;
+		static int outTypeDoubleOrInt = 0;
+		static int nOutStartIdx = 0;
+		static int startIdx = 0;
+		static int arrayIndex = 0;
+		static int setNextArrayIndex = 0;
 
 		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork,
 			bool reassemblingCompletedOverride, MqlApi mqlApi)
@@ -84,8 +84,7 @@ namespace forexAI
 
 			logIf(reassemblyStage, $"=> Reassembling input sequence ...");
 
-			fullInputSet = null;
-			nextPtr = 0;
+			setNextArrayIndex = 0;
 			currentFunctionIndex = 0;
 
 			if (failedReassemble)
@@ -113,8 +112,7 @@ namespace forexAI
 
 			Array.Resize<double>(ref fullInputSet, (int) neuralNetwork.InputCount);
 
-			for (var i = 0; i < fullInputSet.Length; i++)
-				fullInputSet[i] = 0.0;
+			Helpers.ZeroArray(fullInputSet);
 
 			logIf(reassemblyStage, $"fullInputSet.Length = {fullInputSet.Length}");
 
@@ -183,15 +181,15 @@ namespace forexAI
 						case "inReal":
 
 							if (comment.StartsWith("High"))
-								iReal = 2;
+								arrayIndex = 2;
 							if (comment.StartsWith("Open"))
-								iReal = 0;
+								arrayIndex = 0;
 							if (comment.StartsWith("Close"))
-								iReal = 1;
+								arrayIndex = 1;
 							if (comment.StartsWith("Low"))
-								iReal = 3;
+								arrayIndex = 3;
 
-							switch (iReal)
+							switch (arrayIndex)
 							{
 								case 0:
 									functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, mqlApi.Bars, mqlApi.Open);
@@ -286,24 +284,24 @@ namespace forexAI
 						case "outInteger":
 							functionArguments[paramIndex] = new int[numFunctionDimension];
 							outIndex = paramIndex;
-							typeOut = 0;
+							outTypeDoubleOrInt = 0;
 							break;
 						case "outReal":
 							functionArguments[paramIndex] = new double[numFunctionDimension];
 							outIndex = paramIndex;
-							typeOut = 1;
+							outTypeDoubleOrInt = 1;
 							break;
 						case "outAroonUp":
-							functionArguments[paramIndex] = new double[11];
+							functionArguments[paramIndex] = new double[111];
 							break;
 						case "outAroonDown":
-							functionArguments[paramIndex] = new double[11];
+							functionArguments[paramIndex] = new double[111];
 							break;
 						case "outSlowD":
 						case "outSlowK":
 						case "outFastD":
 						case "outFastK":
-							functionArguments[paramIndex] = new double[11];
+							functionArguments[paramIndex] = new double[111];
 							break;
 
 						default:
@@ -343,7 +341,7 @@ namespace forexAI
 				else
 				{
 					ret = (Core.RetCode) FunctionPointer.Invoke(null, functionArguments);
-					if (typeOut == 0)
+					if (outTypeDoubleOrInt == 0)
 					{
 						resultDataInt = (int[]) functionArguments[outIndex];
 						Array.Resize<double>(ref resultDataDouble, (int) functionArguments[outNumberElement]);
@@ -369,14 +367,14 @@ namespace forexAI
 
 					startIdx = (int) functionArguments[nOutStartIdx];
 					if (reassemblyStage && startIdx != 0)
-						warning($"# {functionName}: startIdx = {startIdx} (OutNbElement={outNumberElement}, begIdx={outBegIdx})");
+						warning($"# {functionName}: startIdx = {startIdx} (outNumberElement={outNumberElement}, outBegIdx={outBegIdx})");
 
 					logIf(reassemblyStage, $"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
 					//consolelog($"point {currentFunctionIndex} {resultDataDouble.Length} {startIdx} {fullInputSet.Length} " +
 					//	$"{nextPtr} {resultDataDouble.Length - startIdx} {functionArguments[outNumbElement]}");
 
-					Array.Copy(resultDataDouble, startIdx, fullInputSet, nextPtr, resultDataDouble.Length - startIdx);
+					Array.Copy(resultDataDouble, startIdx, fullInputSet, setNextArrayIndex, resultDataDouble.Length - startIdx);
 
 					//File.WriteAllText($"{Configuration.rootDirectory}\\in.{currentFunctionIndex}.dat",
 					//	SerializeObject(fullInputSet) + "\r\n" +
@@ -385,7 +383,7 @@ namespace forexAI
 						$"[{function.Key}[{resultDataDouble.Length - startIdx}/{numFunctionDimension}]";
 				}
 				currentFunctionIndex++;
-				nextPtr += resultDataDouble.Length - startIdx;
+				setNextArrayIndex += resultDataDouble.Length - startIdx;
 
 				//File.WriteAllText($"{Configuration.rootDirectory}\\{function.Key}.dat", SerializeObject(resultDataDouble));
 			}
