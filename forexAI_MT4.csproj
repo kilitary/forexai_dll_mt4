@@ -160,16 +160,14 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
     <Content Include="Other\ideas.txt" />
-    <None Include="Resources\TextFile1.txt" />
     <None Include="Resources\Icon1.ico" />
-    <None Include="Resources\QTAgent32_40.exe" />
     <None Include="Resources\Image1.jpg" />
-    <None Include="Resources\api-ms-win-core-file-l1-2-0.dll" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />

@@ -61,16 +61,6 @@ namespace forexAI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] api_ms_win_core_file_l1_2_0 {
-            get {
-                object obj = ResourceManager.GetObject("api_ms_win_core_file_l1_2_0", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         public static System.Drawing.Icon Icon1 {
@@ -91,16 +81,6 @@ namespace forexAI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] QTAgent32_40 {
-            get {
-                object obj = ResourceManager.GetObject("QTAgent32_40", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to dfgdfg.
         /// </summary>
         public static string String1 {
@@ -115,15 +95,6 @@ namespace forexAI.Properties {
         public static string String2dfgfdg {
             get {
                 return ResourceManager.GetString("String2dfgfdg", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to nhmhggj.
-        /// </summary>
-        public static string TextFile1 {
-            get {
-                return ResourceManager.GetString("TextFile1", resourceCulture);
             }
         }
     }
