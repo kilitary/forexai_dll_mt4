@@ -55,7 +55,14 @@ namespace forexAI
 		public void Save()
 		{
 			log($"saving {JsonConvert.SerializeObject(config, Formatting.Indented)}", "dev");
-			File.WriteAllText(Configuration.configFilePath, JsonConvert.SerializeObject(config, Formatting.Indented));
+			try
+			{
+				File.WriteAllText(Configuration.configFilePath, JsonConvert.SerializeObject(config, Formatting.Indented));
+			}
+			catch(InvalidOperationException e)
+			{
+				error($"exception in save config: {e.Message}");
+			}
 		}
 
 		~Config()

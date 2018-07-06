@@ -93,7 +93,7 @@ namespace forexAI
 		public double counterTradeLots = 0.02;
 
 		[ExternVariable]
-		public double collapseChangePoints = 0.0028;
+		public double collapseChangePoints = 0.0048;
 
 		//  props
 		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 314);
@@ -142,7 +142,7 @@ namespace forexAI
 		float testMse = 0.0f;
 		float trainMse = 0.0f;
 		long lastDrawStatsTimestamp = 0;
-		long lastMemoryStatsDump = 0;
+		long lastMemoryStatsDumpTimesamp = 0;
 		bool reassembleStageOverride = true;
 		bool hasNoticedLowBalance = false;
 		bool profitTrailing = true;
@@ -343,7 +343,7 @@ namespace forexAI
 				//---- return lot size
 				if (lot < orderLots)
 					lot = orderLots;
-				log($"lotsOpzimied={lot}", "dev");
+				log($"lotsOpzimied={lot}");
 				return lot;
 			}
 		}
@@ -503,7 +503,7 @@ namespace forexAI
 			if (networkDirs.Length > 0)
 			{
 				string network = networkDirs[random.Next(networkDirs.Length - 1)].Name;
-				console($"Loading network [{network}]");
+				console($"Loading network {network} ...");
 				LoadNetwork(network);
 				if (forexFannNetwork != null)
 				{
@@ -511,13 +511,14 @@ namespace forexAI
 					TestNetworkMSE();
 					console($"Testing network hit ratio ");
 					TestNetworkHitRatio();
+
+					neuralNetworkBootstrapped = true;
 				}
 			}
 
 			DumpInfo();
 
 			reassembleStageOverride = false;
-			neuralNetworkBootstrapped = true;
 
 			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) (v{version})";
 			log(initStr);
@@ -543,9 +544,9 @@ namespace forexAI
 					lastDrawStatsTimestamp = runTimer.ElapsedMilliseconds;
 				}
 
-				if (runTimer.ElapsedMilliseconds - lastMemoryStatsDump >= 380000)
+				if (runTimer.ElapsedMilliseconds - lastMemoryStatsDumpTimesamp >= 380000)
 				{
-					lastMemoryStatsDump = runTimer.ElapsedMilliseconds;
+					lastMemoryStatsDumpTimesamp = runTimer.ElapsedMilliseconds;
 					Helpers.ShowMemoryUsage();
 				}
 			}
@@ -800,8 +801,9 @@ namespace forexAI
 			if (Configuration.useMysql)
 				Data.database = new Database();
 
-			config["yrandom"] = YRandom.Next(int.MaxValue);
-			config["random"] = random.Next(int.MaxValue);
+			config["process"] = currentProcess.ToString();
+			config["yrandom"] = (uint) YRandom.Next(int.MaxValue);
+			config["random"] = (uint) random.Next(int.MaxValue);
 		}
 
 		public void TryEnterTrade()
@@ -1400,7 +1402,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 191);
 			}
-			ObjectSetText(labelID, "Buy Prob. " + buyProbability.ToString("0.00"), 17, "liberation mono",
+			ObjectSetText(labelID, "Buy " + buyProbability.ToString("0.00"), 17, "liberation mono",
 				buyProbability > 0.0 ? Color.LightCyan : Color.Gray);
 
 			labelID = gs_80 + "12";
@@ -1411,7 +1413,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 442);
 			}
-			ObjectSetText(labelID, "Sell Prob. " + sellProbability.ToString("0.00"), 17, "liberation mono",
+			ObjectSetText(labelID, "Sell " + sellProbability.ToString("0.00"), 17, "liberation mono",
 				sellProbability > 0.0 ? Color.LightCyan : Color.Gray);
 
 			labelID = gs_80 + "13";

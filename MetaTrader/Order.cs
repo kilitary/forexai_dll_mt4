@@ -15,13 +15,13 @@ namespace forexAI
 		public int ticket;
 		public int magickNumber;
 		public string symbol;
+		public string comment;
 		public double lots;
 		public double profit;
 		public double commission;
 		public double swap;
 		public double stopLoss;
 		public double openPrice;
-		public string comment;
 		public double ageInMinutes;
 		public double takeProfit;
 

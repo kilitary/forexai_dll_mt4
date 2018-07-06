@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using static forexAI.Logger;
+using static Newtonsoft.Json.JsonConvert;
 
 namespace forexAI
 {
@@ -59,6 +60,11 @@ namespace forexAI
 			console($"WorkingSet={(Process.GetCurrentProcess().WorkingSet64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
 				 $"PrivateMemory={(Process.GetCurrentProcess().PrivateMemorySize64 / 1024.0 / 1024.0).ToString("0.00")}mb " +
 				 $"Threads={Process.GetCurrentProcess().Threads.Count}");
+		}
+
+		public static void DumpToFile(string fileName, object value)
+		{
+			File.WriteAllText(fileName, SerializeObject(value, Newtonsoft.Json.Formatting.Indented));
 		}
 	}
 }

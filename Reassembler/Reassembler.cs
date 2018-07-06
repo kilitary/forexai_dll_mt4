@@ -112,8 +112,10 @@ namespace forexAI
 			networkFunctionsCount = functionConfigurationInput.Count;
 
 			Array.Resize<double>(ref fullInputSet, (int) neuralNetwork.InputCount);
+
 			for (var i = 0; i < fullInputSet.Length; i++)
 				fullInputSet[i] = 0.0;
+
 			logIf(reassemblyStage, $"fullInputSet.Length = {fullInputSet.Length}");
 
 			foreach (var function in functionConfigurationInput)
@@ -380,7 +382,7 @@ namespace forexAI
 					//	SerializeObject(fullInputSet) + "\r\n" +
 					//	SerializeObject(resultDataDouble));
 					functionsNamesList += (functionsNamesList.Length > 0 ? "+" : "") +
-						$"{function.Key}[{numFunctionDimension}={resultDataDouble.Length - startIdx}]";
+						$"[{resultDataDouble.Length - startIdx}/{function.Key}[{numFunctionDimension}]";
 				}
 				currentFunctionIndex++;
 				nextPtr += resultDataDouble.Length - startIdx;
