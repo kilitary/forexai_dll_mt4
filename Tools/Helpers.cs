@@ -96,15 +96,14 @@ namespace forexAI
 						string trail = "|...";
 
 						if (recursion > 0)
-						{
 							indent = new StringBuilder(trail).Insert(0, spaces, recursion - 1).ToString();
-						}
 
 						if (value != null)
 						{
 							// If the value is a string, add quotation marks
 							string displayValue = value.ToString();
-							if (value is string) displayValue = String.Concat('"', displayValue, '"');
+							if (value is string)
+								displayValue = String.Concat('"', displayValue, '"');
 
 							// Add property name and value to return string
 							result.AppendFormat("{0}{1} = {2}\n", indent, property.Name, displayValue);

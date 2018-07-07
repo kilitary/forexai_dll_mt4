@@ -182,7 +182,7 @@ namespace forexAI
 		int tradeBarPeriodGone => Bars - lastTradeBar;
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
-		double ordersProfit => buyProfit + sellProfit;
+		double ordersProfit => buysProfit + sellsProfit;
 		TrendDirection collapseDirection => High[0] - Low[0] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
 		double diffProbability => sellProbability + buyProbability;
 		int buyCount => activeOrders.Where(o => o.type == Constants.OrderType.Buy).Count();
@@ -221,7 +221,7 @@ namespace forexAI
 			}
 		}
 
-		double buyProfit
+		double buysProfit
 		{
 			get
 			{
@@ -236,7 +236,7 @@ namespace forexAI
 			}
 		}
 
-		double sellProfit
+		double sellsProfit
 		{
 			get
 			{
@@ -304,7 +304,7 @@ namespace forexAI
 			}
 		}
 
-		double lotsOptimizedV1
+		public double lotsOptimizedV1
 		{
 			get
 			{
@@ -623,10 +623,10 @@ namespace forexAI
 
 		private void CheckForAutoClose()
 		{
-			if (activeLoss + activeProfit >= 0.0 && (buyProfit < 0.0 || sellProfit < 0.0) && ordersCount >= 2)
+			if (activeLoss + activeProfit >= 0.0 && (buysProfit < 0.0 || sellsProfit < 0.0) && ordersCount >= 2)
 			{
 				consolelog($"auto-close profit activeIncome:{activeIncome} activeLoss:{activeLoss} " +
-					$" buyProft:{buyProfit} sellProfit:{sellProfit} ordersCount:{ordersCount}", "debug");
+					$" buyProft:{buysProfit} sellProfit:{sellsProfit} ordersCount:{ordersCount}", "debug");
 				CloseAllOrders();
 			}
 		}
@@ -834,7 +834,7 @@ namespace forexAI
 		{
 			RefreshRates();
 
-			if (buyProfit <= minLossForCounterTrade
+			if (buysProfit <= minLossForCounterTrade
 				&& ordersCount < maxOrdersInParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Down
@@ -845,7 +845,7 @@ namespace forexAI
 				OpenSell(lotsOptimizedV2);
 			}
 
-			if (sellProfit <= minLossForCounterTrade
+			if (sellsProfit <= minLossForCounterTrade
 				&& ordersCount < maxOrdersInParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Up
