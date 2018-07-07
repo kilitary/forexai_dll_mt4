@@ -46,6 +46,7 @@ namespace forexAI
 		public static void dump(object data, string prefix = "", string fileName = null, Tuple<bool, bool> bIndentAndDump = null)
 		{
 			string dataValue;
+			string sPrefix = prefix.Length > 0 ? " " + prefix + ": \r\n" : "\r\n";
 
 			if (fileName == null)
 				fileName = "debug";
@@ -69,8 +70,7 @@ namespace forexAI
 				{
 					file.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " " +
 						Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " +
-						((prefix.Length > 0 ? (" " + prefix + ": \r\n") : "") +
-						dataValue));
+						sPrefix + dataValue);
 				}
 			}
 			catch (Exception e)

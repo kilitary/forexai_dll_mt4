@@ -180,8 +180,8 @@ namespace forexAI
 		// computed properties
 		int ordersCount => activeOrders.Count();
 		int tradeBarPeriodGone => Bars - lastTradeBar;
-		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
-		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
+		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
+		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double ordersProfit => buysProfit + sellsProfit;
 		TrendDirection collapseDirection => High[0] - Low[0] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
 		double diffProbability => sellProbability + buyProbability;
@@ -343,7 +343,6 @@ namespace forexAI
 				//---- return lot size
 				if (lot < orderLots)
 					lot = orderLots;
-				log($"lotsOpzimied={lot}");
 				return lot;
 			}
 		}
@@ -670,7 +669,7 @@ namespace forexAI
 					OpenSell(lotsOptimizedV2);
 			}
 		}
-
+		 
 		public void SyncOrders()
 		{
 			var zeroTime = new DateTime(0);
@@ -1075,14 +1074,15 @@ namespace forexAI
 		void OpenSell(double exactLots = 0.0)
 		{
 			double stopLoss = 0;// Ask - ordersStopPoints * Point;
+			double lots = exactLots > 0.0 ? exactLots : lotsOptimizedV1;
 			DateTime expirationTime = TimeCurrent();
 			expirationTime = expirationTime.AddHours(3);
 
-			if (OrderSend(symbol, OP_SELL, exactLots > 0.0 ? exactLots : lotsOptimizedV1, Bid, 50, stopLoss, 0, $"Probability:",
+			if (OrderSend(symbol, OP_SELL, lots, Bid, 50, stopLoss, 0, $"Probability:",
 				Configuration.magickNumber, expirationTime, Color.Red) <= 0)
 				log($"error sending sell: {GetLastError()} balance={AccountBalance()} lots={lotsOptimizedV1}");
 			else
-				log($"open sell  prob:{sellProbability.ToString("0.00")} @" + Bid);
+				log($"open sell lots={lots} prob={sellProbability.ToString("0.00")} @" + Bid);
 
 			//AddLabel($"SP {sellProbability.ToString("0.0")} BP {buyProbability.ToString("0.0")}", Color.Red);
 
@@ -1092,15 +1092,16 @@ namespace forexAI
 
 		void OpenBuy(double exactLots = 0.0)
 		{
+			double lots = exactLots > 0.0 ? exactLots : lotsOptimizedV1;
 			double stopLoss = 0;//Bid - ordersStopPoints * Point;
 			DateTime expirationTime = TimeCurrent();
 			expirationTime = expirationTime.AddHours(3);
 
-			if (OrderSend(symbol, OP_BUY, exactLots > 0.0 ? exactLots : lotsOptimizedV1, Ask, 50, stopLoss, 0, $"Probability:",
+			if (OrderSend(symbol, OP_BUY, lots, Ask, 50, stopLoss, 0, $"Probability:",
 				Configuration.magickNumber, expirationTime, Color.Blue) <= 0)
 				log($"error sending buy: {GetLastError()} balance={AccountBalance()} lots={lotsOptimizedV1}");
 			else
-				log($"open buy  prob:{buyProbability.ToString("0.00")} @" + Ask);
+				log($"open buy lots={lots} prob={buyProbability.ToString("0.00")} @" + Ask);
 
 			//AddLabel($"BP {buyProbability.ToString("0.0")} SP {sellProbability.ToString("0.0")}", Color.Blue);
 

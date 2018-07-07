@@ -180,8 +180,8 @@ namespace forexAI
 		// computed properties
 		int ordersCount => activeOrders.Count();
 		int tradeBarPeriodGone => Bars - lastTradeBar;
-		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
-		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
+		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
+		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double ordersProfit => buysProfit + sellsProfit;
 		TrendDirection collapseDirection => High[0] - Low[0] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
 		double diffProbability => sellProbability + buyProbability;
