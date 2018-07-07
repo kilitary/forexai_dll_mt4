@@ -182,7 +182,7 @@ namespace forexAI
 		int tradeBarPeriodGone => Bars - lastTradeBar;
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
-		double ordersProfit => buyProfit + sellProfit;
+		double ordersProfit => buysProfit + sellsProfit;
 		TrendDirection collapseDirection => High[0] - Low[0] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
 		double diffProbability => sellProbability + buyProbability;
 		int buyCount => activeOrders.Where(o => o.type == Constants.OrderType.Buy).Count();
@@ -221,7 +221,7 @@ namespace forexAI
 			}
 		}
 
-		double buyProfit
+		double buysProfit
 		{
 			get
 			{
@@ -236,7 +236,7 @@ namespace forexAI
 			}
 		}
 
-		double sellProfit
+		double sellsProfit
 		{
 			get
 			{
@@ -304,7 +304,7 @@ namespace forexAI
 			}
 		}
 
-		double lotsOptimizedV1
+		public double lotsOptimizedV1
 		{
 			get
 			{
@@ -623,10 +623,10 @@ namespace forexAI
 
 		private void CheckForAutoClose()
 		{
-			if (activeLoss + activeProfit >= 0.0 && (buyProfit < 0.0 || sellProfit < 0.0) && ordersCount >= 2)
+			if (activeLoss + activeProfit >= 0.0 && (buysProfit < 0.0 || sellsProfit < 0.0) && ordersCount >= 2)
 			{
 				consolelog($"auto-close profit activeIncome:{activeIncome} activeLoss:{activeLoss} " +
-					$" buyProft:{buyProfit} sellProfit:{sellProfit} ordersCount:{ordersCount}", "debug");
+					$" buyProft:{buysProfit} sellProfit:{sellsProfit} ordersCount:{ordersCount}", "debug");
 				CloseAllOrders();
 			}
 		}
@@ -669,27 +669,28 @@ namespace forexAI
 				else
 					OpenSell(lotsOptimizedV2);
 			}
+
 		}
 
 
 		public void SyncOrders()
 		{
 			var zeroTime = new DateTime(0);
-			var now = TimeCurrent();
+			var forexNow = TimeCurrent();
 
 			foreach (var order in activeOrders)
 			{
-				if (OrderSelect(order.ticket, SELECT_BY_TICKET) == true
-					&& OrderCloseTime() != zeroTime && OrderProfit() > 0.0)
+				if (OrderSelect(order.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() != zeroTime && order.profit > 0.0)
 				{
 					AudioFX.Profit();
+
 					consolelog($"profit {order.type.ToString()} {OrderProfit()}$ lots {OrderLots()} " +
 						$"(total={AccountBalance().ToString("0.00")}, spends={activeLoss}, profit={activeProfit})");
 				}
-				else if (OrderSelect(order.ticket, SELECT_BY_TICKET) == true
-					&& OrderCloseTime() != zeroTime && OrderProfit() < 0.0)
+				else if (OrderSelect(order.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() != zeroTime && order.profit < 0.0)
 				{
 					AudioFX.Fail();
+
 					consolelog($"loss {order.type.ToString()} {OrderProfit()}$ lots {OrderLots()} " +
 						$"(total={AccountBalance().ToString("0.00")}, spends={activeLoss}, profit={activeProfit})");
 				}
@@ -723,7 +724,7 @@ namespace forexAI
 						stopLoss = OrderStopLoss(),
 						comment = OrderComment(),
 						takeProfit = OrderTakeProfit(),
-						ageInMinutes = now.Subtract(OrderOpenTime()).TotalMinutes,
+						ageInMinutes = forexNow.Subtract(OrderOpenTime()).TotalMinutes,
 						expiration = OrderExpiration(),
 						magickNumber = OrderMagicNumber()
 					};
@@ -743,7 +744,7 @@ namespace forexAI
 					currentOrder.swap = OrderSwap();
 					currentOrder.stopLoss = OrderStopLoss();
 					currentOrder.takeProfit = OrderTakeProfit();
-					currentOrder.ageInMinutes = now.Subtract(currentOrder.openTime).TotalMinutes;
+					currentOrder.ageInMinutes = forexNow.Subtract(currentOrder.openTime).TotalMinutes;
 					currentOrder.expiration = OrderExpiration();
 				}
 			}
@@ -764,15 +765,14 @@ namespace forexAI
 					{
 						if (order.type == Constants.OrderType.Buy)
 						{
-							if (OrderProfit() + OrderCommission() + OrderSwap() > 0)
+							if (order.profit > 0)
 								profitBuys++;
 							else
 								spendBuys++;
 						}
-
-						if (order.type == Constants.OrderType.Sell)
+						else if (order.type == Constants.OrderType.Sell)
 						{
-							if (OrderProfit() + OrderCommission() + OrderSwap() > 0)
+							if (order.profit > 0)
 								profitSells++;
 							else
 								spendSells++;
@@ -834,7 +834,7 @@ namespace forexAI
 		{
 			RefreshRates();
 
-			if (buyProfit <= minLossForCounterTrade
+			if (buysProfit <= minLossForCounterTrade
 				&& ordersCount < maxOrdersInParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Down
@@ -845,7 +845,7 @@ namespace forexAI
 				OpenSell(lotsOptimizedV2);
 			}
 
-			if (sellProfit <= minLossForCounterTrade
+			if (sellsProfit <= minLossForCounterTrade
 				&& ordersCount < maxOrdersInParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Up
@@ -1112,12 +1112,10 @@ namespace forexAI
 
 		void TrailPositions()
 		{
-			double TrailingStop = trailingStop;
-			double TrailingBorder = trailingBorder;
 			double newStopLoss = 0;
 
-			if (TrailingStop < minStopLevel)
-				TrailingStop = minStopLevel;
+			if (trailingStop < minStopLevel)
+				trailingStop = minStopLevel;
 
 			RefreshRates();
 
@@ -1125,9 +1123,9 @@ namespace forexAI
 			{
 				if (order.type == Constants.OrderType.Buy)
 				{
-					newStopLoss = Bid - TrailingStop * Point;
+					newStopLoss = Bid - trailingStop * Point;
 					if ((order.stopLoss == 0.0 || newStopLoss > order.stopLoss)
-						&& Bid - (TrailingBorder * Point) > order.openPrice
+						&& Bid - (trailingBorder * Point) > order.openPrice
 						&& order.profit + order.commission + order.swap > 0)
 					{
 						log($"modify buy {order.ticket} newStopLoss={newStopLoss} profit={order.profit}");
@@ -1138,9 +1136,9 @@ namespace forexAI
 				}
 				else if (order.type == Constants.OrderType.Sell)
 				{
-					newStopLoss = Ask + TrailingStop * Point;
+					newStopLoss = Ask + trailingStop * Point;
 					if ((order.stopLoss == 0.0 || newStopLoss < order.stopLoss)
-						&& Ask + (TrailingBorder * Point) < order.openPrice
+						&& Ask + (trailingBorder * Point) < order.openPrice
 						&& order.profit + order.commission + order.swap > 0)
 					{
 						log($"modify sell {OrderTicket()} newStopLoss={newStopLoss} profit={order.profit}");
@@ -1275,7 +1273,7 @@ namespace forexAI
 				//if (OrderType() == OP_SELLSTOP)
 				//	type = "SELL_STOP";
 
-				OrderSelect(order.ticket, SELECT_BY_TICKET, MODE_TRADES);
+				//OrderSelect(order.ticket, SELECT_BY_TICKET, MODE_TRADES);
 				labelID = "order" + index;
 
 				var now = TimeCurrent();
