@@ -550,11 +550,11 @@ namespace forexAI
 			startTime = GetTickCount();
 			mqlApi = this;
 
-			ClearLogs();
-			EraseLogs(Configuration.XXRandomLogFileName, Configuration.YYYRandomLogFileName);
-
 			ShowBanner();
 			console($"> Initializing (with .NET framework={Environment.Version.ToString()}) ...");
+
+			ClearLogs();
+			EraseLogs(Configuration.XXRandomLogFileName, Configuration.YYYRandomLogFileName);
 
 			if (runWatch == null)
 			{
