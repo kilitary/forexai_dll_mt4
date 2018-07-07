@@ -669,9 +669,7 @@ namespace forexAI
 				else
 					OpenSell(lotsOptimizedV2);
 			}
-
 		}
-
 
 		public void SyncOrders()
 		{

@@ -47,7 +47,7 @@ namespace forexAI
 {
 	public static class Reassembler
 	{
-		static Dictionary<string, FunctionsConfiguration> functionConfigurationInput;
+		static Dictionary<string, FunctionsConfiguration> functionsConfiguration;
 		static Core.RetCode ret = Core.RetCode.UnknownErr;
 		static LivePrices prices = new LivePrices();
 		static Random random = new Random();
@@ -99,16 +99,16 @@ namespace forexAI
 				{
 					MetadataPropertyHandling = MetadataPropertyHandling.Ignore
 				};
-				functionConfigurationInput = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
+				functionsConfiguration = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
 					(functionConfigurationString, jsonSettings);
 
 				functionConfigurationHash = Hash.md5(functionConfigurationString);
 				log($"hash of configuration: {functionConfigurationHash}");
 			}
 
-			logIf(reassemblyStage, $"=> {functionConfigurationInput.Count} functions with {inputDimension} input dimension");
+			logIf(reassemblyStage, $"=> {functionsConfiguration.Count} functions with {inputDimension} input dimension");
 
-			networkFunctionsCount = functionConfigurationInput.Count;
+			networkFunctionsCount = functionsConfiguration.Count;
 
 			Array.Resize<double>(ref fullInputSet, (int) neuralNetwork.InputCount);
 
@@ -116,7 +116,7 @@ namespace forexAI
 
 			logIf(reassemblyStage, $"fullInputSet.Length = {fullInputSet.Length}");
 
-			foreach (var function in functionConfigurationInput)
+			foreach (var function in functionsConfiguration)
 			{
 				string stringOut = string.Empty;
 				string[] values = new string[4];
