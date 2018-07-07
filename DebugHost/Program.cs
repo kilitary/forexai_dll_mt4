@@ -18,7 +18,7 @@ namespace NQuotes.DebugHost
         {
             try
             {
-                NQuotes.DebugHost.Server.Start(args);
+				Server.Start(args);
             }
             catch (Exception e)
             {

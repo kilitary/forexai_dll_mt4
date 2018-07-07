@@ -27,34 +27,41 @@ namespace forexAI
 		{
 			get
 			{
-				return config[name];
+				return config ?? config[name];
 			}
 			set
 			{
-				config[name] = value;
+				if (config != null)
+					config[name] = value;
 			}
 		}
 
 		public void Set(string name, object obj)
 		{
-			config[name] = obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
+			if (config != null)
+				config[name] = obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
 		}
 
 		public object Get(string name)
 		{
-			return config[name];// JsonConvert.DeserializeObject<object>(settings[name].ToString());
+			return config ?? config[name];// JsonConvert.DeserializeObject<object>(settings[name].ToString());
 		}
 
 		public Config()
 		{
-			config = new Dictionary<string, object>();
 			if (File.Exists(Configuration.configFilePath))
+			{
+				config = new Dictionary<string, object>();
 				config = JsonConvert.DeserializeObject<Dictionary<string, object>>
 					(File.ReadAllText(Configuration.configFilePath));
+			}
 		}
 
 		public void Save()
 		{
+			if (config == null)
+				return;
+
 			try
 			{
 				log($"saving {JsonConvert.SerializeObject(config, Formatting.Indented)}", "dev");

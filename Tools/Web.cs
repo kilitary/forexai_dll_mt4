@@ -11,9 +11,7 @@ namespace forexAI
 	{
 		public static string DownloadString(string url)
 		{
-			WebClient client = new WebClient();
-			string reply = client.DownloadString(url);
-			return reply;
+			return new WebClient().DownloadString(url);
 		}
 	}
 }
