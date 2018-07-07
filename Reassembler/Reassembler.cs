@@ -369,7 +369,7 @@ namespace forexAI
 					if (reassemblyStage && startIdx != 0)
 					{
 						warning($"# {functionName}: startIdx = {startIdx} (outNumberElement={functionArguments[outNumberElement]}, outBegIdx={outBegIdx})");
-						dump(resultDataDouble, functionName, "warning", Tuple.Create<bool, bool>(false, true));
+						dump(resultDataDouble, functionName, "warning");
 					}
 
 					logIf(reassemblyStage, $"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");

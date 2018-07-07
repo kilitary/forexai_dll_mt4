@@ -73,7 +73,7 @@ namespace forexAI
 		public int minTradePeriodBars = 6;
 
 		[ExternVariable]
-		public bool counterTrading = true;
+		public bool counterTrading = false;
 
 		[ExternVariable]
 		public int countedMeasuredProbabilityBars = 4;
@@ -181,8 +181,8 @@ namespace forexAI
 		// computed properties
 		int ordersCount => activeOrders.Count();
 		int tradeBarPeriodGone => Bars - lastTradeBar;
-		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
-		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
+		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
+		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double ordersProfit => buysProfit + sellsProfit;
 		TrendDirection collapseDirection => High[0] - Low[0] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
 		double diffProbability => sellProbability + buyProbability;
@@ -548,31 +548,13 @@ namespace forexAI
 		public override int init()
 		{
 			startTime = GetTickCount();
+			mqlApi = this;
+
+			ClearLogs();
+			EraseLogs(Configuration.XXRandomLogFileName, Configuration.YYYRandomLogFileName);
+
 			ShowBanner();
 			console($"> Initializing (with .NET framework={Environment.Version.ToString()}) ...");
-
-			var task = Task.Factory.StartNew(() =>
-			{
-				ClearLogs();
-				EraseLogs(Configuration.XXRandomLogFileName, Configuration.YYYRandomLogFileName);
-				ScanNetworks();
-
-				if (networkDirs.Length > 0)
-				{
-					string network = networkDirs[random.Next(networkDirs.Length - 1)].Name;
-					console($"Loading network {network} ...");
-
-					LoadNetwork(network);
-
-					if (forexFannNetwork != null)
-					{
-						console($"Testing network MSE ");
-						TestNetworkMSE();
-						console($"Testing network hit ratio ");
-						TestNetworkHitRatio();
-					}
-				}
-			});
 
 			if (runWatch == null)
 			{
@@ -584,7 +566,6 @@ namespace forexAI
 				Configuration.useAudio = false;
 
 			currentDay = (int) DateTime.Now.DayOfWeek;
-			mqlApi = this;
 			neuralNetworkBootstrapped = false;
 			reassembleStageOverride = false;
 			prevBuyProbability = new double[countedMeasuredProbabilityBars];
@@ -616,6 +597,26 @@ namespace forexAI
 			DumpInfo();
 
 			reassembleStageOverride = false;
+
+			ScanNetworks();
+
+			if (networkDirs.Length > 0)
+			{
+				string network = networkDirs[random.Next(networkDirs.Length - 1)].Name;
+				console($"Loading network {network} ...");
+
+				LoadNetwork(network);
+
+				if (forexFannNetwork != null)
+				{
+					console($"Testing network MSE ");
+					TestNetworkMSE();
+					console($"Testing network hit ratio ");
+					TestNetworkHitRatio();
+				}
+			}
+
+			dump(ConfigSettings.SharedSettings, "configSettings", "dev");
 
 			TextSetFont("liberation mono", 8, 0, 0);
 
@@ -1538,7 +1539,8 @@ namespace forexAI
 			   $"\r\nBuyProb: [{buyProb}]" +
 			   $"\r\nSellProb: [{sellProb}]" +
 			   $"\r\n\r\nMemory: {memoryUsage} MB" +
-			   $"\r\nCPU: {(cpuCounter.NextValue()).ToString("0.00") + "%"}"
+			   $"\r\nCPU: {(cpuCounter.NextValue()).ToString("0.00") + "%"}" + 
+			   $"\r\n\r\nCounter-trading: {counterTrading}\r\nOptimized Lots: {useOptimizedLots} (v2: {lotsOptimizedV2} v1: {lotsOptimizedV1} v3: {lotsOptimizedV3})"
 			   );
 
 			}

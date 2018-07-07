@@ -43,7 +43,7 @@ namespace forexAI
 			});
 		}
 
-		public static void dump(object data, string prefix = "", string fileName = null, Tuple<bool, bool> bIndentAndDump = null)
+		public static void dump(object data, string prefix = "", string fileName = null)
 		{
 			string dataValue;
 			string sPrefix = prefix.Length > 0 ? " " + prefix + ": \r\n" : "\r\n";
@@ -54,15 +54,11 @@ namespace forexAI
 			JsonSerializerSettings jsonSettings = new JsonSerializerSettings
 			{
 				MaxDepth = 5,
-				PreserveReferencesHandling = PreserveReferencesHandling.All
+				PreserveReferencesHandling = PreserveReferencesHandling.All,
+				Formatting = Formatting.Indented
 			};
 
-			if (bIndentAndDump?.Item1 == true)
-				jsonSettings.Formatting = Formatting.Indented;
-			if (bIndentAndDump?.Item2 == true)
-				dataValue = SerializeObject(data, jsonSettings);
-			else
-				dataValue = Helpers.Dump(data);
+			dataValue = SerializeObject(data, jsonSettings);
 
 			try
 			{
