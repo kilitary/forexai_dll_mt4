@@ -43,17 +43,25 @@ namespace forexAI
 			});
 		}
 
-		public static void dump(object data, string prefix = "", string fileName = null)
+		public static void dump(object data, string prefix = "", string fileName = null, Tuple<bool, bool> bIndentAndDump = null)
 		{
+			string dataValue;
+
 			if (fileName == null)
 				fileName = "debug";
 
 			JsonSerializerSettings jsonSettings = new JsonSerializerSettings
 			{
 				MaxDepth = 5,
-				Formatting = Formatting.Indented,
 				PreserveReferencesHandling = PreserveReferencesHandling.All
 			};
+
+			if (bIndentAndDump?.Item1 == true)
+				jsonSettings.Formatting = Formatting.Indented;
+			if (bIndentAndDump?.Item2 == true)
+				dataValue = SerializeObject(data, jsonSettings);
+			else
+				dataValue = Helpers.Dump(data);
 
 			try
 			{
@@ -62,7 +70,7 @@ namespace forexAI
 					file.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " " +
 						Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " +
 						((prefix.Length > 0 ? (" " + prefix + ": \r\n") : "") +
-						SerializeObject(data, jsonSettings)));
+						dataValue));
 				}
 			}
 			catch (Exception e)

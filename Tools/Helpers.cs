@@ -75,7 +75,7 @@ namespace forexAI
 			StringBuilder result = new StringBuilder();
 
 			// Protect the method against endless recursion
-			if (recursion < 5)
+			if (recursion < 15)
 			{
 				// Determine object type
 				Type t = obj.GetType();

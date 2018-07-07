@@ -367,7 +367,10 @@ namespace forexAI
 
 					startIdx = (int) functionArguments[nOutStartIdx];
 					if (reassemblyStage && startIdx != 0)
-						warning($"# {functionName}: startIdx = {startIdx} (outNumberElement={outNumberElement}, outBegIdx={outBegIdx})");
+					{
+						warning($"# {functionName}: startIdx = {startIdx} (outNumberElement={functionArguments[outNumberElement]}, outBegIdx={outBegIdx})");
+						dump(resultDataDouble, functionName, "warning", Tuple.Create<bool, bool>(false, true));
+					}
 
 					logIf(reassemblyStage, $"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
