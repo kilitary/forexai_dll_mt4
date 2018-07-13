@@ -164,5 +164,11 @@ namespace forexAI
 			for (var i = 0; i < input.Length; i++)
 				input[i] = 0.0;
 		}
+
+		public static void ZeroArray(int[] input)
+		{
+			for (var i = 0; i < input.Length; i++)
+				input[i] = 0;
+		}
 	}
 }

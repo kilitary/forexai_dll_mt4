@@ -22,8 +22,8 @@ namespace forexAI
 		public static string rootDirectory = @"d:\forexAI";
 		public static string logFileName = "mt4EA";
 		public static string configFilePath = $@"{rootDirectory}\mt4EA.cfg";
-		public static string XXRandomLogFileName = $@"{rootDirectory}\seed";
-		public static string YYYRandomLogFileName = $@"{rootDirectory}\Yseed";
+		public static string XRandomLogFileName = $@"{rootDirectory}\seed";
+		public static string YRandomLogFileName = $@"{rootDirectory}\Yseed";
 		public static string mysqlDatabase = "forex";
 		public static string mysqlPassword = "secret";
 		public static string mysqlServer = "192.168.10.10";

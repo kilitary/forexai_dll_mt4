@@ -19,7 +19,7 @@ using static forexAI.Logger;
 
 namespace forexAI
 {
-	class Config
+	public class Config
 	{
 		private readonly Dictionary<string, object> config = null;
 

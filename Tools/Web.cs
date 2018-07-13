@@ -9,7 +9,7 @@ namespace forexAI
 {
 	public static class Web
 	{
-		public static string DownloadString(string url)
+		public static string GetUrl(string url)
 		{
 			return new WebClient().DownloadString(url);
 		}

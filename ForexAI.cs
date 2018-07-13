@@ -20,14 +20,14 @@ using FANNCSharp.Double;
 using Newtonsoft.Json;
 using NQuotes;
 using TicTacTec.TA.Library;
+using Color = System.Drawing.Color;
+using DataType = System.Double;
+using System.Threading.Tasks;
 using static System.Console;
 using static System.ConsoleColor;
 using static forexAI.Experimental;
 using static forexAI.Logger;
-using Color = System.Drawing.Color;
 using static forexAI.Constants;
-using DataType = System.Double;
-using System.Threading.Tasks;
 
 namespace forexAI
 {
@@ -61,7 +61,7 @@ namespace forexAI
 		public bool useOptimizedLots = true;
 
 		[ExternVariable]
-		public int maxOrdersInParallel = 10;
+		public int maxOrdersParallel = 10;
 
 		[ExternVariable]
 		public int minStableTrendBarForEnter = 2;
@@ -114,7 +114,7 @@ namespace forexAI
 		// MqlApi object (this)
 		MqlApi mqlApi = null;
 
-		string networkName = string.Empty;
+		string networkId = string.Empty;
 		string fannNetworkDirName = string.Empty;
 		string inputLayerActivationFunction = string.Empty;
 		string middleLayerActivationFunction = string.Empty;
@@ -460,7 +460,7 @@ namespace forexAI
 			{
 				if (runWatch.ElapsedMilliseconds - lastDrawStatsTimestamp >= 300)
 				{
-					CalculateHistoryOrders();
+					FillHistoryOrdersStatistics();
 					DrawStats();
 					lastDrawStatsTimestamp = runWatch.ElapsedMilliseconds;
 				}
@@ -550,11 +550,10 @@ namespace forexAI
 			startTime = GetTickCount();
 			mqlApi = this;
 
-			ShowBanner();
-			console($"> Initializing (with .NET framework={Environment.Version.ToString()}) ...");
-
 			ClearLogs();
-			EraseLogs(Configuration.XXRandomLogFileName, Configuration.YYYRandomLogFileName);
+			EraseLogs(Configuration.XRandomLogFileName, Configuration.YRandomLogFileName);
+
+			ShowBanner();
 
 			if (runWatch == null)
 			{
@@ -573,7 +572,7 @@ namespace forexAI
 
 			console($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
 				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={enteringTradeProbability} BlockingTradeProbability={blockingTradeProbability}" +
-				$" MinLossForCounterTrade={minLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersInParallel}" +
+				$" MinLossForCounterTrade={minLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersParallel}" +
 				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
 				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", ConsoleColor.Black, ConsoleColor.Yellow);
 			console($"Accessing processor performance counters ...");
@@ -590,7 +589,6 @@ namespace forexAI
 				Configuration.tryExperimentalFeatures = true;
 			#endregion
 
-			console($"Init variables ...");
 			InitVariables();
 			ListGlobalVariables();
 
@@ -680,7 +678,7 @@ namespace forexAI
 		public void SyncOrders()
 		{
 			var zeroTime = new DateTime(0);
-			var forexNow = TimeCurrent();
+			var forexTimeCurrent = TimeCurrent();
 
 			foreach (var order in activeOrders)
 			{
@@ -705,7 +703,7 @@ namespace forexAI
 			for (int index = 0; index < OrdersTotal(); index++)
 			{
 				if (!OrderSelect(index, SELECT_BY_POS, MODE_TRADES))
-					break;
+					continue;
 
 				int orderTicket = OrderTicket();
 
@@ -728,7 +726,7 @@ namespace forexAI
 						stopLoss = OrderStopLoss(),
 						comment = OrderComment(),
 						takeProfit = OrderTakeProfit(),
-						ageInMinutes = forexNow.Subtract(OrderOpenTime()).TotalMinutes,
+						ageInMinutes = forexTimeCurrent.Subtract(OrderOpenTime()).TotalMinutes,
 						expiration = OrderExpiration(),
 						magickNumber = OrderMagicNumber()
 					};
@@ -748,20 +746,20 @@ namespace forexAI
 					currentOrder.swap = OrderSwap();
 					currentOrder.stopLoss = OrderStopLoss();
 					currentOrder.takeProfit = OrderTakeProfit();
-					currentOrder.ageInMinutes = forexNow.Subtract(currentOrder.openTime).TotalMinutes;
+					currentOrder.ageInMinutes = forexTimeCurrent.Subtract(currentOrder.openTime).TotalMinutes;
 					currentOrder.expiration = OrderExpiration();
 				}
 			}
 		}
 
-		private void CalculateHistoryOrders()
+		private void FillHistoryOrdersStatistics()
 		{
 			profitBuys = 0;
 			spendBuys = 0;
 			profitSells = 0;
 			spendSells = 0;
 
-			foreach(var order in historyOrders)
+			foreach (var order in historyOrders)
 			{
 				if (OrderSelect(order.ticket, SELECT_BY_TICKET, MODE_HISTORY))
 				{
@@ -795,11 +793,10 @@ namespace forexAI
 			symbol = Symbol();
 			currentProcess = Process.GetCurrentProcess();
 
-			minStopLevel = MarketInfo(symbol, MODE_STOPLEVEL);
-			if (trailingStop < minStopLevel)
+			if (trailingStop < stoplevel)
 				warning($"minStopLevel={minStopLevel}, while trailingStop={trailingStop}, reducing.");
 
-			ordersStopPoints = minStopLevel > 0 ? minStopLevel * 2 : 60;
+			ordersStopPoints = stoplevel > 0 ? stoplevel * 2 : 60;
 
 			if (Configuration.useMysql)
 				Data.database = new Database();
@@ -807,20 +804,19 @@ namespace forexAI
 			config["process"] = currentProcess.ToString();
 			config["yrandom"] = (uint) YRandom.Next(int.MaxValue);
 			config["random"] = (uint) random.Next(int.MaxValue);
+
+			console($"Init variables [stoplevel={stoplevel}] ...");
 		}
 
 		public void TryEnterTrade()
 		{
-			RefreshRates();
-
-			if (!isTrendStable
-				|| stableTrendBar < minStableTrendBarForEnter)
+			if (!isTrendStable || stableTrendBar < minStableTrendBarForEnter)
 				return;
 
 			if (buyProbability >= enteringTradeProbability
 					&& sellProbability <= blockingTradeProbability
 					&& diffProbability >= 0
-					&& ordersCount < maxOrdersInParallel
+					&& ordersCount < maxOrdersParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
 				OpenBuy();
@@ -828,7 +824,7 @@ namespace forexAI
 			if (sellProbability >= enteringTradeProbability
 					&& buyProbability <= blockingTradeProbability
 					&& diffProbability <= 0
-					&& ordersCount < maxOrdersInParallel
+					&& ordersCount < maxOrdersParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
 				OpenSell();
@@ -836,10 +832,8 @@ namespace forexAI
 
 		public void TryEnterCounterTrade()
 		{
-			RefreshRates();
-
 			if (buysProfit <= minLossForCounterTrade
-				&& ordersCount < maxOrdersInParallel
+				&& ordersCount < maxOrdersParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Down
 				&& closestSellDistance >= minOrderDistance
@@ -850,7 +844,7 @@ namespace forexAI
 			}
 
 			if (sellsProfit <= minLossForCounterTrade
-				&& ordersCount < maxOrdersInParallel
+				&& ordersCount < maxOrdersParallel
 				&& tradeBarPeriodGone > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Up
 				&& closestBuyDistance >= minOrderDistance
@@ -877,7 +871,7 @@ namespace forexAI
 			long fileLength = new FileInfo($"{Configuration.rootDirectory}\\{dirName}\\FANN.net").Length;
 			log($"Loading network {dirName} ({(fileLength / 1024.0).ToString("0.00")} KB)");
 
-			networkName = fannNetworkDirName = dirName;
+			networkId = fannNetworkDirName = dirName;
 
 			forexFannNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net")
 			{
@@ -1128,7 +1122,7 @@ namespace forexAI
 
 			RefreshRates();
 
-			foreach(var order in activeOrders)
+			foreach (var order in activeOrders)
 			{
 				if (order.type == Constants.OrderType.Buy)
 				{
@@ -1237,7 +1231,7 @@ namespace forexAI
 
 			Helpers.ShowMemoryUsage();
 
-			Console.Title = $"Automated MT4 trading expert debug console. Version {version}. Network: {networkName} "
+			Console.Title = $"Automated MT4 trading expert debug console. Version {version}. Network: {networkId} "
 				+ (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
 		}
 
@@ -1247,7 +1241,7 @@ namespace forexAI
 			consolelog($"> (c) 2018 Deconf (kilitary@gmail.com teleg:@deconf skype:serjnah icq:401112)");
 
 			version = Assembly.GetExecutingAssembly().GetName().Version;
-			consolelog($"Initializing version {version} ...");
+			consolelog($"> Initializing version {version} (with .NET framework={Environment.Version.ToString()}) ...");
 		}
 
 		void DrawStats()
@@ -1490,7 +1484,7 @@ namespace forexAI
 			   "%" +
 			   "\r\n\r\n" +
 			  "Network: " +
-			   networkName +
+			   networkId +
 			   "\r\n" +
 			  "Functions: " +
 			   networkFunctionsCount +
@@ -1539,7 +1533,7 @@ namespace forexAI
 			   $"\r\nBuyProb: [{buyProb}]" +
 			   $"\r\nSellProb: [{sellProb}]" +
 			   $"\r\n\r\nMemory: {memoryUsage} MB" +
-			   $"\r\nCPU: {(cpuCounter.NextValue()).ToString("0.00") + "%"}" + 
+			   $"\r\nCPU: {(cpuCounter.NextValue()).ToString("0.00") + "%"}" +
 			   $"\r\n\r\nCounter-trading: {counterTrading}\r\nOptimized Lots: {useOptimizedLots} (v2: {lotsOptimizedV2} v1: {lotsOptimizedV1} v3: {lotsOptimizedV3})"
 			   );
 
