@@ -137,6 +137,8 @@ namespace forexAI
 		double leverage = 0.0;
 		double lotsize = 0.01;
 		double stoplevel = 0.0;
+		double[] prevNetworkOutputBuy = new double[3];
+		double[] prevNetworkOutputSell = new double[3];
 		double[] fannNetworkOutput = null;
 		double[] prevBuyProbability = null;
 		double[] prevSellProbability = null;
@@ -151,6 +153,7 @@ namespace forexAI
 		bool hasMorningReported = false;
 		bool neuralNetworkBootstrapped = false;
 		bool hasIncreasedUnstableTrendBar = false;
+		bool networkIsGood = false;
 		int stableTrendCurrentBar = 0;
 		int spendSells = 0;
 		int spendBuys = 0;
@@ -475,6 +478,13 @@ namespace forexAI
 			if (Bars == previousBars)
 				return 0;
 
+			if (IsBadNetwork())
+			{
+				consolelog($"Deleting {networkId}, beacuse it is stalled ({prevNetworkOutputBuy[0]}, {prevNetworkOutputSell[0]})");
+				Directory.Delete($"{Configuration.rootDirectory}\\{networkId}", true);
+				InitNetworks();
+			}
+
 			if (neuralNetworkBootstrapped)
 			{
 				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent,
@@ -549,6 +559,7 @@ namespace forexAI
 		{
 			startTime = GetTickCount();
 			mqlApi = this;
+			networkIsGood = false;
 
 			ClearLogs();
 			EraseLogs(Configuration.XRandomLogFileName, Configuration.YRandomLogFileName);
@@ -596,23 +607,7 @@ namespace forexAI
 
 			reassembleStageOverride = false;
 
-			ScanNetworks();
-
-			if (networkDirs.Length > 0)
-			{
-				string network = networkDirs[random.Next(networkDirs.Length - 1)].Name;
-				console($"Loading network {network} ...");
-
-				LoadNetwork(network);
-
-				if (forexFannNetwork != null)
-				{
-					console($"Testing network MSE ");
-					TestNetworkMSE();
-					console($"Testing network hit ratio ");
-					TestNetworkHitRatio();
-				}
-			}
+			InitNetworks();
 
 			dump(ConfigSettings.SharedSettings, "configSettings", "dev");
 
@@ -639,6 +634,60 @@ namespace forexAI
 			log($"Uptime {mins} mins, has do {totalOperationsCount + dayOperationsCount} operations.");
 			console("... shutted down.", ConsoleColor.Black, ConsoleColor.Blue);
 			return 0;
+		}
+
+		private void InitNetworks()
+		{
+			ScanNetworks();
+
+			if (networkDirs.Length > 0)
+			{
+				string network = networkDirs[random.Next(networkDirs.Length - 1)].Name;
+				console($"Loading network {network} ...");
+
+				LoadNetwork(network);
+
+				if (forexFannNetwork != null)
+				{
+					console($"Testing network MSE ");
+					TestNetworkMSE();
+					console($"Testing network hit ratio ");
+					TestNetworkHitRatio();
+				}
+			}
+		}
+
+		private bool IsBadNetwork()
+		{
+			for (var i = 0; i < prevNetworkOutputBuy.Length - 1; i++)
+				prevNetworkOutputBuy[i] = prevNetworkOutputBuy[i + 1];
+
+			prevNetworkOutputBuy[prevNetworkOutputBuy.Length - 1] = buyProbability;
+
+			for (var i = 0; i < prevNetworkOutputSell.Length - 1; i++)
+				prevNetworkOutputSell[i] = prevNetworkOutputSell[i + 1];
+
+			prevNetworkOutputSell[prevNetworkOutputSell.Length - 1] = sellProbability;
+
+			double value = prevNetworkOutputBuy[0];
+			for (var i = 0; i < prevNetworkOutputBuy.Length; i++)
+			{
+				if (prevNetworkOutputBuy[i] != value)
+					return false;
+
+				value = prevNetworkOutputBuy[i];
+			}
+
+			value = prevNetworkOutputSell[0];
+			for (var i = 0; i < prevNetworkOutputSell.Length; i++)
+			{
+				if (prevNetworkOutputSell[i] != value)
+					return false;
+
+				value = prevNetworkOutputSell[i];
+			}
+
+			return true;
 		}
 
 		private void CheckForAutoClose()
