@@ -39,7 +39,7 @@ namespace forexAI
 				if (!Helpers.IsFileBusy(logFile.FullName))
 					File.WriteAllText($@"{logFile.FullName}", $"***{DateTime.Now.ToString("HH:mm:ss.fff")}***\r\n");
 				else
-					console($"file {logFile.FullName} busy!");
+					console($"! {logFile.FullName}");
 			});
 		}
 
@@ -174,7 +174,7 @@ namespace forexAI
 					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " + lines);
 				file.Close();
 
-				console(lines, ConsoleColor.Black, ConsoleColor.White);
+				console(lines, ConsoleColor.Black, ConsoleColor.Cyan);
 			}
 			catch (Exception e)
 			{
