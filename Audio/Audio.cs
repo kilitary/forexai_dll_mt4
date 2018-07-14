@@ -21,6 +21,11 @@ namespace forexAI
 			new SoundPlayer(audioFileName).Play();
 		}
 
+		public static void Wipe()
+		{
+			Play(Configuration.wipe);
+		}
+
 		public static void NewDay()
 		{
 			Play(Configuration.newDayWAV);

@@ -137,8 +137,8 @@ namespace forexAI
 		double leverage = 0.0;
 		double lotsize = 0.01;
 		double stoplevel = 0.0;
-		double[] prevNetworkOutputBuy = new double[3];
-		double[] prevNetworkOutputSell = new double[3];
+		double[] prevNetworkOutputBuy = new double[5];
+		double[] prevNetworkOutputSell = new double[5];
 		double[] fannNetworkOutput = null;
 		double[] prevBuyProbability = null;
 		double[] prevSellProbability = null;
@@ -480,6 +480,7 @@ namespace forexAI
 
 			if (IsBadNetwork())
 			{
+				AudioFX.Wipe();
 				consolelog($"Deleting {networkId}, beacuse it is stalled ({prevNetworkOutputBuy[0]}, {prevNetworkOutputSell[0]})");
 				Directory.Delete($"{Configuration.rootDirectory}\\{networkId}", true);
 				InitNetworks();
@@ -542,7 +543,8 @@ namespace forexAI
 			else if (hasNoticedLowBalance && YRandom.Next(6) == 3)
 				AudioFX.GoodWork();
 
-			log($"=> Probability: Buy={buyProbability.ToString("0.0000")} Sell={sellProbability.ToString("0.0000")}", "debug");
+			log($"=> Buy {buyProbability.ToString("0.0000").PadLeft(7)} Sell {sellProbability.ToString("0.0000").PadLeft(7)}" +
+				$" Stable {stableTrendBar} Unstable {unstableTrendBar}", "debug");
 
 			#region matters
 			if (Configuration.tryExperimentalFeatures)
@@ -643,15 +645,15 @@ namespace forexAI
 			if (networkDirs.Length > 0)
 			{
 				string network = networkDirs[random.Next(networkDirs.Length - 1)].Name;
-				console($"Loading network {network} ...");
+				log($"Init networks: selected [{network}] from {networkDirs.Length} networks.", "debug");
 
 				LoadNetwork(network);
 
 				if (forexFannNetwork != null)
 				{
-					console($"Testing network MSE ");
+					console($"Testing network MSE ...");
 					TestNetworkMSE();
-					console($"Testing network hit ratio ");
+					console($"Testing network hit ratio ...");
 					TestNetworkHitRatio();
 				}
 			}
@@ -669,22 +671,22 @@ namespace forexAI
 
 			prevNetworkOutputSell[prevNetworkOutputSell.Length - 1] = sellProbability;
 
-			double value = prevNetworkOutputBuy[0];
-			for (var i = 0; i < prevNetworkOutputBuy.Length; i++)
+			double prevValue = prevNetworkOutputBuy[0];
+			for (var i = 1; i < prevNetworkOutputBuy.Length; i++)
 			{
-				if (prevNetworkOutputBuy[i] != value)
+				if (prevNetworkOutputBuy[i].ToString("0.00") != prevValue.ToString("0.00"))
 					return false;
 
-				value = prevNetworkOutputBuy[i];
+				prevValue = prevNetworkOutputBuy[i];
 			}
 
-			value = prevNetworkOutputSell[0];
-			for (var i = 0; i < prevNetworkOutputSell.Length; i++)
+			prevValue = prevNetworkOutputSell[0];
+			for (var i = 1; i < prevNetworkOutputSell.Length; i++)
 			{
-				if (prevNetworkOutputSell[i] != value)
+				if (prevNetworkOutputSell[i].ToString("0.00") != prevValue.ToString("0.00"))
 					return false;
 
-				value = prevNetworkOutputSell[i];
+				prevValue = prevNetworkOutputSell[i];
 			}
 
 			return true;
@@ -1268,15 +1270,15 @@ namespace forexAI
 				$" XprmntL={Configuration.tryExperimentalFeatures} Modules[0]@0x{currentProcess.Modules[0].BaseAddress}",
 				ConsoleColor.Black, ConsoleColor.Yellow);
 
-			debug($"  AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
-			debug($"  Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
-			debug($"  Equity={AccountEquity()} FreeMarginMode={AccountFreeMarginMode()} Expert={WindowExpertName()}");
-			debug($"  Leverage={AccountLeverage()} Server=[{AccountServer()}] StopoutLev={AccountStopoutLevel()} StopoutMod={AccountStopoutMode()}");
-			debug($"  TickValue={MarketInfo(symbol, MODE_TICKVALUE)} TickSize={MarketInfo(symbol, MODE_TICKSIZE)} Minlot={MarketInfo(symbol, MODE_MINLOT)}" + $" LotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
-			debug($"  Orders={OrdersTotal()} TimeForexCurrent=[{TimeCurrent()}] Digits={MarketInfo(symbol, MODE_DIGITS)} Spread={MarketInfo(symbol, MODE_SPREAD)}");
-			debug($"  IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
-			debug($"  Period={Period()}");
-			debug($"  minstoplevel={minStopLevel}");
+			debug($"AccNumber: {AccountNumber()} AccName: [{AccountName()}] Balance: {AccountBalance()} Currency: {AccountCurrency()} ");
+			debug($"Company: [{TerminalCompany()}] Name: [{TerminalName()}] Path: [{TerminalPath()}]");
+			debug($"Equity={AccountEquity()} FreeMarginMode={AccountFreeMarginMode()} Expert={WindowExpertName()}");
+			debug($"Leverage={AccountLeverage()} Server=[{AccountServer()}] StopoutLev={AccountStopoutLevel()} StopoutMod={AccountStopoutMode()}");
+			debug($"TickValue={MarketInfo(symbol, MODE_TICKVALUE)} TickSize={MarketInfo(symbol, MODE_TICKSIZE)} Minlot={MarketInfo(symbol, MODE_MINLOT)}" + $" LotStep={MarketInfo(symbol, MODE_LOTSTEP)}");
+			debug($"Orders={OrdersTotal()} TimeForexCurrent=[{TimeCurrent()}] Digits={MarketInfo(symbol, MODE_DIGITS)} Spread={MarketInfo(symbol, MODE_SPREAD)}");
+			debug($"IsOptimization={IsOptimization()} IsTesting={IsTesting()}");
+			debug($"Period={Period()}");
+			debug($"minstoplevel={minStopLevel}");
 
 			Helpers.ShowMemoryUsage();
 

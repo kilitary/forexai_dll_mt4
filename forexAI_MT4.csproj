@@ -168,9 +168,6 @@
     <None Include="Resources\Icon1.ico" />
     <None Include="Resources\Image1.jpg" />
   </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
