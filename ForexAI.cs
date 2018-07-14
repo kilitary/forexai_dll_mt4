@@ -243,11 +243,11 @@ namespace forexAI
 		double sellsProfit
 		{
 			get
-			{
+			{ 
 				double sellIncome = 0.0;
 
 				Helpers.Each(activeOrders.Where(o => o.type == Constants.OrderType.Sell), delegate (Order order)
-				{
+				{ 
 					sellIncome += order.profit + order.commission + order.swap;
 				});
 
@@ -542,7 +542,7 @@ namespace forexAI
 			else if (hasNoticedLowBalance && YRandom.Next(6) == 3)
 				AudioFX.GoodWork();
 
-			log($"=> Probability: Buy={buyProbability.ToString("0.0000")} Sell={sellProbability.ToString("0.0000")}", "debug");
+			log($"=> Probability: Buy {buyProbability.ToString("0.0000")} Sell {sellProbability.ToString("0.0000")}", "debug");
 
 			#region matters
 			if (Configuration.tryExperimentalFeatures)
@@ -649,9 +649,9 @@ namespace forexAI
 
 				if (forexFannNetwork != null)
 				{
-					console($"Testing network MSE ");
+					console($"Testing network MSE ...");
 					TestNetworkMSE();
-					console($"Testing network hit ratio ");
+					console($"Testing network hit ratio ...");
 					TestNetworkHitRatio();
 				}
 			}
