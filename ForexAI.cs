@@ -137,8 +137,8 @@ namespace forexAI
 		double leverage = 0.0;
 		double lotsize = 0.01;
 		double stoplevel = 0.0;
-		double[] prevNetworkOutputBuy = new double[10];
-		double[] prevNetworkOutputSell = new double[10];
+		double[] prevNetworkOutputBuy = new double[12];
+		double[] prevNetworkOutputSell = new double[12];
 		double[] fannNetworkOutput = null;
 		double[] prevBuyProbability = null;
 		double[] prevSellProbability = null;
@@ -481,7 +481,7 @@ namespace forexAI
 			if (IsBadNetwork())
 			{
 				AudioFX.Wipe();
-				consolelog($"Deleting {networkId}, beacuse it is stalled ({prevNetworkOutputBuy[0]}, {prevNetworkOutputSell[0]})");
+				consolelog($"Deleting {networkId}, beacuse it is desynced/bad/notprofitable ({prevNetworkOutputBuy[0]}, {prevNetworkOutputSell[0]})");
 				Directory.Delete($"{Configuration.rootDirectory}\\{networkId}", true);
 				InitNetworks();
 			}
@@ -544,7 +544,7 @@ namespace forexAI
 				AudioFX.GoodWork();
 
 			log($"=> Buy {buyProbability.ToString("0.0000").PadLeft(7)} Sell {sellProbability.ToString("0.0000").PadLeft(7)}" +
-				$" Stable {stableTrendBar} Unstable {unstableTrendBar}", "debug");
+				$" {(stableTrendBar > 0 ? $"Stable {stableTrendBar}" : $"Unstable  {unstableTrendBar}")}", "debug");
 
 			#region matters
 			if (Configuration.tryExperimentalFeatures)
@@ -661,6 +661,9 @@ namespace forexAI
 
 		private bool IsBadNetwork()
 		{
+			if (buyProbability >= 1.5 || buyProbability <= -1.4 || sellProbability >= 1.5 || sellProbability <= -1.5)
+				return true;
+
 			for (var i = 0; i < prevNetworkOutputBuy.Length - 1; i++)
 				prevNetworkOutputBuy[i] = prevNetworkOutputBuy[i + 1];
 
@@ -734,14 +737,14 @@ namespace forexAI
 					AudioFX.Profit();
 
 					consolelog($"profit {order.type.ToString()} #{order.ticket} {OrderProfit()}$ lots {OrderLots()} " +
-						$"(total={AccountBalance().ToString("0.00")}, spends={activeLoss}, profit={activeProfit})");
+						$"(total={AccountBalance().ToString("0.00")}, spends={activeLoss}, profit={activeProfit})", null, ConsoleColor.Green);
 				}
 				else if (OrderSelect(order.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() != zeroTime && order.profit < 0.0)
 				{
 					AudioFX.Fail();
 
 					consolelog($"loss {order.type.ToString()} #{order.ticket} {OrderProfit()}$ lots {OrderLots()} " +
-						$"(total={AccountBalance().ToString("0.00")}, spends={activeLoss}, profit={activeProfit})");
+						$"(total={AccountBalance().ToString("0.00")}, spends={activeLoss}, profit={activeProfit})", null, ConsoleColor.Red);
 				}
 			}
 
@@ -954,10 +957,10 @@ namespace forexAI
 
 		void ScanNetworks()
 		{
-			console($"Scanning networks ...");
+			consolelog($"-> Scanning networks ...");
 			networkDirs = new DirectoryInfo(Configuration.rootDirectory).GetDirectories("NET_*");
 
-			log($"Looking for networks in {Configuration.rootDirectory}: found {networkDirs.Length} networks.");
+			consolelog($"-> Looking for networks in {Configuration.rootDirectory}: found {networkDirs.Length} networks.");
 			if (networkDirs.Length == 0)
 			{
 				error("WHAT I SHOULD DO?? DO U KNOW????");
@@ -1130,9 +1133,9 @@ namespace forexAI
 			expirationTime = expirationTime.AddHours(3);
 			if ((ticket = OrderSend(symbol, OP_SELL, lots, Bid, 50, stopLoss, 0, $"Probability:",
 				Configuration.magickNumber, expirationTime, Color.Red)) <= 0)
-				log($"error sending sell: {GetLastError()} balance={AccountBalance()} lots={lotsOptimizedV1}");
+				consolelog($"error sending sell: {GetLastError()} balance={AccountBalance()} lots={lotsOptimizedV1}");
 			else
-				log($"open sell #{ticket} lots={lots} prob={sellProbability.ToString("0.00")} @" + Bid);
+				consolelog($"open sell #{ticket} lots={lots} prob={sellProbability.ToString("0.00")} @" + Bid, null, ConsoleColor.White);
 
 			//AddLabel($"SP {sellProbability.ToString("0.0")} BP {buyProbability.ToString("0.0")}", Color.Red);
 
@@ -1150,9 +1153,9 @@ namespace forexAI
 			expirationTime = expirationTime.AddHours(3);
 			if ((ticket = OrderSend(symbol, OP_BUY, lots, Ask, 50, stopLoss, 0, $"Probability:",
 				Configuration.magickNumber, expirationTime, Color.Blue)) <= 0)
-				log($"error sending buy: {GetLastError()} balance={AccountBalance()} lots={lotsOptimizedV1}");
+				consolelog($"error sending buy: {GetLastError()} balance={AccountBalance()} lots={lotsOptimizedV1}");
 			else
-				log($"open buy #{ticket} lots={lots} prob={buyProbability.ToString("0.00")} @" + Ask);
+				consolelog($"open buy #{ticket} lots={lots} prob={buyProbability.ToString("0.00")} @" + Ask, null, ConsoleColor.White);
 
 			//AddLabel($"BP {buyProbability.ToString("0.0")} SP {sellProbability.ToString("0.0")}", Color.Blue);
 
@@ -1178,7 +1181,7 @@ namespace forexAI
 						&& Bid - (trailingBorder * Point) > order.openPrice
 						&& order.currentProfit > 0)
 					{
-						log($"modify buy #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}");
+						consolelog($"modify buy #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Magenta);
 						OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
 							order.expiration, Color.BlueViolet);
 						dayOperationsCount++;
@@ -1191,7 +1194,7 @@ namespace forexAI
 						&& Ask + (trailingBorder * Point) < order.openPrice
 						&& order.currentProfit > 0)
 					{
-						log($"modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}");
+						consolelog($"modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Magenta);
 						OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
 							order.expiration, Color.MediumVioletRed);
 						dayOperationsCount++;

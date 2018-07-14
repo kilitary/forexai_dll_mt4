@@ -163,7 +163,7 @@ namespace forexAI
 				log(lines, fileName);
 		}
 
-		public static void consolelog(string lines, string fileName = null)
+		public static void consolelog(string lines, string fileName = null, ConsoleColor color = ConsoleColor.Cyan)
 		{
 			if (fileName == null)
 				fileName = Configuration.logFileName;
@@ -174,7 +174,7 @@ namespace forexAI
 					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " + lines);
 				file.Close();
 
-				console(lines, ConsoleColor.Black, ConsoleColor.Cyan);
+				console(lines, ConsoleColor.Black, color);
 			}
 			catch (Exception e)
 			{
