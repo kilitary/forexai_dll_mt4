@@ -137,8 +137,8 @@ namespace forexAI
 		double leverage = 0.0;
 		double lotsize = 0.01;
 		double stoplevel = 0.0;
-		double[] prevNetworkOutputBuy = new double[5];
-		double[] prevNetworkOutputSell = new double[5];
+		double[] prevNetworkOutputBuy = new double[10];
+		double[] prevNetworkOutputSell = new double[10];
 		double[] fannNetworkOutput = null;
 		double[] prevBuyProbability = null;
 		double[] prevSellProbability = null;
@@ -676,8 +676,6 @@ namespace forexAI
 			{
 				if (prevNetworkOutputBuy[i].ToString("0.00") != prevValue.ToString("0.00"))
 					return false;
-
-				prevValue = prevNetworkOutputBuy[i];
 			}
 
 			prevValue = prevNetworkOutputSell[0];
@@ -685,8 +683,6 @@ namespace forexAI
 			{
 				if (prevNetworkOutputSell[i].ToString("0.00") != prevValue.ToString("0.00"))
 					return false;
-
-				prevValue = prevNetworkOutputSell[i];
 			}
 
 			return true;
