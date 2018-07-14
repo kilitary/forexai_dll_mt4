@@ -209,7 +209,7 @@ namespace forexAI
 
 		double activeProfit
 		{
-			get
+			get 
 			{
 				double total = 0.0;
 
@@ -628,8 +628,8 @@ namespace forexAI
 			log("Deinitializing ...");
 			log($"Balance={AccountBalance()} Orders={OrdersTotal()} UninitializeReason={UninitializeReason()}");
 
-			config.Set("functions", Data.nnFunctions);
-			config.Set("balance", AccountBalance());
+			//config.Set("functions", Data.nnFunctions);
+			//config.Set("balance", AccountBalance());
 			config.Save();
 			storage.SyncData();
 
@@ -879,7 +879,7 @@ namespace forexAI
 				OpenSell();
 		}
 
-		public void TryEnterCounterTrade()
+		public void TryEnterCounterTrade() 
 		{
 			if (buysProfit <= minLossForCounterTrade
 				&& ordersCount < maxOrdersParallel
@@ -956,10 +956,10 @@ namespace forexAI
 
 		void ScanNetworks()
 		{
-			consolelog($"-> Scanning networks ...");
+			consolelog($"Scanning networks ...");
 			networkDirs = new DirectoryInfo(Configuration.rootDirectory).GetDirectories("NET_*");
 
-			consolelog($"-> Looking for networks in {Configuration.rootDirectory}: found {networkDirs.Length} networks.");
+			consolelog($"Found {networkDirs.Length} networks in {Configuration.rootDirectory}.");
 			if (networkDirs.Length == 0)
 			{
 				error("WHAT I SHOULD DO?? DO U KNOW????");
@@ -1070,7 +1070,7 @@ namespace forexAI
 			}
 		}
 
-		int CloseBuys()
+		private int CloseBuys()
 		{
 			if (buysCount == 0)
 				return 0;
@@ -1096,7 +1096,7 @@ namespace forexAI
 			return ops;
 		}
 
-		int CloseSells()
+		private int CloseSells()
 		{
 			if (sellsCount == 0)
 				return 0;
@@ -1122,7 +1122,7 @@ namespace forexAI
 			return ops;
 		}
 
-		void OpenSell(double exactLots = 0.0)
+		private void OpenSell(double exactLots = 0.0)
 		{
 			double stopLoss = 0;// Ask - ordersStopPoints * Point;
 			double lots = exactLots > 0.0 ? exactLots : lotsOptimizedV1;
@@ -1142,7 +1142,7 @@ namespace forexAI
 			lastTradeBar = Bars;
 		}
 
-		void OpenBuy(double exactLots = 0.0)
+		private void OpenBuy(double exactLots = 0.0)
 		{
 			double lots = exactLots > 0.0 ? exactLots : lotsOptimizedV1;
 			double stopLoss = 0;//Bid - ordersStopPoints * Point;
@@ -1162,7 +1162,7 @@ namespace forexAI
 			lastTradeBar = Bars;
 		}
 
-		void TrailPositions()
+		private void TrailPositions()
 		{
 			double newStopLoss = 0;
 

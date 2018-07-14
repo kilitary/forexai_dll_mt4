@@ -37,7 +37,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationVersion>0.0.2.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -112,9 +112,9 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ForexAI_MT4.csproj">
+    <ProjectReference Include="..\ForexAI_MT4_EA.csproj">
       <Project>{b6f386bf-52f9-4b04-a68e-f98a55cedcff}</Project>
-      <Name>ForexAI_MT4</Name>
+      <Name>ForexAI_MT4_EA</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
