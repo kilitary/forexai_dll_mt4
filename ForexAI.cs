@@ -31,10 +31,6 @@ using static forexAI.Constants;
 
 namespace forexAI
 {
-	/// <summary>
-	/// xftghfgf
-	/// </summary>
-	/// <remarks>fghg</remarks>
 	public class ForexAI : MqlApi
 	{
 		[ExternVariable]
@@ -77,7 +73,7 @@ namespace forexAI
 		public int minTradePeriodBars = 6;
 
 		[ExternVariable]
-		public bool counterTrading = true;
+		public bool counterTrading = false;
 
 		[ExternVariable]
 		public int countedMeasuredProbabilityBars = 4;

@@ -23,7 +23,7 @@ namespace forexAI
 
 		public static void Wipe()
 		{
-			Play(Configuration.wipe);
+			Play(Configuration.wipeWav);
 		}
 
 		public static void NewDay()

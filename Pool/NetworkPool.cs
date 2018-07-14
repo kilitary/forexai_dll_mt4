@@ -16,6 +16,11 @@ using System.Threading.Tasks;
 namespace forexAI
 {
     class NetworkPool
-    {
-    }
+	{
+
+		public void runParallel()
+		{
+			throw new System.NotImplementedException();
+		}
+	}
 }
