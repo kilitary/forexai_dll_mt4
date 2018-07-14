@@ -171,4 +171,17 @@ namespace forexAI
 				input[i] = 0;
 		}
 	}
+
+	public class Inializer
+	{
+		public void temp1()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void temp2()
+		{
+			throw new System.NotImplementedException();
+		}
+	}
 }

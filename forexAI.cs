@@ -31,6 +31,10 @@ using static forexAI.Constants;
 
 namespace forexAI
 {
+	/// <summary>
+	/// xftghfgf
+	/// </summary>
+	/// <remarks>fghg</remarks>
 	public class ForexAI : MqlApi
 	{
 		[ExternVariable]
@@ -137,8 +141,8 @@ namespace forexAI
 		double leverage = 0.0;
 		double lotsize = 0.01;
 		double stoplevel = 0.0;
-		double[] prevNetworkOutputBuy = new double[12];
-		double[] prevNetworkOutputSell = new double[12];
+		double[] prevNetworkOutputBuy = new double[11];
+		double[] prevNetworkOutputSell = new double[11];
 		double[] fannNetworkOutput = null;
 		double[] prevBuyProbability = null;
 		double[] prevSellProbability = null;
@@ -482,7 +486,8 @@ namespace forexAI
 			{
 				AudioFX.Wipe();
 				consolelog($"Deleting {networkId}, beacuse it is desynced/bad/notprofitable ({prevNetworkOutputBuy[0]}, {prevNetworkOutputSell[0]})");
-				Directory.Delete($"{Configuration.rootDirectory}\\{networkId}", true);
+				if (Directory.Exists($"{Configuration.rootDirectory}\\{networkId}"))
+					Directory.Delete($"{Configuration.rootDirectory}\\{networkId}", true);
 				InitNetworks();
 			}
 
@@ -680,19 +685,27 @@ namespace forexAI
 			double prevValue = prevNetworkOutputBuy[0];
 			for (var i = 1; i < prevNetworkOutputBuy.Length; i++)
 			{
-				if (prevNetworkOutputBuy[i].ToString("0.00") != prevValue.ToString("0.00"))
+				if (prevNetworkOutputBuy[i].ToString("0.0000") != prevValue.ToString("0.0000"))
 					buyStall = false;
 			}
 
 			prevValue = prevNetworkOutputSell[0];
 			for (var i = 1; i < prevNetworkOutputSell.Length; i++)
 			{
-				if (prevNetworkOutputSell[i].ToString("0.00") != prevValue.ToString("0.00"))
+				if (prevNetworkOutputSell[i].ToString("0.0000") != prevValue.ToString("0.0000"))
 					sellStall = false;
 			}
 
-			if(sellStall || buyStall)
+			if (sellStall || buyStall)
+			{
+				log($"sellStall {sellStall} buyStall {buyStall} prevValue {prevValue}", "debug");
+				dump(prevNetworkOutputBuy, "buy", "warning");
+				dump(prevNetworkOutputSell, "sell", "warning");
+			}
+
+			if (Bars > prevNetworkOutputBuy.Length && (sellStall || buyStall))
 				return true;
+
 			return false;
 		}
 
@@ -939,23 +952,26 @@ namespace forexAI
 			Match match2 = Regex.Match(fileTextData, "InputDimension:\\s+(\\d+)?");
 			int.TryParse(match2.Groups[1].Value, out inputDimension);
 
-			log($" * InputDimension = {inputDimension}");
+			log($"InputDimension = {inputDimension}");
 
 			Match matches = Regex.Match(fileTextData,
 				 "InputActFunc:\\s+([^ ]{1,40}?)\\s+LayerActFunc:\\s+([^ \r\n]{1,40})",
 				 RegexOptions.Singleline);
 
-			log($" * Activation functions: input [{matches.Groups[1].Value}] layer [{matches.Groups[2].Value}]");
+			log($"Activation functions: input [{matches.Groups[1].Value}] layer [{matches.Groups[2].Value}]");
 
 			inputLayerActivationFunction = matches.Groups[1].Value;
 			middleLayerActivationFunction = matches.Groups[2].Value;
 
 			functionsTextContent = File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json");
 
-			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexFannNetwork, true, mqlApi);
+			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexFannNetwork, false, mqlApi);
 
 			if (networkFunctionsCount > 0 && fannNetworkOutput.Length > 0)
 				neuralNetworkBootstrapped = true;
+
+			Helpers.ZeroArray(prevNetworkOutputBuy);
+			Helpers.ZeroArray(prevNetworkOutputSell);
 		}
 
 		void ScanNetworks()
@@ -1456,7 +1472,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 191);
 			}
 			ObjectSetText(labelID, "Buy " + buyProbability.ToString("0.00"), 17, "liberation mono",
-				buyProbability > 0.0 ? Color.DarkSeaGreen : Color.LightGray);
+				buyProbability >= tradeEnterProbabilityMin ? Color.Green : Color.LightGray);
 
 			labelID = gs_80 + "12";
 			if (ObjectFind(labelID) == -1)
@@ -1467,7 +1483,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 442);
 			}
 			ObjectSetText(labelID, "Sell " + sellProbability.ToString("0.00"), 17, "liberation mono",
-				sellProbability > 0.0 ? Color.DarkSeaGreen : Color.LightGray);
+				sellProbability >= tradeEnterProbabilityMin ? Color.Green : Color.LightGray);
 
 			labelID = gs_80 + "13";
 			if (ObjectFind(labelID) == -1)
@@ -1480,7 +1496,7 @@ namespace forexAI
 			ObjectSetText(labelID, "[" + (isTrendStable ? "STABLE" : "UNSTABLE") +
 				$" {(isTrendStable ? stableTrendBar : unstableTrendBar)}" +
 				$" : {diffProbability.ToString("0.00")}]", 17, "liberation mono",
-				isTrendStable ? Color.Green : Color.Red);
+				isTrendStable ? Color.DarkSeaGreen : Color.Red);
 
 			totalSpends = spendSells + spendBuys;
 			totalProfits = profitSells + profitBuys;
@@ -1579,12 +1595,7 @@ namespace forexAI
 			   "%\r\n" +
 			  "Train Hit Ratio: " +
 			   trainHitRatio.ToString("0.00") +
-			   "%\r\n" +
-			   "Network Output: " +
-			   ((fannNetworkOutput != null && fannNetworkOutput[0] != 0.0 && fannNetworkOutput[1] != 0.0) ?
-			   ($"{ fannNetworkOutput[0].ToString("0.0000") ?? "F.FFFF"}:{ fannNetworkOutput[1].ToString("0.0000") ?? "F.FFFF"}") : "") +
-			   $"\r\nBuyProb: [{buyProb}]" +
-			   $"\r\nSellProb: [{sellProb}]" +
+			   "%" +
 			   $"\r\n\r\nMemory: {memoryUsage} MB" +
 			   $"\r\nCPU: {(cpuCounter.NextValue()).ToString("0.00") + "%"}" +
 			   $"\r\n\r\nCounter-trading: {counterTrading}\r\nOptimized Lots: {useOptimizedLots} " +

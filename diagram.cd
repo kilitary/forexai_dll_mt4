@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Alphabetical" MembersFormat="NameAndType">
+  <Comment CommentText="temproary warehouse&#xD;&#xA;">
+    <Position X="9.365" Y="0.5" Height="0.75" Width="1.7" />
+  </Comment>
+  <Class Name="forexAI.ForexAI">
+    <Position X="0.75" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>EzpfrSfl1TKKMAIrTEppBwMn2LqXZzbwP06nBwFCkUE=</HashCode>
+      <FileName>ForexAI.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Inializer">
+    <Position X="7.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Tools\Helpers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Helpers">
+    <Position X="16" Y="7.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAIAAAAwAAAAAAAAAAAAAAIEAAAAAA=</HashCode>
+      <FileName>Tools\Helpers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Reassembler">
+    <Position X="4.25" Y="0.5" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>AAQBQAAMAAAAAEQBAAICEgBDAgIEAAIAIMWAEIAAAAA=</HashCode>
+      <FileName>Reassembler\Reassembler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Experimental">
+    <Position X="11.25" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAEAAAAAAAAAAAAAAAAAAAAAAAAAQAAABAAAA=</HashCode>
+      <FileName>Experimental\Experimental.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Configuration">
+    <Position X="9.75" Y="2.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAIAQAMQgAAAAEIAAAEAAAAAIQEAAAYCAghABQIgCAA=</HashCode>
+      <FileName>Data\Configuration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Config">
+    <Position X="14.5" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAIAAAAAABABACAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Storages\Config.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Constants">
+    <Position X="4.25" Y="7" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="forexAI.Constants.TrendDirection">
+        <TypeIdentifier>
+          <NewMemberFileName>Data\Constants.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="forexAI.Constants.OrderType">
+        <TypeIdentifier>
+          <NewMemberFileName>Data\Constants.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\Constants.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Hash">
+    <Position X="8.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>Tools\Hash.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.LivePrices">
+    <Position X="6.25" Y="8" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAAAAAAAIAAAgAACAAAAAAIAAAAAAA=</HashCode>
+      <FileName>Prices\Prices.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Logger">
+    <Position X="13.5" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>kAAAAAAAgBgAABCAAAGACAAAAAAQgAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Logging\Logger.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Order">
+    <Position X="16.5" Y="3" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAQIAAEGAAIAEAAAAAAAAAAAAAEBAgAgAQAAAACAIAg=</HashCode>
+      <FileName>MetaTrader\Order.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Storage">
+    <Position X="17.25" Y="10" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAACAAAAEAAAAAAAABAAAAAAAAACAA=</HashCode>
+      <FileName>Storages\Memcached.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Web">
+    <Position X="17.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Tools\Web.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.YRandom">
+    <Position X="13" Y="9.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAASAQAAQAAA=</HashCode>
+      <FileName>Experimental\YRandom.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="forexAI.ForexAI">
+    <Position X="1" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>EzpfrSfl1TKKMAIrTEppBwMn2LqXZzbwP06nBwFCkUE=</HashCode>
+      <FileName>ForexAI.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.Class1">
+    <Position X="4.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Class1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="forexAI.Struct1">
+    <Position X="9.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAEAAAQAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Struct1.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="forexAI.temp">
+    <Position X="7" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAQAAAAAgACAAAEAAA=</HashCode>
+      <FileName>temp.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
