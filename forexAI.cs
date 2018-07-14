@@ -49,10 +49,10 @@ namespace forexAI
 		public double stableBigChangeFactor = 0.2;
 
 		[ExternVariable]
-		public double enteringTradeProbability = 0.9;
+		public double tradeEnterProbabilityMin = 0.9;
 
 		[ExternVariable]
-		public double blockingTradeProbability = -0.2;
+		public double rejectTradeProbability = -0.2;
 
 		[ExternVariable]
 		public double minLossForCounterTrade = -5.0;
@@ -188,7 +188,7 @@ namespace forexAI
 		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double ordersProfit => buysProfit + sellsProfit;
 		TrendDirection collapseDirection => High[0] - Low[0] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
-		double diffProbability => sellProbability + buyProbability;
+		double diffProbability => Math.Abs(buyProbability - sellProbability);
 		int buysCount => activeOrders.Where(o => o.type == Constants.OrderType.Buy).Count();
 		int sellsCount => activeOrders.Where(o => o.type == Constants.OrderType.Sell).Count();
 
@@ -544,7 +544,8 @@ namespace forexAI
 				AudioFX.GoodWork();
 
 			log($"=> Buy {buyProbability.ToString("0.0000").PadLeft(7)} Sell {sellProbability.ToString("0.0000").PadLeft(7)}" +
-				$" {(stableTrendBar > 0 ? $"Stable {stableTrendBar}" : $"Unstable  {unstableTrendBar}")}", "debug");
+				$" Diff {diffProbability.ToString("0.0000").PadLeft(7)} " +
+				$"{(stableTrendBar > 0 ? $"Stable {stableTrendBar}" : $"Unstable  {unstableTrendBar}")}", "debug");
 
 			#region matters
 			if (Configuration.tryExperimentalFeatures)
@@ -584,7 +585,7 @@ namespace forexAI
 			prevSellProbability = new double[countedMeasuredProbabilityBars];
 
 			console($"orderLots={orderLots} maxNegativeSpend={maxNegativeSpend} trailingBorder={trailingBorder} trailingStop={trailingStop}" +
-				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={enteringTradeProbability} BlockingTradeProbability={blockingTradeProbability}" +
+				$" stableBigChangeFactor={stableBigChangeFactor} enteringTradeProbability={tradeEnterProbabilityMin} BlockingTradeProbability={rejectTradeProbability}" +
 				$" MinLossForCounterTrade={minLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersParallel}" +
 				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
 				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", ConsoleColor.Black, ConsoleColor.Yellow);
@@ -621,7 +622,7 @@ namespace forexAI
 
 			return 0;
 		}
-
+		 
 		public override int deinit()
 		{
 			log("Deinitializing ...");
@@ -638,30 +639,30 @@ namespace forexAI
 			return 0;
 		}
 
-		private void InitNetworks()
+		public void InitNetworks()
 		{
 			ScanNetworks();
 
 			if (networkDirs.Length > 0)
 			{
 				string network = networkDirs[random.Next(networkDirs.Length - 1)].Name;
-				log($"Init networks: selected [{network}] from {networkDirs.Length} networks.", "debug");
+				log($"Init network: selected {network} from {Configuration.rootDirectory} (total {networkDirs.Length} networks)", "debug");
 
 				LoadNetwork(network);
 
 				if (forexFannNetwork != null)
 				{
-					console($"Testing network MSE ...");
+					console($"Testing network {network} MSE ...");
 					TestNetworkMSE();
-					console($"Testing network hit ratio ...");
+					console($"Testing network {network} hit ratio ...");
 					TestNetworkHitRatio();
 				}
 			}
 		}
 
-		private bool IsBadNetwork()
+		public bool IsBadNetwork()
 		{
-			if (buyProbability >= 1.5 || buyProbability <= -1.4 || sellProbability >= 1.5 || sellProbability <= -1.5)
+			if (buyProbability >= 1.5 || buyProbability <= -1.5 || sellProbability >= 1.5 || sellProbability <= -1.5)
 				return true;
 
 			for (var i = 0; i < prevNetworkOutputBuy.Length - 1; i++)
@@ -863,17 +864,15 @@ namespace forexAI
 			if (!isTrendStable || stableTrendBar < minStableTrendBarForEnter)
 				return;
 
-			if (buyProbability >= enteringTradeProbability
-					&& sellProbability <= blockingTradeProbability
-					&& diffProbability >= 0
+			if (buyProbability >= tradeEnterProbabilityMin
+					&& sellProbability <= rejectTradeProbability
 					&& ordersCount < maxOrdersParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
 				OpenBuy();
 
-			if (sellProbability >= enteringTradeProbability
-					&& buyProbability <= blockingTradeProbability
-					&& diffProbability <= 0
+			if (sellProbability >= tradeEnterProbabilityMin
+					&& buyProbability <= rejectTradeProbability
 					&& ordersCount < maxOrdersParallel
 					&& tradeBarPeriodGone > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
@@ -1181,7 +1180,7 @@ namespace forexAI
 						&& Bid - (trailingBorder * Point) > order.openPrice
 						&& order.currentProfit > 0)
 					{
-						consolelog($"modify buy #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Magenta);
+						consolelog($"modify buy #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Gray);
 						OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
 							order.expiration, Color.BlueViolet);
 						dayOperationsCount++;
@@ -1194,7 +1193,7 @@ namespace forexAI
 						&& Ask + (trailingBorder * Point) < order.openPrice
 						&& order.currentProfit > 0)
 					{
-						consolelog($"modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Magenta);
+						consolelog($"modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Gray);
 						OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
 							order.expiration, Color.MediumVioletRed);
 						dayOperationsCount++;
