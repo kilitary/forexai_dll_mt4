@@ -209,7 +209,7 @@ namespace forexAI
 
 		double activeProfit
 		{
-			get 
+			get
 			{
 				double total = 0.0;
 
@@ -507,7 +507,7 @@ namespace forexAI
 				stableTrendBar = unstableTrendBar = 0;
 				hasNightReported = true;
 				log($"Night....");
-				AddLabel($"[kNIGHT]", Color.White);
+				AddLabel($"[kNIGHT]", Color.DarkOrange);
 			}
 			else if (hasNightReported && TimeHour(TimeCurrent()) == 1)
 				hasNightReported = false;
@@ -517,7 +517,7 @@ namespace forexAI
 				stableTrendBar = unstableTrendBar = 0;
 				hasMorningReported = true;
 				log($"Morning!");
-				AddLabel($"[MORNING]", Color.Yellow);
+				AddLabel($"[MORNING]", Color.DarkGreen);
 				buysPermitted = sellsPermitted = 3;
 			}
 			else if (hasMorningReported && TimeHour(TimeCurrent()) == 8)
@@ -576,7 +576,7 @@ namespace forexAI
 			}
 
 			if (IsOptimization())
-				Configuration.useAudio = false;
+				Configuration.audioEnabled = false;
 
 			currentDay = (int) DateTime.Now.DayOfWeek;
 			neuralNetworkBootstrapped = false;
@@ -605,14 +605,11 @@ namespace forexAI
 
 			InitVariables();
 			ListGlobalVariables();
-
 			DumpInfo();
-
-			reassembleStageOverride = false;
 
 			InitNetworks();
 
-			dump(ConfigSettings.SharedSettings, "configSettings", "dev");
+			dump(ConfigSettings.SharedSettings, "SharedSettings", "dev");
 
 			TextSetFont("liberation mono", 8, 0, 0);
 
@@ -622,7 +619,7 @@ namespace forexAI
 
 			return 0;
 		}
-		 
+
 		public override int deinit()
 		{
 			log("Deinitializing ...");
@@ -641,6 +638,7 @@ namespace forexAI
 
 		public void InitNetworks()
 		{
+			reassembleStageOverride = true;
 			ScanNetworks();
 
 			if (networkDirs.Length > 0)
@@ -656,12 +654,16 @@ namespace forexAI
 					TestNetworkMSE();
 					console($"Testing network {network} hit ratio ...");
 					TestNetworkHitRatio();
+
+					reassembleStageOverride = false;
 				}
 			}
 		}
 
 		public bool IsBadNetwork()
 		{
+			bool buyStall = true, sellStall = true;
+
 			if (buyProbability >= 1.5 || buyProbability <= -1.5 || sellProbability >= 1.5 || sellProbability <= -1.5)
 				return true;
 
@@ -679,17 +681,19 @@ namespace forexAI
 			for (var i = 1; i < prevNetworkOutputBuy.Length; i++)
 			{
 				if (prevNetworkOutputBuy[i].ToString("0.00") != prevValue.ToString("0.00"))
-					return false;
+					buyStall = false;
 			}
 
 			prevValue = prevNetworkOutputSell[0];
 			for (var i = 1; i < prevNetworkOutputSell.Length; i++)
 			{
 				if (prevNetworkOutputSell[i].ToString("0.00") != prevValue.ToString("0.00"))
-					return false;
+					sellStall = false;
 			}
 
-			return true;
+			if(sellStall || buyStall)
+				return true;
+			return false;
 		}
 
 		private void CheckForAutoClose()
@@ -849,7 +853,7 @@ namespace forexAI
 
 			ordersStopPoints = stoplevel > 0 ? stoplevel * 2 : 60;
 
-			if (Configuration.useMysql)
+			if (Configuration.mysqlEnabled)
 				Data.database = new Database();
 
 			config["process"] = currentProcess.ToString();
@@ -879,7 +883,7 @@ namespace forexAI
 				OpenSell();
 		}
 
-		public void TryEnterCounterTrade() 
+		public void TryEnterCounterTrade()
 		{
 			if (buysProfit <= minLossForCounterTrade
 				&& ordersCount < maxOrdersParallel
@@ -1350,7 +1354,7 @@ namespace forexAI
 						  "AccountEquity: " + DoubleToStr(AccountEquity(), 2),
 						  8,
 						  "liberation mono",
-						  Color.Yellow);
+						  Color.Black);
 
 			labelID = gs_80 + "5";
 			if (ObjectFind(labelID) == -1)
@@ -1366,7 +1370,7 @@ namespace forexAI
 						  "ActiveProfit: " + DoubleToStr(total, 2),
 						  8,
 						  "liberation mono",
-						  Color.Yellow);
+						  Color.Black);
 
 			labelID = gs_80 + "6";
 			if (ObjectFind(labelID) == -1)
@@ -1407,15 +1411,15 @@ namespace forexAI
 			{
 				ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
 				ObjectSet(labelID, OBJPROP_CORNER, 1);
-				ObjectSet(labelID, OBJPROP_XDISTANCE, 1288);
-				ObjectSet(labelID, OBJPROP_YDISTANCE, 674);
+				ObjectSet(labelID, OBJPROP_XDISTANCE, 514);
+				ObjectSet(labelID, OBJPROP_YDISTANCE, 3);
 			}
 
 			ObjectSetText(labelID,
 						  $"{charizedOrdersHistory}",
-						  12,
+						  8,
 						  "consolas",
-						  Color.LimeGreen);
+						  Color.DarkSlateBlue);
 
 			labelID = gs_80 + "9";
 			if (ObjectFind(labelID) == -1)
@@ -1426,7 +1430,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 50);
 			}
 
-			ObjectSetText(labelID, "Total operations: " + (totalOperationsCount + dayOperationsCount), 8, "liberation mono", Color.Yellow);
+			ObjectSetText(labelID, "Total operations: " + (totalOperationsCount + dayOperationsCount), 8, "liberation mono", Color.Black);
 
 			labelID = gs_80 + "10";
 			if (ObjectFind(labelID) == -1)
@@ -1440,7 +1444,7 @@ namespace forexAI
 						  "Live Orders: " + OrdersTotal() + $" ({activeOrders.Count}/{historyOrders.Count})",
 						  8,
 						  "liberation mono",
-						  Color.Yellow);
+						  Color.Black);
 
 			string dirtext = string.Empty, dirtext2 = string.Empty;
 			labelID = gs_80 + "11";
@@ -1452,7 +1456,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 191);
 			}
 			ObjectSetText(labelID, "Buy " + buyProbability.ToString("0.00"), 17, "liberation mono",
-				buyProbability > 0.0 ? Color.LightCyan : Color.Gray);
+				buyProbability > 0.0 ? Color.DarkSeaGreen : Color.LightGray);
 
 			labelID = gs_80 + "12";
 			if (ObjectFind(labelID) == -1)
@@ -1463,7 +1467,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 442);
 			}
 			ObjectSetText(labelID, "Sell " + sellProbability.ToString("0.00"), 17, "liberation mono",
-				sellProbability > 0.0 ? Color.LightCyan : Color.Gray);
+				sellProbability > 0.0 ? Color.DarkSeaGreen : Color.LightGray);
 
 			labelID = gs_80 + "13";
 			if (ObjectFind(labelID) == -1)
@@ -1476,7 +1480,7 @@ namespace forexAI
 			ObjectSetText(labelID, "[" + (isTrendStable ? "STABLE" : "UNSTABLE") +
 				$" {(isTrendStable ? stableTrendBar : unstableTrendBar)}" +
 				$" : {diffProbability.ToString("0.00")}]", 17, "liberation mono",
-				isTrendStable ? Color.LightGreen : Color.Red);
+				isTrendStable ? Color.Green : Color.Red);
 
 			totalSpends = spendSells + spendBuys;
 			totalProfits = profitSells + profitBuys;
@@ -1583,7 +1587,8 @@ namespace forexAI
 			   $"\r\nSellProb: [{sellProb}]" +
 			   $"\r\n\r\nMemory: {memoryUsage} MB" +
 			   $"\r\nCPU: {(cpuCounter.NextValue()).ToString("0.00") + "%"}" +
-			   $"\r\n\r\nCounter-trading: {counterTrading}\r\nOptimized Lots: {useOptimizedLots} (v2: {lotsOptimizedV2} v1: {lotsOptimizedV1} v3: {lotsOptimizedV3})"
+			   $"\r\n\r\nCounter-trading: {counterTrading}\r\nOptimized Lots: {useOptimizedLots} " +
+			   $"(v2: {lotsOptimizedV2} v1: {lotsOptimizedV1} v3: {lotsOptimizedV3})"
 			   );
 
 			}

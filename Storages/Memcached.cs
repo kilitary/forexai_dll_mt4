@@ -23,9 +23,9 @@ namespace forexAI
 
 		public Storage()
 		{
-			debug($"storage INIT (Configuration.useMemcached={Configuration.useMemcached}, useMysql={Configuration.useMysql})");
+			debug($"storage INIT (Configuration.useMemcached={Configuration.memcahedEnabled}, useMysql={Configuration.mysqlEnabled})");
 
-			if (Configuration.useMemcached)
+			if (Configuration.memcahedEnabled)
 				InitMemcached();
 		}
 
@@ -42,7 +42,7 @@ namespace forexAI
 				if (properties.ContainsKey(name))
 					return properties[name];
 
-				if (!Configuration.useMysql)
+				if (!Configuration.mysqlEnabled)
 					return string.Empty;
 
 				string retrievedValue = string.Empty;
@@ -56,7 +56,7 @@ namespace forexAI
 			set
 			{
 				properties[name] = value;
-				if (Configuration.useMemcached)
+				if (Configuration.memcahedEnabled)
 					memcachedServer.Store(StoreMode.Set, name, value);
 			}
 		}
@@ -69,10 +69,10 @@ namespace forexAI
 			debug($"storage: storing {properties.Count} key-value pairs.");
 			foreach (KeyValuePair<string, object> o in properties)
 			{
-				if (Configuration.useMysql)
+				if (Configuration.mysqlEnabled)
 					Data.database.Set(o.Key, o.Value);
 
-				if (Configuration.useMemcached)
+				if (Configuration.memcahedEnabled)
 					memcachedServer.Store(StoreMode.Set, o.Key, o.Value);
 			}
 		}

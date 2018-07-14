@@ -15,7 +15,7 @@ namespace forexAI
 	{
 		public static void Play(string audioFileName)
 		{
-			if (!Configuration.useAudio)
+			if (!Configuration.audioEnabled)
 				return;
 
 			new SoundPlayer(audioFileName).Play();

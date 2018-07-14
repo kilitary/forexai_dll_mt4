@@ -19,27 +19,27 @@ namespace forexAI
 	public static class Configuration
 	{
 		// common configuration   √  
-		public static int magickNumber = 0xc34;
-		public static string rootDirectory = @"d:\forexAI";
-		public static string logFileName = "mt4EA";
 		public static string configFilePath = $@"{rootDirectory}\mt4EA.cfg";
 		public static string XRandomLogFileName = $@"{rootDirectory}\seed";
 		public static string YRandomLogFileName = $@"{rootDirectory}\Yseed";
+		public static string rootDirectory = @"d:\forexAI";
+		public static string logFileName = "mt4EA";
+		public static int magickNumber = 0xc34;
 
 		// mysql √
-		public static bool useMysql = false;
+		public static bool mysqlEnabled = false;
 		public static string mysqlDatabase = "forex";
 		public static string mysqlPassword = "secret";
 		public static string mysqlServer = "192.168.10.10";
 		public static string mysqlUid = "homestead";
 
 		// memcached √
-		public static bool useMemcached = false;
+		public static bool memcahedEnabled = false;
 		public static string memcachedIP = "192.168.0.100";
 		public static int memcachedPort = 11211;
 
 		// audio/FX  ♫ ♫ ♫ √
-		public static bool useAudio = true;
+		public static bool audioEnabled = true;
 		public static string audioDirectory = $@"{rootDirectory}\AudioFX";
 		public static string newDayWAV = $@"{audioDirectory}\Speech Sleep.wav";
 		public static string profitWAV = $@"{audioDirectory}\209578__zott820__cash-register-purchase.wav";
