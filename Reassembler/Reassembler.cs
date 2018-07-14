@@ -47,7 +47,7 @@ namespace forexAI
 {
 	public static class Reassembler
 	{
-		static Dictionary<string, FunctionsConfiguration> functionsConfiguration;
+		static Dictionary<string, FunctionConfiguration> functionsConfiguration;
 		static Core.RetCode ret = Core.RetCode.UnknownErr;
 		static LivePrices prices = new LivePrices();
 		static Random random = new Random();
@@ -99,7 +99,7 @@ namespace forexAI
 				{
 					MetadataPropertyHandling = MetadataPropertyHandling.Ignore
 				};
-				functionsConfiguration = DeserializeObject<Dictionary<string, FunctionsConfiguration>>
+				functionsConfiguration = DeserializeObject<Dictionary<string, FunctionConfiguration>>
 					(functionConfigurationString, jsonSettings);
 
 				functionConfigurationHash = Hash.md5(functionConfigurationString);
@@ -125,7 +125,7 @@ namespace forexAI
 				int internalIndex;
 
 				functionName = function.Key;
-				FunctionsConfiguration functionConfiguration = function.Value;
+				FunctionConfiguration functionConfiguration = function.Value;
 
 				functionArguments = new object[functionConfiguration.parameters.parametersMap.Count];
 

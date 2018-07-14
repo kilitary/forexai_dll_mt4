@@ -16,6 +16,7 @@ namespace forexAI
 {
 	public static class Logger
 	{
+
 		[DllImport("Kernel32", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
 		private static extern int GetCurrentThreadId();
 
@@ -75,7 +76,7 @@ namespace forexAI
 			}
 		}
 
-		public static string console(string lines, ConsoleColor bgcolor = Black, ConsoleColor fgcolor = White)
+		public static void console(string lines, ConsoleColor bgcolor = Black, ConsoleColor fgcolor = White)
 		{
 			Console.BackgroundColor = bgcolor;
 			Console.ForegroundColor = fgcolor;
@@ -83,7 +84,6 @@ namespace forexAI
 				Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " + lines;
 			Console.WriteLine(logString);
 			Console.ResetColor();
-			return logString;
 		}
 
 

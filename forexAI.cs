@@ -77,7 +77,7 @@ namespace forexAI
 		public int minTradePeriodBars = 6;
 
 		[ExternVariable]
-		public bool counterTrading = false;
+		public bool counterTrading = true;
 
 		[ExternVariable]
 		public int countedMeasuredProbabilityBars = 4;
@@ -187,14 +187,14 @@ namespace forexAI
 
 		// computed properties
 		int ordersCount => activeOrders.Count();
-		int tradeBarPeriodGone => Bars - lastTradeBar;
+		int tradeBarPeriodPass => Bars - lastTradeBar;
+		int buysCount => activeOrders.Where(o => o.type == Constants.OrderType.Buy).Count();
+		int sellsCount => activeOrders.Where(o => o.type == Constants.OrderType.Sell).Count();
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double ordersProfit => buysProfit + sellsProfit;
+		double diffProbability => buyProbability + sellProbability;
 		TrendDirection collapseDirection => High[0] - Low[0] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
-		double diffProbability => Math.Abs(buyProbability - sellProbability);
-		int buysCount => activeOrders.Where(o => o.type == Constants.OrderType.Buy).Count();
-		int sellsCount => activeOrders.Where(o => o.type == Constants.OrderType.Sell).Count();
 
 		double activeIncome
 		{
@@ -485,9 +485,12 @@ namespace forexAI
 			if (IsBadNetwork())
 			{
 				AudioFX.Wipe();
+
 				consolelog($"Deleting {networkId}, beacuse it is desynced/bad/notprofitable ({prevNetworkOutputBuy[0]}, {prevNetworkOutputSell[0]})");
+
 				if (Directory.Exists($"{Configuration.rootDirectory}\\{networkId}"))
 					Directory.Delete($"{Configuration.rootDirectory}\\{networkId}", true);
+
 				InitNetworks();
 			}
 
@@ -698,9 +701,9 @@ namespace forexAI
 
 			if (sellStall || buyStall)
 			{
-				log($"sellStall {sellStall} buyStall {buyStall} prevValue {prevValue}", "debug");
-				dump(prevNetworkOutputBuy, "buy", "warning");
-				dump(prevNetworkOutputSell, "sell", "warning");
+				log($"sellStall {sellStall} buyStall {buyStall} prevValue {prevValue} bars {Bars}", "debug");
+				dump(prevNetworkOutputBuy, "buy", "debug");
+				dump(prevNetworkOutputSell, "sell", "debug");
 			}
 
 			if (Bars > prevNetworkOutputBuy.Length && (sellStall || buyStall))
@@ -884,14 +887,14 @@ namespace forexAI
 			if (buyProbability >= tradeEnterProbabilityMin
 					&& sellProbability <= rejectTradeProbability
 					&& ordersCount < maxOrdersParallel
-					&& tradeBarPeriodGone > minTradePeriodBars
+					&& tradeBarPeriodPass > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
 				OpenBuy();
 
 			if (sellProbability >= tradeEnterProbabilityMin
 					&& buyProbability <= rejectTradeProbability
 					&& ordersCount < maxOrdersParallel
-					&& tradeBarPeriodGone > minTradePeriodBars
+					&& tradeBarPeriodPass > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
 				OpenSell();
 		}
@@ -900,23 +903,23 @@ namespace forexAI
 		{
 			if (buysProfit <= minLossForCounterTrade
 				&& ordersCount < maxOrdersParallel
-				&& tradeBarPeriodGone > minTradePeriodBars
+				&& tradeBarPeriodPass > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Down
 				&& closestSellDistance >= minOrderDistance
 				&& sellProbability >= 0.5)
 			{
-				consolelog($"opening counter-sell [{sellsCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
+				consolelog($"opening counter-sell [{sellsCount}/{ordersCount}] lastOrder@{tradeBarPeriodPass}");
 				OpenSell(lotsOptimizedV2);
 			}
 
 			if (sellsProfit <= minLossForCounterTrade
 				&& ordersCount < maxOrdersParallel
-				&& tradeBarPeriodGone > minTradePeriodBars
+				&& tradeBarPeriodPass > minTradePeriodBars
 				&& collapseDirection == TrendDirection.Up
 				&& closestBuyDistance >= minOrderDistance
 				&& buyProbability >= 0.5)
 			{
-				consolelog($"opening counter-buy [{buysCount}/{ordersCount}] lastOrder@{tradeBarPeriodGone}");
+				consolelog($"opening counter-buy [{buysCount}/{ordersCount}] lastOrder@{tradeBarPeriodPass}");
 				OpenBuy(lotsOptimizedV2);
 			}
 		}

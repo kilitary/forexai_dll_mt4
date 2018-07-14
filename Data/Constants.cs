@@ -32,7 +32,6 @@ namespace forexAI
 			Buy,
 			BuyLimit,
 			BuyStop
-
 		}
 	}
 }

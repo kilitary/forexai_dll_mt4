@@ -29,7 +29,7 @@ namespace forexAI
 		public int Offset;
 	}
 
-	public struct FunctionsConfiguration
+	public struct FunctionConfiguration
 	{
 		public FunctionParameters parameters;
 		public ExtendedMethodInfo methodInfo;
