@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="dir_47d43d085ea0e28c8f7535b009096f2a" kind="dir">
+    <compoundname>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler</compoundname>
+    <innerfile refid="_function_json_config_8cs">FunctionJsonConfig.cs</innerfile>
+    <innerfile refid="_reassembler_8cs">Reassembler.cs</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/"/>
+  </compounddef>
+</doxygen>

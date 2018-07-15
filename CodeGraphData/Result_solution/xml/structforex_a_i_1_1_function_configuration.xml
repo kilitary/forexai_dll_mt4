@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="structforex_a_i_1_1_function_configuration" kind="struct" prot="public">
+    <compoundname>forexAI::FunctionConfiguration</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structforex_a_i_1_1_function_configuration_1a6fdf8dfde5137c77bd490d9c6187dc47" prot="public" static="no" mutable="no">
+        <type><ref refid="structforex_a_i_1_1_function_parameters" kindref="compound">FunctionParameters</ref></type>
+        <definition>FunctionParameters forexAI.FunctionConfiguration.parameters</definition>
+        <argsstring></argsstring>
+        <name>parameters</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/FunctionJsonConfig.cs" line="34" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/FunctionJsonConfig.cs" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structforex_a_i_1_1_function_configuration_1a7b206383981c4120bed52155c0feed21" prot="public" static="no" mutable="no">
+        <type><ref refid="structforex_a_i_1_1_extended_method_info" kindref="compound">ExtendedMethodInfo</ref></type>
+        <definition>ExtendedMethodInfo forexAI.FunctionConfiguration.methodInfo</definition>
+        <argsstring></argsstring>
+        <name>methodInfo</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/FunctionJsonConfig.cs" line="35" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/FunctionJsonConfig.cs" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="26">
+        <label>forexAI.FunctionConfiguration</label>
+        <link refid="structforex_a_i_1_1_function_configuration"/>
+        <childnode refid="27" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="28" relation="usage">
+          <edgelabel>methodInfo</edgelabel>
+        </childnode>
+      </node>
+      <node id="28">
+        <label>forexAI.ExtendedMethodInfo</label>
+        <link refid="structforex_a_i_1_1_extended_method_info"/>
+      </node>
+      <node id="27">
+        <label>forexAI.FunctionParameters</label>
+        <link refid="structforex_a_i_1_1_function_parameters"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/FunctionJsonConfig.cs" line="33" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/FunctionJsonConfig.cs" bodystart="32" bodyend="36"/>
+    <listofallmembers>
+      <member refid="structforex_a_i_1_1_function_configuration_1a7b206383981c4120bed52155c0feed21" prot="public" virt="non-virtual"><scope>forexAI::FunctionConfiguration</scope><name>methodInfo</name></member>
+      <member refid="structforex_a_i_1_1_function_configuration_1a6fdf8dfde5137c77bd490d9c6187dc47" prot="public" virt="non-virtual"><scope>forexAI::FunctionConfiguration</scope><name>parameters</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

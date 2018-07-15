@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_hash" kind="class" prot="public">
+    <compoundname>forexAI::Hash</compoundname>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_hash_1a32c5e28ed586522a12b60c37fee109e4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>string</type>
+        <definition>static string forexAI.Hash.md5</definition>
+        <argsstring>(string input)</argsstring>
+        <name>md5</name>
+        <param>
+          <type>string</type>
+          <declname>input</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Hash.cs" line="22" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Hash.cs" bodystart="22" bodyend="30"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Hash.cs" line="21" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Hash.cs" bodystart="20" bodyend="31"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_hash_1a32c5e28ed586522a12b60c37fee109e4" prot="public" virt="non-virtual"><scope>forexAI::Hash</scope><name>md5</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="namespaceforex_a_i" kind="namespace">
+    <compoundname>forexAI</compoundname>
+    <innerclass refid="classforex_a_i_1_1_audio_f_x" prot="public">forexAI::AudioFX</innerclass>
+    <innerclass refid="classforex_a_i_1_1_configuration" prot="public">forexAI::Configuration</innerclass>
+    <innerclass refid="classforex_a_i_1_1_constants" prot="public">forexAI::Constants</innerclass>
+    <innerclass refid="classforex_a_i_1_1_experimental" prot="public">forexAI::Experimental</innerclass>
+    <innerclass refid="classforex_a_i_1_1_y_random" prot="public">forexAI::YRandom</innerclass>
+    <innerclass refid="classforex_a_i_1_1_forex_a_i" prot="public">forexAI::ForexAI</innerclass>
+    <innerclass refid="classforex_a_i_1_1_logger" prot="public">forexAI::Logger</innerclass>
+    <innerclass refid="classforex_a_i_1_1_order" prot="public">forexAI::Order</innerclass>
+    <innerclass refid="classforex_a_i_1_1_network_pool" prot="public">forexAI::NetworkPool</innerclass>
+    <innerclass refid="classforex_a_i_1_1_live_prices" prot="public">forexAI::LivePrices</innerclass>
+    <innerclass refid="structforex_a_i_1_1_extended_method_info" prot="public">forexAI::ExtendedMethodInfo</innerclass>
+    <innerclass refid="structforex_a_i_1_1_function_parameters" prot="public">forexAI::FunctionParameters</innerclass>
+    <innerclass refid="structforex_a_i_1_1_function_configuration" prot="public">forexAI::FunctionConfiguration</innerclass>
+    <innerclass refid="classforex_a_i_1_1_reassembler" prot="public">forexAI::Reassembler</innerclass>
+    <innerclass refid="classforex_a_i_1_1_config" prot="public">forexAI::Config</innerclass>
+    <innerclass refid="classforex_a_i_1_1_data" prot="public">forexAI::Data</innerclass>
+    <innerclass refid="classforex_a_i_1_1_storage" prot="public">forexAI::Storage</innerclass>
+    <innerclass refid="classforex_a_i_1_1_database" prot="public">forexAI::Database</innerclass>
+    <innerclass refid="classforex_a_i_1_1_hash" prot="public">forexAI::Hash</innerclass>
+    <innerclass refid="classforex_a_i_1_1_helpers" prot="public">forexAI::Helpers</innerclass>
+    <innerclass refid="classforex_a_i_1_1_web" prot="public">forexAI::Web</innerclass>
+    <innernamespace refid="namespaceforex_a_i_1_1_properties">forexAI::Properties</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Audio/Audio.cs" line="13" column="1"/>
+  </compounddef>
+</doxygen>

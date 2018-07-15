@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_helpers" kind="class" prot="public">
+    <compoundname>forexAI::Helpers</compoundname>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_helpers_1a4fed7c2b20e532d65b48c5661171428a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool forexAI.Helpers.IsFileBusy</definition>
+        <argsstring>(string fileName)</argsstring>
+        <name>IsFileBusy</name>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" line="29" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" bodystart="29" bodyend="53"/>
+        <referencedby refid="classforex_a_i_1_1_logger_1a0d8aa0fbc2d027aac1de89d64c75d3c2" compoundref="_logger_8cs" startline="33" endline="45">forexAI.Logger.ClearLogs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_helpers_1ac6cdb017eec21795a14df1cc78e58fba" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Helpers.Each&lt; T &gt;</definition>
+        <argsstring>(IEnumerable&lt; T &gt; items, Action&lt; T &gt; action)</argsstring>
+        <name>Each&lt; T &gt;</name>
+        <param>
+          <type>IEnumerable&lt; T &gt;</type>
+          <declname>items</declname>
+        </param>
+        <param>
+          <type>Action&lt; T &gt;</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" line="55" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" bodystart="55" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_helpers_1a34753f110daca3793e412de73e37b274" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Helpers.ShowMemoryUsage</definition>
+        <argsstring>()</argsstring>
+        <name>ShowMemoryUsage</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" line="61" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" bodystart="61" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_helpers_1a125b841f6e3228cf8401f107ba9e7709" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Helpers.DumpToFile</definition>
+        <argsstring>(string fileName, object value)</argsstring>
+        <name>DumpToFile</name>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+        </param>
+        <param>
+          <type>object</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" line="68" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" bodystart="68" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_helpers_1a13ad6d45e422dcd62506ed9f0c512425" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>string</type>
+        <definition>static string forexAI.Helpers.Dump</definition>
+        <argsstring>(object obj, int recursion=1)</argsstring>
+        <name>Dump</name>
+        <param>
+          <type>object</type>
+          <declname>obj</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>recursion</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" line="73" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" bodystart="73" bodyend="160"/>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_helpers_1adededc4ecaee764112d7bb6738c8cbc6" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Helpers.ZeroArray</definition>
+        <argsstring>(double[] input)</argsstring>
+        <name>ZeroArray</name>
+        <param>
+          <type>double[]</type>
+          <declname>input</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" line="162" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" bodystart="162" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_helpers_1a35d9614b07a379907a4fbcde688d7cb4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Helpers.ZeroArray</definition>
+        <argsstring>(int[] input)</argsstring>
+        <name>ZeroArray</name>
+        <param>
+          <type>int[]</type>
+          <declname>input</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" line="168" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" bodystart="168" bodyend="172"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" line="28" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Helpers.cs" bodystart="27" bodyend="173"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_helpers_1a13ad6d45e422dcd62506ed9f0c512425" prot="public" virt="non-virtual"><scope>forexAI::Helpers</scope><name>Dump</name></member>
+      <member refid="classforex_a_i_1_1_helpers_1a125b841f6e3228cf8401f107ba9e7709" prot="public" virt="non-virtual"><scope>forexAI::Helpers</scope><name>DumpToFile</name></member>
+      <member refid="classforex_a_i_1_1_helpers_1ac6cdb017eec21795a14df1cc78e58fba" prot="public" virt="non-virtual"><scope>forexAI::Helpers</scope><name>Each&lt; T &gt;</name></member>
+      <member refid="classforex_a_i_1_1_helpers_1a4fed7c2b20e532d65b48c5661171428a" prot="public" virt="non-virtual"><scope>forexAI::Helpers</scope><name>IsFileBusy</name></member>
+      <member refid="classforex_a_i_1_1_helpers_1a34753f110daca3793e412de73e37b274" prot="public" virt="non-virtual"><scope>forexAI::Helpers</scope><name>ShowMemoryUsage</name></member>
+      <member refid="classforex_a_i_1_1_helpers_1adededc4ecaee764112d7bb6738c8cbc6" prot="public" virt="non-virtual"><scope>forexAI::Helpers</scope><name>ZeroArray</name></member>
+      <member refid="classforex_a_i_1_1_helpers_1a35d9614b07a379907a4fbcde688d7cb4" prot="public" virt="non-virtual"><scope>forexAI::Helpers</scope><name>ZeroArray</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

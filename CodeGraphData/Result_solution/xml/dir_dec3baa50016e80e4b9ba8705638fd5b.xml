@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="dir_dec3baa50016e80e4b9ba8705638fd5b" kind="dir">
+    <compoundname>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4</compoundname>
+    <innerdir refid="dir_dc024639844b9351f7f1b56971b841f6">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Audio</innerdir>
+    <innerdir refid="dir_a73348e92f9ffdf190e346718e2fa96a">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Data</innerdir>
+    <innerdir refid="dir_f3b1806e90ee7b5f0ecd63fa8c8b5af8">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/DebugHost</innerdir>
+    <innerdir refid="dir_8879caee57c2edbba1fd0c94bcef070e">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental</innerdir>
+    <innerdir refid="dir_b9d2d0a8faeac9a819bcb04e84919075">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging</innerdir>
+    <innerdir refid="dir_0dd18d6dcd045e7652ffcb91601e2b85">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader</innerdir>
+    <innerdir refid="dir_f203fcb0c1a83b5b64d8852fdb3cc57a">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Pool</innerdir>
+    <innerdir refid="dir_ddc79c417d2d67b8893d05617d435f80">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices</innerdir>
+    <innerdir refid="dir_aacccbfb6ce91de4b599263097764b2a">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties</innerdir>
+    <innerdir refid="dir_47d43d085ea0e28c8f7535b009096f2a">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler</innerdir>
+    <innerdir refid="dir_6427db3c8565e9f2bcde3e2a9a6bebb9">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages</innerdir>
+    <innerdir refid="dir_1e8f1cdd7259278e1fe563c9c8825a74">C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools</innerdir>
+    <innerfile refid="_forex_a_i_8cs">ForexAI.cs</innerfile>
+    <innerfile refid="_global_suppressions_8cs">GlobalSuppressions.cs</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/"/>
+  </compounddef>
+</doxygen>

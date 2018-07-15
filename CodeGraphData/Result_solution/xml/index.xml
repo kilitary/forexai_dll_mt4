@@ -1,0 +1,568 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.6">
+  <compound refid="classforex_a_i_1_1_audio_f_x" kind="class"><name>forexAI::AudioFX</name>
+    <member refid="classforex_a_i_1_1_audio_f_x_1ade7ca2defe6566109ee76df6b23af5a8" kind="function"><name>Play</name></member>
+    <member refid="classforex_a_i_1_1_audio_f_x_1a5b502c0f1c2fd074b08a1089b324bf4d" kind="function"><name>Wipe</name></member>
+    <member refid="classforex_a_i_1_1_audio_f_x_1ad13deef1c88d78eb8c6397d18bde9f6d" kind="function"><name>NewDay</name></member>
+    <member refid="classforex_a_i_1_1_audio_f_x_1af10a3a055abcd9a980bce2d40b61156f" kind="function"><name>Fail</name></member>
+    <member refid="classforex_a_i_1_1_audio_f_x_1a541ff508d0465156038723f88417b468" kind="function"><name>Profit</name></member>
+    <member refid="classforex_a_i_1_1_audio_f_x_1a075a2b3b108e60cdc611bf7b94e2d617" kind="function"><name>TheBroken</name></member>
+    <member refid="classforex_a_i_1_1_audio_f_x_1a28cd9a33438cb0ec18262f01fc5f63d4" kind="function"><name>GoodWork</name></member>
+    <member refid="classforex_a_i_1_1_audio_f_x_1a1c159ea7c2bf01986ebd2d90dbc1c12d" kind="function"><name>LowBalance</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_config" kind="class"><name>forexAI::Config</name>
+    <member refid="classforex_a_i_1_1_config_1a8f5953631e2c40513cfa2211d70b0335" kind="variable"><name>config</name></member>
+    <member refid="classforex_a_i_1_1_config_1a0d190310a122459d7aa5c07ce08c9112" kind="property"><name>this[string name]</name></member>
+    <member refid="classforex_a_i_1_1_config_1ae4b2b37acd0124663971d1cb316f88d1" kind="function"><name>Set</name></member>
+    <member refid="classforex_a_i_1_1_config_1abc51818103cb7359815915aec2f42cad" kind="function"><name>Get</name></member>
+    <member refid="classforex_a_i_1_1_config_1a81e36ecb5002a7d92279cf6d43e41960" kind="function"><name>Config</name></member>
+    <member refid="classforex_a_i_1_1_config_1a0d3ea1343d0c14bf7a59b4eeab675bdc" kind="function"><name>Save</name></member>
+    <member refid="classforex_a_i_1_1_config_1a018fe3eb2c1c71dbac762adca65d2efe" kind="function"><name>~Config</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_configuration" kind="class"><name>forexAI::Configuration</name>
+    <member refid="classforex_a_i_1_1_configuration_1a1e31a68d64ed906db5ec342e52c79a03" kind="variable"><name>configFilePath</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a9d51afa4382afbac299d38ee0629af66" kind="variable"><name>XRandomLogFileName</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a6913325addb7ba28f5086352ebc1930e" kind="variable"><name>YRandomLogFileName</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1ab4a0fa62c8a45c65f2b90b148144ee44" kind="variable"><name>rootDirectory</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a0043caa050b7191ec91dc9a6ac79e9fe" kind="variable"><name>logFileName</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1aae933d94f705340008ea45342c15bfb6" kind="variable"><name>magickNumber</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a04a61b17e3ed1528678f7b0aca7f012a" kind="variable"><name>mysqlEnabled</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1ad2bd8a4fb2f960b9487da17f6dd8dff3" kind="variable"><name>mysqlDatabase</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1ad721656dfba74e2b93784e092c26a918" kind="variable"><name>mysqlPassword</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a28cac837c74a56e16495b92e1576e5c7" kind="variable"><name>mysqlServer</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a8d6c97689b5a155a34b9469decad728f" kind="variable"><name>mysqlUid</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a44814c7c7ec977532e45d5143127b711" kind="variable"><name>memcahedEnabled</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1aa8f708c66f92bd6ea1a5b06d166f37b8" kind="variable"><name>memcachedIP</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a52cf299ac3370d6b270d2c33996e1502" kind="variable"><name>memcachedPort</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a6f41f280dc33e02e6373ec945570fd21" kind="variable"><name>audioEnabled</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1aebcc15e0f5a570c6331a189f404b6945" kind="variable"><name>audioDirectory</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a285ac663e5b1f5a4b9a6782a109d75a1" kind="variable"><name>newDayWAV</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a1d190a98006477279c9d288bf0e930ce" kind="variable"><name>profitWAV</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1abd331a0ec46cbe913f7feaf951997f2f" kind="variable"><name>brokenWAV</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a95c5dd621141eafe0584e14fb46f3b8c" kind="variable"><name>lowBalanceWAV</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a55489e33b0efce6d5e2ebe2594c6784b" kind="variable"><name>goodWorkWAV</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a4996dc4a6e274c01bdd9d9a1cd04cab2" kind="variable"><name>failWav</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a60c234ba6f6f56a4da02545f18bca53f" kind="variable"><name>wipeWav</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1ae53af7e272a78782bd48d1989d31dd4e" kind="variable"><name>tryExperimentalFeatures</name></member>
+    <member refid="classforex_a_i_1_1_configuration_1a7da77a25ca1b131efacbf294b4ff0f1a" kind="variable"><name>experimentalAlliedRandomUpperBound</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_constants" kind="class"><name>forexAI::Constants</name>
+    <member refid="classforex_a_i_1_1_constants_1ac6213f05fe2f55f43fa7d1497e5ed978" kind="enum"><name>TrendDirection</name></member>
+    <member refid="classforex_a_i_1_1_constants_1ac6213f05fe2f55f43fa7d1497e5ed978a258f49887ef8d14ac268c92b02503aaa" kind="enumvalue"><name>Up</name></member>
+    <member refid="classforex_a_i_1_1_constants_1ac6213f05fe2f55f43fa7d1497e5ed978a08a38277b0309070706f6652eeae9a53" kind="enumvalue"><name>Down</name></member>
+    <member refid="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423" kind="enum"><name>OrderType</name></member>
+    <member refid="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423a3068c5a98c003498f1fec0c489212e8b" kind="enumvalue"><name>Sell</name></member>
+    <member refid="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423ae23ae8e28e6ced8969661edc6ee6889a" kind="enumvalue"><name>SellLimit</name></member>
+    <member refid="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423a97425ea85e9afb38c5b5895351450d05" kind="enumvalue"><name>SellStop</name></member>
+    <member refid="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423a831a28f1e8df07c553fcd59546465d13" kind="enumvalue"><name>Buy</name></member>
+    <member refid="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423a41451198fafa1d1b8b507fc037557feb" kind="enumvalue"><name>BuyLimit</name></member>
+    <member refid="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423ab1588f6d87b6f27f057a9d75b989efba" kind="enumvalue"><name>BuyStop</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_data" kind="class"><name>forexAI::Data</name>
+    <member refid="classforex_a_i_1_1_data_1ad640a23f091d64d39c6359eb75dbc2e5" kind="variable"><name>nnFunctions</name></member>
+    <member refid="classforex_a_i_1_1_data_1a818d03a200033d2b205f0d9b0c523484" kind="variable"><name>database</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_database" kind="class"><name>forexAI::Database</name>
+    <member refid="classforex_a_i_1_1_database_1adfc4f42cdbeeb81f940c69f241d2ce2d" kind="variable"><name>connection</name></member>
+    <member refid="classforex_a_i_1_1_database_1af743c685b2dca2cc9831351b9fba80ca" kind="function"><name>Database</name></member>
+    <member refid="classforex_a_i_1_1_database_1afe13ec60a1d5a4ae47820325fdaf958a" kind="function"><name>CloseConnection</name></member>
+    <member refid="classforex_a_i_1_1_database_1ae8ba96e1dc07eacaf5faebecbe59cada" kind="function"><name>Get</name></member>
+    <member refid="classforex_a_i_1_1_database_1a5046e68718fdf0d99dada3102032ea3c" kind="function"><name>Set</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_experimental" kind="class"><name>forexAI::Experimental</name>
+    <member refid="classforex_a_i_1_1_experimental_1a2ad8076fe6baebac70e8f9b0cff6748e" kind="variable"><name>random</name></member>
+    <member refid="classforex_a_i_1_1_experimental_1ae577bbda20eac7d13ac3e1f5851b9b33" kind="function"><name>AlliedInstructions</name></member>
+    <member refid="classforex_a_i_1_1_experimental_1a94d5465c791335206fdc0fc45ed9e0db" kind="function"><name>IsBlackHateFocused</name></member>
+    <member refid="classforex_a_i_1_1_experimental_1a65aaf441ba1ef543af41a6fb84d5e67c" kind="function"><name>IsHardwareForcesConnected</name></member>
+  </compound>
+  <compound refid="structforex_a_i_1_1_extended_method_info" kind="struct"><name>forexAI::ExtendedMethodInfo</name>
+    <member refid="structforex_a_i_1_1_extended_method_info_1af2ef89b10a3fc15a0a1fc00a8405b7ab" kind="variable"><name>Name</name></member>
+    <member refid="structforex_a_i_1_1_extended_method_info_1a83cb2bc697e8e7924366b9d26ad66c70" kind="variable"><name>AssemblyName</name></member>
+    <member refid="structforex_a_i_1_1_extended_method_info_1ac75644f8536709587e8cf9a57fecb614" kind="variable"><name>ClassName</name></member>
+    <member refid="structforex_a_i_1_1_extended_method_info_1a6f16efbc8de4f18fa96d204bac686953" kind="variable"><name>Signature</name></member>
+    <member refid="structforex_a_i_1_1_extended_method_info_1a2f51740daa45e017ce003d3c20e84904" kind="variable"><name>Signature2</name></member>
+    <member refid="structforex_a_i_1_1_extended_method_info_1a5c58beb32b860ee3fe31747d05202a9b" kind="variable"><name>GenericArguments</name></member>
+    <member refid="structforex_a_i_1_1_extended_method_info_1a90c6876f2edbc1451a8745d98d243591" kind="variable"><name>MemberType</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_forex_a_i" kind="class"><name>forexAI::ForexAI</name>
+    <member refid="classforex_a_i_1_1_forex_a_i_1af90559ed13fd5f496a04c10ea7abb169" kind="variable"><name>orderLots</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a1b42d5e777bb1e2269f2c6e9b4ec2633" kind="variable"><name>maxNegativeSpend</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ab444e272545d3c458514474b150bc766" kind="variable"><name>trailingBorder</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a9efc1b66b7ed8e63ca99008833573c6d" kind="variable"><name>trailingStop</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a3750ef83e403548b2b69a8c90e992801" kind="variable"><name>stableBigChangeFactor</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1adefc466cd6a8bd7def1dde1414a68dea" kind="variable"><name>tradeEnterProbabilityMin</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a6327c4144b0ed662c0e975d1177bf8a7" kind="variable"><name>rejectTradeProbability</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1aceac37f250fe4082f5ab4ec300525438" kind="variable"><name>minLossForCounterTrade</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ae6663624964f9135e846bcf5ac50fd9f" kind="variable"><name>useOptimizedLots</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a70a325a6bc980d9fe22dd35df982f938" kind="variable"><name>maxOrdersParallel</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a7fc46872fbeb3a5bd1ccfc6f1631a00a" kind="variable"><name>minStableTrendBarForEnter</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a6024df7adeebc18c4287156df8f0ef6d" kind="variable"><name>maxStableTrendBarForEnter</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a9b0a08dd4fbab9408f8fffeeaae4f01a" kind="variable"><name>minTradePeriodBars</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1abef051fba5d3f066bd05004ee42d90ff" kind="variable"><name>counterTrading</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a0f0eb8c3b0801aca945a97a337df8950" kind="variable"><name>countedMeasuredProbabilityBars</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1aeab243cc20bbd122b97fcdeab68cf20e" kind="variable"><name>maxOrderOpenHours</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1abde983ee3a24214eb2e56017eee51fdf" kind="variable"><name>minOrderDistance</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ada63d507d81ef81aad2dc4152a98693e" kind="variable"><name>orderAliveHours</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a544b4ae9d29dfba01b067fccd664e6a4" kind="variable"><name>collapseEnterLots</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a6e1cb82a30d4f84368f6016de9d5b4ee" kind="variable"><name>counterTradeLots</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a53d26fd901325b8a8f07f20ac44dc25a" kind="variable"><name>collapseChangePoints</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1aa3c2e0f4daadfdcc1e42552306a9d1d0" kind="variable"><name>random</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a9766ba67efdbf7ce647ccbdbf914d2f7" kind="variable"><name>historyOrders</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a6e798812d14cb7851286fd62bbb8351d" kind="variable"><name>activeOrders</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1aef8f0e7db1fea2451ffa9d6d2ce00c6f" kind="variable"><name>storage</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1acde16c58a9b421cb40f1491f076581c8" kind="variable"><name>config</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a23327c7f5eac7c60415db62948acbe05" kind="variable"><name>cpuCounter</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a1064bc1aedc68c7b7b2717e60cbb959d" kind="variable"><name>networkDirs</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a15c19a0582f303066f0b40b197eb3422" kind="variable"><name>forexFannNetwork</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a5e39f96168a052a4912d7ea1e6654492" kind="variable"><name>trainingData</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a30866eb166d94bb28e6b40e635110f4a" kind="variable"><name>currentProcess</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a32abf46bc457098625ea46aba44558b9" kind="variable"><name>testData</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1afa1fa63d7de94836209ded90620833cf" kind="variable"><name>runWatch</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a457e4d2b8a03379b4339bdc5ffe6f368" kind="variable"><name>version</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1af107cbe4840c2087a947eeb81d2fa033" kind="variable"><name>mqlApi</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ab629c6359da6e63c43c8d4a3887cad54" kind="variable"><name>networkId</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1aef4ef5b43ab097d1239f3a961a36e71f" kind="variable"><name>fannNetworkDirName</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ac2a3e1570be8c846d405c1d6afbc8040" kind="variable"><name>inputLayerActivationFunction</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a058e53f6bd13a20e078f7f570fa95f16" kind="variable"><name>middleLayerActivationFunction</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ae4ad7a68641f152bf8f9940542398888" kind="variable"><name>labelID</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1af1061d115d564d1816075927718c4e28" kind="variable"><name>type</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ad65bfd192c0f5a9aadb3ce8dd157d7e1" kind="variable"><name>symbol</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ae12a8fa2e0ed64cc7b853b2d5dda4b8c" kind="variable"><name>charizedOrdersHistory</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a40d3f434b74f6d31cd4fa0e659680c2c" kind="variable"><name>functionsTextContent</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ae92774c3c45148b461d463df843d30f5" kind="variable"><name>trainHitRatio</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a444a8ea1f8d0b38d37859e551929f8df" kind="variable"><name>testHitRatio</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a43b81e8b36b6829cd7b0ff433bd0b097" kind="variable"><name>total</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a2efdf70b0476d0cf2bb1c442e8867d4a" kind="variable"><name>spends</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a122e7b2f301f7d1aeacf526f6f8171f5" kind="variable"><name>profit</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a192bdfeff39d006eabcee63fbe9a9844" kind="variable"><name>minStopLevel</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ae030363939eb76876efbf3828ab1c657" kind="variable"><name>ordersStopPoints</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a30f39a961bcf872094f6d80e3c838902" kind="variable"><name>risky2_Risk</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a2567b524ea5e5a8ae60f02b41255e9f8" kind="variable"><name>risky2_Lots</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1af682431d06262ba4098f07f6575fe585" kind="variable"><name>risky2_LotDigits</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a64ab8a83629ef0932c8794a1cea7e584" kind="variable"><name>minlot</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ad800f44c90497fdf632c7cafb6847eb5" kind="variable"><name>maxlot</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a7b4337a0d0376cf3860994931ade18a7" kind="variable"><name>leverage</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a4c9a3fe10abcbd8e82235ff3672a0f2e" kind="variable"><name>lotsize</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a0570e4d9c4a3a928cb61640e86a6bf0f" kind="variable"><name>stoplevel</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a9a142ad92a7aece1819378dcd8f2f841" kind="variable"><name>prevNetworkOutputBuy</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a00ef3dcd7739eef2c2b22558b9e68981" kind="variable"><name>prevNetworkOutputSell</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1abb6d44ebe50e8b523ae4941eb38f316a" kind="variable"><name>fannNetworkOutput</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a25e4badbef554825042b67d03d84d7d4" kind="variable"><name>prevBuyProbability</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a660ba57bb246a3b0a7940a680751fa0a" kind="variable"><name>prevSellProbability</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1af5a25249628f05c5c095dde61dc16730" kind="variable"><name>testMse</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a9f5da0d28f1a0d346e7931c2501f8d55" kind="variable"><name>trainMse</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a4e8a332dbf40602fb4b914f1177a00da" kind="variable"><name>lastDrawStatsTimestamp</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1aee96ce82affdf6f7b9e9688d32a9625a" kind="variable"><name>lastMemoryStatsDumpTimesamp</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a232e4a53ccf76c3a80c283ca5527d3bd" kind="variable"><name>reassembleStageOverride</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a2012ccf03baa00c6b55868dce08a9594" kind="variable"><name>hasNoticedLowBalance</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1afd0d2a5dee143ae1d4aca77c6d9b0e86" kind="variable"><name>profitTrailing</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a2c8700b73bcebf020b6cadd6cb222d44" kind="variable"><name>hasNightReported</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a319f1cda00d517c3e87c27c2f862f8fd" kind="variable"><name>hasMorningReported</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1af52a4d3f2bb72502ca852d270a64cbba" kind="variable"><name>neuralNetworkBootstrapped</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a586fe84f7bd6287bcf73c83067e6aa77" kind="variable"><name>hasIncreasedUnstableTrendBar</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a55cfafc5794293172df25d35ad4abb31" kind="variable"><name>networkIsGood</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a7b648acd56ca9c96333ca242aed50aff" kind="variable"><name>stableTrendCurrentBar</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1adeb51a799b9779ab5cda1070aff4c464" kind="variable"><name>spendSells</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1aa495a082dbee5f4efa0713560ca28d08" kind="variable"><name>spendBuys</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ab5309722814cbf382c9fb0084bedc8e2" kind="variable"><name>profitSells</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1affa5de2f9d0d019835847630d92042d7" kind="variable"><name>profitBuys</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a850450baa2a1a6faee0cb80421605515" kind="variable"><name>totalSpends</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a58c0b835340c142befef728c76de1d13" kind="variable"><name>totalProfits</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1acc933cf765038f2c84b6ef1fb0a06658" kind="variable"><name>openedBuys</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a702c49a4cdec7197ce1d03e2e33cfda8" kind="variable"><name>openedSells</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a2a8ce88b7071514e0d0fece77db3f1c4" kind="variable"><name>inputDimension</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1aec0eb9dbbc3f36f76ff5ac937d86f12a" kind="variable"><name>currentTicket</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1af5aa9220aa796460916ade5263160d23" kind="variable"><name>dayOperationsCount</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ad34c0ef57c59d67730c24e91b2b5b467" kind="variable"><name>ordersTotal</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a4b8e027134df28fe810946d9c28f991a" kind="variable"><name>previousBars</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a0f754e1b87a8d5a655d121cfcb045a4d" kind="variable"><name>barsPerDay</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a6ebe698dbfe0f5130f4fc12209986789" kind="variable"><name>startTime</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a8dabb9da8e3ac296bc79b8fea7f37648" kind="variable"><name>previousBankDay</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a903193b70d7db0f72301b4fad0584d52" kind="variable"><name>totalOperationsCount</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a28d871c1f0c795ee49083d64d3f2cb56" kind="variable"><name>buysPermitted</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1aca297a3edae8713cb2abf08826fedcbd" kind="variable"><name>sellsPermitted</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a9a0cd9762010c31a9840ac3e8b96316a" kind="variable"><name>currentDay</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ac3d9a5b46351532fbceb247c5e1bcfde" kind="variable"><name>stableTrendBar</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a1208ece88d378aeb3993237ecdd2ba5e" kind="variable"><name>networkFunctionsCount</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a6347a21caa9de2e33566e057d41fb7cc" kind="variable"><name>unstableTrendBar</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a965a3869eceb866a52b753bd99be1cc9" kind="variable"><name>lastTradeBar</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a56d5bbea372e6e3c2777acdc4f71d47b" kind="variable"><name>marketCollapsedBar</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a8a0c4121299a9f47ab8f2b6c37213c37" kind="variable"><name>ordersCount</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1adb17b36a4660469b2c6633dc09f2756e" kind="variable"><name>tradeBarPeriodPass</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a36a9c24318bda91ac30dec71c0c9a286" kind="variable"><name>buysCount</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a257aaf6536844313f35f0af474539740" kind="variable"><name>sellsCount</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a311fce8bb7742882f5e06f4cd185fc06" kind="variable"><name>buyProbability</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1aa8ef0c593e6b5d1aad65ed4e38e9f802" kind="variable"><name>sellProbability</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a6118b239abff1009e04e7faaaa5c5854" kind="variable"><name>ordersProfit</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a7f3de0e11df3eeed05bfff4a11e758f9" kind="variable"><name>diffProbability</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ac2a45749c8bb8bfe8d012b175dd20337" kind="variable"><name>collapseDirection</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a05439cac7d3d20a862985e8dd1d6fdbe" kind="property"><name>activeIncome</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ac8742dfdff041e9e6767c584901f2bbb" kind="property"><name>activeProfit</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a2cc4e9d86de5191ec986128fb74b4c2e" kind="property"><name>buysProfit</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ab6ac8dc9babcb47a6abd3bef93feab2c" kind="property"><name>sellsProfit</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a2983a399e6eb05417423c5b7690d17f6" kind="property"><name>activeLoss</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ae7b4b94c66770387128288cae9fe14b6" kind="property"><name>lotsOptimizedV3</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a6da35cfc2c7e77360982565b07c7a1a0" kind="property"><name>lotsOptimizedV2</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a21b54a86aca9eeac5cbca5960e4443d4" kind="property"><name>lotsOptimizedV1</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ade190235d8a48c84b517675ce77cf4f6" kind="property"><name>isTrendStable</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ae052f134dddcb6234d199f7988241679" kind="property"><name>closestBuyDistance</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ac2a727515e0c89d4149e271c0221fadb" kind="property"><name>closestSellDistance</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a2c3cdfb613a9ce11764fd41eb8cd802d" kind="function"><name>start</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a285e1a0d4c9a68620576091b194ff54c" kind="function"><name>init</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a67fdf18037ff3ac4909ddd0e013f8164" kind="function"><name>deinit</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a6ea35c9ec64cf890839b0bcd3b74bc18" kind="function"><name>InitNetworks</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a470cbfb171f502f310dff61c3cbd98f5" kind="function"><name>IsBadNetwork</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a2501227c5b779fa680fe965d6349720c" kind="function"><name>SyncOrders</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a71a832f48634dc27fb7dc1b089a4e86d" kind="function"><name>InitVariables</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ac03021034bacbcf674b9be26bf57ff0a" kind="function"><name>TryEnterTrade</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a7235aca70ed1d34968327cb77334b3ee" kind="function"><name>TryEnterCounterTrade</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ab9d34b80b2c6df0506c2dabd8fab719e" kind="function"><name>ListGlobalVariables</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1af5f32e208e74082d01abbf7174064f1d" kind="function"><name>CheckForAutoClose</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a449f59e5283da6c92d9173b7a39479ec" kind="function"><name>CloseAllOrders</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a8b799e7fe29a9b4e76d8f66694009a6d" kind="function"><name>CheckForMarketCollapse</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a21623cf20ccb2a9d3ee0968b09a2a1ec" kind="function"><name>FillHistoryOrdersStatistics</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a5bd6079e3186b2fc2e3a501615b6fbc2" kind="function"><name>LoadNetwork</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a6b9da7b946ff75161ba662a975b41fc2" kind="function"><name>ScanNetworks</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a65d88989dd53518f09808fc6d7daed32" kind="function"><name>TestNetworkMSE</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a5df791c0b164d62aa79a372de0f4b667" kind="function"><name>TestNetworkHitRatio</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1afc9aff5f872611136fce632a5858e860" kind="function"><name>CalculateHitRatio</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a0ca6e4f833c420462818e7303a1bfab2" kind="function"><name>CloseNegativeOrders</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a1beeb108fb649d9e49625eb1db9eacb5" kind="function"><name>CloseBuys</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ab94b2bf468e3c3219811f9a1b2e5e94b" kind="function"><name>CloseSells</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a413862889ae8d9041a0b53152c0fedb5" kind="function"><name>OpenSell</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a202024770f28376fcb36e064c64b3e2a" kind="function"><name>OpenBuy</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a1170cf5bca00bbc467e8ac6ac4d37e85" kind="function"><name>TrailPositions</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a94801b391c9796f30e489efcdf298968" kind="function"><name>AddLabel</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a582c83779f75ab31f2e480c9c82ebd7a" kind="function"><name>AddVerticalLabel</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a9bd8c218f94c54dd71ad59db46e1d447" kind="function"><name>RenderVisualizedzedHistory</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1a411e932dca7a178edf8e2faf286389ae" kind="function"><name>DumpInfo</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ac95509dbb8a7ac8e5e352b8098d54f92" kind="function"><name>ShowBanner</name></member>
+    <member refid="classforex_a_i_1_1_forex_a_i_1ac96a756181c361c9cc439b9e2dfad02e" kind="function"><name>DrawStats</name></member>
+  </compound>
+  <compound refid="structforex_a_i_1_1_function_configuration" kind="struct"><name>forexAI::FunctionConfiguration</name>
+    <member refid="structforex_a_i_1_1_function_configuration_1a6fdf8dfde5137c77bd490d9c6187dc47" kind="variable"><name>parameters</name></member>
+    <member refid="structforex_a_i_1_1_function_configuration_1a7b206383981c4120bed52155c0feed21" kind="variable"><name>methodInfo</name></member>
+  </compound>
+  <compound refid="structforex_a_i_1_1_function_parameters" kind="struct"><name>forexAI::FunctionParameters</name>
+    <member refid="structforex_a_i_1_1_function_parameters_1a219adfb464ec8b4895ee70567dea399d" kind="variable"><name>parametersMap</name></member>
+    <member refid="structforex_a_i_1_1_function_parameters_1a339dad2debf46ee3213f2ded6ef874e9" kind="variable"><name>Arguments</name></member>
+    <member refid="structforex_a_i_1_1_function_parameters_1ab462ab8dfc4ba9ee130aa2981e7a94b7" kind="variable"><name>OutIndex</name></member>
+    <member refid="structforex_a_i_1_1_function_parameters_1a00637181385d79797c87bfbaa975e1f2" kind="variable"><name>OutNbElement</name></member>
+    <member refid="structforex_a_i_1_1_function_parameters_1a717a8252a206d2e8f319886388e31233" kind="variable"><name>ParamIndex</name></member>
+    <member refid="structforex_a_i_1_1_function_parameters_1a4964537b2d3c3c60a29f3c47e7a43353" kind="variable"><name>NumData</name></member>
+    <member refid="structforex_a_i_1_1_function_parameters_1af9e5168ed0edb391221ec9f5f0868b4b" kind="variable"><name>OutBegIdx</name></member>
+    <member refid="structforex_a_i_1_1_function_parameters_1adac8ed7bd5b156ce490e41fb6ab6895d" kind="variable"><name>Offset</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_hash" kind="class"><name>forexAI::Hash</name>
+    <member refid="classforex_a_i_1_1_hash_1a32c5e28ed586522a12b60c37fee109e4" kind="function"><name>md5</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_helpers" kind="class"><name>forexAI::Helpers</name>
+    <member refid="classforex_a_i_1_1_helpers_1a4fed7c2b20e532d65b48c5661171428a" kind="function"><name>IsFileBusy</name></member>
+    <member refid="classforex_a_i_1_1_helpers_1ac6cdb017eec21795a14df1cc78e58fba" kind="function"><name>Each&lt; T &gt;</name></member>
+    <member refid="classforex_a_i_1_1_helpers_1a34753f110daca3793e412de73e37b274" kind="function"><name>ShowMemoryUsage</name></member>
+    <member refid="classforex_a_i_1_1_helpers_1a125b841f6e3228cf8401f107ba9e7709" kind="function"><name>DumpToFile</name></member>
+    <member refid="classforex_a_i_1_1_helpers_1a13ad6d45e422dcd62506ed9f0c512425" kind="function"><name>Dump</name></member>
+    <member refid="classforex_a_i_1_1_helpers_1adededc4ecaee764112d7bb6738c8cbc6" kind="function"><name>ZeroArray</name></member>
+    <member refid="classforex_a_i_1_1_helpers_1a35d9614b07a379907a4fbcde688d7cb4" kind="function"><name>ZeroArray</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_live_prices" kind="class"><name>forexAI::LivePrices</name>
+    <member refid="classforex_a_i_1_1_live_prices_1a1f2aaa2e129d333b9d7080eb89e1ea4d" kind="function"><name>GetOpen</name></member>
+    <member refid="classforex_a_i_1_1_live_prices_1ac20e1f60e72f06f6e330e1a08014b85a" kind="function"><name>GetClose</name></member>
+    <member refid="classforex_a_i_1_1_live_prices_1aefa8f3098b793ba33e0627cbc29e4626" kind="function"><name>GetHigh</name></member>
+    <member refid="classforex_a_i_1_1_live_prices_1a1560db2dc7725aaf07a41d7de8de0b37" kind="function"><name>GetLow</name></member>
+    <member refid="classforex_a_i_1_1_live_prices_1ad7118513126323765f70556ede959838" kind="function"><name>GetVolume</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_logger" kind="class"><name>forexAI::Logger</name>
+    <member refid="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07" kind="function"><name>GetCurrentThreadId</name></member>
+    <member refid="classforex_a_i_1_1_logger_1a20067d2d3de43ddaa232570ff46c90b5" kind="function"><name>EraseLogs</name></member>
+    <member refid="classforex_a_i_1_1_logger_1a0d8aa0fbc2d027aac1de89d64c75d3c2" kind="function"><name>ClearLogs</name></member>
+    <member refid="classforex_a_i_1_1_logger_1a23041675e7e7faab5cea15ebae983e0f" kind="function"><name>dump</name></member>
+    <member refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" kind="function"><name>console</name></member>
+    <member refid="classforex_a_i_1_1_logger_1a60690de6cf424ae28b59a1b231fc08d4" kind="function"><name>debug</name></member>
+    <member refid="classforex_a_i_1_1_logger_1a4a8412be3461041b43ac11b8c044c7b7" kind="function"><name>error</name></member>
+    <member refid="classforex_a_i_1_1_logger_1a33cfacd18846a053a3a0b65ecfd38ab6" kind="function"><name>info</name></member>
+    <member refid="classforex_a_i_1_1_logger_1a60a92f16561ead6c2218dc3470b85b98" kind="function"><name>log</name></member>
+    <member refid="classforex_a_i_1_1_logger_1a4f0efc55305509360e4b75ce814ff5f4" kind="function"><name>logIf</name></member>
+    <member refid="classforex_a_i_1_1_logger_1ab4b2ee7c11c3ee1ab9ef5fa72388396f" kind="function"><name>consolelog</name></member>
+    <member refid="classforex_a_i_1_1_logger_1a5c2203f4aa3fbfe2688a27490ff6ee10" kind="function"><name>warning</name></member>
+    <member refid="classforex_a_i_1_1_logger_1a852edae379e4c2e1ed25c81e768a491b" kind="function"><name>notice</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_network_pool" kind="class"><name>forexAI::NetworkPool</name>
+    <member refid="classforex_a_i_1_1_network_pool_1a4ab02ef1ef56bdb83fa2efc788530b02" kind="function"><name>runParallel</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_order" kind="class"><name>forexAI::Order</name>
+    <member refid="classforex_a_i_1_1_order_1a23a5b7fefeef968637bc989fc454a4e8" kind="variable"><name>type</name></member>
+    <member refid="classforex_a_i_1_1_order_1acd9124bba6c4ca6cc31dd1438b6f4d81" kind="variable"><name>openTime</name></member>
+    <member refid="classforex_a_i_1_1_order_1a962f870592f4ed19c35e9a0e94594951" kind="variable"><name>expiration</name></member>
+    <member refid="classforex_a_i_1_1_order_1a12cc428f7d826246d21ab6820c851023" kind="variable"><name>ticket</name></member>
+    <member refid="classforex_a_i_1_1_order_1a6d0e4dbb557f9f58c2b8a4137d9bcc52" kind="variable"><name>magickNumber</name></member>
+    <member refid="classforex_a_i_1_1_order_1aced6a23a30bb2db37183e4cf992a7f05" kind="variable"><name>symbol</name></member>
+    <member refid="classforex_a_i_1_1_order_1aab0736ef16e65f57f84455d8319345b0" kind="variable"><name>comment</name></member>
+    <member refid="classforex_a_i_1_1_order_1a2e09966a7711b215b31c77a527e5ee74" kind="variable"><name>lots</name></member>
+    <member refid="classforex_a_i_1_1_order_1aeb95d31b756992a2f0eb773cb1971280" kind="variable"><name>profit</name></member>
+    <member refid="classforex_a_i_1_1_order_1a0c95c9e8d97377208d5f1658dad06659" kind="variable"><name>commission</name></member>
+    <member refid="classforex_a_i_1_1_order_1aa2578369f38e4bfbc49a970d55d09107" kind="variable"><name>swap</name></member>
+    <member refid="classforex_a_i_1_1_order_1a6d15ac78bd8ca863ada383bdb4b0f3bd" kind="variable"><name>stopLoss</name></member>
+    <member refid="classforex_a_i_1_1_order_1ab5d73e4028d8ad23015a39d617df820f" kind="variable"><name>openPrice</name></member>
+    <member refid="classforex_a_i_1_1_order_1a30374f2046b5708d88bda76cb834d773" kind="variable"><name>ageInMinutes</name></member>
+    <member refid="classforex_a_i_1_1_order_1a9e93dfb8255e42911a2ae3f10690ad45" kind="variable"><name>takeProfit</name></member>
+    <member refid="classforex_a_i_1_1_order_1a3269980e18bab24e70030b58b74239cb" kind="variable"><name>currentProfit</name></member>
+  </compound>
+  <compound refid="class_n_quotes_1_1_debug_host_1_1_program" kind="class"><name>NQuotes::DebugHost::Program</name>
+    <member refid="class_n_quotes_1_1_debug_host_1_1_program_1ad7569507f412d193001c091ec206f8f9" kind="function"><name>Main</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_reassembler" kind="class"><name>forexAI::Reassembler</name>
+    <member refid="classforex_a_i_1_1_reassembler_1a1d7ab11e4351d738526482a4781abcd0" kind="variable"><name>functionsConfiguration</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a60ff78a7c9e9c78cfb57538953a77bae" kind="variable"><name>ret</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1aadefe9d4f9d4eb0310280f3d4f1ea808" kind="variable"><name>prices</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1ae9a6d3ecc8c6bb16ecfb7dff10523b0a" kind="variable"><name>random</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a45a25639d8d61268bde9ff45306cda2d" kind="variable"><name>functionConfigurationHash</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a62da239ebf1973ca55b2fe2ba93394e1" kind="variable"><name>functionName</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a4fee7e791911c5c15e78a3fed2775952" kind="variable"><name>paramName</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1ad6cd0cb8a5cf43d1b160943f1b2e5078" kind="variable"><name>comment</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a9d9388a4d2976a08dd623fde8df5c5fc" kind="variable"><name>functionsNamesList</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1aa320cb201d112e3aa8f84a5fd08b829e" kind="variable"><name>paramValue</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1ae845f1f5a83abf9790953df692f59de4" kind="variable"><name>resultDataDouble</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a1bd3432e29fcff8c88864bb6abac7e73" kind="variable"><name>fullInputSet</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1aae0451608512535aae79877d5a86c861" kind="variable"><name>functionArguments</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a44b98de1bb174e5f3c5c0bc8aa10114e" kind="variable"><name>failedReassemble</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a4ad42141cf1d9eab9b178399e1138ef3" kind="variable"><name>reassemblyStage</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a53e01ac325a6a831423e907209e96e0e" kind="variable"><name>resultDataInt</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a667a862ec795312efc5a3a6616ed2fde" kind="variable"><name>networkFunctionsCount</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a9d452e90e129c5e205081e01f6cb556f" kind="variable"><name>currentFunctionIndex</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1aa0feda8b29702626e5c2eb37afe7f715" kind="variable"><name>outBegIdx</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a6e9a35c62d592335d855b11c2a48fdee" kind="variable"><name>outNumberElement</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a4ad9a8856fccc639b8d6cfa6fc1294cb" kind="variable"><name>pOutNbElement</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a69b5c08ad3aec91abef76cf7c44ac09f" kind="variable"><name>outIndex</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1af94f0c04be1b27342f9c1e28b93ed106" kind="variable"><name>outTypeDoubleOrInt</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a000f00cc2c2f722e419689b3ba8a1a13" kind="variable"><name>nOutStartIdx</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a14613ce6fab1170776c6c3dde44c88cb" kind="variable"><name>startIdx</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1aa94c02d91ee1dcdc826bd146d39f592e" kind="variable"><name>arrayIndex</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1acea6f059a51c893c9280a616df7037e1" kind="variable"><name>setNextArrayIndex</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kind="variable"><name>int</name></member>
+    <member refid="classforex_a_i_1_1_reassembler_1a22f59d70823b25a38007c4e5130d7afb" kind="function"><name>Execute</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_properties_1_1_resources" kind="class"><name>forexAI::Properties::Resources</name>
+    <member refid="classforex_a_i_1_1_properties_1_1_resources_1a9bbada279b5b1aac943141f81eb0d45f" kind="variable"><name>resourceMan</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_resources_1a6ba3631cf0610ea3fb661012e70f2b2a" kind="variable"><name>resourceCulture</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_resources_1abc13c0568882a4ae070d63da2c4a42e6" kind="property"><name>ResourceManager</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_resources_1a6ca3546f02d9b08f6b0cca0251c3706d" kind="property"><name>Culture</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_resources_1ae76d1990877a175193dfb0912918e5a8" kind="property"><name>Icon1</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_resources_1abaa34053104c2c1cde652fafa4e4faa3" kind="property"><name>Image1</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_resources_1aadde98f59e941ca674dde7f61c56f3ea" kind="property"><name>String1</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_resources_1a2bcb14480bf71c063ef991051d17ed2d" kind="property"><name>String2dfgfdg</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_resources_1a8b53073ad1612be8a77541bf5ae725c0" kind="function"><name>Resources</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_properties_1_1_settings" kind="class"><name>forexAI::Properties::Settings</name>
+    <member refid="classforex_a_i_1_1_properties_1_1_settings_1ac8752b65788023bb7914645702f96809" kind="variable"><name>defaultInstance</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_settings_1a6e0b58fa27ca5e6dfa447a7c00a39d2d" kind="property"><name>Default</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_settings_1a51d77a0570d34ddf430ff559456fa350" kind="property"><name>Settingdgfdfg</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_settings_1a1934355e9398dfbf78ba212b1f963902" kind="property"><name>Settingsdfdsf</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_settings_1a1c0c6b6039db38d4e0f19e2d8090e253" kind="property"><name>sdfdsf</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_settings_1a12912678df794dad196ff76a5e8c3f0a" kind="property"><name>Setting</name></member>
+    <member refid="classforex_a_i_1_1_properties_1_1_settings_1a4a3d2a34b0500191e9cf796921f5028e" kind="property"><name>Setting1</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_storage" kind="class"><name>forexAI::Storage</name>
+    <member refid="classforex_a_i_1_1_storage_1af1ee8323203b13e3ad121c69329d43da" kind="variable"><name>memcachedServer</name></member>
+    <member refid="classforex_a_i_1_1_storage_1a440f695c23657c56dae9db9340ab0338" kind="variable"><name>properties</name></member>
+    <member refid="classforex_a_i_1_1_storage_1a5a165f9528ad36612898457a18a31fb3" kind="property"><name>this[string name]</name></member>
+    <member refid="classforex_a_i_1_1_storage_1ace6b01de9d80286b31b0be6ec2f80821" kind="function"><name>Storage</name></member>
+    <member refid="classforex_a_i_1_1_storage_1a5ef9752769e7dc94b79d1d79f9b0f1c6" kind="function"><name>SyncData</name></member>
+    <member refid="classforex_a_i_1_1_storage_1a9050077b1839b0ac207470180e245b26" kind="function"><name>InitMemcached</name></member>
+    <member refid="classforex_a_i_1_1_storage_1a03f37f56354d208bf63889241ef0f087" kind="function"><name>~Storage</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_web" kind="class"><name>forexAI::Web</name>
+    <member refid="classforex_a_i_1_1_web_1a56f7422a7821a03f17dbdb1518736286" kind="function"><name>DownloadUrl</name></member>
+  </compound>
+  <compound refid="classforex_a_i_1_1_y_random" kind="class"><name>forexAI::YRandom</name>
+    <member refid="classforex_a_i_1_1_y_random_1ae0d6b1bdcc11329f9338499d77d98de6" kind="variable"><name>random</name></member>
+    <member refid="classforex_a_i_1_1_y_random_1a0c1e2854806d10c0765fe98844f86347" kind="variable"><name>prevResult</name></member>
+    <member refid="classforex_a_i_1_1_y_random_1a85d44f676778afeca0052adef6776f4b" kind="variable"><name>_generator</name></member>
+    <member refid="classforex_a_i_1_1_y_random_1ac29182d0f60a6f315fe651f1497f59c7" kind="function"><name>Next</name></member>
+    <member refid="classforex_a_i_1_1_y_random_1a1e04a17d64fb1325142053de791bb957" kind="function"><name>Next</name></member>
+    <member refid="classforex_a_i_1_1_y_random_1a00f466ca773d41ef558cab40047acbcb" kind="function"><name>between</name></member>
+    <member refid="classforex_a_i_1_1_y_random_1ada407a2956fdc20b72f8049e2742f250" kind="function"><name>randomString</name></member>
+  </compound>
+  <compound refid="namespace_color" kind="namespace"><name>Color</name>
+  </compound>
+  <compound refid="namespace_data_type" kind="namespace"><name>DataType</name>
+  </compound>
+  <compound refid="namespace_enyim_1_1_caching" kind="namespace"><name>Enyim::Caching</name>
+  </compound>
+  <compound refid="namespace_enyim_1_1_caching_1_1_configuration" kind="namespace"><name>Enyim::Caching::Configuration</name>
+  </compound>
+  <compound refid="namespace_enyim_1_1_caching_1_1_memcached" kind="namespace"><name>Enyim::Caching::Memcached</name>
+  </compound>
+  <compound refid="namespace_f_a_n_n_c_sharp_1_1_double" kind="namespace"><name>FANNCSharp::Double</name>
+  </compound>
+  <compound refid="namespaceforex_a_i" kind="namespace"><name>forexAI</name>
+  </compound>
+  <compound refid="namespaceforex_a_i_1_1_constants" kind="namespace"><name>forexAI::Constants</name>
+  </compound>
+  <compound refid="namespaceforex_a_i_1_1_experimental" kind="namespace"><name>forexAI::Experimental</name>
+  </compound>
+  <compound refid="namespaceforex_a_i_1_1_logger" kind="namespace"><name>forexAI::Logger</name>
+  </compound>
+  <compound refid="namespaceforex_a_i_1_1_properties" kind="namespace"><name>forexAI::Properties</name>
+  </compound>
+  <compound refid="namespace_my_sql_1_1_data_1_1_my_sql_client" kind="namespace"><name>MySql::Data::MySqlClient</name>
+  </compound>
+  <compound refid="namespace_newtonsoft_1_1_json" kind="namespace"><name>Newtonsoft::Json</name>
+  </compound>
+  <compound refid="namespace_newtonsoft_1_1_json_1_1_json_convert" kind="namespace"><name>Newtonsoft::Json::JsonConvert</name>
+  </compound>
+  <compound refid="namespace_n_quotes" kind="namespace"><name>NQuotes</name>
+  </compound>
+  <compound refid="namespace_n_quotes_1_1_debug_host" kind="namespace"><name>NQuotes::DebugHost</name>
+  </compound>
+  <compound refid="namespacestatic" kind="namespace"><name>static</name>
+  </compound>
+  <compound refid="namespace_system" kind="namespace"><name>System</name>
+  </compound>
+  <compound refid="namespace_system_1_1_collections" kind="namespace"><name>System::Collections</name>
+  </compound>
+  <compound refid="namespace_system_1_1_collections_1_1_generic" kind="namespace"><name>System::Collections::Generic</name>
+  </compound>
+  <compound refid="namespace_system_1_1_console" kind="namespace"><name>System::Console</name>
+  </compound>
+  <compound refid="namespace_system_1_1_console_color" kind="namespace"><name>System::ConsoleColor</name>
+  </compound>
+  <compound refid="namespace_system_1_1_data" kind="namespace"><name>System::Data</name>
+  </compound>
+  <compound refid="namespace_system_1_1_diagnostics" kind="namespace"><name>System::Diagnostics</name>
+  </compound>
+  <compound refid="namespace_system_1_1_drawing" kind="namespace"><name>System::Drawing</name>
+  </compound>
+  <compound refid="namespace_system_1_1_i_o" kind="namespace"><name>System::IO</name>
+  </compound>
+  <compound refid="namespace_system_1_1_linq" kind="namespace"><name>System::Linq</name>
+  </compound>
+  <compound refid="namespace_system_1_1_media" kind="namespace"><name>System::Media</name>
+  </compound>
+  <compound refid="namespace_system_1_1_net" kind="namespace"><name>System::Net</name>
+  </compound>
+  <compound refid="namespace_system_1_1_reflection" kind="namespace"><name>System::Reflection</name>
+  </compound>
+  <compound refid="namespace_system_1_1_runtime_1_1_compiler_services" kind="namespace"><name>System::Runtime::CompilerServices</name>
+  </compound>
+  <compound refid="namespace_system_1_1_runtime_1_1_interop_services" kind="namespace"><name>System::Runtime::InteropServices</name>
+  </compound>
+  <compound refid="namespace_system_1_1_security_1_1_cryptography" kind="namespace"><name>System::Security::Cryptography</name>
+  </compound>
+  <compound refid="namespace_system_1_1_text" kind="namespace"><name>System::Text</name>
+  </compound>
+  <compound refid="namespace_system_1_1_text_1_1_regular_expressions" kind="namespace"><name>System::Text::RegularExpressions</name>
+  </compound>
+  <compound refid="namespace_system_1_1_threading" kind="namespace"><name>System::Threading</name>
+  </compound>
+  <compound refid="namespace_system_1_1_threading_1_1_tasks" kind="namespace"><name>System::Threading::Tasks</name>
+  </compound>
+  <compound refid="namespace_system_1_1_web_1_1_u_i" kind="namespace"><name>System::Web::UI</name>
+  </compound>
+  <compound refid="namespace_system_1_1_windows" kind="namespace"><name>System::Windows</name>
+  </compound>
+  <compound refid="namespace_tic_tac_tec_1_1_t_a_1_1_library" kind="namespace"><name>TicTacTec::TA::Library</name>
+  </compound>
+  <compound refid="_audio_8cs" kind="file"><name>Audio.cs</name>
+  </compound>
+  <compound refid="_configuration_8cs" kind="file"><name>Configuration.cs</name>
+  </compound>
+  <compound refid="_constants_8cs" kind="file"><name>Constants.cs</name>
+  </compound>
+  <compound refid="_debug_host_2_assembly_info_8cs" kind="file"><name>AssemblyInfo.cs</name>
+  </compound>
+  <compound refid="_properties_2_assembly_info_8cs" kind="file"><name>AssemblyInfo.cs</name>
+  </compound>
+  <compound refid="_debug_host_2_global_suppressions_8cs" kind="file"><name>GlobalSuppressions.cs</name>
+  </compound>
+  <compound refid="_global_suppressions_8cs" kind="file"><name>GlobalSuppressions.cs</name>
+  </compound>
+  <compound refid="_program_8cs" kind="file"><name>Program.cs</name>
+  </compound>
+  <compound refid="_experimental_8cs" kind="file"><name>Experimental.cs</name>
+  </compound>
+  <compound refid="_y_random_8cs" kind="file"><name>YRandom.cs</name>
+  </compound>
+  <compound refid="_forex_a_i_8cs" kind="file"><name>ForexAI.cs</name>
+    <member refid="_forex_a_i_8cs_1a6f788691db6e37fbc6c180b514b9f43a" kind="typedef"><name>Color</name></member>
+    <member refid="_forex_a_i_8cs_1a2e863972b9b73ec5cb4f0b0f146b0a53" kind="typedef"><name>DataType</name></member>
+  </compound>
+  <compound refid="_logger_8cs" kind="file"><name>Logger.cs</name>
+  </compound>
+  <compound refid="_order_8cs" kind="file"><name>Order.cs</name>
+  </compound>
+  <compound refid="_network_pool_8cs" kind="file"><name>NetworkPool.cs</name>
+  </compound>
+  <compound refid="_prices_8cs" kind="file"><name>Prices.cs</name>
+  </compound>
+  <compound refid="_resources_8_designer_8cs" kind="file"><name>Resources.Designer.cs</name>
+  </compound>
+  <compound refid="_settings_8_designer_8cs" kind="file"><name>Settings.Designer.cs</name>
+  </compound>
+  <compound refid="_r_e_a_d_m_e_8md" kind="file"><name>README.md</name>
+  </compound>
+  <compound refid="_function_json_config_8cs" kind="file"><name>FunctionJsonConfig.cs</name>
+  </compound>
+  <compound refid="_reassembler_8cs" kind="file"><name>Reassembler.cs</name>
+  </compound>
+  <compound refid="_config_8cs" kind="file"><name>Config.cs</name>
+  </compound>
+  <compound refid="_data_8cs" kind="file"><name>Data.cs</name>
+  </compound>
+  <compound refid="_memcached_8cs" kind="file"><name>Memcached.cs</name>
+    <member refid="_memcached_8cs_1a6f788691db6e37fbc6c180b514b9f43a" kind="typedef"><name>Color</name></member>
+  </compound>
+  <compound refid="_mysql_8cs" kind="file"><name>Mysql.cs</name>
+  </compound>
+  <compound refid="_hash_8cs" kind="file"><name>Hash.cs</name>
+  </compound>
+  <compound refid="_helpers_8cs" kind="file"><name>Helpers.cs</name>
+  </compound>
+  <compound refid="_web_8cs" kind="file"><name>Web.cs</name>
+  </compound>
+  <compound refid="md__c_1__users__tom__app_data__roaming__meta_quotes__terminal_287469_d_e_a9630_e_a94_d0715_d755964deda9b6095f1839b4ab0b49f623364" kind="page"><name>md_C:_Users_Tom_AppData_Roaming_MetaQuotes_Terminal_287469DEA9630EA94D0715D755974F1B_MQL4_Experts_forexai_dll_mt4_README</name>
+  <compound refid="dir_57ac13834acc248a90e7986f24c4b18a" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B</name>
+  </compound>
+  <compound refid="dir_f65ef8ec7e2f7e1aa061cd2fce1623a8" kind="dir"><name>C:/Users/Tom/AppData</name>
+  </compound>
+  <compound refid="dir_dc024639844b9351f7f1b56971b841f6" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Audio</name>
+  </compound>
+  <compound refid="dir_a73348e92f9ffdf190e346718e2fa96a" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Data</name>
+  </compound>
+  <compound refid="dir_f3b1806e90ee7b5f0ecd63fa8c8b5af8" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/DebugHost</name>
+  </compound>
+  <compound refid="dir_8879caee57c2edbba1fd0c94bcef070e" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental</name>
+  </compound>
+  <compound refid="dir_2861e56f14fc74c0ec45920a419428b0" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts</name>
+  </compound>
+  <compound refid="dir_dec3baa50016e80e4b9ba8705638fd5b" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4</name>
+  </compound>
+  <compound refid="dir_b9d2d0a8faeac9a819bcb04e84919075" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging</name>
+  </compound>
+  <compound refid="dir_681061883462c3eda675bd7d26e9c775" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes</name>
+  </compound>
+  <compound refid="dir_0dd18d6dcd045e7652ffcb91601e2b85" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader</name>
+  </compound>
+  <compound refid="dir_97c1d832a47e4060f5924442c9b6b391" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4</name>
+  </compound>
+  <compound refid="dir_f203fcb0c1a83b5b64d8852fdb3cc57a" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Pool</name>
+  </compound>
+  <compound refid="dir_ddc79c417d2d67b8893d05617d435f80" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices</name>
+  </compound>
+  <compound refid="dir_aacccbfb6ce91de4b599263097764b2a" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties</name>
+  </compound>
+  <compound refid="dir_47d43d085ea0e28c8f7535b009096f2a" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler</name>
+  </compound>
+  <compound refid="dir_b01c05b8cde237b7bdb9b3ac7347e2f0" kind="dir"><name>C:/Users/Tom/AppData/Roaming</name>
+  </compound>
+  <compound refid="dir_6427db3c8565e9f2bcde3e2a9a6bebb9" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages</name>
+  </compound>
+  <compound refid="dir_884a6853ade55ec5c0293d07379c4927" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal</name>
+  </compound>
+  <compound refid="dir_03194f5773826e6ca43df1e2a61818b0" kind="dir"><name>C:/Users/Tom</name>
+  </compound>
+  <compound refid="dir_1e8f1cdd7259278e1fe563c9c8825a74" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools</name>
+  </compound>
+  <compound refid="dir_8ceffd4ee35c3518d4e8bdc7e638efe8" kind="dir"><name>C:/Users</name>
+  </compound>
+</doxygenindex>

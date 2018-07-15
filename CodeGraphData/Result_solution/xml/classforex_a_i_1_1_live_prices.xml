@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_live_prices" kind="class" prot="public">
+    <compoundname>forexAI::LivePrices</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_live_prices_1a1f2aaa2e129d333b9d7080eb89e1ea4d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double[]</type>
+        <definition>double [] forexAI.LivePrices.GetOpen</definition>
+        <argsstring>(int numData, int Bars, IMqlArray&lt; double &gt; Open)</argsstring>
+        <name>GetOpen</name>
+        <param>
+          <type>int</type>
+          <declname>numData</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>Bars</declname>
+        </param>
+        <param>
+          <type>IMqlArray&lt; double &gt;</type>
+          <declname>Open</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" line="20" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" bodystart="20" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_live_prices_1ac20e1f60e72f06f6e330e1a08014b85a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double[]</type>
+        <definition>double [] forexAI.LivePrices.GetClose</definition>
+        <argsstring>(int numData, int Bars, IMqlArray&lt; double &gt; Close)</argsstring>
+        <name>GetClose</name>
+        <param>
+          <type>int</type>
+          <declname>numData</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>Bars</declname>
+        </param>
+        <param>
+          <type>IMqlArray&lt; double &gt;</type>
+          <declname>Close</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" line="30" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" bodystart="30" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_live_prices_1aefa8f3098b793ba33e0627cbc29e4626" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double[]</type>
+        <definition>double [] forexAI.LivePrices.GetHigh</definition>
+        <argsstring>(int numData, int Bars, IMqlArray&lt; double &gt; High)</argsstring>
+        <name>GetHigh</name>
+        <param>
+          <type>int</type>
+          <declname>numData</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>Bars</declname>
+        </param>
+        <param>
+          <type>IMqlArray&lt; double &gt;</type>
+          <declname>High</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" line="40" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" bodystart="40" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_live_prices_1a1560db2dc7725aaf07a41d7de8de0b37" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double[]</type>
+        <definition>double [] forexAI.LivePrices.GetLow</definition>
+        <argsstring>(int numData, int Bars, IMqlArray&lt; double &gt; Low)</argsstring>
+        <name>GetLow</name>
+        <param>
+          <type>int</type>
+          <declname>numData</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>Bars</declname>
+        </param>
+        <param>
+          <type>IMqlArray&lt; double &gt;</type>
+          <declname>Low</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" line="50" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" bodystart="50" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_live_prices_1ad7118513126323765f70556ede959838" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double[]</type>
+        <definition>double [] forexAI.LivePrices.GetVolume</definition>
+        <argsstring>(int numData, int Bars, IMqlArray&lt; double &gt; Volume)</argsstring>
+        <name>GetVolume</name>
+        <param>
+          <type>int</type>
+          <declname>numData</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>Bars</declname>
+        </param>
+        <param>
+          <type>IMqlArray&lt; double &gt;</type>
+          <declname>Volume</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" line="60" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" bodystart="60" bodyend="68"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" line="19" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Prices/Prices.cs" bodystart="18" bodyend="69"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_live_prices_1ac20e1f60e72f06f6e330e1a08014b85a" prot="public" virt="non-virtual"><scope>forexAI::LivePrices</scope><name>GetClose</name></member>
+      <member refid="classforex_a_i_1_1_live_prices_1aefa8f3098b793ba33e0627cbc29e4626" prot="public" virt="non-virtual"><scope>forexAI::LivePrices</scope><name>GetHigh</name></member>
+      <member refid="classforex_a_i_1_1_live_prices_1a1560db2dc7725aaf07a41d7de8de0b37" prot="public" virt="non-virtual"><scope>forexAI::LivePrices</scope><name>GetLow</name></member>
+      <member refid="classforex_a_i_1_1_live_prices_1a1f2aaa2e129d333b9d7080eb89e1ea4d" prot="public" virt="non-virtual"><scope>forexAI::LivePrices</scope><name>GetOpen</name></member>
+      <member refid="classforex_a_i_1_1_live_prices_1ad7118513126323765f70556ede959838" prot="public" virt="non-virtual"><scope>forexAI::LivePrices</scope><name>GetVolume</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="namespace_n_quotes_1_1_debug_host" kind="namespace">
+    <compoundname>NQuotes::DebugHost</compoundname>
+    <innerclass refid="class_n_quotes_1_1_debug_host_1_1_program" prot="public">NQuotes::DebugHost::Program</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/DebugHost/Program.cs" line="14" column="1"/>
+  </compounddef>
+</doxygen>

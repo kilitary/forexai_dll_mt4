@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="_audio_8cs" kind="file">
+    <compoundname>Audio.cs</compoundname>
+    <innerclass refid="classforex_a_i_1_1_audio_f_x" prot="public">forexAI::AudioFX</innerclass>
+    <innernamespace refid="namespaceforex_a_i">forexAI</innernamespace>
+    <innernamespace refid="namespace_system_1_1_collections_1_1_generic">System::Collections::Generic</innernamespace>
+    <innernamespace refid="namespace_system_1_1_linq">System::Linq</innernamespace>
+    <innernamespace refid="namespace_system_1_1_media">System::Media</innernamespace>
+    <innernamespace refid="namespace_system_1_1_text">System::Text</innernamespace>
+    <innernamespace refid="namespace_system_1_1_threading">System::Threading</innernamespace>
+    <innernamespace refid="namespace_system_1_1_threading_1_1_tasks">System::Threading::Tasks</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//コ<sp/><sp/>ー<sp/>キ<sp/>ロ<sp/>ェ<sp/>に<sp/>パ<sp/>ン<sp/>ヨ<sp/>ダ<sp/>キ<sp/>ェ<sp/>アコ<sp/><sp/>ー<sp/>キ<sp/>ロ<sp/>ェ<sp/>に<sp/>パ<sp/>ン<sp/>ヨ<sp/>ダ<sp/>キ<sp/>ェ<sp/>アコ<sp/><sp/>ー<sp/>キ<sp/>ロ<sp/>ェ<sp/>に<sp/>パ<sp/>ン<sp/>ヨ<sp/>ダ<sp/>キ<sp/>ェ<sp/>アコ<sp/><sp/>ー<sp/>キ<sp/>ロ<sp/>ェ<sp/>に<sp/>パ<sp/>ン<sp/>ヨ<sp/>ダ<sp/>キ<sp/>ェ<sp/>ア</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>System;</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>System.Collections.Generic;</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>System.Linq;</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>System.Media;</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>System.Runtime.InteropServices;</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>System.Text;</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>System.Threading;</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>System.Threading.Tasks;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>forexAI;</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12" refid="namespaceforex_a_i" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">forexAI</highlight></codeline>
+<codeline lineno="13"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="14" refid="classforex_a_i_1_1_audio_f_x" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classforex_a_i_1_1_audio_f_x" kindref="compound">AudioFX</ref></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="16" refid="classforex_a_i_1_1_audio_f_x_1ade7ca2defe6566109ee76df6b23af5a8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1ade7ca2defe6566109ee76df6b23af5a8" kindref="member">Play</ref>(</highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>audioFileName)</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="classforex_a_i_1_1_configuration" kindref="compound">Configuration</ref>.<ref refid="classforex_a_i_1_1_configuration_1a6f41f280dc33e02e6373ec945570fd21" kindref="member">audioEnabled</ref>)</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>SoundPlayer(audioFileName).Play();</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24" refid="classforex_a_i_1_1_audio_f_x_1a5b502c0f1c2fd074b08a1089b324bf4d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1a5b502c0f1c2fd074b08a1089b324bf4d" kindref="member">Wipe</ref>()</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1ade7ca2defe6566109ee76df6b23af5a8" kindref="member">Play</ref>(<ref refid="classforex_a_i_1_1_configuration" kindref="compound">Configuration</ref>.<ref refid="classforex_a_i_1_1_configuration_1a60c234ba6f6f56a4da02545f18bca53f" kindref="member">wipeWav</ref>);</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="classforex_a_i_1_1_audio_f_x_1ad13deef1c88d78eb8c6397d18bde9f6d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1ad13deef1c88d78eb8c6397d18bde9f6d" kindref="member">NewDay</ref>()</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1ade7ca2defe6566109ee76df6b23af5a8" kindref="member">Play</ref>(<ref refid="classforex_a_i_1_1_configuration" kindref="compound">Configuration</ref>.<ref refid="classforex_a_i_1_1_configuration_1a285ac663e5b1f5a4b9a6782a109d75a1" kindref="member">newDayWAV</ref>);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34" refid="classforex_a_i_1_1_audio_f_x_1af10a3a055abcd9a980bce2d40b61156f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1af10a3a055abcd9a980bce2d40b61156f" kindref="member">Fail</ref>()</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1ade7ca2defe6566109ee76df6b23af5a8" kindref="member">Play</ref>(<ref refid="classforex_a_i_1_1_configuration" kindref="compound">Configuration</ref>.<ref refid="classforex_a_i_1_1_configuration_1a4996dc4a6e274c01bdd9d9a1cd04cab2" kindref="member">failWav</ref>);</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39" refid="classforex_a_i_1_1_audio_f_x_1a541ff508d0465156038723f88417b468" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1a541ff508d0465156038723f88417b468" kindref="member">Profit</ref>()</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1ade7ca2defe6566109ee76df6b23af5a8" kindref="member">Play</ref>(<ref refid="classforex_a_i_1_1_configuration" kindref="compound">Configuration</ref>.<ref refid="classforex_a_i_1_1_configuration_1a1d190a98006477279c9d288bf0e930ce" kindref="member">profitWAV</ref>);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="classforex_a_i_1_1_audio_f_x_1a075a2b3b108e60cdc611bf7b94e2d617" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1a075a2b3b108e60cdc611bf7b94e2d617" kindref="member">TheBroken</ref>()</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1ade7ca2defe6566109ee76df6b23af5a8" kindref="member">Play</ref>(<ref refid="classforex_a_i_1_1_configuration" kindref="compound">Configuration</ref>.<ref refid="classforex_a_i_1_1_configuration_1abd331a0ec46cbe913f7feaf951997f2f" kindref="member">brokenWAV</ref>);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="classforex_a_i_1_1_audio_f_x_1a28cd9a33438cb0ec18262f01fc5f63d4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1a28cd9a33438cb0ec18262f01fc5f63d4" kindref="member">GoodWork</ref>()</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1ade7ca2defe6566109ee76df6b23af5a8" kindref="member">Play</ref>(<ref refid="classforex_a_i_1_1_configuration" kindref="compound">Configuration</ref>.<ref refid="classforex_a_i_1_1_configuration_1a55489e33b0efce6d5e2ebe2594c6784b" kindref="member">goodWorkWAV</ref>);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="53" refid="classforex_a_i_1_1_audio_f_x_1a1c159ea7c2bf01986ebd2d90dbc1c12d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1a1c159ea7c2bf01986ebd2d90dbc1c12d" kindref="member">LowBalance</ref>()</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classforex_a_i_1_1_audio_f_x_1ade7ca2defe6566109ee76df6b23af5a8" kindref="member">Play</ref>(<ref refid="classforex_a_i_1_1_configuration" kindref="compound">Configuration</ref>.<ref refid="classforex_a_i_1_1_configuration_1a95c5dd621141eafe0584e14fb46f3b8c" kindref="member">lowBalanceWAV</ref>);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="59"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Audio/Audio.cs"/>
+  </compounddef>
+</doxygen>

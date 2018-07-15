@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_database" kind="class" prot="public">
+    <compoundname>forexAI::Database</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classforex_a_i_1_1_database_1adfc4f42cdbeeb81f940c69f241d2ce2d" prot="public" static="no" mutable="no">
+        <type>MySqlConnection</type>
+        <definition>MySqlConnection forexAI.Database.connection</definition>
+        <argsstring></argsstring>
+        <name>connection</name>
+        <initializer>= null</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" line="23" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" bodystart="23" bodyend="-1"/>
+        <referencedby refid="classforex_a_i_1_1_database_1af743c685b2dca2cc9831351b9fba80ca" compoundref="_mysql_8cs" startline="25" endline="71">forexAI.Database.Database</referencedby>
+        <referencedby refid="classforex_a_i_1_1_database_1ae8ba96e1dc07eacaf5faebecbe59cada" compoundref="_mysql_8cs" startline="87" endline="111">forexAI.Database.Get</referencedby>
+        <referencedby refid="classforex_a_i_1_1_database_1a5046e68718fdf0d99dada3102032ea3c" compoundref="_mysql_8cs" startline="113" endline="129">forexAI.Database.Set</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_database_1af743c685b2dca2cc9831351b9fba80ca" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>forexAI.Database.Database</definition>
+        <argsstring>()</argsstring>
+        <name>Database</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" line="25" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" bodystart="25" bodyend="71"/>
+        <references refid="classforex_a_i_1_1_database_1adfc4f42cdbeeb81f940c69f241d2ce2d" compoundref="_mysql_8cs" startline="23">forexAI.Database.connection</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_database_1afe13ec60a1d5a4ae47820325fdaf958a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool forexAI.Database.CloseConnection</definition>
+        <argsstring>()</argsstring>
+        <name>CloseConnection</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" line="73" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" bodystart="73" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_database_1ae8ba96e1dc07eacaf5faebecbe59cada" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>object</type>
+        <definition>object forexAI.Database.Get</definition>
+        <argsstring>(string key)</argsstring>
+        <name>Get</name>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" line="87" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" bodystart="87" bodyend="111"/>
+        <references refid="classforex_a_i_1_1_database_1adfc4f42cdbeeb81f940c69f241d2ce2d" compoundref="_mysql_8cs" startline="23">forexAI.Database.connection</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_database_1a5046e68718fdf0d99dada3102032ea3c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void forexAI.Database.Set</definition>
+        <argsstring>(string key, object value)</argsstring>
+        <name>Set</name>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>object</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" line="113" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" bodystart="113" bodyend="129"/>
+        <references refid="classforex_a_i_1_1_database_1adfc4f42cdbeeb81f940c69f241d2ce2d" compoundref="_mysql_8cs" startline="23">forexAI.Database.connection</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" line="22" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Mysql.cs" bodystart="21" bodyend="130"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_database_1afe13ec60a1d5a4ae47820325fdaf958a" prot="public" virt="non-virtual"><scope>forexAI::Database</scope><name>CloseConnection</name></member>
+      <member refid="classforex_a_i_1_1_database_1adfc4f42cdbeeb81f940c69f241d2ce2d" prot="public" virt="non-virtual"><scope>forexAI::Database</scope><name>connection</name></member>
+      <member refid="classforex_a_i_1_1_database_1af743c685b2dca2cc9831351b9fba80ca" prot="public" virt="non-virtual"><scope>forexAI::Database</scope><name>Database</name></member>
+      <member refid="classforex_a_i_1_1_database_1ae8ba96e1dc07eacaf5faebecbe59cada" prot="public" virt="non-virtual"><scope>forexAI::Database</scope><name>Get</name></member>
+      <member refid="classforex_a_i_1_1_database_1a5046e68718fdf0d99dada3102032ea3c" prot="public" virt="non-virtual"><scope>forexAI::Database</scope><name>Set</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

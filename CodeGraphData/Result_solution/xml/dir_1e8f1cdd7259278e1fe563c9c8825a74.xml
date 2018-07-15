@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="dir_1e8f1cdd7259278e1fe563c9c8825a74" kind="dir">
+    <compoundname>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools</compoundname>
+    <innerfile refid="_hash_8cs">Hash.cs</innerfile>
+    <innerfile refid="_helpers_8cs">Helpers.cs</innerfile>
+    <innerfile refid="_web_8cs">Web.cs</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/"/>
+  </compounddef>
+</doxygen>

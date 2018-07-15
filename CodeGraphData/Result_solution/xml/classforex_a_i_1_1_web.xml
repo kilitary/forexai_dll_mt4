@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_web" kind="class" prot="public">
+    <compoundname>forexAI::Web</compoundname>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_web_1a56f7422a7821a03f17dbdb1518736286" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>string</type>
+        <definition>static string forexAI.Web.DownloadUrl</definition>
+        <argsstring>(string url)</argsstring>
+        <name>DownloadUrl</name>
+        <param>
+          <type>string</type>
+          <declname>url</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Web.cs" line="12" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Web.cs" bodystart="12" bodyend="15"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Web.cs" line="11" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Tools/Web.cs" bodystart="10" bodyend="16"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_web_1a56f7422a7821a03f17dbdb1518736286" prot="public" virt="non-virtual"><scope>forexAI::Web</scope><name>DownloadUrl</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

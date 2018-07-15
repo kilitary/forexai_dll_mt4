@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_constants" kind="class" prot="public">
+    <compoundname>forexAI::Constants</compoundname>
+      <sectiondef kind="public-type">
+      <memberdef kind="enum" id="classforex_a_i_1_1_constants_1ac6213f05fe2f55f43fa7d1497e5ed978" prot="public" static="no">
+        <name>TrendDirection</name>
+        <enumvalue id="classforex_a_i_1_1_constants_1ac6213f05fe2f55f43fa7d1497e5ed978a258f49887ef8d14ac268c92b02503aaa" prot="public">
+          <name>Up</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classforex_a_i_1_1_constants_1ac6213f05fe2f55f43fa7d1497e5ed978a08a38277b0309070706f6652eeae9a53" prot="public">
+          <name>Down</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Data/Constants.cs" line="22" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Data/Constants.cs" bodystart="21" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="enum" id="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423" prot="public" static="no">
+        <name>OrderType</name>
+        <enumvalue id="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423a3068c5a98c003498f1fec0c489212e8b" prot="public">
+          <name>Sell</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423ae23ae8e28e6ced8969661edc6ee6889a" prot="public">
+          <name>SellLimit</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423a97425ea85e9afb38c5b5895351450d05" prot="public">
+          <name>SellStop</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423a831a28f1e8df07c553fcd59546465d13" prot="public">
+          <name>Buy</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423a41451198fafa1d1b8b507fc037557feb" prot="public">
+          <name>BuyLimit</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423ab1588f6d87b6f27f057a9d75b989efba" prot="public">
+          <name>BuyStop</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Data/Constants.cs" line="28" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Data/Constants.cs" bodystart="27" bodyend="35"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Data/Constants.cs" line="20" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Data/Constants.cs" bodystart="19" bodyend="36"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_constants_1a5c4ba9da19e488eee42a7a170dfd4423" prot="public" virt="non-virtual"><scope>forexAI::Constants</scope><name>OrderType</name></member>
+      <member refid="classforex_a_i_1_1_constants_1ac6213f05fe2f55f43fa7d1497e5ed978" prot="public" virt="non-virtual"><scope>forexAI::Constants</scope><name>TrendDirection</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

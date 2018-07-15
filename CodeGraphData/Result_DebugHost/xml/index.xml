@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.6">
+  <compound refid="class_n_quotes_1_1_debug_host_1_1_program" kind="class"><name>NQuotes::DebugHost::Program</name>
+    <member refid="class_n_quotes_1_1_debug_host_1_1_program_1ad7569507f412d193001c091ec206f8f9" kind="function"><name>Main</name></member>
+  </compound>
+  <compound refid="namespace_n_quotes" kind="namespace"><name>NQuotes</name>
+  </compound>
+  <compound refid="namespace_n_quotes_1_1_debug_host" kind="namespace"><name>NQuotes::DebugHost</name>
+  </compound>
+  <compound refid="namespace_system" kind="namespace"><name>System</name>
+  </compound>
+  <compound refid="namespace_system_1_1_reflection" kind="namespace"><name>System::Reflection</name>
+  </compound>
+  <compound refid="namespace_system_1_1_runtime_1_1_compiler_services" kind="namespace"><name>System::Runtime::CompilerServices</name>
+  </compound>
+  <compound refid="namespace_system_1_1_runtime_1_1_interop_services" kind="namespace"><name>System::Runtime::InteropServices</name>
+  </compound>
+  <compound refid="_assembly_info_8cs" kind="file"><name>AssemblyInfo.cs</name>
+  </compound>
+  <compound refid="_global_suppressions_8cs" kind="file"><name>GlobalSuppressions.cs</name>
+  </compound>
+  <compound refid="_program_8cs" kind="file"><name>Program.cs</name>
+  </compound>
+  <compound refid="dir_57ac13834acc248a90e7986f24c4b18a" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B</name>
+  </compound>
+  <compound refid="dir_f65ef8ec7e2f7e1aa061cd2fce1623a8" kind="dir"><name>C:/Users/Tom/AppData</name>
+  </compound>
+  <compound refid="dir_f3b1806e90ee7b5f0ecd63fa8c8b5af8" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/DebugHost</name>
+  </compound>
+  <compound refid="dir_2861e56f14fc74c0ec45920a419428b0" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts</name>
+  </compound>
+  <compound refid="dir_dec3baa50016e80e4b9ba8705638fd5b" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4</name>
+  </compound>
+  <compound refid="dir_681061883462c3eda675bd7d26e9c775" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes</name>
+  </compound>
+  <compound refid="dir_97c1d832a47e4060f5924442c9b6b391" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4</name>
+  </compound>
+  <compound refid="dir_b01c05b8cde237b7bdb9b3ac7347e2f0" kind="dir"><name>C:/Users/Tom/AppData/Roaming</name>
+  </compound>
+  <compound refid="dir_884a6853ade55ec5c0293d07379c4927" kind="dir"><name>C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal</name>
+  </compound>
+  <compound refid="dir_03194f5773826e6ca43df1e2a61818b0" kind="dir"><name>C:/Users/Tom</name>
+  </compound>
+  <compound refid="dir_8ceffd4ee35c3518d4e8bdc7e638efe8" kind="dir"><name>C:/Users</name>
+  </compound>
+</doxygenindex>

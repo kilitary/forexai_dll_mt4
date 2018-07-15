@@ -315,7 +315,7 @@ namespace forexAI
 				if (!useOptimizedLots)
 					return orderLots;
 
-				double MaximumRisk = 0.03;
+				var MaximumRisk = 0.03;
 				double DecreaseFactor = 3;
 				// history orders total
 				int orders = OrdersHistoryTotal();
@@ -420,7 +420,7 @@ namespace forexAI
 		{
 			get
 			{
-				double minNearDistance = 1110.0;
+				var minNearDistance = 1110.0;
 				foreach (var order in activeOrders)
 				{
 					if (!OrderSelect(order.ticket, SELECT_BY_TICKET) || order.type != Constants.OrderType.Buy || OrderCloseTime() != new DateTime(0))

@@ -1,0 +1,494 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_reassembler" kind="class" prot="public">
+    <compoundname>forexAI::Reassembler</compoundname>
+      <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a1d7ab11e4351d738526482a4781abcd0" prot="private" static="yes" mutable="no">
+        <type>Dictionary&lt; string, <ref refid="structforex_a_i_1_1_function_configuration" kindref="compound">FunctionConfiguration</ref> &gt;</type>
+        <definition>Dictionary&lt;string, FunctionConfiguration&gt; forexAI.Reassembler.functionsConfiguration</definition>
+        <argsstring></argsstring>
+        <name>functionsConfiguration</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="50" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a60ff78a7c9e9c78cfb57538953a77bae" prot="private" static="yes" mutable="no">
+        <type>Core.RetCode</type>
+        <definition>Core.RetCode forexAI.Reassembler.ret</definition>
+        <argsstring></argsstring>
+        <name>ret</name>
+        <initializer>= Core.RetCode.UnknownErr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="51" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1aadefe9d4f9d4eb0310280f3d4f1ea808" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_live_prices" kindref="compound">LivePrices</ref></type>
+        <definition>LivePrices forexAI.Reassembler.prices</definition>
+        <argsstring></argsstring>
+        <name>prices</name>
+        <initializer>= new <ref refid="classforex_a_i_1_1_live_prices" kindref="compound">LivePrices</ref>()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="52" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1ae9a6d3ecc8c6bb16ecfb7dff10523b0a" prot="private" static="yes" mutable="no">
+        <type>Random</type>
+        <definition>Random forexAI.Reassembler.random</definition>
+        <argsstring></argsstring>
+        <name>random</name>
+        <initializer>= new Random()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="53" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a45a25639d8d61268bde9ff45306cda2d" prot="private" static="yes" mutable="no">
+        <type>string</type>
+        <definition>string forexAI.Reassembler.functionConfigurationHash</definition>
+        <argsstring></argsstring>
+        <name>functionConfigurationHash</name>
+        <initializer>= string.Empty</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="54" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a62da239ebf1973ca55b2fe2ba93394e1" prot="private" static="yes" mutable="no">
+        <type>string</type>
+        <definition>string forexAI.Reassembler.functionName</definition>
+        <argsstring></argsstring>
+        <name>functionName</name>
+        <initializer>= string.Empty</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="55" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a4fee7e791911c5c15e78a3fed2775952" prot="private" static="yes" mutable="no">
+        <type>string</type>
+        <definition>string forexAI.Reassembler.paramName</definition>
+        <argsstring></argsstring>
+        <name>paramName</name>
+        <initializer>= string.Empty</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="56" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1ad6cd0cb8a5cf43d1b160943f1b2e5078" prot="private" static="yes" mutable="no">
+        <type>string</type>
+        <definition>string forexAI.Reassembler.comment</definition>
+        <argsstring></argsstring>
+        <name>comment</name>
+        <initializer>= string.Empty</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="57" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a9d9388a4d2976a08dd623fde8df5c5fc" prot="private" static="yes" mutable="no">
+        <type>string</type>
+        <definition>string forexAI.Reassembler.functionsNamesList</definition>
+        <argsstring></argsstring>
+        <name>functionsNamesList</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="58" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1aa320cb201d112e3aa8f84a5fd08b829e" prot="private" static="yes" mutable="no">
+        <type>double</type>
+        <definition>double forexAI.Reassembler.paramValue</definition>
+        <argsstring></argsstring>
+        <name>paramValue</name>
+        <initializer>= 0.0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="59" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1ae845f1f5a83abf9790953df692f59de4" prot="private" static="yes" mutable="no">
+        <type>double[]</type>
+        <definition>double [] forexAI.Reassembler.resultDataDouble</definition>
+        <argsstring></argsstring>
+        <name>resultDataDouble</name>
+        <initializer>= null</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="60" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a1bd3432e29fcff8c88864bb6abac7e73" prot="private" static="yes" mutable="no">
+        <type>double[]</type>
+        <definition>double [] forexAI.Reassembler.fullInputSet</definition>
+        <argsstring></argsstring>
+        <name>fullInputSet</name>
+        <initializer>= null</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="61" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1aae0451608512535aae79877d5a86c861" prot="private" static="yes" mutable="no">
+        <type>object[]</type>
+        <definition>object [] forexAI.Reassembler.functionArguments</definition>
+        <argsstring></argsstring>
+        <name>functionArguments</name>
+        <initializer>= null</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="62" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a44b98de1bb174e5f3c5c0bc8aa10114e" prot="private" static="yes" mutable="no">
+        <type>bool</type>
+        <definition>bool forexAI.Reassembler.failedReassemble</definition>
+        <argsstring></argsstring>
+        <name>failedReassemble</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="63" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a4ad42141cf1d9eab9b178399e1138ef3" prot="private" static="yes" mutable="no">
+        <type>bool</type>
+        <definition>bool forexAI.Reassembler.reassemblyStage</definition>
+        <argsstring></argsstring>
+        <name>reassemblyStage</name>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="64" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a53e01ac325a6a831423e907209e96e0e" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref>[]</type>
+        <definition>int [] forexAI.Reassembler.resultDataInt</definition>
+        <argsstring></argsstring>
+        <name>resultDataInt</name>
+        <initializer>= null</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="65" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a667a862ec795312efc5a3a6616ed2fde" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+        <definition>int forexAI.Reassembler.networkFunctionsCount</definition>
+        <argsstring></argsstring>
+        <name>networkFunctionsCount</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="66" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a9d452e90e129c5e205081e01f6cb556f" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+        <definition>int forexAI.Reassembler.currentFunctionIndex</definition>
+        <argsstring></argsstring>
+        <name>currentFunctionIndex</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="67" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1aa0feda8b29702626e5c2eb37afe7f715" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+        <definition>int forexAI.Reassembler.outBegIdx</definition>
+        <argsstring></argsstring>
+        <name>outBegIdx</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="68" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a6e9a35c62d592335d855b11c2a48fdee" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+        <definition>int forexAI.Reassembler.outNumberElement</definition>
+        <argsstring></argsstring>
+        <name>outNumberElement</name>
+        <initializer>= -1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="69" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a4ad9a8856fccc639b8d6cfa6fc1294cb" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+        <definition>int forexAI.Reassembler.pOutNbElement</definition>
+        <argsstring></argsstring>
+        <name>pOutNbElement</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="70" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a69b5c08ad3aec91abef76cf7c44ac09f" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+        <definition>int forexAI.Reassembler.outIndex</definition>
+        <argsstring></argsstring>
+        <name>outIndex</name>
+        <initializer>= -1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="71" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1af94f0c04be1b27342f9c1e28b93ed106" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+        <definition>int forexAI.Reassembler.outTypeDoubleOrInt</definition>
+        <argsstring></argsstring>
+        <name>outTypeDoubleOrInt</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="72" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a000f00cc2c2f722e419689b3ba8a1a13" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+        <definition>int forexAI.Reassembler.nOutStartIdx</definition>
+        <argsstring></argsstring>
+        <name>nOutStartIdx</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="73" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1a14613ce6fab1170776c6c3dde44c88cb" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+        <definition>int forexAI.Reassembler.startIdx</definition>
+        <argsstring></argsstring>
+        <name>startIdx</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="74" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1aa94c02d91ee1dcdc826bd146d39f592e" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+        <definition>int forexAI.Reassembler.arrayIndex</definition>
+        <argsstring></argsstring>
+        <name>arrayIndex</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="75" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1acea6f059a51c893c9280a616df7037e1" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+        <definition>int forexAI.Reassembler.setNextArrayIndex</definition>
+        <argsstring></argsstring>
+        <name>setNextArrayIndex</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="76" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" prot="public" static="yes" mutable="no">
+        <type>static</type>
+        <definition>forexAI.Reassembler.int</definition>
+        <argsstring></argsstring>
+        <name>int</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="78" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_reassembler_1a22f59d70823b25a38007c4e5130d7afb" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double[]</type>
+        <definition>static double [] forexAI.Reassembler.Execute</definition>
+        <argsstring>(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork, bool reassemblingCompletedOverride, MqlApi mqlApi)</argsstring>
+        <name>Execute</name>
+        <param>
+          <type>string</type>
+          <declname>functionConfigurationString</declname>
+        </param>
+        <param>
+          <type><ref refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" kindref="member">int</ref></type>
+          <declname>inputDimension</declname>
+        </param>
+        <param>
+          <type>NeuralNet</type>
+          <declname>neuralNetwork</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>reassemblingCompletedOverride</declname>
+        </param>
+        <param>
+          <type>MqlApi</type>
+          <declname>mqlApi</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="78" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="78" bodyend="429"/>
+        <referencedby refid="classforex_a_i_1_1_forex_a_i_1a5bd6079e3186b2fc2e3a501615b6fbc2" compoundref="_forex_a_i_8cs" startline="934" endline="974">forexAI.ForexAI.LoadNetwork</referencedby>
+        <referencedby refid="classforex_a_i_1_1_forex_a_i_1a2c3cdfb613a9ce11764fd41eb8cd802d" compoundref="_forex_a_i_8cs" startline="454" endline="563">forexAI.ForexAI.start</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="46">
+        <label>forexAI.Reassembler</label>
+        <link refid="classforex_a_i_1_1_reassembler"/>
+        <childnode refid="47" relation="usage">
+          <edgelabel>arrayIndex</edgelabel>
+          <edgelabel>fullInputSet</edgelabel>
+          <edgelabel>startIdx</edgelabel>
+          <edgelabel>comment</edgelabel>
+          <edgelabel>random</edgelabel>
+          <edgelabel>outTypeDoubleOrInt</edgelabel>
+          <edgelabel>pOutNbElement</edgelabel>
+          <edgelabel>functionsConfiguration</edgelabel>
+          <edgelabel>int</edgelabel>
+          <edgelabel>nOutStartIdx</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="47">
+        <label>static</label>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" line="49" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Reassembler/Reassembler.cs" bodystart="48" bodyend="430"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_reassembler_1aa94c02d91ee1dcdc826bd146d39f592e" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>arrayIndex</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1ad6cd0cb8a5cf43d1b160943f1b2e5078" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>comment</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a9d452e90e129c5e205081e01f6cb556f" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>currentFunctionIndex</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a22f59d70823b25a38007c4e5130d7afb" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>Execute</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a44b98de1bb174e5f3c5c0bc8aa10114e" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>failedReassemble</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a1bd3432e29fcff8c88864bb6abac7e73" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>fullInputSet</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1aae0451608512535aae79877d5a86c861" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>functionArguments</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a45a25639d8d61268bde9ff45306cda2d" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>functionConfigurationHash</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a62da239ebf1973ca55b2fe2ba93394e1" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>functionName</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a1d7ab11e4351d738526482a4781abcd0" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>functionsConfiguration</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a9d9388a4d2976a08dd623fde8df5c5fc" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>functionsNamesList</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1afdede260609d320f016a95ed22e5a3ab" prot="public" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>int</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a667a862ec795312efc5a3a6616ed2fde" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>networkFunctionsCount</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a000f00cc2c2f722e419689b3ba8a1a13" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>nOutStartIdx</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1aa0feda8b29702626e5c2eb37afe7f715" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>outBegIdx</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a69b5c08ad3aec91abef76cf7c44ac09f" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>outIndex</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a6e9a35c62d592335d855b11c2a48fdee" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>outNumberElement</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1af94f0c04be1b27342f9c1e28b93ed106" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>outTypeDoubleOrInt</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a4fee7e791911c5c15e78a3fed2775952" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>paramName</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1aa320cb201d112e3aa8f84a5fd08b829e" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>paramValue</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a4ad9a8856fccc639b8d6cfa6fc1294cb" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>pOutNbElement</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1aadefe9d4f9d4eb0310280f3d4f1ea808" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>prices</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1ae9a6d3ecc8c6bb16ecfb7dff10523b0a" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>random</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a4ad42141cf1d9eab9b178399e1138ef3" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>reassemblyStage</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1ae845f1f5a83abf9790953df692f59de4" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>resultDataDouble</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a53e01ac325a6a831423e907209e96e0e" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>resultDataInt</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a60ff78a7c9e9c78cfb57538953a77bae" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>ret</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1acea6f059a51c893c9280a616df7037e1" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>setNextArrayIndex</name></member>
+      <member refid="classforex_a_i_1_1_reassembler_1a14613ce6fab1170776c6c3dde44c88cb" prot="private" virt="non-virtual"><scope>forexAI::Reassembler</scope><name>startIdx</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

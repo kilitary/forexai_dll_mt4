@@ -1,0 +1,364 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_logger" kind="class" prot="public">
+    <compoundname>forexAI::Logger</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>static int forexAI.Logger.GetCurrentThreadId</definition>
+        <argsstring>()</argsstring>
+        <name>GetCurrentThreadId</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="21" column="1"/>
+        <referencedby refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" compoundref="_logger_8cs" startline="79" endline="87">forexAI.Logger.console</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1ab4b2ee7c11c3ee1ab9ef5fa72388396f" compoundref="_logger_8cs" startline="166" endline="183">forexAI.Logger.consolelog</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a60690de6cf424ae28b59a1b231fc08d4" compoundref="_logger_8cs" startline="90" endline="105">forexAI.Logger.debug</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a23041675e7e7faab5cea15ebae983e0f" compoundref="_logger_8cs" startline="47" endline="77">forexAI.Logger.dump</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a4a8412be3461041b43ac11b8c044c7b7" compoundref="_logger_8cs" startline="107" endline="124">forexAI.Logger.error</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a33cfacd18846a053a3a0b65ecfd38ab6" compoundref="_logger_8cs" startline="126" endline="141">forexAI.Logger.info</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a60a92f16561ead6c2218dc3470b85b98" compoundref="_logger_8cs" startline="143" endline="158">forexAI.Logger.log</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a852edae379e4c2e1ed25c81e768a491b" compoundref="_logger_8cs" startline="202" endline="217">forexAI.Logger.notice</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a5c2203f4aa3fbfe2688a27490ff6ee10" compoundref="_logger_8cs" startline="185" endline="200">forexAI.Logger.warning</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1a20067d2d3de43ddaa232570ff46c90b5" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.EraseLogs</definition>
+        <argsstring>(params string[] fileNames)</argsstring>
+        <name>EraseLogs</name>
+        <param>
+          <type>params string[]</type>
+          <declname>fileNames</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="23" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="23" bodyend="31"/>
+        <references refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" compoundref="_logger_8cs" startline="79" endline="87">forexAI.Logger.console</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1a0d8aa0fbc2d027aac1de89d64c75d3c2" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.ClearLogs</definition>
+        <argsstring>()</argsstring>
+        <name>ClearLogs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="33" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="33" bodyend="45"/>
+        <references refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" compoundref="_logger_8cs" startline="79" endline="87">forexAI.Logger.console</references>
+        <references refid="classforex_a_i_1_1_helpers_1a4fed7c2b20e532d65b48c5661171428a" compoundref="_helpers_8cs" startline="29" endline="53">forexAI.Helpers.IsFileBusy</references>
+        <references refid="classforex_a_i_1_1_configuration_1ab4a0fa62c8a45c65f2b90b148144ee44" compoundref="_configuration_8cs" startline="25">forexAI.Configuration.rootDirectory</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1a23041675e7e7faab5cea15ebae983e0f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.dump</definition>
+        <argsstring>(object data, string prefix=&quot;&quot;, string fileName=null)</argsstring>
+        <name>dump</name>
+        <param>
+          <type>object</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>prefix</declname>
+          <defval>&quot;&quot;</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="47" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="47" bodyend="77"/>
+        <references refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" compoundref="_logger_8cs" startline="79" endline="87">forexAI.Logger.console</references>
+        <references refid="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07">forexAI.Logger.GetCurrentThreadId</references>
+        <references refid="classforex_a_i_1_1_configuration_1ab4a0fa62c8a45c65f2b90b148144ee44" compoundref="_configuration_8cs" startline="25">forexAI.Configuration.rootDirectory</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.console</definition>
+        <argsstring>(string lines, ConsoleColor bgcolor=Black, ConsoleColor fgcolor=White)</argsstring>
+        <name>console</name>
+        <param>
+          <type>string</type>
+          <declname>lines</declname>
+        </param>
+        <param>
+          <type>ConsoleColor</type>
+          <declname>bgcolor</declname>
+          <defval>Black</defval>
+        </param>
+        <param>
+          <type>ConsoleColor</type>
+          <declname>fgcolor</declname>
+          <defval>White</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="79" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="79" bodyend="87"/>
+        <references refid="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07">forexAI.Logger.GetCurrentThreadId</references>
+        <referencedby refid="classforex_a_i_1_1_logger_1a0d8aa0fbc2d027aac1de89d64c75d3c2" compoundref="_logger_8cs" startline="33" endline="45">forexAI.Logger.ClearLogs</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1ab4b2ee7c11c3ee1ab9ef5fa72388396f" compoundref="_logger_8cs" startline="166" endline="183">forexAI.Logger.consolelog</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a60690de6cf424ae28b59a1b231fc08d4" compoundref="_logger_8cs" startline="90" endline="105">forexAI.Logger.debug</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a23041675e7e7faab5cea15ebae983e0f" compoundref="_logger_8cs" startline="47" endline="77">forexAI.Logger.dump</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a20067d2d3de43ddaa232570ff46c90b5" compoundref="_logger_8cs" startline="23" endline="31">forexAI.Logger.EraseLogs</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a4a8412be3461041b43ac11b8c044c7b7" compoundref="_logger_8cs" startline="107" endline="124">forexAI.Logger.error</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a33cfacd18846a053a3a0b65ecfd38ab6" compoundref="_logger_8cs" startline="126" endline="141">forexAI.Logger.info</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a60a92f16561ead6c2218dc3470b85b98" compoundref="_logger_8cs" startline="143" endline="158">forexAI.Logger.log</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a852edae379e4c2e1ed25c81e768a491b" compoundref="_logger_8cs" startline="202" endline="217">forexAI.Logger.notice</referencedby>
+        <referencedby refid="classforex_a_i_1_1_logger_1a5c2203f4aa3fbfe2688a27490ff6ee10" compoundref="_logger_8cs" startline="185" endline="200">forexAI.Logger.warning</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1a60690de6cf424ae28b59a1b231fc08d4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.debug</definition>
+        <argsstring>(string lines, string fileName=null)</argsstring>
+        <name>debug</name>
+        <param>
+          <type>string</type>
+          <declname>lines</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="90" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="90" bodyend="105"/>
+        <references refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" compoundref="_logger_8cs" startline="79" endline="87">forexAI.Logger.console</references>
+        <references refid="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07">forexAI.Logger.GetCurrentThreadId</references>
+        <references refid="classforex_a_i_1_1_configuration_1ab4a0fa62c8a45c65f2b90b148144ee44" compoundref="_configuration_8cs" startline="25">forexAI.Configuration.rootDirectory</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1a4a8412be3461041b43ac11b8c044c7b7" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.error</definition>
+        <argsstring>(string lines, string fileName=null)</argsstring>
+        <name>error</name>
+        <param>
+          <type>string</type>
+          <declname>lines</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="107" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="107" bodyend="124"/>
+        <references refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" compoundref="_logger_8cs" startline="79" endline="87">forexAI.Logger.console</references>
+        <references refid="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07">forexAI.Logger.GetCurrentThreadId</references>
+        <references refid="classforex_a_i_1_1_configuration_1ab4a0fa62c8a45c65f2b90b148144ee44" compoundref="_configuration_8cs" startline="25">forexAI.Configuration.rootDirectory</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1a33cfacd18846a053a3a0b65ecfd38ab6" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.info</definition>
+        <argsstring>(string lines, string fileName=null)</argsstring>
+        <name>info</name>
+        <param>
+          <type>string</type>
+          <declname>lines</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="126" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="126" bodyend="141"/>
+        <references refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" compoundref="_logger_8cs" startline="79" endline="87">forexAI.Logger.console</references>
+        <references refid="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07">forexAI.Logger.GetCurrentThreadId</references>
+        <references refid="classforex_a_i_1_1_configuration_1ab4a0fa62c8a45c65f2b90b148144ee44" compoundref="_configuration_8cs" startline="25">forexAI.Configuration.rootDirectory</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1a60a92f16561ead6c2218dc3470b85b98" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.log</definition>
+        <argsstring>(string lines, string fileName=null)</argsstring>
+        <name>log</name>
+        <param>
+          <type>string</type>
+          <declname>lines</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="143" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="143" bodyend="158"/>
+        <references refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" compoundref="_logger_8cs" startline="79" endline="87">forexAI.Logger.console</references>
+        <references refid="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07">forexAI.Logger.GetCurrentThreadId</references>
+        <references refid="classforex_a_i_1_1_configuration_1a0043caa050b7191ec91dc9a6ac79e9fe" compoundref="_configuration_8cs" startline="26">forexAI.Configuration.logFileName</references>
+        <references refid="classforex_a_i_1_1_configuration_1ab4a0fa62c8a45c65f2b90b148144ee44" compoundref="_configuration_8cs" startline="25">forexAI.Configuration.rootDirectory</references>
+        <referencedby refid="classforex_a_i_1_1_logger_1a4f0efc55305509360e4b75ce814ff5f4" compoundref="_logger_8cs" startline="160" endline="164">forexAI.Logger.logIf</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1a4f0efc55305509360e4b75ce814ff5f4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.logIf</definition>
+        <argsstring>(bool ifCase, string lines, string fileName=null)</argsstring>
+        <name>logIf</name>
+        <param>
+          <type>bool</type>
+          <declname>ifCase</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>lines</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="160" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="160" bodyend="164"/>
+        <references refid="classforex_a_i_1_1_logger_1a60a92f16561ead6c2218dc3470b85b98" compoundref="_logger_8cs" startline="143" endline="158">forexAI.Logger.log</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1ab4b2ee7c11c3ee1ab9ef5fa72388396f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.consolelog</definition>
+        <argsstring>(string lines, string fileName=null, ConsoleColor color=ConsoleColor.Cyan)</argsstring>
+        <name>consolelog</name>
+        <param>
+          <type>string</type>
+          <declname>lines</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+          <defval>null</defval>
+        </param>
+        <param>
+          <type>ConsoleColor</type>
+          <declname>color</declname>
+          <defval>ConsoleColor.Cyan</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="166" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="166" bodyend="183"/>
+        <references refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" compoundref="_logger_8cs" startline="79" endline="87">forexAI.Logger.console</references>
+        <references refid="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07">forexAI.Logger.GetCurrentThreadId</references>
+        <references refid="classforex_a_i_1_1_configuration_1a0043caa050b7191ec91dc9a6ac79e9fe" compoundref="_configuration_8cs" startline="26">forexAI.Configuration.logFileName</references>
+        <references refid="classforex_a_i_1_1_configuration_1ab4a0fa62c8a45c65f2b90b148144ee44" compoundref="_configuration_8cs" startline="25">forexAI.Configuration.rootDirectory</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1a5c2203f4aa3fbfe2688a27490ff6ee10" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.warning</definition>
+        <argsstring>(string lines, string fileName=null)</argsstring>
+        <name>warning</name>
+        <param>
+          <type>string</type>
+          <declname>lines</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="185" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="185" bodyend="200"/>
+        <references refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" compoundref="_logger_8cs" startline="79" endline="87">forexAI.Logger.console</references>
+        <references refid="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07">forexAI.Logger.GetCurrentThreadId</references>
+        <references refid="classforex_a_i_1_1_configuration_1ab4a0fa62c8a45c65f2b90b148144ee44" compoundref="_configuration_8cs" startline="25">forexAI.Configuration.rootDirectory</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_logger_1a852edae379e4c2e1ed25c81e768a491b" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Logger.notice</definition>
+        <argsstring>(string lines, string fileName=null)</argsstring>
+        <name>notice</name>
+        <param>
+          <type>string</type>
+          <declname>lines</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="202" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="202" bodyend="217"/>
+        <references refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" compoundref="_logger_8cs" startline="79" endline="87">forexAI.Logger.console</references>
+        <references refid="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07">forexAI.Logger.GetCurrentThreadId</references>
+        <references refid="classforex_a_i_1_1_configuration_1ab4a0fa62c8a45c65f2b90b148144ee44" compoundref="_configuration_8cs" startline="25">forexAI.Configuration.rootDirectory</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" line="18" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Logging/Logger.cs" bodystart="17" bodyend="218"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_logger_1a0d8aa0fbc2d027aac1de89d64c75d3c2" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>ClearLogs</name></member>
+      <member refid="classforex_a_i_1_1_logger_1a0533b82b250eea89d9ac55c621b1d352" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>console</name></member>
+      <member refid="classforex_a_i_1_1_logger_1ab4b2ee7c11c3ee1ab9ef5fa72388396f" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>consolelog</name></member>
+      <member refid="classforex_a_i_1_1_logger_1a60690de6cf424ae28b59a1b231fc08d4" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>debug</name></member>
+      <member refid="classforex_a_i_1_1_logger_1a23041675e7e7faab5cea15ebae983e0f" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>dump</name></member>
+      <member refid="classforex_a_i_1_1_logger_1a20067d2d3de43ddaa232570ff46c90b5" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>EraseLogs</name></member>
+      <member refid="classforex_a_i_1_1_logger_1a4a8412be3461041b43ac11b8c044c7b7" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>error</name></member>
+      <member refid="classforex_a_i_1_1_logger_1abf2c2520b6a90d9c76023d1cf0fd1e07" prot="private" virt="non-virtual"><scope>forexAI::Logger</scope><name>GetCurrentThreadId</name></member>
+      <member refid="classforex_a_i_1_1_logger_1a33cfacd18846a053a3a0b65ecfd38ab6" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>info</name></member>
+      <member refid="classforex_a_i_1_1_logger_1a60a92f16561ead6c2218dc3470b85b98" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>log</name></member>
+      <member refid="classforex_a_i_1_1_logger_1a4f0efc55305509360e4b75ce814ff5f4" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>logIf</name></member>
+      <member refid="classforex_a_i_1_1_logger_1a852edae379e4c2e1ed25c81e768a491b" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>notice</name></member>
+      <member refid="classforex_a_i_1_1_logger_1a5c2203f4aa3fbfe2688a27490ff6ee10" prot="public" virt="non-virtual"><scope>forexAI::Logger</scope><name>warning</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

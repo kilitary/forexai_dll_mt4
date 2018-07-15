@@ -33,7 +33,7 @@ namespace forexAI
 
 		static public void AlliedInstructions()
 		{
-			int e;
+			int e; 
 			do
 			{
 				e = random.Next(6);

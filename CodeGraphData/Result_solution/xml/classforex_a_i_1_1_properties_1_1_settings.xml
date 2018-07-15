@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_properties_1_1_settings" kind="class" prot="package">
+    <compoundname>forexAI::Properties::Settings</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">ApplicationSettingsBase</basecompoundref>
+      <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classforex_a_i_1_1_properties_1_1_settings_1ac8752b65788023bb7914645702f96809" prot="private" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_properties_1_1_settings" kindref="compound">Settings</ref></type>
+        <definition>Settings forexAI.Properties.Settings.defaultInstance</definition>
+        <argsstring></argsstring>
+        <name>defaultInstance</name>
+        <initializer>= ((<ref refid="classforex_a_i_1_1_properties_1_1_settings" kindref="compound">Settings</ref>)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new <ref refid="classforex_a_i_1_1_properties_1_1_settings" kindref="compound">Settings</ref>())))</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" line="18" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="classforex_a_i_1_1_properties_1_1_settings_1a6e0b58fa27ca5e6dfa447a7c00a39d2d" prot="public" static="yes" readable="no" writable="no" gettable="yes" settable="no">
+        <type><ref refid="classforex_a_i_1_1_properties_1_1_settings" kindref="compound">Settings</ref></type>
+        <definition>Settings forexAI.Properties.Settings.Default</definition>
+        <argsstring></argsstring>
+        <name>Default</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" line="20" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classforex_a_i_1_1_properties_1_1_settings_1a51d77a0570d34ddf430ff559456fa350" prot="public" static="no" readable="no" writable="no" gettable="yes" settable="no">
+        <type>bool</type>
+        <definition>bool forexAI.Properties.Settings.Settingdgfdfg</definition>
+        <argsstring></argsstring>
+        <name>Settingdgfdfg</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" line="29" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classforex_a_i_1_1_properties_1_1_settings_1a1934355e9398dfbf78ba212b1f963902" prot="public" static="no" readable="no" writable="no" gettable="yes" settable="yes">
+        <type>global::System.DateTime</type>
+        <definition>global::System.DateTime forexAI.Properties.Settings.Settingsdfdsf</definition>
+        <argsstring></argsstring>
+        <name>Settingsdfdsf</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" line="38" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classforex_a_i_1_1_properties_1_1_settings_1a1c0c6b6039db38d4e0f19e2d8090e253" prot="public" static="no" readable="no" writable="no" gettable="yes" settable="no">
+        <type>string</type>
+        <definition>string forexAI.Properties.Settings.sdfdsf</definition>
+        <argsstring></argsstring>
+        <name>sdfdsf</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" line="51" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classforex_a_i_1_1_properties_1_1_settings_1a12912678df794dad196ff76a5e8c3f0a" prot="public" static="no" readable="no" writable="no" gettable="yes" settable="yes">
+        <type>global::NQuotes.Config</type>
+        <definition>global::NQuotes.Config forexAI.Properties.Settings.Setting</definition>
+        <argsstring></argsstring>
+        <name>Setting</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" line="59" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="classforex_a_i_1_1_properties_1_1_settings_1a4a3d2a34b0500191e9cf796921f5028e" prot="public" static="no" readable="no" writable="no" gettable="yes" settable="yes">
+        <type>short</type>
+        <definition>short forexAI.Properties.Settings.Setting1</definition>
+        <argsstring></argsstring>
+        <name>Setting1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" line="71" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="52">
+        <label>global::SystemConfiguration::ApplicationSettingsBase</label>
+      </node>
+      <node id="51">
+        <label>forexAI.Properties.Settings</label>
+        <link refid="classforex_a_i_1_1_properties_1_1_settings"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="54">
+        <label>global::SystemConfiguration::ApplicationSettingsBase</label>
+      </node>
+      <node id="53">
+        <label>forexAI.Properties.Settings</label>
+        <link refid="classforex_a_i_1_1_properties_1_1_settings"/>
+        <childnode refid="54" relation="public-inheritance">
+        </childnode>
+        <childnode refid="55" relation="usage">
+          <edgelabel>defaultInstance</edgelabel>
+        </childnode>
+      </node>
+      <node id="55">
+        <label>static</label>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" line="16" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Properties/Settings.Designer.cs" bodystart="16" bodyend="79"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_properties_1_1_settings_1a6e0b58fa27ca5e6dfa447a7c00a39d2d" prot="public" virt="non-virtual"><scope>forexAI::Properties::Settings</scope><name>Default</name></member>
+      <member refid="classforex_a_i_1_1_properties_1_1_settings_1ac8752b65788023bb7914645702f96809" prot="private" virt="non-virtual"><scope>forexAI::Properties::Settings</scope><name>defaultInstance</name></member>
+      <member refid="classforex_a_i_1_1_properties_1_1_settings_1a1c0c6b6039db38d4e0f19e2d8090e253" prot="public" virt="non-virtual"><scope>forexAI::Properties::Settings</scope><name>sdfdsf</name></member>
+      <member refid="classforex_a_i_1_1_properties_1_1_settings_1a12912678df794dad196ff76a5e8c3f0a" prot="public" virt="non-virtual"><scope>forexAI::Properties::Settings</scope><name>Setting</name></member>
+      <member refid="classforex_a_i_1_1_properties_1_1_settings_1a4a3d2a34b0500191e9cf796921f5028e" prot="public" virt="non-virtual"><scope>forexAI::Properties::Settings</scope><name>Setting1</name></member>
+      <member refid="classforex_a_i_1_1_properties_1_1_settings_1a51d77a0570d34ddf430ff559456fa350" prot="public" virt="non-virtual"><scope>forexAI::Properties::Settings</scope><name>Settingdgfdfg</name></member>
+      <member refid="classforex_a_i_1_1_properties_1_1_settings_1a1934355e9398dfbf78ba212b1f963902" prot="public" virt="non-virtual"><scope>forexAI::Properties::Settings</scope><name>Settingsdfdsf</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_config" kind="class" prot="public">
+    <compoundname>forexAI::Config</compoundname>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classforex_a_i_1_1_config_1a8f5953631e2c40513cfa2211d70b0335" prot="private" static="no" mutable="no">
+        <type>readonly Dictionary&lt; string, object &gt;</type>
+        <definition>readonly Dictionary&lt;string, object&gt; forexAI.Config.config</definition>
+        <argsstring></argsstring>
+        <name>config</name>
+        <initializer>= null</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" line="24" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" bodystart="24" bodyend="-1"/>
+        <referencedby refid="classforex_a_i_1_1_config_1a81e36ecb5002a7d92279cf6d43e41960" compoundref="_config_8cs" startline="50" endline="58">forexAI.Config.Config</referencedby>
+        <referencedby refid="classforex_a_i_1_1_config_1abc51818103cb7359815915aec2f42cad" compoundref="_config_8cs" startline="45" endline="48">forexAI.Config.Get</referencedby>
+        <referencedby refid="classforex_a_i_1_1_config_1a0d3ea1343d0c14bf7a59b4eeab675bdc" compoundref="_config_8cs" startline="60" endline="74">forexAI.Config.Save</referencedby>
+        <referencedby refid="classforex_a_i_1_1_config_1ae4b2b37acd0124663971d1cb316f88d1" compoundref="_config_8cs" startline="39" endline="43">forexAI.Config.Set</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="classforex_a_i_1_1_config_1a0d190310a122459d7aa5c07ce08c9112" prot="public" static="no" readable="no" writable="no" gettable="yes" settable="yes">
+        <type>object</type>
+        <definition>object forexAI.Config.this[string name]</definition>
+        <argsstring></argsstring>
+        <name>this[string name]</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" line="26" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_config_1ae4b2b37acd0124663971d1cb316f88d1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void forexAI.Config.Set</definition>
+        <argsstring>(string name, object obj)</argsstring>
+        <name>Set</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>object</type>
+          <declname>obj</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" line="39" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" bodystart="39" bodyend="43"/>
+        <references refid="classforex_a_i_1_1_config_1a8f5953631e2c40513cfa2211d70b0335" compoundref="_config_8cs" startline="24">forexAI.Config.config</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_config_1abc51818103cb7359815915aec2f42cad" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>object</type>
+        <definition>object forexAI.Config.Get</definition>
+        <argsstring>(string name)</argsstring>
+        <name>Get</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" line="45" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" bodystart="45" bodyend="48"/>
+        <references refid="classforex_a_i_1_1_config_1a8f5953631e2c40513cfa2211d70b0335" compoundref="_config_8cs" startline="24">forexAI.Config.config</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_config_1a81e36ecb5002a7d92279cf6d43e41960" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>forexAI.Config.Config</definition>
+        <argsstring>()</argsstring>
+        <name>Config</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" line="50" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" bodystart="50" bodyend="58"/>
+        <references refid="classforex_a_i_1_1_config_1a8f5953631e2c40513cfa2211d70b0335" compoundref="_config_8cs" startline="24">forexAI.Config.config</references>
+        <references refid="classforex_a_i_1_1_configuration_1a1e31a68d64ed906db5ec342e52c79a03" compoundref="_configuration_8cs" startline="22">forexAI.Configuration.configFilePath</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_config_1a0d3ea1343d0c14bf7a59b4eeab675bdc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void forexAI.Config.Save</definition>
+        <argsstring>()</argsstring>
+        <name>Save</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" line="60" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" bodystart="60" bodyend="74"/>
+        <references refid="classforex_a_i_1_1_config_1a8f5953631e2c40513cfa2211d70b0335" compoundref="_config_8cs" startline="24">forexAI.Config.config</references>
+        <references refid="classforex_a_i_1_1_configuration_1a1e31a68d64ed906db5ec342e52c79a03" compoundref="_configuration_8cs" startline="22">forexAI.Configuration.configFilePath</references>
+        <referencedby refid="classforex_a_i_1_1_config_1a018fe3eb2c1c71dbac762adca65d2efe" compoundref="_config_8cs" startline="76" endline="79">forexAI.Config.~Config</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_config_1a018fe3eb2c1c71dbac762adca65d2efe" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>forexAI.Config.~Config</definition>
+        <argsstring>()</argsstring>
+        <name>~Config</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" line="76" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" bodystart="76" bodyend="79"/>
+        <references refid="classforex_a_i_1_1_config_1a0d3ea1343d0c14bf7a59b4eeab675bdc" compoundref="_config_8cs" startline="60" endline="74">forexAI.Config.Save</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" line="23" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Config.cs" bodystart="22" bodyend="81"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_config_1a8f5953631e2c40513cfa2211d70b0335" prot="private" virt="non-virtual"><scope>forexAI::Config</scope><name>config</name></member>
+      <member refid="classforex_a_i_1_1_config_1a81e36ecb5002a7d92279cf6d43e41960" prot="public" virt="non-virtual"><scope>forexAI::Config</scope><name>Config</name></member>
+      <member refid="classforex_a_i_1_1_config_1abc51818103cb7359815915aec2f42cad" prot="public" virt="non-virtual"><scope>forexAI::Config</scope><name>Get</name></member>
+      <member refid="classforex_a_i_1_1_config_1a0d3ea1343d0c14bf7a59b4eeab675bdc" prot="public" virt="non-virtual"><scope>forexAI::Config</scope><name>Save</name></member>
+      <member refid="classforex_a_i_1_1_config_1ae4b2b37acd0124663971d1cb316f88d1" prot="public" virt="non-virtual"><scope>forexAI::Config</scope><name>Set</name></member>
+      <member refid="classforex_a_i_1_1_config_1a0d190310a122459d7aa5c07ce08c9112" prot="public" virt="non-virtual"><scope>forexAI::Config</scope><name>this[string name]</name></member>
+      <member refid="classforex_a_i_1_1_config_1a018fe3eb2c1c71dbac762adca65d2efe" prot="private" virt="non-virtual"><scope>forexAI::Config</scope><name>~Config</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_order" kind="class" prot="public">
+    <compoundname>forexAI::Order</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1a23a5b7fefeef968637bc989fc454a4e8" prot="public" static="no" mutable="no">
+        <type>OrderType</type>
+        <definition>OrderType forexAI.Order.type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="12" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1acd9124bba6c4ca6cc31dd1438b6f4d81" prot="public" static="no" mutable="no">
+        <type>DateTime</type>
+        <definition>DateTime forexAI.Order.openTime</definition>
+        <argsstring></argsstring>
+        <name>openTime</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="13" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1a962f870592f4ed19c35e9a0e94594951" prot="public" static="no" mutable="no">
+        <type>DateTime</type>
+        <definition>DateTime forexAI.Order.expiration</definition>
+        <argsstring></argsstring>
+        <name>expiration</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="14" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1a12cc428f7d826246d21ab6820c851023" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int forexAI.Order.ticket</definition>
+        <argsstring></argsstring>
+        <name>ticket</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="15" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1a6d0e4dbb557f9f58c2b8a4137d9bcc52" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int forexAI.Order.magickNumber</definition>
+        <argsstring></argsstring>
+        <name>magickNumber</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="16" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1aced6a23a30bb2db37183e4cf992a7f05" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string forexAI.Order.symbol</definition>
+        <argsstring></argsstring>
+        <name>symbol</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="17" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1aab0736ef16e65f57f84455d8319345b0" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string forexAI.Order.comment</definition>
+        <argsstring></argsstring>
+        <name>comment</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="18" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1a2e09966a7711b215b31c77a527e5ee74" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double forexAI.Order.lots</definition>
+        <argsstring></argsstring>
+        <name>lots</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="19" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1aeb95d31b756992a2f0eb773cb1971280" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double forexAI.Order.profit</definition>
+        <argsstring></argsstring>
+        <name>profit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="20" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1a0c95c9e8d97377208d5f1658dad06659" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double forexAI.Order.commission</definition>
+        <argsstring></argsstring>
+        <name>commission</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="21" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1aa2578369f38e4bfbc49a970d55d09107" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double forexAI.Order.swap</definition>
+        <argsstring></argsstring>
+        <name>swap</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="22" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1a6d15ac78bd8ca863ada383bdb4b0f3bd" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double forexAI.Order.stopLoss</definition>
+        <argsstring></argsstring>
+        <name>stopLoss</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="23" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1ab5d73e4028d8ad23015a39d617df820f" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double forexAI.Order.openPrice</definition>
+        <argsstring></argsstring>
+        <name>openPrice</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="24" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1a30374f2046b5708d88bda76cb834d773" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double forexAI.Order.ageInMinutes</definition>
+        <argsstring></argsstring>
+        <name>ageInMinutes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="25" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1a9e93dfb8255e42911a2ae3f10690ad45" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double forexAI.Order.takeProfit</definition>
+        <argsstring></argsstring>
+        <name>takeProfit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="26" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_order_1a3269980e18bab24e70030b58b74239cb" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double forexAI.Order.currentProfit</definition>
+        <argsstring></argsstring>
+        <name>currentProfit</name>
+        <initializer>=&gt; <ref refid="classforex_a_i_1_1_order_1aeb95d31b756992a2f0eb773cb1971280" kindref="member">profit</ref> + <ref refid="classforex_a_i_1_1_order_1a0c95c9e8d97377208d5f1658dad06659" kindref="member">commission</ref> + <ref refid="classforex_a_i_1_1_order_1aa2578369f38e4bfbc49a970d55d09107" kindref="member">swap</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="28" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" line="11" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/MetaTrader/Order.cs" bodystart="10" bodyend="29"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_order_1a30374f2046b5708d88bda76cb834d773" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>ageInMinutes</name></member>
+      <member refid="classforex_a_i_1_1_order_1aab0736ef16e65f57f84455d8319345b0" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>comment</name></member>
+      <member refid="classforex_a_i_1_1_order_1a0c95c9e8d97377208d5f1658dad06659" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>commission</name></member>
+      <member refid="classforex_a_i_1_1_order_1a3269980e18bab24e70030b58b74239cb" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>currentProfit</name></member>
+      <member refid="classforex_a_i_1_1_order_1a962f870592f4ed19c35e9a0e94594951" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>expiration</name></member>
+      <member refid="classforex_a_i_1_1_order_1a2e09966a7711b215b31c77a527e5ee74" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>lots</name></member>
+      <member refid="classforex_a_i_1_1_order_1a6d0e4dbb557f9f58c2b8a4137d9bcc52" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>magickNumber</name></member>
+      <member refid="classforex_a_i_1_1_order_1ab5d73e4028d8ad23015a39d617df820f" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>openPrice</name></member>
+      <member refid="classforex_a_i_1_1_order_1acd9124bba6c4ca6cc31dd1438b6f4d81" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>openTime</name></member>
+      <member refid="classforex_a_i_1_1_order_1aeb95d31b756992a2f0eb773cb1971280" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>profit</name></member>
+      <member refid="classforex_a_i_1_1_order_1a6d15ac78bd8ca863ada383bdb4b0f3bd" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>stopLoss</name></member>
+      <member refid="classforex_a_i_1_1_order_1aa2578369f38e4bfbc49a970d55d09107" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>swap</name></member>
+      <member refid="classforex_a_i_1_1_order_1aced6a23a30bb2db37183e4cf992a7f05" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>symbol</name></member>
+      <member refid="classforex_a_i_1_1_order_1a9e93dfb8255e42911a2ae3f10690ad45" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>takeProfit</name></member>
+      <member refid="classforex_a_i_1_1_order_1a12cc428f7d826246d21ab6820c851023" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>ticket</name></member>
+      <member refid="classforex_a_i_1_1_order_1a23a5b7fefeef968637bc989fc454a4e8" prot="public" virt="non-virtual"><scope>forexAI::Order</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

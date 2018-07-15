@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_network_pool" kind="class" prot="public">
+    <compoundname>forexAI::NetworkPool</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_network_pool_1a4ab02ef1ef56bdb83fa2efc788530b02" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void forexAI.NetworkPool.runParallel</definition>
+        <argsstring>()</argsstring>
+        <name>runParallel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Pool/NetworkPool.cs" line="21" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Pool/NetworkPool.cs" bodystart="21" bodyend="24"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Pool/NetworkPool.cs" line="19" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Pool/NetworkPool.cs" bodystart="18" bodyend="25"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_network_pool_1a4ab02ef1ef56bdb83fa2efc788530b02" prot="public" virt="non-virtual"><scope>forexAI::NetworkPool</scope><name>runParallel</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

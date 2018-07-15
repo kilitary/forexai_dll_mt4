@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_experimental" kind="class" prot="public">
+    <compoundname>forexAI::Experimental</compoundname>
+      <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classforex_a_i_1_1_experimental_1a2ad8076fe6baebac70e8f9b0cff6748e" prot="private" static="yes" mutable="no">
+        <type>Random</type>
+        <definition>Random forexAI.Experimental.random</definition>
+        <argsstring></argsstring>
+        <name>random</name>
+        <initializer>= new Random((int) (((double) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 48)))</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental/Experimental.cs" line="32" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental/Experimental.cs" bodystart="32" bodyend="-1"/>
+        <referencedby refid="classforex_a_i_1_1_experimental_1ae577bbda20eac7d13ac3e1f5851b9b33" compoundref="_experimental_8cs" startline="34" endline="87">forexAI.Experimental.AlliedInstructions</referencedby>
+        <referencedby refid="classforex_a_i_1_1_experimental_1a94d5465c791335206fdc0fc45ed9e0db" compoundref="_experimental_8cs" startline="89" endline="102">forexAI.Experimental.IsBlackHateFocused</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classforex_a_i_1_1_experimental_1ae577bbda20eac7d13ac3e1f5851b9b33" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void forexAI.Experimental.AlliedInstructions</definition>
+        <argsstring>()</argsstring>
+        <name>AlliedInstructions</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental/Experimental.cs" line="34" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental/Experimental.cs" bodystart="34" bodyend="87"/>
+        <references refid="classforex_a_i_1_1_configuration_1a7da77a25ca1b131efacbf294b4ff0f1a" compoundref="_configuration_8cs" startline="65">forexAI.Configuration.experimentalAlliedRandomUpperBound</references>
+        <references refid="classforex_a_i_1_1_experimental_1a94d5465c791335206fdc0fc45ed9e0db" compoundref="_experimental_8cs" startline="89" endline="102">forexAI.Experimental.IsBlackHateFocused</references>
+        <references refid="classforex_a_i_1_1_experimental_1a2ad8076fe6baebac70e8f9b0cff6748e" compoundref="_experimental_8cs" startline="32">forexAI.Experimental.random</references>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_experimental_1a94d5465c791335206fdc0fc45ed9e0db" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool forexAI.Experimental.IsBlackHateFocused</definition>
+        <argsstring>()</argsstring>
+        <name>IsBlackHateFocused</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental/Experimental.cs" line="89" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental/Experimental.cs" bodystart="89" bodyend="102"/>
+        <references refid="classforex_a_i_1_1_configuration_1a7da77a25ca1b131efacbf294b4ff0f1a" compoundref="_configuration_8cs" startline="65">forexAI.Configuration.experimentalAlliedRandomUpperBound</references>
+        <references refid="classforex_a_i_1_1_experimental_1a2ad8076fe6baebac70e8f9b0cff6748e" compoundref="_experimental_8cs" startline="32">forexAI.Experimental.random</references>
+        <referencedby refid="classforex_a_i_1_1_experimental_1ae577bbda20eac7d13ac3e1f5851b9b33" compoundref="_experimental_8cs" startline="34" endline="87">forexAI.Experimental.AlliedInstructions</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="classforex_a_i_1_1_experimental_1a65aaf441ba1ef543af41a6fb84d5e67c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool forexAI.Experimental.IsHardwareForcesConnected</definition>
+        <argsstring>()</argsstring>
+        <name>IsHardwareForcesConnected</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental/Experimental.cs" line="104" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental/Experimental.cs" bodystart="104" bodyend="112"/>
+        <references refid="classforex_a_i_1_1_configuration_1a7da77a25ca1b131efacbf294b4ff0f1a" compoundref="_configuration_8cs" startline="65">forexAI.Configuration.experimentalAlliedRandomUpperBound</references>
+        <referencedby refid="classforex_a_i_1_1_forex_a_i_1a285e1a0d4c9a68620576091b194ff54c" compoundref="_forex_a_i_8cs" startline="565" endline="625">forexAI.ForexAI.init</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="15">
+        <label>forexAI.Experimental</label>
+        <link refid="classforex_a_i_1_1_experimental"/>
+        <childnode refid="16" relation="usage">
+          <edgelabel>random</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>static</label>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental/Experimental.cs" line="31" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Experimental/Experimental.cs" bodystart="30" bodyend="113"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_experimental_1ae577bbda20eac7d13ac3e1f5851b9b33" prot="public" virt="non-virtual"><scope>forexAI::Experimental</scope><name>AlliedInstructions</name></member>
+      <member refid="classforex_a_i_1_1_experimental_1a94d5465c791335206fdc0fc45ed9e0db" prot="public" virt="non-virtual"><scope>forexAI::Experimental</scope><name>IsBlackHateFocused</name></member>
+      <member refid="classforex_a_i_1_1_experimental_1a65aaf441ba1ef543af41a6fb84d5e67c" prot="public" virt="non-virtual"><scope>forexAI::Experimental</scope><name>IsHardwareForcesConnected</name></member>
+      <member refid="classforex_a_i_1_1_experimental_1a2ad8076fe6baebac70e8f9b0cff6748e" prot="private" virt="non-virtual"><scope>forexAI::Experimental</scope><name>random</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classforex_a_i_1_1_data" kind="class" prot="public">
+    <compoundname>forexAI::Data</compoundname>
+      <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classforex_a_i_1_1_data_1ad640a23f091d64d39c6359eb75dbc2e5" prot="public" static="yes" mutable="no">
+        <type>Dictionary&lt; string, Dictionary&lt; string, string &gt; &gt;</type>
+        <definition>Dictionary&lt;string, Dictionary&lt;string, string&gt; &gt; forexAI.Data.nnFunctions</definition>
+        <argsstring></argsstring>
+        <name>nnFunctions</name>
+        <initializer>=
+            new Dictionary&lt;string, Dictionary&lt;string, string&gt;&gt;()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Data.cs" line="19" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Data.cs" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classforex_a_i_1_1_data_1a818d03a200033d2b205f0d9b0c523484" prot="public" static="yes" mutable="no">
+        <type><ref refid="classforex_a_i_1_1_database" kindref="compound">Database</ref></type>
+        <definition>Database forexAI.Data.database</definition>
+        <argsstring></argsstring>
+        <name>database</name>
+        <initializer>= null</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Data.cs" line="22" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Data.cs" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="10">
+        <label>forexAI.Data</label>
+        <link refid="classforex_a_i_1_1_data"/>
+        <childnode refid="11" relation="usage">
+          <edgelabel>nnFunctions</edgelabel>
+          <edgelabel>database</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>static</label>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Data.cs" line="18" column="1" bodyfile="C:/Users/Tom/AppData/Roaming/MetaQuotes/Terminal/287469DEA9630EA94D0715D755974F1B/MQL4/Experts/forexai_dll_mt4/Storages/Data.cs" bodystart="17" bodyend="23"/>
+    <listofallmembers>
+      <member refid="classforex_a_i_1_1_data_1a818d03a200033d2b205f0d9b0c523484" prot="public" virt="non-virtual"><scope>forexAI::Data</scope><name>database</name></member>
+      <member refid="classforex_a_i_1_1_data_1ad640a23f091d64d39c6359eb75dbc2e5" prot="public" virt="non-virtual"><scope>forexAI::Data</scope><name>nnFunctions</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
