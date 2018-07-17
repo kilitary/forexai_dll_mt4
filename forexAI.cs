@@ -1,14 +1,4 @@
-﻿// ѼΞΞΞΞΞΞΞD   ѼΞΞΞΞΞΞΞD  ѼΞΞΞΞΞΞΞD 
-//   ╮╰╮╮▕╲╰╮╭╯╱▏╭╭╭╭ 
-//   ╰╰╮╰╭╱▔▔▔▔╲╮╯╭╯ 
-//┏━┓┏┫╭▅╲╱▅╮┣┓╭║║║ 
-//╰┳╯╰┫┗━╭╮━┛┣╯╯╚╬╝ 
-//╭┻╮╱╰╮╰━━╯╭╯╲┊ ║ 
-//╰┳┫▔╲╰┳━━┳╯╱▔┊ ║ 
-//┈┃╰━━╲▕╲╱▏╱━━━┬╨╮ 
-//┈ ╰━━╮┊▕╱╲▏┊╭━━┴╥╯
-//--------^---Ѽ---^-----^^^-------------^------- ѼΞΞΞΞΞΞΞD -----------------------^---------
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -154,6 +144,7 @@ namespace forexAI
 		bool neuralNetworkBootstrapped = false;
 		bool hasIncreasedUnstableTrendBar = false;
 		bool networkIsGood = false;
+		bool deletingBadNetworks = false;
 		int stableTrendCurrentBar = 0;
 		int spendSells = 0;
 		int spendBuys = 0;
@@ -478,7 +469,7 @@ namespace forexAI
 			if (Bars == previousBars)
 				return 0;
 
-			if (IsBadNetwork())
+			if (deletingBadNetworks && IsBadNetwork())
 			{
 				AudioFX.Wipe();
 
@@ -547,9 +538,11 @@ namespace forexAI
 			else if (hasNoticedLowBalance && YRandom.Next(6) == 3)
 				AudioFX.GoodWork();
 
+			var trend = stableTrendBar > 0 ? $"Stable {stableTrendBar}" : $"Unstable  {unstableTrendBar}";
+
 			log($"=> Buy {buyProbability.ToString("0.0000").PadLeft(7)} Sell {sellProbability.ToString("0.0000").PadLeft(7)}" +
 				$" Diff {diffProbability.ToString("0.0000").PadLeft(7)} " +
-				$"{(stableTrendBar > 0 ? $"Stable {stableTrendBar}" : $"Unstable  {unstableTrendBar}")}", "debug");
+				$"{trend}", "debug");
 
 			#region matters
 			if (Configuration.tryExperimentalFeatures)
@@ -593,6 +586,9 @@ namespace forexAI
 				$" MinLossForCounterTrade={minLossForCounterTrade} useOptimizedLots={useOptimizedLots} maxOrdersInParallel={maxOrdersParallel}" +
 				$" minStableTrendBarForEnter={minStableTrendBarForEnter} maxStableTrendBarForEnter={maxStableTrendBarForEnter} " +
 				$"minTradePeriodBars={minTradePeriodBars} counterTrading={counterTrading}", ConsoleColor.Black, ConsoleColor.Yellow);
+
+			DumpInputConfig();
+
 			console($"Accessing processor performance counters ...");
 
 			cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
@@ -622,6 +618,29 @@ namespace forexAI
 			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
 
 			return 0;
+		}
+
+		private void DumpInputConfig()
+		{
+			FieldInfo[] myFieldInfo;
+			Type info = typeof(ForexAI);
+			myFieldInfo = info.GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+
+			log($"attribs: {myFieldInfo.Length}", "dev");
+			foreach (var field in myFieldInfo)
+			{
+				var skip = 0;
+				var names = field.GetCustomAttributesData();
+				
+				skip = (from n in names
+						where n.ToString() == "[NQuotes.ExternVariableAttribute()]"
+						select n).Count();
+				if (skip == 0)
+					continue;
+
+				//log($"-> {field.ToString()} = {field.GetValue(field)}", "dev");
+
+			}
 		}
 
 		public override int deinit()
@@ -1470,7 +1489,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 191);
 			}
-			ObjectSetText(labelID, "Buy " + buyProbability.ToString("0.00"), 17, "liberation mono",
+			ObjectSetText(labelID, "Buy " + buyProbability.ToString("0.0000"), 17, "liberation mono",
 				buyProbability >= tradeEnterProbabilityMin ? Color.Green : Color.LightGray);
 
 			labelID = gs_80 + "12";
@@ -1481,7 +1500,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 442);
 			}
-			ObjectSetText(labelID, "Sell " + sellProbability.ToString("0.00"), 17, "liberation mono",
+			ObjectSetText(labelID, "Sell " + sellProbability.ToString("0.0000"), 17, "liberation mono",
 				sellProbability >= tradeEnterProbabilityMin ? Color.Green : Color.LightGray);
 
 			labelID = gs_80 + "13";
@@ -1494,7 +1513,7 @@ namespace forexAI
 			}
 			ObjectSetText(labelID, "[" + (isTrendStable ? "STABLE" : "UNSTABLE") +
 				$" {(isTrendStable ? stableTrendBar : unstableTrendBar)}" +
-				$" : {diffProbability.ToString("0.00")}]", 17, "liberation mono",
+				$" : {diffProbability.ToString("0.0000")}]", 17, "liberation mono",
 				isTrendStable ? Color.DarkSeaGreen : Color.Red);
 
 			totalSpends = spendSells + spendBuys;
