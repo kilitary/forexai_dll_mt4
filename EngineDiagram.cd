@@ -3,13 +3,6 @@
   <Comment CommentText="engine version 1 ">
     <Position X="7.135" Y="0.5" Height="0.291" Width="2.774" />
   </Comment>
-  <Class Name="forexAI.ForexAI">
-    <Position X="0.5" Y="0.5" Width="2.75" />
-    <TypeIdentifier>
-      <HashCode>EzhfrSfl1TKKMAIrTEppBwMn2LuXZzbwP06nBwFCkUE=</HashCode>
-      <FileName>ForexAI.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="forexAI.Helpers">
     <Position X="7.75" Y="8.25" Width="2.5" />
     <TypeIdentifier>
@@ -91,7 +84,7 @@
   <Class Name="forexAI.Order">
     <Position X="15.5" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAQIAAEGAAIAEAAAAAAAAAAAAAEBAgAgAQAAAACAIAg=</HashCode>
+      <HashCode>AAQIAAEGAAIAEAAAAAAAAAAAAAEBAgAgAQAAAACAIEg=</HashCode>
       <FileName>MetaTrader\Order.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -142,6 +135,13 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Pool\NetworkPool.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.ForexAI">
+    <Position X="0.5" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>Ezhfryfl1TKKMAIrTEppBwMn2LuXZzbwP06nBwFCkUE=</HashCode>
+      <FileName>ForexAI.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="forexAI.FunctionParameters">

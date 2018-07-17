@@ -19,13 +19,13 @@ namespace forexAI
 	public static class Configuration
 	{
 		// common configuration   √  
+		public static string rootDirectory = @"d:\forexAI";
 		public static string configFilePath = $@"{rootDirectory}\mt4EA.cfg";
 		public static string XRandomLogFileName = $@"{rootDirectory}\seed";
 		public static string YRandomLogFileName = $@"{rootDirectory}\Yseed";
-		public static string rootDirectory = @"d:\forexAI";
 		public static string logFileName = "mt4EA";
 		public static int magickNumber = 0xc34;
-
+		
 		// mysql √
 		public static bool mysqlEnabled = false;
 		public static string mysqlDatabase = "forex";
@@ -61,7 +61,7 @@ namespace forexAI
 		//░░░░▀▄░░░░▀▄▒▒▒▒▒▒▒▒▒▒▀▄ 
 		//[!]░░░▀▄▄▄▄▄█▄▄▄▄▄▄▄▄▄▄▄▀▄ 
 		// Experimental features [!]
-		public static bool tryExperimentalFeatures = false; 
+		public static bool tryExperimentalFeatures = false;
 		public static int experimentalAlliedRandomUpperBound = 4498;
 		//░[!]░░░░░░░▌▌░▌▌░░░░░  
 		//░░░░░░░░░░░▌▌░▌▌░░░░░  

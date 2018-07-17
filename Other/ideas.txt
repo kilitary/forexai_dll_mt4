@@ -1,5 +1,6 @@
 ﻿*** current version ***
 1) random dimension on each function generation (mt4trainer)
+2) place counter-trade with negative spend if more than 1$
 
 *** further versions ***
 1) more math libs

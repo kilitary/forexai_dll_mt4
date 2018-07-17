@@ -12,6 +12,7 @@ namespace forexAI
 		public OrderType type;
 		public DateTime openTime;
 		public DateTime expiration;
+		public Order counterOrder = null;
 		public int ticket;
 		public int magickNumber;
 		public string symbol;
