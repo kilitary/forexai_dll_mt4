@@ -37,10 +37,11 @@ namespace forexAI
 			logFiles.ForEach(delegate (FileInfo logFile)
 			{
 				console($"+ {logFile.FullName} ...");
-				if (!Helpers.IsFileBusy(logFile.FullName))
-					File.WriteAllText($@"{logFile.FullName}", $"***{DateTime.Now.ToString("HH:mm:ss.fff")}***\r\n");
-				else
+				if (Helpers.IsFileBusy(logFile.FullName))
 					console($"! {logFile.FullName}");
+				else
+					File.WriteAllText($@"{logFile.FullName}", $"***{DateTime.Now.ToString("HH:mm:ss.fff")}***\r\n");
+
 			});
 		}
 

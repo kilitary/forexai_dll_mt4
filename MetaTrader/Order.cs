@@ -7,7 +7,7 @@ using static forexAI.Constants;
 
 namespace forexAI
 {
-	class Order
+	public class Order
 	{
 		public OrderType type;
 		public DateTime openTime;
@@ -27,5 +27,29 @@ namespace forexAI
 		public double takeProfit;
 
 		public double currentProfit => profit + commission + swap;
+
+		public override string ToString()
+		{
+			return $"{type} order #{ticket} profit {currentProfit}";
+		}
+
+		public int findCounterOrder(List<Order> activeOrders)
+		{
+			foreach (var order in activeOrders)
+			{
+				if (order.ticket == ticket || order.counterOrder != null)
+					continue;
+
+				if (order.currentProfit < 0.0)
+				{
+					counterOrder = order;
+				}
+			}
+
+			if (counterOrder != null)
+				return counterOrder.ticket;
+			else
+				return 0;
+		}
 	}
 }

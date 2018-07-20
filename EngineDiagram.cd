@@ -84,7 +84,7 @@
   <Class Name="forexAI.Order">
     <Position X="15.5" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAQIAAEGAAIAEAAAAAAAAAAAAAEBAgAgAQAAAACAIEg=</HashCode>
+      <HashCode>AAQIAAEGAAIAEAAEAAAAAAAEAAEBAgAgAQAAAACAIEg=</HashCode>
       <FileName>MetaTrader\Order.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -109,7 +109,7 @@
       <FileName>Experimental\YRandom.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.Database">
+  <Class Name="forexAI.MysqlDatabase">
     <Position X="10.5" Y="8.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAABABAAAABABAAAAAAAAAAAAAAAAAAAAA=</HashCode>
@@ -119,7 +119,7 @@
   <Class Name="forexAI.Data">
     <Position X="5.5" Y="10.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAgAAAAAA=</HashCode>
       <FileName>Storages\Data.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -140,7 +140,7 @@
   <Class Name="forexAI.ForexAI">
     <Position X="0.5" Y="0.5" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>Ezhfryfl1TKKMAIrTEppBwMn2LuXZzbwP06nBwFCkUE=</HashCode>
+      <HashCode>Ezhfryfl1TKKMAIrTEppBwMn2LuXZzbwP06nBwFCmUE=</HashCode>
       <FileName>ForexAI.cs</FileName>
     </TypeIdentifier>
   </Class>

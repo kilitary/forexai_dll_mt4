@@ -19,7 +19,7 @@ namespace forexAI
 	public static class Configuration
 	{
 		// common configuration   √  
-		public static string rootDirectory = @"d:\forexAI";
+		public static string rootDirectory = @"c:\forexAI";
 		public static string configFilePath = $@"{rootDirectory}\mt4EA.cfg";
 		public static string XRandomLogFileName = $@"{rootDirectory}\seed";
 		public static string YRandomLogFileName = $@"{rootDirectory}\Yseed";

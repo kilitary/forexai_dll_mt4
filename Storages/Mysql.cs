@@ -18,11 +18,11 @@ using static forexAI.Logger;
 
 namespace forexAI
 {
-	public class Database
+	public class MysqlDatabase
 	{
 		public MySqlConnection connection = null;
 
-		public Database()
+		public MysqlDatabase()
 		{
 			string connectionString;
 			connectionString = "SERVER=" +

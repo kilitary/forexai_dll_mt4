@@ -87,22 +87,22 @@ namespace forexAI
 		public double collapseChangePoints = 0.0048;
 
 		//  props
-		Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 314);
-		List<Order> historyOrders = new List<Order>();
-		List<Order> activeOrders = new List<Order>();
-		Storage storage = new Storage();
-		Config config = new Config();
-		PerformanceCounter cpuCounter = null;
-		DirectoryInfo[] networkDirs = null;
-		NeuralNet forexFannNetwork = null;
-		TrainingData trainingData = null;
-		Process currentProcess = null;
-		TrainingData testData = null;
-		Stopwatch runWatch = null;
-		Version version = null;
+		public Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 314);
+		public List<Order> historyOrders = new List<Order>();
+		public List<Order> activeOrders = new List<Order>();
+		public Storage storage = new Storage();
+		public Config config = new Config();
+		public PerformanceCounter cpuCounter = null;
+		public DirectoryInfo[] networkDirs = null;
+		public NeuralNet forexFannNetwork = null;
+		public TrainingData trainingData = null;
+		public Process currentProcess = null;
+		public TrainingData testData = null;
+		public Stopwatch runWatch = null;
+		public Version version = null;
 
 		// MqlApi object (this)
-		MqlApi mqlApi = null;
+		public MqlApi mqlApi = null;
 
 		string networkId = string.Empty;
 		string fannNetworkDirName = string.Empty;
@@ -171,6 +171,7 @@ namespace forexAI
 		int unstableTrendBar = 0;
 		int lastTradeBar = 0;
 		int marketCollapsedBar = 0;
+		private bool heartOff;
 
 		// computed properties
 		int ordersCount => activeOrders.Count();
@@ -445,6 +446,7 @@ namespace forexAI
 		public override int start()
 		{
 			SyncOrders();
+			AssignCounterOrders();
 			CheckForAutoClose();
 			CheckForMarketCollapse();
 			CloseNegativeOrders();
@@ -555,6 +557,14 @@ namespace forexAI
 			return 0;
 		}
 
+		private void AssignCounterOrders()
+		{
+			activeOrders.ForEach(delegate (Order order)
+			{
+				order.findCounterOrder(activeOrders);
+			});
+		}
+
 		public override int init()
 		{
 			startTime = GetTickCount();
@@ -622,16 +632,18 @@ namespace forexAI
 
 		private void DumpInputConfig()
 		{
-			FieldInfo[] myFieldInfo;
+			FieldInfo[] myFieldsInfo;
 			Type info = typeof(ForexAI);
-			myFieldInfo = info.GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+			myFieldsInfo = info.GetFields(BindingFlags.Public);
+			dump(info.GetProperties(), "props", "dev");
+			dump(myFieldsInfo, "myFieldsInfo", "dev");
 
-			log($"attribs: {myFieldInfo.Length}", "dev");
-			foreach (var field in myFieldInfo)
+			log($"attribs: {myFieldsInfo.Length}", "dev");
+			foreach (var field in myFieldsInfo)
 			{
 				var skip = 0;
 				var names = field.GetCustomAttributesData();
-				
+				dump(names, "names", "dev");
 				skip = (from n in names
 						where n.ToString() == "[NQuotes.ExternVariableAttribute()]"
 						select n).Count();
@@ -885,7 +897,7 @@ namespace forexAI
 			ordersStopPoints = stoplevel > 0 ? stoplevel * 2 : 60;
 
 			if (Configuration.mysqlEnabled)
-				Data.database = new Database();
+				Data.mysqlDatabase = new MysqlDatabase();
 
 			config["process"] = currentProcess.ToString();
 			config["yrandom"] = (uint) YRandom.Next(int.MaxValue);
@@ -1211,6 +1223,9 @@ namespace forexAI
 
 			foreach (var order in activeOrders)
 			{
+				if (order.counterOrder != null)
+					continue;
+
 				if (order.type == Constants.OrderType.Buy)
 				{
 					newStopLoss = Bid - trailingStop * Point;
@@ -1335,6 +1350,25 @@ namespace forexAI
 		{
 			int i;
 
+			labelID = "heartAlive";
+			if (ObjectFind(labelID) == -1)
+			{
+				ObjectCreate(labelID, OBJ_LABEL, 0, DateTime.Now, 0);
+				ObjectSet(labelID, OBJPROP_CORNER, 1);
+				ObjectSet(labelID, OBJPROP_XDISTANCE, 150);
+				ObjectSet(labelID, OBJPROP_YDISTANCE, 600);
+			}
+			if (heartOff)
+			{
+				ObjectSetText(labelID, "[LIVE]", 14, "lucida console", Color.Red);
+				heartOff = false;
+			}
+			else
+			{
+				ObjectSetText(labelID, "[    ]", 14, "lucida console", Color.Red);
+				heartOff = true;
+			}
+
 			for (i = 0; i < 10; i++)
 			{
 				labelID = "order" + i;
@@ -1369,7 +1403,8 @@ namespace forexAI
 
 				ObjectSetText(labelID, $"#{order.ticket} " + order.type.ToString() + " " +
 					order.currentProfit.ToString("0.00") + $" ({order.lots.ToString("0.00")} lots, " +
-					$" age {(order.ageInMinutes / 60).ToString("0.0")} hours)", 8, "consolas",
+					$" age {(order.ageInMinutes / 60).ToString("0.0")} hours" +
+					(order.counterOrder == null ? "" : $", counter #{order.counterOrder.ticket}") + ")", 8, "consolas",
 					order.currentProfit > 0.0 ? Color.LightGreen : Color.Red);
 				index++;
 			}
@@ -1548,6 +1583,8 @@ namespace forexAI
 			if (forexFannNetwork != null)
 			{
 				Comment(
+					 $"Memory: {memoryUsage} MB" +
+			   $"\r\nCPU: {(cpuCounter.NextValue()).ToString("0.00") + "%"}\r\n\r\n" +
 			  "Profit sells: " +
 			   profitSells +
 			   "\r\n" +
@@ -1565,11 +1602,8 @@ namespace forexAI
 			   "\r\n" +
 			  "Total spends:  " +
 			   totalSpends +
-			   "\r\n" +
-			  "КПД: " +
-			   KPD.ToString("0.00") +
 			   "%" +
-			   "\r\n\r\n" +
+			   "\r\n" +
 			  "Network: " +
 			   networkId +
 			   "\r\n" +
@@ -1614,10 +1648,16 @@ namespace forexAI
 			  "Train Hit Ratio: " +
 			   trainHitRatio.ToString("0.00") +
 			   "%" +
-			   $"\r\n\r\nMemory: {memoryUsage} MB" +
-			   $"\r\nCPU: {(cpuCounter.NextValue()).ToString("0.00") + "%"}" +
-			   $"\r\n\r\nCounter-trading: {counterTrading}\r\nOptimized Lots: {useOptimizedLots} " +
+			   $"\r\nCounter-trading: {counterTrading}\r\nOptimized Lots: {useOptimizedLots} " +
 			   $"(v2: {lotsOptimizedV2} v1: {lotsOptimizedV1} v3: {lotsOptimizedV3})"
+			   +
+			   "\r\n\r\n" +
+			   $"orderLots: {orderLots}\r\nmaxNegativeSpend: {maxNegativeSpend}\r\ntrailingBorder: {trailingBorder}\r\ntrailingStop: {trailingStop}\r\n" +
+			   $"stableBigChangeFactor: {stableBigChangeFactor}\r\ntradeEnterProbMin: {tradeEnterProbabilityMin}\r\nrejectTradeProb: {rejectTradeProbability}\r\n" +
+			   $"minLossForCounterTrade: {minLossForCounterTrade}\r\nuseOptimizedLots: {useOptimizedLots}\r\nnaxOrdersParallel: {maxOrdersParallel}\r\n" +
+			   $"minStableTrendBar: {minStableTrendBarForEnter}\r\nmaxStableTrendBar: {maxStableTrendBarForEnter}\r\nminTrade3PeriodBars: {minTradePeriodBars}\r\n" +
+			   $"counterTrading: {counterTrading}\r\ncounterMeasuedProbBars: {countedMeasuredProbabilityBars}\r\nminORderDist: {minOrderDistance}\r\n" +
+			   $"orderAliveHours: {orderAliveHours}\r\ncollapseEnerLots: {collapseEnterLots}\r\ncounterTradeLots: {counterTradeLots}\r\ncollapseChgPnts: {collapseChangePoints}"
 			   );
 
 			}

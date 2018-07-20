@@ -16,7 +16,7 @@ using Color = System.Drawing.Color;
 
 namespace forexAI
 {
-	class Storage
+	public class Storage
 	{
 		MemcachedClient memcachedServer = null;
 		Dictionary<string, object> properties = new Dictionary<string, object>();
@@ -46,7 +46,7 @@ namespace forexAI
 					return string.Empty;
 
 				string retrievedValue = string.Empty;
-				retrievedValue = (string) Data.database.Get(name);
+				retrievedValue = (string) Data.mysqlDatabase.Get(name);
 				properties[name] = retrievedValue;
 
 				return (retrievedValue != null && retrievedValue.Length > 0)
@@ -70,7 +70,7 @@ namespace forexAI
 			foreach (KeyValuePair<string, object> o in properties)
 			{
 				if (Configuration.mysqlEnabled)
-					Data.database.Set(o.Key, o.Value);
+					Data.mysqlDatabase.Set(o.Key, o.Value);
 
 				if (Configuration.memcahedEnabled)
 					memcachedServer.Store(StoreMode.Set, o.Key, o.Value);
