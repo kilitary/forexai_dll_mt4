@@ -35,7 +35,7 @@ namespace forexAI
 
 		public int findCounterOrder()
 		{
-			foreach (var order in Data.activeOrders)
+			foreach (var order in Data.ordersActive)
 			{
 				if (order.ticket == ticket || order.counterOrder != null)
 					continue;

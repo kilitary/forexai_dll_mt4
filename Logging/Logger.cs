@@ -34,15 +34,23 @@ namespace forexAI
 		{
 			var logFiles = new DirectoryInfo(Configuration.rootDirectory).GetFiles("*.log").ToList<FileInfo>();
 
-			logFiles.ForEach(delegate (FileInfo logFile)
+			foreach(var logFile in logFiles)
 			{
-				console($"+ {logFile.FullName} ...");
-				if (Helpers.IsFileBusy(logFile.FullName))
-					console($"! {logFile.FullName}");
-				else
-					File.WriteAllText($@"{logFile.FullName}", $"***{DateTime.Now.ToString("HH:mm:ss.fff")}***\r\n");
+				if (logFile.FullName.Contains("full"))
+				{
+					console($"skip {logFile.FullName} ...");
+					continue;
+				}
 
-			});
+				if (Helpers.IsFileBusy(logFile.FullName))
+					console($"busy {logFile.FullName}");
+				else
+				{
+					console($"truncate {logFile.FullName} ...");
+					File.WriteAllText($@"{logFile.FullName}", $"***{DateTime.Now.ToString("HH:mm:ss.fff")}***\r\n");
+				}
+
+			}
 		}
 
 		public static void dump(object data, string prefix = "", string fileName = null)
@@ -147,6 +155,9 @@ namespace forexAI
 				fileName = Configuration.logFileName;
 			try
 			{
+				if (!File.Exists(Configuration.rootDirectory + "/" + fileName + ".log"))
+					File.AppendAllText(Configuration.rootDirectory + "/" + fileName + ".log", $"+++ {fileName} +++\r\n");
+
 				StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
 				file.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " " +
 					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " + lines);

@@ -75,8 +75,7 @@ namespace forexAI
 		static int arrayIndex = 0;
 		static int setNextArrayIndex = 0;
 
-		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork,
-			bool reassemblingCompletedOverride)
+		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork, bool reassemblingCompletedOverride)
 		{
 			reassemblyStage = reassemblingCompletedOverride;
 
@@ -192,16 +191,16 @@ namespace forexAI
 							switch (arrayIndex)
 							{
 								case 0:
-									functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Open);
+									functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, App.mqlApi.Bars);
 									break;
 								case 1:
-									functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Close);
+									functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, App.mqlApi.Bars);
 									break;
 								case 2:
-									functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.High);
+									functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, App.mqlApi.Bars);
 									break;
 								case 3:
-									functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Low);
+									functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, App.mqlApi.Bars);
 									break;
 							}
 
@@ -259,19 +258,19 @@ namespace forexAI
 							functionArguments[paramIndex] = numFunctionDimension - 1;
 							break;
 						case "inOpen":
-							functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Open);
+							functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, App.mqlApi.Bars);
 							break;
 						case "inHigh":
-							functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.High);
+							functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, App.mqlApi.Bars);
 							break;
 						case "inLow":
-							functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Low);
+							functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, App.mqlApi.Bars);
 							break;
 						case "inClose":
-							functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Close);
+							functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, App.mqlApi.Bars);
 							break;
 						case "inVolume":
-							functionArguments[paramIndex] = prices.GetVolume(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Volume);
+							functionArguments[paramIndex] = prices.GetVolume(numFunctionDimension, App.mqlApi.Bars);
 							break;
 						case "outBegIdx":
 							functionArguments[paramIndex] = outBegIdx;

@@ -24,8 +24,9 @@ namespace forexAI
 		public static string XRandomLogFileName = $@"{rootDirectory}\seed";
 		public static string YRandomLogFileName = $@"{rootDirectory}\Yseed";
 		public static string logFileName = "mt4EA";
+		public static bool unlinkBadNetworksEnabled = false;
 		public static int magickNumber = 0xc34;
-		
+
 		// mysql √
 		public static bool mysqlEnabled = false;
 		public static string mysqlDatabase = "forex";

@@ -17,52 +17,52 @@ namespace forexAI
 {
 	public class LivePrices
 	{
-		public double[] GetOpen(int numData, int Bars, IMqlArray<double> Open)
+		public double[] GetOpen(int numData, int Bars)
 		{
 			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
 			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-				prices[i] = Open[i];
+				prices[i] = App.mqlApi.Open[i];
 
 			return prices;
 		}
 
-		public double[] GetClose(int numData, int Bars, IMqlArray<double> Close)
+		public double[] GetClose(int numData, int Bars)
 		{
 			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
 			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-				prices[i] = Close[i];
+				prices[i] = App.mqlApi.Close[i];
 
 			return prices;
 		}
 
-		public double[] GetHigh(int numData, int Bars, IMqlArray<double> High)
+		public double[] GetHigh(int numData, int Bars)
 		{
 			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
 			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-				prices[i] = High[i];
+				prices[i] = App.mqlApi.High[i];
 
 			return prices;
 		}
 
-		public double[] GetLow(int numData, int Bars, IMqlArray<double> Low)
+		public double[] GetLow(int numData, int Bars)
 		{
 			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
 			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-				prices[i] = Low[i];
+				prices[i] = App.mqlApi.Low[i];
 
 			return prices;
 		}
 
-		public double[] GetVolume(int numData, int Bars, IMqlArray<double> Volume)
+		public double[] GetVolume(int numData, int Bars)
 		{
 			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
 			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-				prices[i] = Volume[i];
+				prices[i] = App.mqlApi.Volume[i];
 
 			return prices;
 		}

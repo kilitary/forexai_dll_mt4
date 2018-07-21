@@ -1,45 +1,48 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Alphabetical" MembersFormat="NameAndType">
-  <Comment CommentText="engine version 1 ">
-    <Position X="7.135" Y="0.5" Height="0.291" Width="2.774" />
-  </Comment>
-  <Class Name="forexAI.Helpers">
-    <Position X="7.75" Y="8.25" Width="2.5" />
+  <Class Name="forexAI.Helpers" Collapsed="true">
+    <Position X="0.5" Y="11.5" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AACAAAAAAAAAAAAIAAAAwAAAAAAAAAAAAAAIEAAAAAA=</HashCode>
       <FileName>Tools\Helpers.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Reassembler">
-    <Position X="3.5" Y="0.5" Width="3" />
+    <Position X="10.75" Y="0.75" Width="2.75" />
+    <Members>
+      <Field Name="functionsConfiguration" Hidden="true" />
+    </Members>
     <TypeIdentifier>
       <HashCode>AAQBQAAMAAAAAEQBAAICEgBDAgIEAAIAIMWAEIAAAAA=</HashCode>
       <FileName>Reassembler\Reassembler.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="functionsConfiguration" />
+    </ShowAsAssociation>
   </Class>
-  <Class Name="forexAI.Experimental">
-    <Position X="10.25" Y="0.5" Width="2.75" />
+  <Class Name="forexAI.Experimental" Collapsed="true">
+    <Position X="15.75" Y="11.25" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAACAEAAAAAAAAAAAAAAAAAAAAAAAAAQAAABAAAA=</HashCode>
       <FileName>Experimental\Experimental.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Configuration">
-    <Position X="6.75" Y="1" Width="3.25" />
+    <Position X="14" Y="0.5" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>AAIAQAMQgAEAAEIAAAEAAAAAIQEAAAYCAghABQIgAAA=</HashCode>
+      <HashCode>AAIAQAMQgAEAAEIAAAEAAQAAIQEAAAYCAghABQIgAAA=</HashCode>
       <FileName>Data\Configuration.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.Config">
-    <Position X="12.5" Y="3.25" Width="2.75" />
+  <Class Name="forexAI.Config" Collapsed="true">
+    <Position X="12" Y="11.25" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAACAIAAAAAABABACAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Storages\Config.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Constants">
-    <Position X="3.5" Y="7" Width="1.75" />
+    <Position X="6" Y="0.5" Width="1.75" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -60,137 +63,108 @@
       <FileName>Data\Constants.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.Hash">
-    <Position X="3.75" Y="11.25" Width="1.5" />
+  <Class Name="forexAI.Hash" Collapsed="true">
+    <Position X="0.5" Y="10" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
       <FileName>Tools\Hash.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.LivePrices">
-    <Position X="5.5" Y="7" Width="2" />
+    <Position X="6.25" Y="4.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAACAAAAAAAAAIAAAgAACAAAAAAIAAAAAAA=</HashCode>
       <FileName>Prices\Prices.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Logger">
-    <Position X="10.25" Y="2.25" Width="2" />
+    <Position X="8.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>kAAAAAAAgBgAABCAAAGACAAAAAAQgAAAQAAAAAAAAAA=</HashCode>
       <FileName>Logging\Logger.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Order">
-    <Position X="15.5" Y="0.5" Width="2" />
+    <Position X="0.5" Y="0.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAQIAAEGAAIAEAAEAAAAAAAEAAEBAgAgAQAAAACAIEg=</HashCode>
       <FileName>MetaTrader\Order.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.Storage">
-    <Position X="10.25" Y="5.75" Width="2.75" />
+  <Class Name="forexAI.Storage" Collapsed="true">
+    <Position X="14.5" Y="11.25" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAIAAAAAAAAAAAAACAAAAEAAAAAAAABAAAAAAAAACAA=</HashCode>
       <FileName>Storages\Memcached.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.Web">
-    <Position X="5.5" Y="9" Width="2" />
+  <Class Name="forexAI.Web" Collapsed="true">
+    <Position X="0.5" Y="10.75" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Tools\Web.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.YRandom">
-    <Position X="7.75" Y="10.5" Width="2.5" />
+  <Class Name="forexAI.YRandom" Collapsed="true">
+    <Position X="9.5" Y="11.25" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AgAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAASAQAAQAAA=</HashCode>
       <FileName>Experimental\YRandom.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.MysqlDatabase">
-    <Position X="10.5" Y="8.25" Width="2.25" />
+  <Class Name="forexAI.MysqlDatabase" Collapsed="true">
+    <Position X="13.25" Y="11.25" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAABABAAAABABAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Storages\Mysql.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Data">
-    <Position X="5.5" Y="10.25" Width="1.75" />
+    <Position X="2.75" Y="4.75" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>EAAAAAAAAAAAAAAAAAAAAAAAACEAAAAAAAAAgAACAAA=</HashCode>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAIAAAAA=</HashCode>
       <FileName>Storages\Data.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.AudioFX">
-    <Position X="13.25" Y="0.5" Width="2" />
+  <Class Name="forexAI.AudioFX" Collapsed="true">
+    <Position X="0.5" Y="9.25" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAABAABAAAAgDAAQAAAAAgAAIAAAAAAA=</HashCode>
       <FileName>Audio\Audio.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.NetworkPool">
-    <Position X="7.75" Y="7" Width="2.25" />
+  <Class Name="forexAI.NetworkPool" Collapsed="true">
+    <Position X="10.75" Y="11.25" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Pool\NetworkPool.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.ForexAI">
-    <Position X="0.5" Y="0.5" Width="2.75" />
+  <Class Name="forexAI.ForexAI" Collapsed="true">
+    <Position X="0.5" Y="7.5" Width="1.25" />
     <TypeIdentifier>
-      <HashCode>Ezhfryfl1TKKMAIrTEppBwMn2JuXZzbQP06nDwNCkUE=</HashCode>
-      <FileName>ForexAI.cs</FileName>
+      <HashCode>EzhfrQfl1TKKMAIrTEppBwMn2JuXZzbQP06nDwNCkUE=</HashCode>
+      <FileName>App\ForexAI.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.Core">
-    <Position X="10.75" Y="10.25" Width="1.5" />
+  <Class Name="forexAI.App">
+    <Position X="0.5" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
-      <FileName>Core.cs</FileName>
+      <HashCode>AAAAACAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>App\App.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Struct Name="forexAI.FunctionParameters">
-    <Position X="15.25" Y="8" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAQAAAAAAACABAAAAAAAAAAAABIAAAAAgAgBA=</HashCode>
-      <FileName>Reassembler\FunctionJsonConfig.cs</FileName>
-    </TypeIdentifier>
-  </Struct>
-  <Struct Name="forexAI.FunctionConfiguration">
-    <Position X="13.75" Y="6.25" Width="2.5" />
-    <AssociationLine Name="parameters" Type="forexAI.FunctionParameters" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="16.25" Y="6.684" />
-        <Point X="16.373" Y="6.684" />
-        <Point X="16.373" Y="7.877" />
-        <Point X="15.127" Y="7.877" />
-        <Point X="15.127" Y="8.875" />
-        <Point X="15.25" Y="8.875" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.519" Y="1.198" />
-      </MemberNameLabel>
-    </AssociationLine>
-    <AssociationLine Name="methodInfo" Type="forexAI.ExtendedMethodInfo">
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="0.103" Y="0.153" Height="0.182" Width="0.998" />
-      </MemberNameLabel>
-    </AssociationLine>
+  <Struct Name="forexAI.FunctionConfiguration" Collapsed="true">
+    <Position X="3" Y="11.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAA=</HashCode>
       <FileName>Reassembler\FunctionJsonConfig.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="parameters" />
-      <Field Name="methodInfo" />
-    </ShowAsAssociation>
   </Struct>
-  <Struct Name="forexAI.ExtendedMethodInfo">
-    <Position X="13" Y="8" Width="2" />
+  <Struct Name="forexAI.FunctionParameters">
+    <Position X="3" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAgAAAACAAAAAAAAAAAQCAAAAAAAgAAAABAAAAAE=</HashCode>
+      <HashCode>AAAAAAAAQAAAAAAACABAAAAAAAAAAAABIAAAAAgAgBA=</HashCode>
       <FileName>Reassembler\FunctionJsonConfig.cs</FileName>
     </TypeIdentifier>
   </Struct>

@@ -17,10 +17,9 @@ namespace forexAI
 {
 	public static class Data
 	{
-		public static Dictionary<string, Dictionary<string, string>> nnFunctions = new Dictionary<string, Dictionary<string, string>>();
 		public static MysqlDatabase mysqlDatabase = null;
-		public static List<Order> historyOrders = new List<Order>();
-		public static List<Order> activeOrders = new List<Order>();
-		public static DirectoryInfo[] networkDirs = null;
+		public static List<Order> ordersHistory = new List<Order>();
+		public static List<Order> ordersActive = new List<Order>();
+		public static DirectoryInfo[] networksDirectories = null;
 	}
 }
