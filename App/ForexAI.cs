@@ -51,6 +51,9 @@ namespace forexAI
 		public bool useOptimizedLots = true;
 
 		[ExternVariable]
+		public bool muteSound = false;
+
+		[ExternVariable]
 		public int maxOrdersParallel = 10;
 
 		[ExternVariable]
@@ -548,16 +551,14 @@ namespace forexAI
 			return 0;
 		}
 
-		private void AssignCounterOrders()
-		{
-			Data.ordersActive.ForEach(order => order.findCounterOrder());
-		}
-
 		public override int init()
 		{
 			startTime = GetTickCount();
 			App.mqlApi = this;
 			networkIsGood = false;
+
+			if (muteSound)
+				Configuration.audioEnabled = false;
 
 			ClearLogs();
 			EraseLogs(Configuration.XRandomLogFileName, Configuration.YRandomLogFileName);
@@ -625,6 +626,11 @@ namespace forexAI
 			return 0;
 		}
 
+		private void AssignCounterOrders()
+		{
+			Data.ordersActive.ForEach(order => order.findNecessaryCounterOrder());
+		}
+
 		private void DumpInputConfig()
 		{
 			FieldInfo[] myFieldsInfo;
@@ -679,12 +685,16 @@ namespace forexAI
 
 				if (aiFannNetwork != null)
 				{
-					console($"Testing network {network} MSE ...");
-					TestNetworkMSE();
-					console($"Testing network {network} hit ratio ...");
-					TestNetworkHitRatio();
+					Task.Factory.StartNew(() =>
+					{
+						console($"Testing network {network} MSE ...");
+						TestNetworkMSE();
+						console($"Testing network {network} hit ratio ...");
+						TestNetworkHitRatio();
+					});
 
 					reassembleStageOverride = false;
+					
 				}
 			}
 		}
@@ -1456,9 +1466,9 @@ namespace forexAI
 
 			ObjectSetText(labelID,
 						  $"{charizedOrdersHistory}",
-						  8,
-						  "consolas",
-						  Color.DarkSlateBlue);
+						  11,
+						  "liberation mono",
+						  Color.Pink);
 
 			labelID = gs_80 + "9";
 			if (ObjectFind(labelID) == -1)

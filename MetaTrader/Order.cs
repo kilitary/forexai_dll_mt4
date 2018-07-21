@@ -33,7 +33,7 @@ namespace forexAI
 			return $"{type} order #{ticket} profit {currentProfit}";
 		}
 
-		public int findCounterOrder()
+		public int findNecessaryCounterOrder()
 		{
 			foreach (var order in Data.ordersActive)
 			{

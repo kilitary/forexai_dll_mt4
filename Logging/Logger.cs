@@ -24,7 +24,7 @@ namespace forexAI
 		{
 			foreach (var fileName in fileNames)
 			{
-				console($"- {fileName} ... ");
+				console($"unlink {fileName} ... ");
 				if (fileName != null && File.Exists(fileName) && !Helpers.IsFileBusy(fileName))
 					File.Delete(fileName);
 			}
@@ -47,7 +47,7 @@ namespace forexAI
 				else
 				{
 					console($"truncate {logFile.FullName} ...");
-					File.WriteAllText($@"{logFile.FullName}", $"***{DateTime.Now.ToString("HH:mm:ss.fff")}***\r\n");
+					File.WriteAllText(logFile.FullName, $"***{DateTime.Now.ToString("HH:mm:ss.fff")}***\r\n");
 				}
 
 			}
