@@ -87,22 +87,16 @@ namespace forexAI
 		public double collapseChangePoints = 0.0048;
 
 		//  props
-		public Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 314);
-		public List<Order> historyOrders = new List<Order>();
-		public List<Order> activeOrders = new List<Order>();
+		public Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 1314);
 		public Storage storage = new Storage();
 		public Config config = new Config();
 		public PerformanceCounter cpuCounter = null;
-		public DirectoryInfo[] networkDirs = null;
-		public NeuralNet forexFannNetwork = null;
+		public NeuralNet aiFannNetwork = null;
 		public TrainingData trainingData = null;
 		public Process currentProcess = null;
 		public TrainingData testData = null;
 		public Stopwatch runWatch = null;
 		public Version version = null;
-
-		// MqlApi object (this)
-		public MqlApi mqlApi = null;
 
 		string networkId = string.Empty;
 		string fannNetworkDirName = string.Empty;
@@ -171,13 +165,12 @@ namespace forexAI
 		int unstableTrendBar = 0;
 		int lastTradeBar = 0;
 		int marketCollapsedBar = 0;
-		private bool heartOff;
 
 		// computed properties
-		int ordersCount => activeOrders.Count();
+		int ordersCount => Data.activeOrders.Count();
 		int tradeBarPeriodPass => Bars - lastTradeBar;
-		int buysCount => activeOrders.Where(o => o.type == Constants.OrderType.Buy).Count();
-		int sellsCount => activeOrders.Where(o => o.type == Constants.OrderType.Sell).Count();
+		int buysCount => Data.activeOrders.Where(o => o.type == Constants.OrderType.Buy).Count();
+		int sellsCount => Data.activeOrders.Where(o => o.type == Constants.OrderType.Sell).Count();
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double ordersProfit => buysProfit + sellsProfit;
@@ -205,7 +198,7 @@ namespace forexAI
 			{
 				double total = 0.0;
 
-				foreach (var order in activeOrders)
+				foreach (var order in Data.activeOrders)
 				{
 					var orderTotal = order.profit + order.commission + order.swap;
 
@@ -223,7 +216,7 @@ namespace forexAI
 			{
 				double buyIncome = 0.0;
 
-				Helpers.Each(activeOrders.Where(o => o.type == Constants.OrderType.Buy), delegate (Order order)
+				Helpers.Each(Data.activeOrders.Where(o => o.type == Constants.OrderType.Buy), delegate (Order order)
 				{
 					buyIncome += order.profit + order.commission + order.swap;
 				});
@@ -238,7 +231,7 @@ namespace forexAI
 			{
 				double sellIncome = 0.0;
 
-				Helpers.Each(activeOrders.Where(o => o.type == Constants.OrderType.Sell), delegate (Order order)
+				Helpers.Each(Data.activeOrders.Where(o => o.type == Constants.OrderType.Sell), delegate (Order order)
 				{
 					sellIncome += order.profit + order.commission + order.swap;
 				});
@@ -254,7 +247,7 @@ namespace forexAI
 				ordersTotal = OrdersTotal();
 				double loss = 0.0;
 
-				foreach (var order in activeOrders)
+				foreach (var order in Data.activeOrders)
 				{
 					var orderTotal = order.profit + order.commission + order.swap;
 					if (orderTotal < 0.0)
@@ -413,7 +406,7 @@ namespace forexAI
 			get
 			{
 				var minNearDistance = 1110.0;
-				foreach (var order in activeOrders)
+				foreach (var order in Data.activeOrders)
 				{
 					if (!OrderSelect(order.ticket, SELECT_BY_TICKET) || order.type != Constants.OrderType.Buy || OrderCloseTime() != new DateTime(0))
 						continue;
@@ -430,7 +423,7 @@ namespace forexAI
 			get
 			{
 				double minNearDistance = 1110.0;
-				foreach (var order in activeOrders)
+				foreach (var order in Data.activeOrders)
 				{
 					if (!OrderSelect(order.ticket, SELECT_BY_TICKET) || order.type != Constants.OrderType.Sell || OrderCloseTime() != new DateTime(0))
 						continue;
@@ -474,7 +467,7 @@ namespace forexAI
 			if (neuralNetworkBootstrapped)
 			{
 				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent,
-					inputDimension, forexFannNetwork, reassembleStageOverride, mqlApi);
+					inputDimension, aiFannNetwork, reassembleStageOverride);
 
 				RefreshRates();
 
@@ -526,7 +519,7 @@ namespace forexAI
 			{
 				previousBankDay = Day();
 				log($"-> Day {previousBankDay.ToString("0")} [opsDone={dayOperationsCount} barsPerDay={barsPerDay}] accountBanalce={AccountBalance()} "
-					+ (forexFannNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
+					+ (aiFannNetwork == null ? "[BUT NO NETWORK HAHA]" : ""));
 				totalOperationsCount += dayOperationsCount;
 				dayOperationsCount = barsPerDay = stableTrendBar = unstableTrendBar = 0;
 				AudioFX.NewDay();
@@ -561,16 +554,13 @@ namespace forexAI
 
 		private void AssignCounterOrders()
 		{
-			activeOrders.ForEach(delegate (Order order)
-			{
-				order.findCounterOrder(activeOrders);
-			});
+			Data.activeOrders.ForEach(order => order.findCounterOrder());
 		}
 
 		public override int init()
 		{
 			startTime = GetTickCount();
-			mqlApi = this;
+			Core.mqlApi = this;
 			networkIsGood = false;
 
 			ClearLogs();
@@ -603,13 +593,14 @@ namespace forexAI
 
 			Task.Factory.StartNew(() =>
 			{
-				console($"Accessing processor performance counters ...");
+				consolelog($"Accessing processor performance counters ...");
 				cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+				consolelog($"... done with counters");
 			});
 
 
 			console($"Set Core.Compatibility.Metastock");
-			Core.SetCompatibility(Core.Compatibility.Metastock);
+			TicTacTec.TA.Library.Core.SetCompatibility(TicTacTec.TA.Library.Core.Compatibility.Metastock);
 			//Core.SetUnstablePeriod(Core.FuncUnstId.FuncUnstNone, 10);
 
 			#region matters
@@ -681,14 +672,14 @@ namespace forexAI
 			reassembleStageOverride = true;
 			ScanNetworks();
 
-			if (networkDirs.Length > 0)
+			if (Data.networkDirs.Length > 0)
 			{
-				string network = networkDirs[random.Next(networkDirs.Length - 1)].Name;
-				log($"Init network: selected {network} from {Configuration.rootDirectory} (total {networkDirs.Length} networks)", "debug");
+				string network = Data.networkDirs[random.Next(Data.networkDirs.Length - 1)].Name;
+				log($"Init network: selected {network} from {Configuration.rootDirectory} (total {Data.networkDirs.Length} networks)", "debug");
 
 				LoadNetwork(network);
 
-				if (forexFannNetwork != null)
+				if (aiFannNetwork != null)
 				{
 					console($"Testing network {network} MSE ...");
 					TestNetworkMSE();
@@ -783,7 +774,7 @@ namespace forexAI
 			var zeroTime = new DateTime(0);
 			var forexTimeCurrent = TimeCurrent();
 
-			foreach (var order in activeOrders)
+			foreach (var order in Data.activeOrders)
 			{
 				if (OrderSelect(order.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() != zeroTime && order.profit > 0.0)
 				{
@@ -801,7 +792,7 @@ namespace forexAI
 				}
 			}
 
-			activeOrders = activeOrders.Where(o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() == zeroTime).ToList();
+			Data.activeOrders = Data.activeOrders.Where(o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() == zeroTime).ToList();
 
 			for (int index = 0; index < OrdersTotal(); index++)
 			{
@@ -810,7 +801,7 @@ namespace forexAI
 
 				int orderTicket = OrderTicket();
 
-				var currentOrder = (from order in activeOrders
+				var currentOrder = (from order in Data.activeOrders
 									where order.ticket == orderTicket
 									select order).DefaultIfEmpty(null).FirstOrDefault();
 
@@ -839,8 +830,8 @@ namespace forexAI
 					else if (OrderType() == OP_SELL)
 						order.type = Constants.OrderType.Sell;
 
-					activeOrders.Add(order);
-					historyOrders.Add(order);
+					Data.activeOrders.Add(order);
+					Data.historyOrders.Add(order);
 				}
 				else
 				{
@@ -862,7 +853,7 @@ namespace forexAI
 			profitSells = 0;
 			spendSells = 0;
 
-			foreach (var order in historyOrders)
+			foreach (var order in Data.historyOrders)
 			{
 				if (OrderSelect(order.ticket, SELECT_BY_TICKET, MODE_HISTORY))
 				{
@@ -913,7 +904,7 @@ namespace forexAI
 
 		public void TryEnterTrade()
 		{
-			double lLots = orderLots;
+			double iLots = orderLots;
 
 			if (!isTrendStable || stableTrendBar < minStableTrendBarForEnter)
 				return;
@@ -930,14 +921,14 @@ namespace forexAI
 					&& ordersCount < maxOrdersParallel
 					&& tradeBarPeriodPass > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
-				OpenBuy(lLots);
+				OpenBuy(iLots);
 
 			if (sellProbability >= tradeEnterProbabilityMin
 					&& buyProbability <= rejectTradeProbability
 					&& ordersCount < maxOrdersParallel
 					&& tradeBarPeriodPass > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
-				OpenSell(lLots);
+				OpenSell(iLots);
 		}
 
 		public void TryEnterCounterTrade()
@@ -983,13 +974,13 @@ namespace forexAI
 
 			networkId = fannNetworkDirName = dirName;
 
-			forexFannNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net")
+			aiFannNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net")
 			{
 				ErrorLog = new FANNCSharp.FannFile($"{Configuration.rootDirectory}\\fann.log", "a+")
 			};
 
-			log($"Network: hash={forexFannNetwork.GetHashCode()} inputs={forexFannNetwork.InputCount} layers={forexFannNetwork.LayerCount}" +
-				$" outputs={forexFannNetwork.OutputCount} neurons={forexFannNetwork.TotalNeurons} connections={forexFannNetwork.TotalConnections}");
+			log($"Network: hash={aiFannNetwork.GetHashCode()} inputs={aiFannNetwork.InputCount} layers={aiFannNetwork.LayerCount}" +
+				$" outputs={aiFannNetwork.OutputCount} neurons={aiFannNetwork.TotalNeurons} connections={aiFannNetwork.TotalConnections}");
 
 			string fileTextData = File.ReadAllText($@"{Configuration.rootDirectory}\{dirName}\configuration.txt");
 
@@ -1009,7 +1000,7 @@ namespace forexAI
 
 			functionsTextContent = File.ReadAllText($"{Configuration.rootDirectory}\\{fannNetworkDirName}\\functions.json");
 
-			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, forexFannNetwork, false, mqlApi);
+			(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, aiFannNetwork, false);
 
 			if (networkFunctionsCount > 0 && fannNetworkOutput.Length > 0)
 				neuralNetworkBootstrapped = true;
@@ -1021,16 +1012,16 @@ namespace forexAI
 		void ScanNetworks()
 		{
 			consolelog($"Scanning networks ...");
-			networkDirs = new DirectoryInfo(Configuration.rootDirectory).GetDirectories("NET_*");
+			Data.networkDirs = new DirectoryInfo(Configuration.rootDirectory).GetDirectories("NET_*");
 
-			consolelog($"Found {networkDirs.Length} networks in {Configuration.rootDirectory}.");
-			if (networkDirs.Length == 0)
+			consolelog($"Found {Data.networkDirs.Length} networks in {Configuration.rootDirectory}.");
+			if (Data.networkDirs.Length == 0)
 			{
 				error("WHAT I SHOULD DO?? DO U KNOW????");
 				return;
 			}
 
-			config["networks"] = networkDirs;
+			config["networks"] = Data.networkDirs;
 		}
 
 		void TestNetworkMSE()
@@ -1045,10 +1036,10 @@ namespace forexAI
 
 			log($" * trainDataLength={trainingData.TrainDataLength} testDataLength={testData.TrainDataLength}");
 
-			trainMse = forexFannNetwork.TestDataParallel(trainingData, 4);
-			testMse = forexFannNetwork.TestDataParallel(testData, 4);
+			trainMse = aiFannNetwork.TestDataParallel(trainingData, 4);
+			testMse = aiFannNetwork.TestDataParallel(testData, 4);
 
-			log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={forexFannNetwork.BitFail}");
+			log($" * MSE: train={trainMse.ToString("0.0000")} test={testMse.ToString("0.0000")} bitfail={aiFannNetwork.BitFail}");
 		}
 
 		void TestNetworkHitRatio()
@@ -1064,9 +1055,9 @@ namespace forexAI
 			int hits = 0, curX = 0;
 			foreach (double[] input in inputs)
 			{
-				double[] output = forexFannNetwork.Run(input);
+				double[] output = aiFannNetwork.Run(input);
 
-				forexFannNetwork.DescaleOutput(output);
+				aiFannNetwork.DescaleOutput(output);
 
 				double output0 = 0;
 				if (output[0] > output[1])
@@ -1093,7 +1084,7 @@ namespace forexAI
 		{
 			var currentTime = TimeCurrent();
 
-			foreach (var order in activeOrders)
+			foreach (var order in Data.activeOrders)
 			{
 				if (order.currentProfit >= maxNegativeSpend
 						&& order.ageInMinutes / 60 <= orderAliveHours)
@@ -1235,7 +1226,7 @@ namespace forexAI
 
 			RefreshRates();
 
-			foreach (var order in activeOrders)
+			foreach (var order in Data.activeOrders)
 			{
 				if (order.counterOrder != null)
 					continue;
@@ -1378,7 +1369,7 @@ namespace forexAI
 			}
 
 			int index = 0;
-			foreach (var order in activeOrders)
+			foreach (var order in Data.activeOrders)
 			{
 				labelID = "order" + index;
 
@@ -1491,7 +1482,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 60);
 			}
 			ObjectSetText(labelID,
-						  "Live Orders: " + OrdersTotal() + $" ({activeOrders.Count}/{historyOrders.Count})",
+						  "Live Orders: " + OrdersTotal() + $" ({Data.activeOrders.Count}/{Data.historyOrders.Count})",
 						  8,
 						  "liberation mono",
 						  Color.Black);
@@ -1505,7 +1496,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 191);
 			}
-			ObjectSetText(labelID, "Buy " + buyProbability.ToString("0.0000").PadLeft(7), 17, "liberation mono",
+			ObjectSetText(labelID, "Buy " + buyProbability.ToString("0.0000").PadLeft(7), 13, "liberation mono",
 				buyProbability >= tradeEnterProbabilityMin ? Color.Green : Color.LightGray);
 
 			labelID = gs_80 + "12";
@@ -1516,7 +1507,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_XDISTANCE, 15);
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 442);
 			}
-			ObjectSetText(labelID, "Sell " + sellProbability.ToString("0.0000").PadLeft(7), 17, "liberation mono",
+			ObjectSetText(labelID, "Sell " + sellProbability.ToString("0.0000").PadLeft(7), 13, "liberation mono",
 				sellProbability >= tradeEnterProbabilityMin ? Color.Green : Color.LightGray);
 
 			labelID = gs_80 + "13";
@@ -1528,8 +1519,8 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 318);
 			}
 			ObjectSetText(labelID, (isTrendStable ? "  STABLE" : "UNSTABLE") +
-				$" {(isTrendStable ? stableTrendBar.ToString("00") : unstableTrendBar.ToString("00"))}" +
-				$" {diffProbability.ToString("0.0000").PadLeft(7)}", 14, "liberation mono",
+				$" {(isTrendStable ? stableTrendBar : unstableTrendBar)}" +
+				$" {diffProbability.ToString("0.0000").PadLeft(7)}", 12, "liberation mono",
 				isTrendStable && stableTrendBar >= minStableTrendBarForEnter ? Color.DarkSeaGreen : Color.Red);
 
 			totalSpends = spendSells + spendBuys;
@@ -1561,7 +1552,7 @@ namespace forexAI
 			Process proc = Process.GetCurrentProcess();
 			var memoryUsage = (proc.PrivateMemorySize64 / 1024 / 1024).ToString("0.00");
 
-			if (forexFannNetwork != null)
+			if (aiFannNetwork != null)
 			{
 				string cpuUsage = cpuCounter == null ? "??" : cpuCounter.NextValue().ToString("0.00") + "%";
 
@@ -1596,10 +1587,10 @@ namespace forexAI
 			   inputDimension +
 			   "\r\n" +
 			  "TotalNeurons: " +
-			   forexFannNetwork.TotalNeurons +
+			   aiFannNetwork.TotalNeurons +
 			   "\r\n" +
 			  "InputCount: " +
-			   forexFannNetwork.InputCount +
+			   aiFannNetwork.InputCount +
 			   "\r\n" +
 			  "InputActFunc: " +
 			   inputLayerActivationFunction +
@@ -1608,13 +1599,13 @@ namespace forexAI
 			   middleLayerActivationFunction +
 			   "\r\n" +
 			  "ConnRate: " +
-			   forexFannNetwork.ConnectionRate +
+			   aiFannNetwork.ConnectionRate +
 			   "\r\n" +
 			  "Connections: " +
-			   forexFannNetwork.TotalConnections +
+			   aiFannNetwork.TotalConnections +
 			   "\r\n" +
 			  "LayerCount: " +
-			   forexFannNetwork.LayerCount +
+			   aiFannNetwork.LayerCount +
 			   "\r\n" +
 			  "Train/Test MSE: " +
 			   trainMse +
@@ -1622,7 +1613,7 @@ namespace forexAI
 			   testMse +
 			   "\r\n" +
 			  "LearningRate: " +
-			   forexFannNetwork.LearningRate +
+			   aiFannNetwork.LearningRate +
 			   "\r\n" +
 			  "Test Hit Ratio: " +
 			   testHitRatio.ToString("0.00") +

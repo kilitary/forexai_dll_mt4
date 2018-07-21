@@ -48,7 +48,7 @@ namespace forexAI
 	public static class Reassembler
 	{
 		static Dictionary<string, FunctionConfiguration> functionsConfiguration;
-		static Core.RetCode ret = Core.RetCode.UnknownErr;
+		static TicTacTec.TA.Library.Core.RetCode ret = TicTacTec.TA.Library.Core.RetCode.UnknownErr;
 		static LivePrices prices = new LivePrices();
 		static Random random = new Random();
 		static string functionConfigurationHash = string.Empty;
@@ -76,7 +76,7 @@ namespace forexAI
 		static int setNextArrayIndex = 0;
 
 		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork,
-			bool reassemblingCompletedOverride, MqlApi mqlApi)
+			bool reassemblingCompletedOverride)
 		{
 			reassemblyStage = reassemblingCompletedOverride;
 
@@ -192,16 +192,16 @@ namespace forexAI
 							switch (arrayIndex)
 							{
 								case 0:
-									functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, mqlApi.Bars, mqlApi.Open);
+									functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Open);
 									break;
 								case 1:
-									functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, mqlApi.Bars, mqlApi.Close);
+									functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Close);
 									break;
 								case 2:
-									functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, mqlApi.Bars, mqlApi.High);
+									functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.High);
 									break;
 								case 3:
-									functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, mqlApi.Bars, mqlApi.Low);
+									functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Low);
 									break;
 							}
 
@@ -259,19 +259,19 @@ namespace forexAI
 							functionArguments[paramIndex] = numFunctionDimension - 1;
 							break;
 						case "inOpen":
-							functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, mqlApi.Bars, mqlApi.Open);
+							functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Open);
 							break;
 						case "inHigh":
-							functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, mqlApi.Bars, mqlApi.High);
+							functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.High);
 							break;
 						case "inLow":
-							functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, mqlApi.Bars, mqlApi.Low);
+							functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Low);
 							break;
 						case "inClose":
-							functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, mqlApi.Bars, mqlApi.Close);
+							functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Close);
 							break;
 						case "inVolume":
-							functionArguments[paramIndex] = prices.GetVolume(numFunctionDimension, mqlApi.Bars, mqlApi.Volume);
+							functionArguments[paramIndex] = prices.GetVolume(numFunctionDimension, Core.mqlApi.Bars, Core.mqlApi.Volume);
 							break;
 						case "outBegIdx":
 							functionArguments[paramIndex] = outBegIdx;
@@ -332,7 +332,7 @@ namespace forexAI
 					idx++;
 				}
 
-				MethodInfo FunctionPointer = typeof(Core).GetMethod(functionName, functionTypes);
+				MethodInfo FunctionPointer = typeof(TicTacTec.TA.Library.Core).GetMethod(functionName, functionTypes);
 				if (FunctionPointer == null)
 				{
 					error($"fail to load method [{functionName}] from TICTAC");
@@ -340,7 +340,7 @@ namespace forexAI
 				}
 				else
 				{
-					ret = (Core.RetCode) FunctionPointer.Invoke(null, functionArguments);
+					ret = (TicTacTec.TA.Library.Core.RetCode) FunctionPointer.Invoke(null, functionArguments);
 					if (outTypeDoubleOrInt == 0)
 					{
 						resultDataInt = (int[]) functionArguments[outIndex];

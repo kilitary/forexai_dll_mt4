@@ -33,9 +33,9 @@ namespace forexAI
 			return $"{type} order #{ticket} profit {currentProfit}";
 		}
 
-		public int findCounterOrder(List<Order> activeOrders)
+		public int findCounterOrder()
 		{
-			foreach (var order in activeOrders)
+			foreach (var order in Data.activeOrders)
 			{
 				if (order.ticket == ticket || order.counterOrder != null)
 					continue;
@@ -43,6 +43,7 @@ namespace forexAI
 				if (order.currentProfit < 0.0)
 				{
 					counterOrder = order;
+					break;
 				}
 			}
 
