@@ -166,6 +166,7 @@ namespace forexAI
 		int unstableTrendBar = 0;
 		int lastTradeBar = 0;
 		int marketCollapsedBar = 0;
+		int slipPage = 30;
 
 		// computed properties
 		int ordersCount => Data.ordersActive.Count();
@@ -809,13 +810,13 @@ namespace forexAI
 
 				int orderTicket = OrderTicket();
 
-				var currentOrder = (from order in Data.ordersActive
-									where order.ticket == orderTicket
-									select order).DefaultIfEmpty(null).FirstOrDefault();
+				var order = (from o in Data.ordersActive
+									where o.ticket == orderTicket
+									select o).DefaultIfEmpty(null).FirstOrDefault();
 
-				if (currentOrder == null)
+				if (order == null)
 				{
-					var order = new Order
+					var newOrder = new Order
 					{
 						ticket = orderTicket,
 						openTime = OrderOpenTime(),
@@ -834,22 +835,31 @@ namespace forexAI
 					};
 
 					if (OrderType() == OP_BUY)
-						order.type = Constants.OrderType.Buy;
+						newOrder.type = Constants.OrderType.Buy;
 					else if (OrderType() == OP_SELL)
-						order.type = Constants.OrderType.Sell;
+						newOrder.type = Constants.OrderType.Sell;
 
-					Data.ordersActive.Add(order);
-					Data.ordersHistory.Add(order);
+					Data.ordersActive.Add(newOrder);
+					Data.ordersHistory.Add(newOrder);
 				}
 				else
 				{
-					currentOrder.profit = OrderProfit();
-					currentOrder.commission = OrderCommission();
-					currentOrder.swap = OrderSwap();
-					currentOrder.stopLoss = OrderStopLoss();
-					currentOrder.takeProfit = OrderTakeProfit();
-					currentOrder.ageInMinutes = forexTimeCurrent.Subtract(currentOrder.openTime).TotalMinutes;
-					currentOrder.expiration = OrderExpiration();
+					order.profit = OrderProfit();
+					order.commission = OrderCommission();
+					order.swap = OrderSwap();
+					order.stopLoss = OrderStopLoss();
+					order.takeProfit = OrderTakeProfit();
+					order.ageInMinutes = forexTimeCurrent.Subtract(order.openTime).TotalMinutes;
+					order.expiration = OrderExpiration();
+
+					if (order.counterOrder != null)
+					{
+						var counterOrderAlive = (from o in Data.ordersActive
+											where o == order.counterOrder
+											select o).Any();
+						if (!counterOrderAlive)
+							order.counterOrder = null;
+					}
 				}
 			}
 		}
@@ -1193,7 +1203,7 @@ namespace forexAI
 			int ticket;
 
 			expirationTime = expirationTime.AddHours(3);
-			if ((ticket = OrderSend(symbol, OP_SELL, lots, Bid, 50, stopLoss, 0, $"Probability:",
+			if ((ticket = OrderSend(symbol, OP_SELL, lots, Bid, slipPage, stopLoss, 0, $"Probability:",
 				Configuration.magickNumber, expirationTime, Color.Red)) <= 0)
 				consolelog($"error sending sell: {GetLastError()} balance={AccountBalance()} lots={lots}");
 			else
@@ -1213,7 +1223,7 @@ namespace forexAI
 			DateTime expirationTime = TimeCurrent();
 
 			expirationTime = expirationTime.AddHours(3);
-			if ((ticket = OrderSend(symbol, OP_BUY, lots, Ask, 50, stopLoss, 0, $"Probability:",
+			if ((ticket = OrderSend(symbol, OP_BUY, lots, Ask, slipPage, stopLoss, 0, $"Probability:",
 				Configuration.magickNumber, expirationTime, Color.Blue)) <= 0)
 				consolelog($"error sending buy: {GetLastError()} balance={AccountBalance()} lots={lots}");
 			else
@@ -1232,12 +1242,13 @@ namespace forexAI
 			if (trailingStop < minStopLevel)
 				trailingStop = minStopLevel;
 
-			RefreshRates();
 
 			foreach (var order in Data.ordersActive)
 			{
 				if (order.counterOrder != null)
 					continue;
+
+			RefreshRates();
 
 				if (order.type == Constants.OrderType.Buy)
 				{

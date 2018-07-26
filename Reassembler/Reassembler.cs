@@ -49,7 +49,7 @@ namespace forexAI
 	{
 		static Dictionary<string, FunctionConfiguration> functionsConfiguration;
 		static TicTacTec.TA.Library.Core.RetCode ret = TicTacTec.TA.Library.Core.RetCode.UnknownErr;
-		static LivePrices prices = new LivePrices();
+		static ChartPrices prices = new ChartPrices();
 		static Random random = new Random();
 		static string functionConfigurationHash = string.Empty;
 		static string functionName = string.Empty;

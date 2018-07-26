@@ -12,18 +12,18 @@ using System;
 
 namespace NQuotes.DebugHost
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            try
-            {
+	public class Program
+	{
+		public static void Main(string[] args)
+		{
+			try
+			{
 				Server.Start(args);
-            }
-            catch (Exception e)
-            {
-                forexAI.Logger.console($"EXCEPTION:\r\n{e.Message}", ConsoleColor.Black, ConsoleColor.Red);
-            }
-        }
-    }
+			}
+			catch (Exception e)
+			{
+				forexAI.Logger.console($"EXCEPTION:\r\n{e.Message} {e.StackTrace}", ConsoleColor.Black, ConsoleColor.Red);
+			}
+		}
+	}
 }

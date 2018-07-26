@@ -15,7 +15,7 @@ using static Newtonsoft.Json.JsonConvert;
 
 namespace forexAI
 {
-	public class LivePrices
+	public class ChartPrices
 	{
 		public double[] GetOpen(int numData, int Bars)
 		{
