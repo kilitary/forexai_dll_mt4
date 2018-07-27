@@ -91,7 +91,7 @@ namespace forexAI
 
 			failedReassemble = false;
 
-			if (functionConfigurationHash != Hash.md5(functionConfigurationString))
+			if (functionConfigurationHash != Hash.sha256(functionConfigurationString))
 			{
 				log($"hashOfFunctionConfiguration ({functionConfigurationHash}) not match content, deserializing {functionConfigurationString.Length} bytes ...");
 				var jsonSettings = new JsonSerializerSettings
@@ -101,8 +101,8 @@ namespace forexAI
 				functionsConfiguration = DeserializeObject<Dictionary<string, FunctionConfiguration>>
 					(functionConfigurationString, jsonSettings);
 
-				functionConfigurationHash = Hash.md5(functionConfigurationString);
-				log($"hash of configuration: {functionConfigurationHash}");
+				functionConfigurationHash = Hash.sha256(functionConfigurationString);
+				consolelog($"hash of configuration: {functionConfigurationHash}");
 			}
 
 			logIf(reassemblyStage, $"=> {functionsConfiguration.Count} functions with {inputDimension} input dimension");

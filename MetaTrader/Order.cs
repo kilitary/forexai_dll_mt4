@@ -13,8 +13,6 @@ namespace forexAI
 		public DateTime openTime;
 		public DateTime expiration;
 		public Order counterOrder = null;
-		public int ticket;
-		public int magickNumber;
 		public string symbol;
 		public string comment;
 		public double lots;
@@ -25,22 +23,23 @@ namespace forexAI
 		public double openPrice;
 		public double ageInMinutes;
 		public double takeProfit;
-
-		public double currentProfit => profit + commission + swap;
+		public int ticket;
+		public int magickNumber;
+		public double calculatedProfit => profit + commission + swap;
 
 		public override string ToString()
 		{
-			return $"{type} order #{ticket} profit {currentProfit}";
+			return $"{type} order #{ticket} profit {calculatedProfit}";
 		}
 
-		public int findNecessaryCounterOrder()
+		public int FindSpendCounterOrder()
 		{
 			foreach (var order in Data.ordersActive)
 			{
 				if (order.ticket == ticket || order.counterOrder != null)
 					continue;
 
-				if (order.currentProfit < 0.0)
+				if (order.calculatedProfit < 0.0)
 				{
 					counterOrder = order;
 					break;

@@ -28,5 +28,15 @@ namespace forexAI
 
 			return BitConverter.ToString(encodedBytes).Replace("-", "").ToLower();
 		}
+
+		public static string sha256(string input)
+		{
+			SHA256 mySHA256 = SHA256.Create();
+
+			byte[] originalBytes = ASCIIEncoding.Default.GetBytes(input);
+			byte[] encodedBytes = mySHA256.ComputeHash(originalBytes);
+
+			return BitConverter.ToString(encodedBytes).Replace("-", "").ToLower();
+		}
 	}
 }
