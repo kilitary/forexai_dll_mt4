@@ -222,7 +222,7 @@ namespace forexAI
 
 				Helpers.Each(Repository.ordersActive.Where(o => o.type == Constants.OrderType.Buy), delegate (Order order)
 				{
-					buyIncome += order.profit + order.commission + order.swap;
+					buyIncome += order.calculatedProfit;
 				});
 
 				return buyIncome;
@@ -237,7 +237,7 @@ namespace forexAI
 
 				Helpers.Each(Repository.ordersActive.Where(o => o.type == Constants.OrderType.Sell), delegate (Order order)
 				{
-					sellIncome += order.profit + order.commission + order.swap;
+					sellIncome += order.calculatedProfit;
 				});
 
 				return sellIncome;
@@ -817,7 +817,9 @@ namespace forexAI
 				}
 			}
 
-			Repository.ordersActive = Repository.ordersActive.Where(o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() == zeroTime).ToList();
+			Repository.ordersActive = Repository.ordersActive.Where(
+				o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true &&
+				OrderCloseTime() == zeroTime).ToList();
 
 			for (int index = 0; index < OrdersTotal(); index++)
 			{
@@ -857,11 +859,8 @@ namespace forexAI
 
 					Repository.ordersActive.Add(newOrder);
 
-					var hasInHistory = (from o in Repository.orderHistory
-										where o.ticket == orderTicket
-										select o).Any();
-					if (!hasInHistory)
-						Repository.orderHistory.Add(newOrder);
+					if (!Repository.ordersHistory.Where(o => o.ticket == orderTicket).Any())
+						Repository.ordersHistory.Add(newOrder);
 				}
 				else
 				{
@@ -875,10 +874,7 @@ namespace forexAI
 
 					if (order.counterOrder != null)
 					{
-						var counterOrderAlive = (from o in Repository.ordersActive
-												 where o == order.counterOrder
-												 select o).Any();
-						if (!counterOrderAlive)
+						if (!Repository.ordersActive.Where(o => o == order.counterOrder).Any())
 							order.counterOrder = null;
 					}
 				}
@@ -892,7 +888,7 @@ namespace forexAI
 			profitSells = 0;
 			spendSells = 0;
 
-			foreach (var order in Repository.orderHistory)
+			foreach (var order in Repository.ordersHistory)
 			{
 				if (OrderSelect(order.ticket, SELECT_BY_TICKET, MODE_HISTORY))
 				{
@@ -941,6 +937,18 @@ namespace forexAI
 			console($"Init variables [stoplevel={stoplevel}] ...");
 		}
 
+		public double CalculateLots(OrderType type)
+		{
+			double iLots = orderLots;
+
+			if (sellsProfit < 0 || buysProfit < 0)
+			{
+				iLots = orderLots * 2.1;
+				consolelog($"resolving spends {sellsProfit}/{buysProfit} ... ilots={iLots}");
+			}
+			return iLots;
+		}
+
 		public void TryEnterTrade()
 		{
 			double iLots = orderLots;
@@ -948,12 +956,8 @@ namespace forexAI
 			if (!isTrendStable || stableTrendBar < minStableTrendBarForEnter)
 				return;
 
-			//if (historyOrders.Count() > 0)
-			//	lLots = historyOrders[historyOrders.Count() - 1].profit >= 0 ?
-			//		orderLots : historyOrders[historyOrders.Count() - 1].lots * 1.5;
-
-			//if (lLots > 0.04)
-			//	lLots = 0.04;
+			if (iLots > 0.03)
+				iLots = 0.03;
 
 			if (buyProbability >= tradeEnterProbabilityMin
 					&& sellProbability <= rejectTradeProbability
@@ -961,6 +965,7 @@ namespace forexAI
 					&& tradeBarPeriodPass > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
 			{
+				iLots = CalculateLots(Constants.OrderType.Buy);
 				OpenBuy(iLots);
 			}
 
@@ -970,6 +975,7 @@ namespace forexAI
 					&& tradeBarPeriodPass > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
 			{
+				iLots = CalculateLots(Constants.OrderType.Sell);
 				OpenSell(iLots);
 			}
 		}
@@ -1562,7 +1568,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 60);
 			}
 			ObjectSetText(labelID,
-						  "Live Orders: " + OrdersTotal() + $" ({Repository.ordersActive.Count}/{Repository.orderHistory.Count})",
+						  "Live Orders: " + OrdersTotal() + $" ({Repository.ordersActive.Count}/{Repository.ordersHistory.Count})",
 						  8,
 						  "liberation mono",
 						  Color.Black);

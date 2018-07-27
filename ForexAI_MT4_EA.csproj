@@ -118,6 +118,7 @@
     <Compile Include="App\App.cs" />
     <Compile Include="Data\Constants.cs" />
     <Compile Include="Data\Configuration.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MetaTrader\Order.cs" />
     <Compile Include="Pool\NetworkPool.cs" />
