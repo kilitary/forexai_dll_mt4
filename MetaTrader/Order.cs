@@ -34,7 +34,7 @@ namespace forexAI
 
 		public int FindSpendCounterOrder()
 		{
-			foreach (var order in Data.ordersActive)
+			foreach (var order in Repository.ordersActive)
 			{
 				if (order.ticket == ticket || order.counterOrder != null)
 					continue;

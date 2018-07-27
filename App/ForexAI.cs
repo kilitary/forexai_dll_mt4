@@ -171,10 +171,10 @@ namespace forexAI
 		double previousSpread;
 
 		// computed properties
-		int ordersCount => Data.ordersActive.Count();
+		int ordersCount => Repository.ordersActive.Count();
 		int tradeBarPeriodPass => Bars - lastTradeBar;
-		int buysCount => Data.ordersActive.Where(o => o.type == Constants.OrderType.Buy).Count();
-		int sellsCount => Data.ordersActive.Where(o => o.type == Constants.OrderType.Sell).Count();
+		int buysCount => Repository.ordersActive.Where(o => o.type == Constants.OrderType.Buy).Count();
+		int sellsCount => Repository.ordersActive.Where(o => o.type == Constants.OrderType.Sell).Count();
 		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double ordersProfit => buysProfit + sellsProfit;
@@ -202,7 +202,7 @@ namespace forexAI
 			{
 				double total = 0.0;
 
-				foreach (var order in Data.ordersActive)
+				foreach (var order in Repository.ordersActive)
 				{
 					var orderTotal = order.profit + order.commission + order.swap;
 
@@ -220,7 +220,7 @@ namespace forexAI
 			{
 				double buyIncome = 0.0;
 
-				Helpers.Each(Data.ordersActive.Where(o => o.type == Constants.OrderType.Buy), delegate (Order order)
+				Helpers.Each(Repository.ordersActive.Where(o => o.type == Constants.OrderType.Buy), delegate (Order order)
 				{
 					buyIncome += order.profit + order.commission + order.swap;
 				});
@@ -235,7 +235,7 @@ namespace forexAI
 			{
 				double sellIncome = 0.0;
 
-				Helpers.Each(Data.ordersActive.Where(o => o.type == Constants.OrderType.Sell), delegate (Order order)
+				Helpers.Each(Repository.ordersActive.Where(o => o.type == Constants.OrderType.Sell), delegate (Order order)
 				{
 					sellIncome += order.profit + order.commission + order.swap;
 				});
@@ -251,7 +251,7 @@ namespace forexAI
 				ordersTotal = OrdersTotal();
 				double loss = 0.0;
 
-				foreach (var order in Data.ordersActive)
+				foreach (var order in Repository.ordersActive)
 				{
 					var orderTotal = order.profit + order.commission + order.swap;
 					if (orderTotal < 0.0)
@@ -410,7 +410,7 @@ namespace forexAI
 			get
 			{
 				var minNearDistance = 1110.0;
-				foreach (var order in Data.ordersActive)
+				foreach (var order in Repository.ordersActive)
 				{
 					if (!OrderSelect(order.ticket, SELECT_BY_TICKET) || order.type != Constants.OrderType.Buy || OrderCloseTime() != new DateTime(0))
 						continue;
@@ -427,7 +427,7 @@ namespace forexAI
 			get
 			{
 				double minNearDistance = 1110.0;
-				foreach (var order in Data.ordersActive)
+				foreach (var order in Repository.ordersActive)
 				{
 					if (!OrderSelect(order.ticket, SELECT_BY_TICKET) || order.type != Constants.OrderType.Sell || OrderCloseTime() != new DateTime(0))
 						continue;
@@ -569,6 +569,7 @@ namespace forexAI
 
 		public override int init()
 		{
+			InitPredefinedVariables();
 			startTime = GetTickCount();
 			App.mqlApi = this;
 			networkIsGood = false;
@@ -644,7 +645,7 @@ namespace forexAI
 
 		private void AssignCounterOrders()
 		{
-			Data.ordersActive.ForEach(order => order.FindSpendCounterOrder());
+			Repository.ordersActive.ForEach(order => order.FindSpendCounterOrder());
 		}
 
 		private void DumpInputConfig()
@@ -692,10 +693,10 @@ namespace forexAI
 			reassembleStageOverride = true;
 			ScanNetworks();
 
-			if (Data.networksDirectories.Length > 0)
+			if (Repository.networksDirectories.Length > 0)
 			{
-				string network = Data.networksDirectories[random.Next(Data.networksDirectories.Length - 1)].Name;
-				log($"Init network: selected {network} from {Configuration.rootDirectory} (total {Data.networksDirectories.Length} networks)", "debug");
+				string network = Repository.networksDirectories[random.Next(Repository.networksDirectories.Length - 1)].Name;
+				log($"Init network: selected {network} from {Configuration.rootDirectory} (total {Repository.networksDirectories.Length} networks)", "debug");
 
 				LoadNetwork(network);
 
@@ -798,7 +799,7 @@ namespace forexAI
 			var zeroTime = new DateTime(0);
 			var forexTimeCurrent = TimeCurrent();
 
-			foreach (var order in Data.ordersActive)
+			foreach (var order in Repository.ordersActive)
 			{
 				if (OrderSelect(order.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() != zeroTime && order.profit > 0.0)
 				{
@@ -816,7 +817,7 @@ namespace forexAI
 				}
 			}
 
-			Data.ordersActive = Data.ordersActive.Where(o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() == zeroTime).ToList();
+			Repository.ordersActive = Repository.ordersActive.Where(o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() == zeroTime).ToList();
 
 			for (int index = 0; index < OrdersTotal(); index++)
 			{
@@ -825,7 +826,7 @@ namespace forexAI
 
 				int orderTicket = OrderTicket();
 
-				var order = (from o in Data.ordersActive
+				var order = (from o in Repository.ordersActive
 							 where o.ticket == orderTicket
 							 select o).DefaultIfEmpty(null).FirstOrDefault();
 
@@ -854,13 +855,13 @@ namespace forexAI
 					else if (OrderType() == OP_SELL)
 						newOrder.type = Constants.OrderType.Sell;
 
-					Data.ordersActive.Add(newOrder);
+					Repository.ordersActive.Add(newOrder);
 
-					var hasInHistory = (from o in Data.orderHistory
-									 where o.ticket == orderTicket
-									 select o).Any();
+					var hasInHistory = (from o in Repository.orderHistory
+										where o.ticket == orderTicket
+										select o).Any();
 					if (!hasInHistory)
-						Data.orderHistory.Add(newOrder);
+						Repository.orderHistory.Add(newOrder);
 				}
 				else
 				{
@@ -874,7 +875,7 @@ namespace forexAI
 
 					if (order.counterOrder != null)
 					{
-						var counterOrderAlive = (from o in Data.ordersActive
+						var counterOrderAlive = (from o in Repository.ordersActive
 												 where o == order.counterOrder
 												 select o).Any();
 						if (!counterOrderAlive)
@@ -891,7 +892,7 @@ namespace forexAI
 			profitSells = 0;
 			spendSells = 0;
 
-			foreach (var order in Data.orderHistory)
+			foreach (var order in Repository.orderHistory)
 			{
 				if (OrderSelect(order.ticket, SELECT_BY_TICKET, MODE_HISTORY))
 				{
@@ -931,7 +932,7 @@ namespace forexAI
 			ordersStopPoints = stoplevel > 0 ? stoplevel * 2 : 60;
 
 			if (Configuration.mysqlEnabled)
-				Data.mysqlDatabase = new MysqlDatabase();
+				Repository.mysqlDatabase = new MysqlDatabase();
 
 			config["process"] = currentProcess.ToString();
 			config["yrandom"] = (uint) YRandom.Next(int.MaxValue);
@@ -959,14 +960,18 @@ namespace forexAI
 					&& ordersCount < maxOrdersParallel
 					&& tradeBarPeriodPass > minTradePeriodBars
 					&& closestBuyDistance >= minOrderDistance)
+			{
 				OpenBuy(iLots);
+			}
 
 			if (sellProbability >= tradeEnterProbabilityMin
 					&& buyProbability <= rejectTradeProbability
 					&& ordersCount < maxOrdersParallel
 					&& tradeBarPeriodPass > minTradePeriodBars
 					&& closestSellDistance >= minOrderDistance)
+			{
 				OpenSell(iLots);
+			}
 		}
 
 		public void TryEnterCounterTrade()
@@ -1050,16 +1055,16 @@ namespace forexAI
 		void ScanNetworks()
 		{
 			consolelog($"Scanning networks ...");
-			Data.networksDirectories = new DirectoryInfo(Configuration.rootDirectory).GetDirectories("NET_*");
+			Repository.networksDirectories = new DirectoryInfo(Configuration.rootDirectory).GetDirectories("NET_*");
 
-			consolelog($"Found {Data.networksDirectories.Length} networks in {Configuration.rootDirectory}.");
-			if (Data.networksDirectories.Length == 0)
+			consolelog($"Found {Repository.networksDirectories.Length} networks in {Configuration.rootDirectory}.");
+			if (Repository.networksDirectories.Length == 0)
 			{
 				error("WHAT I SHOULD DO?? DO U KNOW????");
 				return;
 			}
 
-			config["networks"] = Data.networksDirectories;
+			config["networks"] = Repository.networksDirectories;
 		}
 
 		void TestNetworkMSE()
@@ -1122,7 +1127,7 @@ namespace forexAI
 		{
 			var currentTime = TimeCurrent();
 
-			foreach (var order in Data.ordersActive)
+			foreach (var order in Repository.ordersActive)
 			{
 				if (order.calculatedProfit >= maxNegativeSpend
 						&& order.ageInMinutes / 60 <= orderAliveHours)
@@ -1261,7 +1266,7 @@ namespace forexAI
 			double iTrailingStop = trailingStop;
 			double iTrailingBorder = trailingBorder;
 
-			foreach (var order in Data.ordersActive)
+			foreach (var order in Repository.ordersActive)
 			{
 				if (order.counterOrder != null)
 				{
@@ -1287,11 +1292,20 @@ namespace forexAI
 						if (newStopLoss > OrderOpenPrice() || order.stopLoss == 0)
 						{
 							if (order.stopLoss == 0)
-								newStopLoss = OrderOpenPrice() + (iTrailingStop * Point);
-							consolelog($"modify buy #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Yellow);
-							OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
-								order.expiration, Color.BlueViolet);
-							currentDayOperationsCount++;
+								newStopLoss = OrderOpenPrice() + (2 * iTrailingStop * Point);
+
+							if (newStopLoss != order.stopLoss)
+							{
+								consolelog($"modify buy #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Yellow);
+								if (!OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
+									order.expiration, Color.BlueViolet))
+								{
+									int error = GetLastError();
+									consolelog($"FAIL: {error}: {ErrorDescription(error)}", null, ConsoleColor.Red);
+								}
+								else
+									currentDayOperationsCount++;
+							}
 						}
 					}
 				}
@@ -1306,11 +1320,20 @@ namespace forexAI
 						if (newStopLoss < OrderOpenPrice() || order.stopLoss == 0)
 						{
 							if (order.stopLoss == 0)
-								newStopLoss = OrderOpenPrice() - (iTrailingStop * Point);
-							consolelog($"modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Yellow);
-							OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
-								order.expiration, Color.MediumVioletRed);
-							currentDayOperationsCount++;
+								newStopLoss = OrderOpenPrice() - (2 * iTrailingStop * Point);
+
+							if (newStopLoss != order.stopLoss)
+							{
+								consolelog($"modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Yellow);
+								if (!OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
+									order.expiration, Color.MediumVioletRed))
+								{
+									int error = GetLastError();
+									consolelog($"FAIL: {error}: {ErrorDescription(error)}", null, ConsoleColor.Red);
+								}
+								else
+									currentDayOperationsCount++;
+							}
 						}
 					}
 				}
@@ -1426,7 +1449,7 @@ namespace forexAI
 			}
 
 			int index = 0;
-			foreach (var order in Data.ordersActive)
+			foreach (var order in Repository.ordersActive)
 			{
 				labelID = "order" + index;
 
@@ -1539,7 +1562,7 @@ namespace forexAI
 				ObjectSet(labelID, OBJPROP_YDISTANCE, 60);
 			}
 			ObjectSetText(labelID,
-						  "Live Orders: " + OrdersTotal() + $" ({Data.ordersActive.Count}/{Data.orderHistory.Count})",
+						  "Live Orders: " + OrdersTotal() + $" ({Repository.ordersActive.Count}/{Repository.orderHistory.Count})",
 						  8,
 						  "liberation mono",
 						  Color.Black);
