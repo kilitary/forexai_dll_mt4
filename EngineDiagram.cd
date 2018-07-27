@@ -134,10 +134,10 @@
       <FileName>Pool\NetworkPool.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.ForexAI">
+  <Class Name="forexAI.ForexAI" Collapsed="true">
     <Position X="15" Y="4" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>EzhfrQfl9TKKMAIrzEppBwMn2JuXZzbQP06nCwFikUE=</HashCode>
+      <HashCode>EzhfrQfl/TKKMAIrzEppBwMn2JuXZzbQP06nCwFikUE=</HashCode>
       <FileName>App\ForexAI.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -151,7 +151,7 @@
   <Class Name="forexAI.Extensions">
     <Position X="12.75" Y="4.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Extensions\Extensions.cs</FileName>
     </TypeIdentifier>
   </Class>

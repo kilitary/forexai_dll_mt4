@@ -944,7 +944,7 @@ namespace forexAI
 			if (sellsProfit < 0 || buysProfit < 0)
 			{
 				iLots = orderLots * 2.1;
-				consolelog($"resolving spends {sellsProfit}/{buysProfit} ... ilots={iLots}");
+				consolelog($"[{type}] refinancing spend sells:{sellsProfit} buys:{buysProfit}  ilots->{iLots}", "auto");
 			}
 			return iLots;
 		}
@@ -1233,8 +1233,8 @@ namespace forexAI
 			DateTime expirationTime = TimeCurrent();
 			int ticket;
 
-			expirationTime = expirationTime.AddHours(3);
-			if ((ticket = OrderSend(symbol, OP_SELL, lots, Bid, slipPage, stopLoss, 0, $"Probability:",
+			expirationTime = new DateTime(0);// expirationTime.AddHours(3);
+			if ((ticket = OrderSend(symbol, OP_SELL, lots, Bid, slipPage, stopLoss, 0, $"Probability: {sellProbability}",
 				Configuration.magickNumber, expirationTime, Color.Red)) <= 0)
 				consolelog($"error sending sell: {GetLastError()} balance={AccountBalance()} lots={lots}");
 			else
@@ -1253,8 +1253,8 @@ namespace forexAI
 			int ticket;
 			DateTime expirationTime = TimeCurrent();
 
-			expirationTime = expirationTime.AddHours(3);
-			if ((ticket = OrderSend(symbol, OP_BUY, lots, Ask, slipPage, stopLoss, 0, $"Probability:",
+			expirationTime = new DateTime(0); //expirationTime.AddHours(3);
+			if ((ticket = OrderSend(symbol, OP_BUY, lots, Ask, slipPage, stopLoss, 0, $"Probability: {buyProbability}",
 				Configuration.magickNumber, expirationTime, Color.Blue)) <= 0)
 				consolelog($"error sending buy: {GetLastError()} balance={AccountBalance()} lots={lots}");
 			else
@@ -1271,6 +1271,7 @@ namespace forexAI
 			double newStopLoss = 0;
 			double iTrailingStop = trailingStop;
 			double iTrailingBorder = trailingBorder;
+			string result = string.Empty;
 
 			foreach (var order in Repository.ordersActive)
 			{
@@ -1302,15 +1303,20 @@ namespace forexAI
 
 							if (newStopLoss != order.stopLoss)
 							{
-								consolelog($"modify buy #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Yellow);
+
 								if (!OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
 									order.expiration, Color.BlueViolet))
 								{
 									int error = GetLastError();
-									consolelog($"FAIL: {error}: {ErrorDescription(error)}", null, ConsoleColor.Red);
+									result = $"FAIL: {error}: {ErrorDescription(error)}";
 								}
 								else
+								{
 									currentDayOperationsCount++;
+									result = $"OK";
+								}
+
+								consolelog($"modify buy #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}: {result}", null, ConsoleColor.Yellow);
 							}
 						}
 					}
@@ -1330,15 +1336,19 @@ namespace forexAI
 
 							if (newStopLoss != order.stopLoss)
 							{
-								consolelog($"modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}", null, ConsoleColor.Yellow);
 								if (!OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
 									order.expiration, Color.MediumVioletRed))
 								{
 									int error = GetLastError();
-									consolelog($"FAIL: {error}: {ErrorDescription(error)}", null, ConsoleColor.Red);
+									result = $"FAIL: {error}: {ErrorDescription(error)}";
 								}
 								else
+								{
 									currentDayOperationsCount++;
+									result = $"OK";
+								}
+								
+								consolelog($"modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}: {result}", null, ConsoleColor.Yellow);
 							}
 						}
 					}
