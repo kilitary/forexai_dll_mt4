@@ -416,11 +416,22 @@ namespace forexAI
 			File.WriteAllText($"{Configuration.rootDirectory}\\unscaledset.dat", $"[Functions: {functionsNamesList}]" +
 				"\r\n\r\n" + SerializeObject(fullInputSet, jsonSettings2));
 
+			TrainingData trainData = new TrainingData();
+			double[][] ptr = new double[1][];
+			ptr[0] = fullInputSet;
+			dump(ptr, "ptr", "dev");
+			trainData.SetTrainData(ptr, ptr);
 			//neuralNetwork.ScaleInput(trainData.GetTrainInput(0));
+			//neuralNetwork.SetScalingParams(trainData, -1.0f, 1.0f, -1.0f, 1.0f);
+			//neuralNetwork.ScaleTrain(trainData);
+			trainData.ScaleInputTrainData(-1.0, 1.0);
 
-			//File.WriteAllText($"{Configuration.rootDirectory}\\scaledset.dat", SerializeObject(trainData.GetTrainInput(0).Array, jsonSettings2));
+			double[] outD;
+			outD = trainData.GetTrainInput(0).Array;
+			//outD = fullInputSet;
+			File.WriteAllText($"{Configuration.rootDirectory}\\scaledset.dat", SerializeObject(outD, jsonSettings2));
 
-			double[] networkOutput = neuralNetwork.Run(fullInputSet);
+			double[] networkOutput = neuralNetwork.Run(outD);
 			neuralNetwork.DescaleOutput(networkOutput);
 
 			reassemblyStage = false;

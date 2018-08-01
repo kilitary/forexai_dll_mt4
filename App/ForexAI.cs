@@ -470,8 +470,7 @@ namespace forexAI
 
 			if (neuralNetworkBootstrapped)
 			{
-				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent,
-					inputDimension, fannNetwork, reassembleStageOverride);
+				(networkFunctionsCount, fannNetworkOutput) = Reassembler.Execute(functionsTextContent, inputDimension, fannNetwork, reassembleStageOverride);
 
 				RefreshRates();
 
@@ -816,9 +815,7 @@ namespace forexAI
 				}
 			}
 
-			Data.ordersActive = Data.ordersActive.Where(
-				o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true &&
-				OrderCloseTime() == zeroTime).ToList();
+			Data.ordersActive = Data.ordersActive.Where(o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() == zeroTime).ToList();
 
 			for (int index = 0; index < OrdersTotal(); index++)
 			{
@@ -871,11 +868,8 @@ namespace forexAI
 					order.ageInMinutes = forexTimeCurrent.Subtract(order.openTime).TotalMinutes;
 					order.expiration = OrderExpiration();
 
-					if (order.counterOrder != null)
-					{
-						if (!Data.ordersActive.Where(o => o == order.counterOrder).Any())
-							order.counterOrder = null;
-					}
+					if (order.counterOrder != null && !Data.ordersActive.Where(o => o == order.counterOrder).Any())
+						order.counterOrder = null;
 				}
 			}
 		}
@@ -1346,7 +1340,7 @@ namespace forexAI
 									currentDayOperationsCount++;
 									result = $"OK";
 								}
-								
+
 								consolelog($"modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}: {result}", null, ConsoleColor.Yellow);
 							}
 						}
