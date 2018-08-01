@@ -113,7 +113,7 @@
       <FileName>Storages\Mysql.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.Repository">
+  <Class Name="forexAI.Data">
     <Position X="9.5" Y="3.75" Width="3" />
     <TypeIdentifier>
       <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAIAAAAA=</HashCode>

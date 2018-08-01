@@ -9,9 +9,6 @@ namespace forexAI
 {
 	public static class Web
 	{
-		public static string DownloadUrl(string url)
-		{
-			return new WebClient().DownloadString(url);
-		}
+		public static string DownloadUrl(string url) => new WebClient().DownloadString(url);
 	}
 }

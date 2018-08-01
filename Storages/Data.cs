@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace forexAI
 {
-	public static class Repository
+	public static class Data
 	{
 		public static MysqlDatabase mysqlDatabase = null;
 		public static List<Order> ordersHistory = new List<Order>();
