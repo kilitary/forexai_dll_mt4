@@ -11,16 +11,20 @@ namespace forexAI
 	{
 		public static void CommandLoop()
 		{
+			string typing = String.Empty;
+			string[] commandParts = null;
+			var resultString = string.Empty;
+			int nBytes = 0;
+
 			while (true)
 			{
-				var typing = Console.ReadLine().Trim();
-
-				var commandParts = typing.Split(' ');
-				var resultString = string.Empty;
-				if (commandParts.Count() <= 0)
-					continue;
 				try
 				{
+					typing = Console.ReadLine().Trim();
+					commandParts = typing.Split(' ');
+					if (commandParts.Count() <= 0)
+						continue;
+
 					log($"command: {typing}");
 					consolelog($"> {typing} ({commandParts.Count()})", "dev", ConsoleColor.DarkGreen);
 
@@ -33,17 +37,18 @@ namespace forexAI
 							if (commandParts.Count() >= 1)
 							{
 								if (commandParts.Count() == 1)
-									resultString = $"config: {App.config.getDump()}";
+									resultString = $"config: {App.config.DumpString()}";
 								else
 								{
 									switch (commandParts[1])
 									{
 										case "save":
-											int bytes = App.config.Save();
-											resultString = $"config saved ({bytes} bytes)";
+											nBytes = App.config.Save();
+											resultString = $"config saved ({nBytes} bytes)";
 											break;
 										case "clear":
 											App.config.Clear();
+											App.config.Save();
 											resultString = $"config clear";
 											break;
 										default:

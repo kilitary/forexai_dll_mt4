@@ -19,6 +19,7 @@ using static forexAI.Experimental;
 using static forexAI.Logger;
 using static forexAI.Constants;
 using System.Runtime.InteropServices;
+using static Newtonsoft.Json.JsonConvert;
 
 namespace forexAI
 {
@@ -179,8 +180,8 @@ namespace forexAI
 		int tradeBarPeriodPass => Bars - lastTradeBar;
 		int buysCount => Data.ordersActive.Where(o => o.type == Constants.OrderType.Buy).Count();
 		int sellsCount => Data.ordersActive.Where(o => o.type == Constants.OrderType.Sell).Count();
-		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
-		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
+		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
+		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double ordersProfit => buysProfit + sellsProfit;
 		double diffProbability => buyProbability + sellProbability;
 		TrendDirection collapseDirection => Low[0] - Low[1] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
@@ -449,7 +450,6 @@ namespace forexAI
 			Task.Factory.StartNew(() =>
 			{
 				AttachConsole(ATTACH_PARENT_PROCESS);
-
 				ConsoleCommandReceiver.CommandLoop();
 			});
 
@@ -575,9 +575,9 @@ namespace forexAI
 			if (spread == previousSpread)
 				return;
 
-			trailingBorder = Math.Round(spread * 2.3);
-			trailingStop = Math.Round(trailingBorder * 0.9);
-			log($"set trailingBorder {trailingBorder} trailingStop: {trailingStop}", "auto");
+			trailingBorder = Math.Round(spread * 1.2);
+			trailingStop = Math.Round(trailingBorder * 0.6);
+			log($"[spread={spread}] set trailingBorder {trailingBorder} trailingStop: {trailingStop}", "auto");
 			previousSpread = spread;
 		}
 
@@ -801,8 +801,11 @@ namespace forexAI
 				AddVerticalLabel($"Market collapse {collapseDirection} ({change.ToString("0.00000")})", Color.Aquamarine);
 
 				marketCollapsedBar = Bars;
-				OpenBuy(collapseEnterLots);
-				OpenSell(collapseEnterLots);
+
+				/*if (collapseDirection == Constants.TrendDirection.Up)
+					OpenBuy(collapseEnterLots);
+				else
+					OpenSell(collapseEnterLots);*/
 			}
 		}
 
@@ -950,7 +953,7 @@ namespace forexAI
 
 			if (sellsProfit < 0 || buysProfit < 0)
 			{
-				iLots = orderLots * 2.1;
+				iLots = Math.Round(orderLots * 2.3, 2);
 				consolelog($"[{type}] refinancing spend sells:{sellsProfit} buys:{buysProfit}  ilots:{iLots}", "auto");
 			}
 			return iLots;
@@ -1077,8 +1080,6 @@ namespace forexAI
 				error("WHAT I SHOULD DO?? DO U KNOW????");
 				return;
 			}
-
-			config["networks"] = Newtonsoft.Json.JsonConvert.SerializeObject(Data.networksDirectories);
 		}
 
 		void TestNetworkMSE()

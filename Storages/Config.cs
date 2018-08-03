@@ -42,6 +42,13 @@ namespace forexAI
 			}
 		}
 
+		public bool Has(string name)
+		{
+			if (_config == null || !_config.Keys.Contains(name))
+				return false;
+			return true;
+		}
+
 		public void Set(string name, object obj)
 		{
 			if (_config != null)
@@ -60,13 +67,14 @@ namespace forexAI
 				_config = new Dictionary<string, dynamic>();
 				_config = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>
 					(File.ReadAllText(Configuration.configFilePath));
-				log($"Config()->load {_config.Count()} vars", "dev");
+				log($"Config()->load {_config.Count()} vars", "App.full");
 			}
 		}
 
 		public int Save()
 		{
 			string data = string.Empty;
+
 			if (_config == null)
 				return -1;
 
@@ -88,14 +96,15 @@ namespace forexAI
 			Save();
 		}
 
-		public object getDump()
+		public string DumpString()
 		{
 			return Newtonsoft.Json.JsonConvert.SerializeObject(_config, Formatting.Indented);
 		}
 
-		internal void Clear()
+		public void Clear()
 		{
-			_config.Clear();
+			if (_config != null)
+				_config.Clear();
 		}
 	}
 }

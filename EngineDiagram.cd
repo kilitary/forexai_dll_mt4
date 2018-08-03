@@ -10,7 +10,7 @@
   <Class Name="forexAI.Reassembler">
     <Position X="4.75" Y="2.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAQBQAAMAAAAAEQBAAICEgBDAgIEAAIAIMWAEIAAAAA=</HashCode>
+      <HashCode>AAQFQAAMAAAAAEQBAAICEgBDAgYEAAIAIMWAEIAAAAA=</HashCode>
       <FileName>Reassembler\Reassembler.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -22,7 +22,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Configuration">
-    <Position X="7" Y="3" Width="2.25" />
+    <Position X="7" Y="3.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAIAQAMQgAEAAEIAAAEAAQAAIQEAAAYCAghABQIgAAA=</HashCode>
       <FileName>Data\Configuration.cs</FileName>
@@ -31,7 +31,7 @@
   <Class Name="forexAI.Config">
     <Position X="8" Y="0.5" Width="1.25" />
     <TypeIdentifier>
-      <HashCode>AAACAIAAAAAABABACAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAIAIAAAAACBABACAAEAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
       <FileName>Storages\Config.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -58,7 +58,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Hash">
-    <Position X="14.25" Y="0.5" Width="1.25" />
+    <Position X="9.75" Y="3.25" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAgAAA=</HashCode>
       <FileName>Tools\Hash.cs</FileName>
@@ -72,7 +72,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Logger">
-    <Position X="15.5" Y="0.5" Width="2" />
+    <Position X="0.75" Y="7.75" Width="2" />
     <TypeIdentifier>
       <HashCode>kAAAAAAAgBgAABCAAAGACAAAAAAQgAAAQAAAAAAAAAA=</HashCode>
       <FileName>Logging\Logger.cs</FileName>
@@ -114,7 +114,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Data">
-    <Position X="9.5" Y="3.75" Width="3" />
+    <Position X="9.5" Y="4.75" Width="3" />
     <TypeIdentifier>
       <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAIAAAAA=</HashCode>
       <FileName>Storages\Data.cs</FileName>
@@ -135,16 +135,16 @@
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.ForexAI" Collapsed="true">
-    <Position X="15" Y="4" Width="2.5" />
+    <Position X="9.5" Y="6.75" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>EzhfrQfl/TKKMAIrzEppBwMn2JuXZzbQP06nCwFikUE=</HashCode>
-      <FileName>App\ForexAI.cs</FileName>
+      <HashCode>EzhfrQfl/TKKMAKrzEppBwMn2JuXZzbQP06nCwFikUE=</HashCode>
+      <FileName>ForexAI.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.App">
     <Position X="11" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAACAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACACAAAAAAAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAA=</HashCode>
       <FileName>App\App.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -153,6 +153,13 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Extensions\Extensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="forexAI.ConsoleCommandReceiver">
+    <Position X="12.75" Y="6" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ConsoleCommands\CommandLoop.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="forexAI.FunctionConfiguration">
