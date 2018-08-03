@@ -31,7 +31,7 @@
   <Class Name="forexAI.Config">
     <Position X="8" Y="0.5" Width="1.25" />
     <TypeIdentifier>
-      <HashCode>AAAIAIAAAAACBABACAQAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <HashCode>AAAIAIAAAAACBABACAUACAAAAAAAABAAAAAgAABAAAA=</HashCode>
       <FileName>Storages\Config.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -123,7 +123,7 @@
   <Class Name="forexAI.AudioFX">
     <Position X="0.5" Y="0.5" Width="1.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAABAAAAgDAAQAAAAAgAAIAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAJAABAEAAgDAAQAAAAAgAAIAAAAAAA=</HashCode>
       <FileName>Audio\Audio.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -137,7 +137,7 @@
   <Class Name="forexAI.ForexAI" Collapsed="true">
     <Position X="9.5" Y="7.25" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>EzhfrQfl/TKKMAKrzEppBwMn2JuXZzbQP06nCwFikUE=</HashCode>
+      <HashCode>EzhfrQfl/TKKMAKrzEppBwMn2JuXZz7QP06nCwFikUE=</HashCode>
       <FileName>ForexAI.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -158,7 +158,7 @@
   <Class Name="forexAI.ConsoleCommandReceiver">
     <Position X="11" Y="4.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAEAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Console\CommandLoop.cs</FileName>
     </TypeIdentifier>
   </Class>

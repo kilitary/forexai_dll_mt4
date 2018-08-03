@@ -20,16 +20,45 @@ namespace forexAI
 {
 	public class Config
 	{
-		private readonly Dictionary<string, dynamic> _config = null;
+		private readonly Dictionary<string, string> _config = null;
 
-		public dynamic this[string name]
+		public bool IsEnabled(string logic)
+		{
+			if (!Has(logic))
+				return false;
+
+			return bool.Parse(this[logic]);
+		}
+
+		public void Toggle(string logic)
+		{
+			if(IsEnabled(logic))
+				this[logic] = "false";
+			else
+				this[logic] = "true";
+			Save();
+		}
+
+		public void Enable(string logic)
+		{
+			this[logic] = "true";
+			Save();
+		}
+
+		public void Disable(string logic)
+		{
+			this[logic] = "false";
+			Save();
+		}
+
+		public string this[string name]
 		{
 			get
 			{
 				if (_config == null || !_config.Keys.Contains(name))
 					return null;
 
-				dynamic value;
+				string value;
 				_config.TryGetValue(name, out value);
 
 				return value;
@@ -38,6 +67,7 @@ namespace forexAI
 			{
 				if (_config != null)
 					_config[name] = value;
+				Save();
 			}
 		}
 
@@ -53,9 +83,10 @@ namespace forexAI
 		{
 			if (_config != null)
 				_config[name] = (string) obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
+			Save();
 		}
 
-		public object Get(string name, dynamic def = null)
+		public object Get(string name, string def = null)
 		{
 			if (!Has(name))
 				return def;
@@ -67,8 +98,8 @@ namespace forexAI
 		{
 			if (File.Exists(Configuration.configFilePath))
 			{
-				_config = new Dictionary<string, dynamic>();
-				_config = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>
+				_config = new Dictionary<string, string>();
+				_config = JsonConvert.DeserializeObject<Dictionary<string, string>>
 					(File.ReadAllText(Configuration.configFilePath));
 				log($"Config()->load {_config.Count()} vars", "App.full");
 			}

@@ -8,11 +8,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using forexAI;
+using static forexAI.Logger;
 
 namespace forexAI
 {
 	public static class AudioFX
 	{
+		public static bool currentlyPriceComingPlaying = false;
+
 		public static void Play(string audioFileName)
 		{
 			if (!Configuration.audioEnabled)
@@ -55,5 +58,24 @@ namespace forexAI
 			Play(Configuration.lowBalanceWAV);
 		}
 
+		public static void PriceComing(double freq)
+		{
+			if (currentlyPriceComingPlaying)
+				return;
+
+			currentlyPriceComingPlaying = true;
+			//log($"freq bef={freq} poiunt={App.mqlApi.Point}", "dev");
+			freq = (freq) / App.mqlApi.Point / 10;
+			//log($"freq aft={freq}", "dev");
+			Task.Factory.StartNew(() =>
+			{
+				for (var i = 0; i < freq % 2; i++)
+				{
+					Thread.Sleep((int) freq);
+					Console.Beep(776 - i * 10, 50 - i);
+				}
+				currentlyPriceComingPlaying = false;
+			});
+		}
 	}
 }

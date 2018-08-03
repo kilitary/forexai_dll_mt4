@@ -184,8 +184,8 @@ namespace forexAI
 		int tradeBarPeriodPass => Bars - lastTradeBar;
 		int buysCount => Data.ordersActive.Where(o => o.type == Constants.OrderType.Buy).Count();
 		int sellsCount => Data.ordersActive.Where(o => o.type == Constants.OrderType.Sell).Count();
-		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
-		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
+		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
+		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
 		double ordersProfit => buysProfit + sellsProfit;
 		double diffProbability => buyProbability + sellProbability;
 		TrendDirection collapseDirection => Low[0] - Low[1] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
@@ -455,7 +455,8 @@ namespace forexAI
 			{
 				AttachConsole(ATTACH_PARENT_PROCESS);
 				ConsoleCommandReceiver.CommandReadingLoop();
-			}, TaskCreationOptions.LongRunning);
+			},
+			TaskCreationOptions.LongRunning);
 
 		}
 
@@ -1304,11 +1305,15 @@ namespace forexAI
 
 				if (order.type == Constants.OrderType.Buy)
 				{
+					if (order.stopLoss == 0 && Bid >= order.openPrice)
+						AudioFX.PriceComing(Math.Abs(Bid - OrderOpenPrice()));
+
 					newStopLoss = Bid - iTrailingStop * Point;
 					if ((order.stopLoss == 0.0 || newStopLoss > order.stopLoss)
 						&& Bid - (iTrailingBorder * Point) > order.openPrice
 						&& order.calculatedProfit > 0)
 					{
+
 						if (order.stopLoss > 0)
 							newStopLoss = Low[2];
 						if (newStopLoss > OrderOpenPrice() || order.stopLoss == 0)
@@ -1338,11 +1343,16 @@ namespace forexAI
 				}
 				else if (order.type == Constants.OrderType.Sell)
 				{
+					if (order.stopLoss == 0 && Ask <= order.openPrice)
+						AudioFX.PriceComing(Math.Abs(Ask - order.openPrice));
+
 					newStopLoss = Ask + iTrailingStop * Point;
 					if ((order.stopLoss == 0.0 || newStopLoss < order.stopLoss)
 						&& Ask + (iTrailingBorder * Point) < order.openPrice
 						&& order.calculatedProfit > 0)
 					{
+
+
 						if (order.stopLoss > 0)
 							newStopLoss = High[2];
 						if (newStopLoss < OrderOpenPrice() || order.stopLoss == 0)
@@ -1738,7 +1748,7 @@ namespace forexAI
 			   "\r\n" +
 			   $"orderLots: {orderLots}\r\nmaxNegativeSpend: {maxNegativeSpend}\r\n" +
 			   $"Spread: {spread}\r\n" + $"trailingBorder: {trailingBorder}\r\ntrailingStop: {trailingStop}\r\n" +
-			    $"trailingBorderFactor: {trailingBorderFactor}\r\ntrailingStopFactor: {trailingStopFactor}\r\n" +
+				$"trailingBorderFactor: {trailingBorderFactor}\r\ntrailingStopFactor: {trailingStopFactor}\r\n" +
 			   $"stableBigChangeFactor: {stableBigChangeFactor}\r\ntradeEnterProbMin: {tradeEnterProbabilityMin}\r\nrejectTradeProb: {rejectTradeProbability}\r\n" +
 			   $"minLossForCounterTrade: {minLossForCounterTrade}\r\nuseOptimizedLots: {useOptimizedLots}\r\nnaxOrdersParallel: {maxOrdersParallel}\r\n" +
 			   $"minStableTrendBar: {minStableTrendBarForEnter}\r\nmaxStableTrendBar: {maxStableTrendBarForEnter}\r\nminTrade3PeriodBars: {minTradePeriodBars}\r\n" +

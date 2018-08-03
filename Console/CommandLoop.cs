@@ -41,6 +41,21 @@ namespace forexAI
 
 					switch (commandParts[0])
 					{
+						case "enable":
+							App.config.Enable(commandParts[1]);
+							resultString = $"enabled {commandParts[1]}";
+							break;
+
+						case "disable":
+							App.config.Disable(commandParts[1]);
+							resultString = $"disabled {commandParts[1]}";
+							break;
+
+						case "toggle":
+							App.config.Toggle(commandParts[1]);
+							resultString = $"toggle {commandParts[1]}: {App.config.IsEnabled(commandParts[1])}";
+							break;
+
 						case "version":
 							resultString = $"version: {App.version.ToString()}";
 							break;
@@ -69,6 +84,7 @@ namespace forexAI
 												log($"setting {commandParts[1]} to {commandParts[2]}", "dev");
 												App.config[commandParts[1]] = commandParts[2];
 												resultString = $"set {commandParts[1]} = {commandParts[2]}";
+												App.config.Save();
 											}
 											else
 											{
