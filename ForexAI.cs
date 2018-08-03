@@ -92,7 +92,8 @@ namespace forexAI
 		public double collapseChangePoints = 0.0048;
 
 		[DllImport("kernel32.dll")]
-		private static extern bool AttachConsole(int dwProcessId);
+		public static extern bool AttachConsole(int dwProcessId);
+
 		private const int ATTACH_PARENT_PROCESS = -1;
 
 		//  props
@@ -180,8 +181,8 @@ namespace forexAI
 		int tradeBarPeriodPass => Bars - lastTradeBar;
 		int buysCount => Data.ordersActive.Where(o => o.type == Constants.OrderType.Buy).Count();
 		int sellsCount => Data.ordersActive.Where(o => o.type == Constants.OrderType.Sell).Count();
-		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
-		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
+		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
+		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double ordersProfit => buysProfit + sellsProfit;
 		double diffProbability => buyProbability + sellProbability;
 		TrendDirection collapseDirection => Low[0] - Low[1] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
@@ -450,8 +451,8 @@ namespace forexAI
 			Task.Factory.StartNew(() =>
 			{
 				AttachConsole(ATTACH_PARENT_PROCESS);
-				ConsoleCommandReceiver.CommandLoop();
-			});
+				ConsoleCommandReceiver.CommandReadingLoop();
+			}, TaskCreationOptions.LongRunning);
 
 		}
 

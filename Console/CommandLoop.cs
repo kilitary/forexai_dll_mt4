@@ -4,17 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static forexAI.Logger;
+using System.Runtime.InteropServices;
+using static System.Console;
 
 namespace forexAI
 {
 	public static class ConsoleCommandReceiver
 	{
-		public static void CommandLoop()
+		[DllImport("kernel32.dll")]
+		private static extern bool FreeConsole();
+
+		public static void CommandReadingLoop()
 		{
 			string typing = String.Empty;
 			string[] commandParts = null;
 			var resultString = string.Empty;
 			int nBytes = 0;
+
+			Console.WindowWidth = 180;
+			Console.WindowHeight = 30;
+			Console.CursorLeft = 0;
+			Console.CursorTop = 0;
+			Console.Beep(1650, 100);
 
 			while (true)
 			{
@@ -22,11 +33,11 @@ namespace forexAI
 				{
 					typing = Console.ReadLine().Trim();
 					commandParts = typing.Split(' ');
-					if (commandParts.Count() <= 0)
+					if (commandParts.Count() <= 0 || commandParts[0].Length == 0)
 						continue;
 
 					log($"command: {typing}");
-					consolelog($"> {typing} ({commandParts.Count()})", "dev", ConsoleColor.DarkGreen);
+					consolelog($"=> {typing} ({commandParts.Count()})", "dev", ConsoleColor.DarkGreen);
 
 					switch (commandParts[0])
 					{
@@ -75,11 +86,22 @@ namespace forexAI
 							break;
 
 					}
-					consolelog($"< {resultString}", "dev", ConsoleColor.White);
+
+					if(resultString.Contains("unknown command"))
+						Console.Beep(250, 255);
+					else
+						Console.Beep(1850, 55);
+
+					consolelog($"<= {resultString}", "dev", ConsoleColor.White);
 				}
 				catch (Exception e)
 				{
 					log($"EXCEPTION COMMAND '{Newtonsoft.Json.JsonConvert.SerializeObject(commandParts)}: '{e.Message}: {e.StackTrace}", "error");
+				}
+				finally
+				{
+					//FreeConsole();
+					//log($"console freed", "dev");
 				}
 			}
 		}

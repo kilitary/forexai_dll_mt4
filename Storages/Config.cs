@@ -23,7 +23,7 @@ namespace forexAI
 	{
 		private readonly Dictionary<string, dynamic> _config = null;
 
-		public string this[string name]
+		public dynamic this[string name]
 		{
 			get
 			{
@@ -46,6 +46,7 @@ namespace forexAI
 		{
 			if (_config == null || !_config.Keys.Contains(name))
 				return false;
+
 			return true;
 		}
 
@@ -55,9 +56,12 @@ namespace forexAI
 				_config[name] = (string) obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
 		}
 
-		public object Get(string name)
+		public object Get(string name, dynamic def = null)
 		{
-			return _config == null ? "<nullconfig>" : _config[name];
+			if (!Has(name))
+				return def;
+
+			return _config?[name];
 		}
 
 		public Config()
