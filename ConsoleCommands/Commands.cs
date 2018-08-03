@@ -7,7 +7,7 @@ using static forexAI.Logger;
 
 namespace forexAI
 {
-	public static class Commands
+	public static class ConsoleCommandReceiver
 	{
 		public static void CommandLoop()
 		{

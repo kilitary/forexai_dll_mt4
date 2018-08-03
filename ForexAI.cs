@@ -450,7 +450,7 @@ namespace forexAI
 			{
 				AttachConsole(ATTACH_PARENT_PROCESS);
 
-				forexAI.Commands.CommandLoop();
+				ConsoleCommandReceiver.CommandLoop();
 			});
 
 		}
