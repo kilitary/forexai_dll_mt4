@@ -7,7 +7,6 @@
 //.........\................. ..\/..../.... 
 //..........\......................./´..... 
 //............\................ ..(........
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -85,14 +84,15 @@ namespace forexAI
 			try
 			{
 				data = JsonConvert.SerializeObject(_config, Formatting.Indented);
-				log($"saving {data}", "dev");
+				log($"Config()->saving {data.Length} bytes '{data}' to {Configuration.configFilePath}", "App.full");
 				File.WriteAllText(Configuration.configFilePath, data);
 			}
 			catch (InvalidOperationException e)
 			{
 				log($"exception in save config: {e.Message}", "error");
 			}
-			return data == string.Empty ? -1 : data.Length;
+
+			return data.Length;
 		}
 
 		~Config()

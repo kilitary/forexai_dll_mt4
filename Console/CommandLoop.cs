@@ -16,7 +16,7 @@ namespace forexAI
 
 		public static void CommandReadingLoop()
 		{
-			string typing = String.Empty;
+			var typing = String.Empty;
 			string[] commandParts = null;
 			var resultString = string.Empty;
 			int nBytes = 0;
@@ -25,7 +25,7 @@ namespace forexAI
 			Console.WindowHeight = 30;
 			Console.CursorLeft = 0;
 			Console.CursorTop = 0;
-			Console.Beep(1650, 100);
+			Console.Beep(1650, 33);
 
 			while (true)
 			{
@@ -36,7 +36,7 @@ namespace forexAI
 					if (commandParts.Count() <= 0 || commandParts[0].Length == 0)
 						continue;
 
-					log($"command: {typing}");
+					log($"command: {typing}", "dev");
 					consolelog($"=> {typing} ({commandParts.Count()})", "dev", ConsoleColor.DarkGreen);
 
 					switch (commandParts[0])
@@ -44,6 +44,7 @@ namespace forexAI
 						case "version":
 							resultString = $"version: {App.version.ToString()}";
 							break;
+
 						case "config":
 							if (commandParts.Count() >= 1)
 							{
@@ -81,6 +82,7 @@ namespace forexAI
 							else
 								resultString = $"unknown config cmd";
 							break;
+
 						default:
 							resultString = $"unknown command '{commandParts[0]}'";
 							break;
@@ -88,7 +90,7 @@ namespace forexAI
 					}
 
 					if(resultString.Contains("unknown command"))
-						Console.Beep(250, 255);
+						Console.Beep(250, 155);
 					else
 						Console.Beep(1850, 55);
 

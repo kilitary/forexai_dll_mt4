@@ -32,10 +32,10 @@ namespace forexAI
 		public double maxNegativeSpend = -2;
 
 		[ExternVariable]
-		public double trailingBorder = 30;
+		public double trailingBorderFactor = 1.1;
 
 		[ExternVariable]
-		public double trailingStop = 25;
+		public double trailingStopFactor = 0.3;
 
 		[ExternVariable]
 		public double stableBigChangeFactor = 0.2;
@@ -131,6 +131,8 @@ namespace forexAI
 		double spread;
 		double previousSpread;
 		double stoplevel = 0.0;
+		double trailingBorder = 30;
+		double trailingStop = 25;
 		double[] prevNetworkOutputBuy = new double[11];
 		double[] prevNetworkOutputSell = new double[11];
 		double[] fannNetworkOutput = null;
@@ -175,6 +177,7 @@ namespace forexAI
 		int lastTradeBar = 0;
 		int marketCollapsedBar = 0;
 		int slipPage = 30;
+
 
 		// computed properties
 		int ordersCount => Data.ordersActive.Count();
@@ -576,14 +579,15 @@ namespace forexAI
 			if (spread == previousSpread)
 				return;
 
-			trailingBorder = Math.Round(spread * 1.2);
-			trailingStop = Math.Round(trailingBorder * 0.6);
+			trailingBorder = Math.Round(spread * trailingBorderFactor);
+			trailingStop = Math.Round(trailingBorder * trailingStopFactor);
 			log($"[spread={spread}] set trailingBorder {trailingBorder} trailingStop: {trailingStop}", "auto");
 			previousSpread = spread;
 		}
 
 		public override int init()
 		{
+			Console.Clear();
 			InitPredefinedVariables();
 			startTime = GetTickCount();
 			App.mqlApi = this;
@@ -1734,6 +1738,7 @@ namespace forexAI
 			   "\r\n" +
 			   $"orderLots: {orderLots}\r\nmaxNegativeSpend: {maxNegativeSpend}\r\n" +
 			   $"Spread: {spread}\r\n" + $"trailingBorder: {trailingBorder}\r\ntrailingStop: {trailingStop}\r\n" +
+			    $"trailingBorderFactor: {trailingBorderFactor}\r\ntrailingStopFactor: {trailingStopFactor}\r\n" +
 			   $"stableBigChangeFactor: {stableBigChangeFactor}\r\ntradeEnterProbMin: {tradeEnterProbabilityMin}\r\nrejectTradeProb: {rejectTradeProbability}\r\n" +
 			   $"minLossForCounterTrade: {minLossForCounterTrade}\r\nuseOptimizedLots: {useOptimizedLots}\r\nnaxOrdersParallel: {maxOrdersParallel}\r\n" +
 			   $"minStableTrendBar: {minStableTrendBarForEnter}\r\nmaxStableTrendBar: {maxStableTrendBarForEnter}\r\nminTrade3PeriodBars: {minTradePeriodBars}\r\n" +
