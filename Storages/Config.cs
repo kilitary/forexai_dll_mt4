@@ -21,56 +21,66 @@ namespace forexAI
 {
 	public class Config
 	{
-		private readonly Dictionary<string, object> config = null;
+		private readonly Dictionary<string, dynamic> _config = null;
 
-		public object this[string name]
+		public string this[string name]
 		{
 			get
 			{
-				return config ?? config[name];
+				if (_config == null)
+					return "<nullconfig>";
+
+				dynamic value;
+				_config.TryGetValue(name, out value);
+
+				return value;
 			}
 			set
 			{
-				if (config != null)
-					config[name] = value;
+				if (_config != null)
+					_config[name] = value;
 			}
 		}
 
 		public void Set(string name, object obj)
 		{
-			if (config != null)
-				config[name] = obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
+			if (_config != null)
+				_config[name] = (string) obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
 		}
 
 		public object Get(string name)
 		{
-			return config ?? config[name];// JsonConvert.DeserializeObject<object>(settings[name].ToString());
+			return _config == null ? "<nullconfig>" : _config[name];
 		}
 
 		public Config()
 		{
 			if (File.Exists(Configuration.configFilePath))
 			{
-				config = new Dictionary<string, object>();
-				config = JsonConvert.DeserializeObject<Dictionary<string, object>>
+				_config = new Dictionary<string, dynamic>();
+				_config = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>
 					(File.ReadAllText(Configuration.configFilePath));
+				log($"Config()->load {_config.Count()} vars", "dev");
 			}
 		}
 
-		public void Save()
+		public int Save()
 		{
-			if (config == null)
-				return;
+			string data = string.Empty;
+			if (_config == null)
+				return -1;
 
 			try
 			{
-				log($"saving {JsonConvert.SerializeObject(config, Formatting.Indented)}", "dev");
-				File.WriteAllText(Configuration.configFilePath, JsonConvert.SerializeObject(config, Formatting.Indented));
+				data = JsonConvert.SerializeObject(_config, Formatting.Indented);
+				log($"saving {data}", "dev");
+				File.WriteAllText(Configuration.configFilePath, data);
 			}
 			catch (InvalidOperationException e)
 			{
-				error($"exception in save config: {e.Message}");
+				log($"exception in save config: {e.Message}", "error");
 			}
+			return data == string.Empty ? -1 : data.Length;
 		}
 
 		~Config()
@@ -78,5 +88,14 @@ namespace forexAI
 			Save();
 		}
 
+		public object getDump()
+		{
+			return Newtonsoft.Json.JsonConvert.SerializeObject(_config, Formatting.Indented);
+		}
+
+		internal void Clear()
+		{
+			_config.Clear();
+		}
 	}
 }

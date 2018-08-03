@@ -18,6 +18,7 @@ using static System.ConsoleColor;
 using static forexAI.Experimental;
 using static forexAI.Logger;
 using static forexAI.Constants;
+using System.Runtime.InteropServices;
 
 namespace forexAI
 {
@@ -39,7 +40,7 @@ namespace forexAI
 		public double stableBigChangeFactor = 0.2;
 
 		[ExternVariable]
-		public double tradeEnterProbabilityMin = 0.8;
+		public double tradeEnterProbabilityMin = 0.7;
 
 		[ExternVariable]
 		public double rejectTradeProbability = -0.2;
@@ -81,13 +82,17 @@ namespace forexAI
 		public double orderAliveHours = 4;
 
 		[ExternVariable]
-		public double collapseEnterLots = 0.04;
+		public double collapseEnterLots = 0.01;
 
 		[ExternVariable]
 		public double counterTradeLots = 0.02;
 
 		[ExternVariable]
 		public double collapseChangePoints = 0.0048;
+
+		[DllImport("kernel32.dll")]
+		private static extern bool AttachConsole(int dwProcessId);
+		private const int ATTACH_PARENT_PROCESS = -1;
 
 		//  props
 		public Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 1314);
@@ -99,8 +104,8 @@ namespace forexAI
 		public Process currentProcess = null;
 		public TrainingData testData = null;
 		public Stopwatch runWatch = null;
-		string networkId = string.Empty;
-		string fannNetworkDirName = string.Empty;
+		public string networkId = string.Empty;
+		public string fannNetworkDirName = string.Empty;
 		string inputLayerActivationFunction = string.Empty;
 		string middleLayerActivationFunction = string.Empty;
 		string labelID, type = string.Empty;
@@ -437,6 +442,17 @@ namespace forexAI
 
 				return minNearDistance;
 			}
+		}
+
+		public ForexAI()
+		{
+			Task.Factory.StartNew(() =>
+			{
+				AttachConsole(ATTACH_PARENT_PROCESS);
+
+				forexAI.Commands.CommandLoop();
+			});
+
 		}
 
 		public override int start()
@@ -785,10 +801,8 @@ namespace forexAI
 				AddVerticalLabel($"Market collapse {collapseDirection} ({change.ToString("0.00000")})", Color.Aquamarine);
 
 				marketCollapsedBar = Bars;
-				if (collapseDirection == TrendDirection.Up)
-					OpenBuy(collapseEnterLots);
-				else
-					OpenSell(collapseEnterLots);
+				OpenBuy(collapseEnterLots);
+				OpenSell(collapseEnterLots);
 			}
 		}
 
@@ -924,8 +938,8 @@ namespace forexAI
 				Data.mysqlDatabase = new MysqlDatabase();
 
 			config["process"] = currentProcess.ToString();
-			config["yrandom"] = (uint) YRandom.Next(int.MaxValue);
-			config["random"] = (uint) random.Next(int.MaxValue);
+			config["yrandom"] = YRandom.Next(int.MaxValue).ToString();
+			config["random"] = random.Next(int.MaxValue).ToString();
 
 			console($"Init variables [stoplevel={stoplevel}] ...");
 		}
@@ -937,7 +951,7 @@ namespace forexAI
 			if (sellsProfit < 0 || buysProfit < 0)
 			{
 				iLots = orderLots * 2.1;
-				consolelog($"[{type}] refinancing spend sells:{sellsProfit} buys:{buysProfit}  ilots->{iLots}", "auto");
+				consolelog($"[{type}] refinancing spend sells:{sellsProfit} buys:{buysProfit}  ilots:{iLots}", "auto");
 			}
 			return iLots;
 		}
@@ -1014,6 +1028,7 @@ namespace forexAI
 			long fileLength = new FileInfo($"{Configuration.rootDirectory}\\{dirName}\\FANN.net").Length;
 			log($"Loading network {dirName} ({(fileLength / 1024.0).ToString("0.00")} KB)");
 
+			App.currentNetworkId = dirName;
 			networkId = fannNetworkDirName = dirName;
 
 			fannNetwork = new NeuralNet($"{Configuration.rootDirectory}\\{dirName}\\FANN.net")
@@ -1063,7 +1078,7 @@ namespace forexAI
 				return;
 			}
 
-			config["networks"] = Data.networksDirectories;
+			config["networks"] = Newtonsoft.Json.JsonConvert.SerializeObject(Data.networksDirectories);
 		}
 
 		void TestNetworkMSE()
@@ -1288,7 +1303,8 @@ namespace forexAI
 						&& Bid - (iTrailingBorder * Point) > order.openPrice
 						&& order.calculatedProfit > 0)
 					{
-						newStopLoss = Low[2];
+						if (order.stopLoss > 0)
+							newStopLoss = Low[2];
 						if (newStopLoss > OrderOpenPrice() || order.stopLoss == 0)
 						{
 							if (order.stopLoss == 0)
@@ -1321,7 +1337,8 @@ namespace forexAI
 						&& Ask + (iTrailingBorder * Point) < order.openPrice
 						&& order.calculatedProfit > 0)
 					{
-						newStopLoss = High[2];
+						if (order.stopLoss > 0)
+							newStopLoss = High[2];
 						if (newStopLoss < OrderOpenPrice() || order.stopLoss == 0)
 						{
 							if (order.stopLoss == 0)

@@ -74,6 +74,8 @@ namespace forexAI
 		static int startIdx = 0;
 		static int arrayIndex = 0;
 		static int setNextArrayIndex = 0;
+		static TrainingData trainData = null;
+		static TrainingData trainDataOriginal = null;
 
 		public static (int, double[]) Execute(string functionConfigurationString, int inputDimension, NeuralNet neuralNetwork, bool reassemblingCompletedOverride)
 		{
@@ -403,9 +405,6 @@ namespace forexAI
 
 			logIf(reassemblyStage, $"=> Reassembling [ SUCCESS ] Functions: {functionsNamesList}");
 
-			//TrainingData trainData = new TrainingData();
-			//trainData.SetTrainData((uint) 1, fullInputSet, fullInputSet);
-
 			JsonSerializerSettings jsonSettings2 = new JsonSerializerSettings
 			{
 				MaxDepth = 5,
@@ -416,23 +415,39 @@ namespace forexAI
 			File.WriteAllText($"{Configuration.rootDirectory}\\unscaledset.dat", $"[Functions: {functionsNamesList}]" +
 				"\r\n\r\n" + SerializeObject(fullInputSet, jsonSettings2));
 
-			TrainingData trainData = new TrainingData();
+			//dump(ptr, "ptr", "dev");
+			/*if (trainDataOriginal == null)
+			{
+				string trainPath = $"{Configuration.rootDirectory}\\{App.currentNetworkId}\\traindata.dat";
+				log($"loading pretrain '{trainPath}' ...");
+				trainData = new TrainingData();
+				trainData.ReadTrainFromFile(trainPath);
+				trainDataOriginal = trainData;
+			}
+			else
+			{
+				trainData = trainDataOriginal;
+			}
+
+			TrainingData trainDataCurrent = new TrainingData();
 			double[][] ptr = new double[1][];
+			double[][] outPtr = new double[1][];
 			ptr[0] = fullInputSet;
-			dump(ptr, "ptr", "dev");
-			trainData.SetTrainData(ptr, ptr);
+			outPtr[0] = new double[2] { 0, 0 };
+			trainDataCurrent.SetTrainData(ptr, outPtr);
+			trainData.MergeTrainData(trainDataCurrent);
+			neuralNetwork.SetScalingParams(trainData, -1.0f, 1.0f, -1.0f, 1.0f);
 			//neuralNetwork.ScaleInput(trainData.GetTrainInput(0));
-			//neuralNetwork.SetScalingParams(trainData, -1.0f, 1.0f, -1.0f, 1.0f);
 			//neuralNetwork.ScaleTrain(trainData);
 			trainData.ScaleInputTrainData(-1.0, 1.0);
 
 			double[] outD;
 			outD = trainData.GetTrainInput(0).Array;
 			//outD = fullInputSet;
-			File.WriteAllText($"{Configuration.rootDirectory}\\scaledset.dat", SerializeObject(outD, jsonSettings2));
+			File.WriteAllText($"{Configuration.rootDirectory}\\scaledset.dat", SerializeObject(outD, jsonSettings2));*/
 
-			double[] networkOutput = neuralNetwork.Run(outD);
-			neuralNetwork.DescaleOutput(networkOutput);
+			double[] networkOutput = neuralNetwork.Run(fullInputSet);
+			//neuralNetwork.DescaleOutput(networkOutput);
 
 			reassemblyStage = false;
 			return (networkFunctionsCount, networkOutput);

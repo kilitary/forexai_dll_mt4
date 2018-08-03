@@ -116,6 +116,7 @@
   <ItemGroup>
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="App\App.cs" />
+    <Compile Include="ConsoleCommands\Commands.cs" />
     <Compile Include="Data\Constants.cs" />
     <Compile Include="Data\Configuration.cs" />
     <Compile Include="Extensions\Extensions.cs" />
@@ -129,7 +130,7 @@
     <Compile Include="Storages\Config.cs" />
     <Compile Include="Experimental\Experimental.cs" />
     <Compile Include="Experimental\YRandom.cs" />
-    <Compile Include="App\ForexAI.cs" />
+    <Compile Include="ForexAI.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Storages\Mysql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
