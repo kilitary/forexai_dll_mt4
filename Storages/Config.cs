@@ -27,8 +27,8 @@ namespace forexAI
 		{
 			get
 			{
-				if (_config == null)
-					return "<nullconfig>";
+				if (_config == null || !_config.Keys.Contains(name))
+					return null;
 
 				dynamic value;
 				_config.TryGetValue(name, out value);
