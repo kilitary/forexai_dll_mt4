@@ -351,13 +351,13 @@ namespace forexAI
 		{
 			get
 			{
-				bool stableTrend = true;
+				bool bStableTrend = true;
 
-				for (int x = 0; x < prevBuyProbability.Length; x++)
+				for (var x = 0; x < prevBuyProbability.Length; x++)
 				{
 					if (Math.Abs(prevBuyProbability[x] - buyProbability) >= stableBigChangeFactor)
 					{
-						stableTrend = false;
+						bStableTrend = false;
 						stableTrendBar = 0;
 
 						if (stableTrendCurrentBar != Bars && !hasIncreasedUnstableTrendBar)
@@ -376,11 +376,11 @@ namespace forexAI
 					prevBuyProbability[prevBuyProbability.Length - 1] = buyProbability;
 				}
 
-				for (int x = 0; x < prevSellProbability.Length; x++)
+				for (var x = 0; x < prevSellProbability.Length; x++)
 				{
 					if (Math.Abs(prevSellProbability[x] - sellProbability) >= stableBigChangeFactor)
 					{
-						stableTrend = false;
+						bStableTrend = false;
 						stableTrendBar = 0;
 						if (stableTrendCurrentBar != Bars && !hasIncreasedUnstableTrendBar)
 						{
@@ -398,7 +398,7 @@ namespace forexAI
 					prevSellProbability[prevSellProbability.Length - 1] = sellProbability;
 				}
 
-				if (stableTrend && stableTrendCurrentBar != Bars)
+				if (bStableTrend && stableTrendCurrentBar != Bars)
 				{
 					unstableTrendBar = 0;
 					stableTrendBar++;
@@ -410,7 +410,7 @@ namespace forexAI
 					hasIncreasedUnstableTrendBar = false;
 				}
 
-				return stableTrend;
+				return bStableTrend;
 			}
 		}
 
@@ -461,24 +461,24 @@ namespace forexAI
 
 		public override int start()
 		{
-			CalculateTrailSettings();
 			SyncOrders();
 			AssignCounterOrders();
 			CheckForAutoClose();
 			CheckForMarketCollapse();
-			CloseNegativeOrders();
+			CloseSpendOrders();
+			CalculateTrailSettings();
 			TrailPositions();
 
 			if (!IsOptimization())
 			{
-				if (runWatch.ElapsedMilliseconds - lastDrawStatsTimestamp >= 300)
+				if (runWatch.ElapsedMilliseconds - lastDrawStatsTimestamp >= 500)
 				{
 					FillHistoryOrdersStatistics();
 					DrawStats();
 					lastDrawStatsTimestamp = runWatch.ElapsedMilliseconds;
 				}
 
-				if (runWatch.ElapsedMilliseconds - lastMemoryStatsDumpTimesamp >= 380000)
+				if (runWatch.ElapsedMilliseconds - lastMemoryStatsDumpTimesamp >= 1380000)
 				{
 					lastMemoryStatsDumpTimesamp = runWatch.ElapsedMilliseconds;
 					Helpers.ShowMemoryUsage();
@@ -598,8 +598,7 @@ namespace forexAI
 			if (muteSound)
 				Configuration.audioEnabled = false;
 
-			ClearLogs();
-			EraseLogs(Configuration.XRandomLogFileName, Configuration.YRandomLogFileName);
+		
 
 			ShowBanner();
 
@@ -650,6 +649,9 @@ namespace forexAI
 			InitVariables();
 			ListGlobalVariables();
 			DumpInfo();
+
+			ClearLogs();
+			EraseLogs(Configuration.XRandomLogFileName, Configuration.YRandomLogFileName);
 
 			InitNetwork();
 
@@ -950,10 +952,6 @@ namespace forexAI
 			if (Configuration.mysqlEnabled)
 				Data.mysqlDatabase = new MysqlDatabase();
 
-			App.config["process"] = currentProcess.ToString();
-			App.config["yrandom"] = YRandom.Next(int.MaxValue).ToString();
-			App.config["random"] = random.Next(int.MaxValue).ToString();
-
 			console($"Init variables [stoplevel={stoplevel}] ...");
 		}
 
@@ -1151,7 +1149,7 @@ namespace forexAI
 			return ((double) hits / (double) inputs.Length) * 100.0;
 		}
 
-		void CloseNegativeOrders()
+		void CloseSpendOrders()
 		{
 			var currentTime = TimeCurrent();
 

@@ -72,7 +72,7 @@ namespace forexAI
 				for (var i = 0; i < freq % 2; i++)
 				{
 					Thread.Sleep((int) freq);
-					Console.Beep(776 - i * 10, 50 - i);
+					Console.Beep(776 + i * 100, 50 - i * 3);
 				}
 				currentlyPriceComingPlaying = false;
 			});

@@ -138,6 +138,7 @@ namespace forexAI
 		{
 			if (_config != null)
 				_config.Clear();
+			Save();
 		}
 	}
 }

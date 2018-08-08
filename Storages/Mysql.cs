@@ -18,7 +18,7 @@ using static forexAI.Logger;
 
 namespace forexAI
 {
-	public class MysqlDatabase
+	public class MysqlDatabase : IDisposable
 	{
 		public MySqlConnection connection = null;
 
@@ -82,6 +82,11 @@ namespace forexAI
 				error(ex.Message);
 				return false;
 			}
+		}
+
+		public void Dispose()
+		{
+			throw new NotImplementedException();
 		}
 
 		public object Get(string key)

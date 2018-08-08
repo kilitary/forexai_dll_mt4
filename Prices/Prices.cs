@@ -17,8 +17,9 @@ namespace forexAI
 {
 	public class ChartPrices
 	{
-		public double[] GetOpen(int numData, int Bars)
+		public double[] GetOpen(int numData)
 		{
+			int Bars = App.mqlApi.Bars;
 			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
 			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
@@ -27,8 +28,9 @@ namespace forexAI
 			return prices;
 		}
 
-		public double[] GetClose(int numData, int Bars)
+		public double[] GetClose(int numData)
 		{
+			int Bars = App.mqlApi.Bars;
 			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
 			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
@@ -37,8 +39,9 @@ namespace forexAI
 			return prices;
 		}
 
-		public double[] GetHigh(int numData, int Bars)
+		public double[] GetHigh(int numData)
 		{
+			int Bars = App.mqlApi.Bars;
 			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
 			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
@@ -47,8 +50,9 @@ namespace forexAI
 			return prices;
 		}
 
-		public double[] GetLow(int numData, int Bars)
+		public double[] GetLow(int numData)
 		{
+			int Bars = App.mqlApi.Bars;
 			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
 			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
@@ -57,8 +61,9 @@ namespace forexAI
 			return prices;
 		}
 
-		public double[] GetVolume(int numData, int Bars)
+		public double[] GetVolume(int numData)
 		{
+			int Bars = App.mqlApi.Bars;
 			double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
 			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)

@@ -31,8 +31,9 @@ namespace forexAI
 			{
 				try
 				{
-					typing = Console.ReadLine().Trim();
+					typing = ReadLine().Trim();
 					commandParts = typing.Split(' ');
+
 					if (commandParts.Count() <= 0 || commandParts[0].Length == 0)
 						continue;
 
@@ -79,7 +80,6 @@ namespace forexAI
 											break;
 										case "clear":
 											App.config.Clear();
-											App.config.Save();
 											resultString = $"config clear";
 											break;
 										default:
@@ -109,10 +109,10 @@ namespace forexAI
 
 					}
 
-					if(resultString.Contains("unknown command"))
-						Console.Beep(250, 155);
+					if (resultString.Contains("unknown command"))
+						Beep(190, 15);
 					else
-						Console.Beep(1850, 55);
+						Beep(1850, 55);
 
 					consolelog($"<= {resultString}", "dev", ConsoleColor.White);
 				}

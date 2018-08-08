@@ -51,7 +51,7 @@ namespace forexAI
 		static TicTacTec.TA.Library.Core.RetCode ret = TicTacTec.TA.Library.Core.RetCode.UnknownErr;
 		static ChartPrices prices = new ChartPrices();
 		static Random random = new Random();
-		static string functionConfigurationHash = string.Empty;
+		static int functionConfigurationHashCode = 0;
 		static string functionName = string.Empty;
 		static string paramName = string.Empty;
 		static string comment = string.Empty;
@@ -93,9 +93,9 @@ namespace forexAI
 
 			failedReassemble = false;
 
-			if (functionConfigurationHash != Hash.sha256(functionConfigurationString))
+			if (functionConfigurationHashCode != functionConfigurationString.GetHashCode())
 			{
-				log($"hashOfFunctionConfiguration ({functionConfigurationHash}) not match content, deserializing {functionConfigurationString.Length} bytes ...");
+				log($"hashOfFunctionConfiguration ({functionConfigurationHashCode}) not match content, deserializing {functionConfigurationString.Length} bytes ...");
 				var jsonSettings = new JsonSerializerSettings
 				{
 					MetadataPropertyHandling = MetadataPropertyHandling.Ignore
@@ -103,17 +103,19 @@ namespace forexAI
 				functionsConfiguration = DeserializeObject<Dictionary<string, FunctionConfiguration>>
 					(functionConfigurationString, jsonSettings);
 
-				functionConfigurationHash = Hash.sha256(functionConfigurationString);
-				consolelog($"hash of configuration: {functionConfigurationHash}");
+				functionConfigurationHashCode = functionConfigurationString.GetHashCode();
+				consolelog($"hash of configuration: {functionConfigurationHashCode.ToString("x")}");
 			}
 
 			logIf(reassemblyStage, $"=> {functionsConfiguration.Count} functions with {inputDimension} input dimension");
 
 			networkFunctionsCount = functionsConfiguration.Count;
 
-			Array.Resize<double>(ref fullInputSet, (int) neuralNetwork.InputCount);
-
-			Helpers.ZeroArray(fullInputSet);
+			if (fullInputSet == null || fullInputSet.Length != neuralNetwork.InputCount)
+			{
+				Array.Resize<double>(ref fullInputSet, (int) neuralNetwork.InputCount);
+				Helpers.ZeroArray(fullInputSet);
+			}
 
 			logIf(reassemblyStage, $"fullInputSet.Length = {fullInputSet.Length}");
 
@@ -193,16 +195,16 @@ namespace forexAI
 							switch (arrayIndex)
 							{
 								case 0:
-									functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, App.mqlApi.Bars);
+									functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension);
 									break;
 								case 1:
-									functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, App.mqlApi.Bars);
+									functionArguments[paramIndex] = prices.GetClose(numFunctionDimension);
 									break;
 								case 2:
-									functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, App.mqlApi.Bars);
+									functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension);
 									break;
 								case 3:
-									functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, App.mqlApi.Bars);
+									functionArguments[paramIndex] = prices.GetLow(numFunctionDimension);
 									break;
 							}
 
@@ -260,19 +262,19 @@ namespace forexAI
 							functionArguments[paramIndex] = numFunctionDimension - 1;
 							break;
 						case "inOpen":
-							functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension, App.mqlApi.Bars);
+							functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension);
 							break;
 						case "inHigh":
-							functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension, App.mqlApi.Bars);
+							functionArguments[paramIndex] = prices.GetHigh(numFunctionDimension);
 							break;
 						case "inLow":
-							functionArguments[paramIndex] = prices.GetLow(numFunctionDimension, App.mqlApi.Bars);
+							functionArguments[paramIndex] = prices.GetLow(numFunctionDimension);
 							break;
 						case "inClose":
-							functionArguments[paramIndex] = prices.GetClose(numFunctionDimension, App.mqlApi.Bars);
+							functionArguments[paramIndex] = prices.GetClose(numFunctionDimension);
 							break;
 						case "inVolume":
-							functionArguments[paramIndex] = prices.GetVolume(numFunctionDimension, App.mqlApi.Bars);
+							functionArguments[paramIndex] = prices.GetVolume(numFunctionDimension);
 							break;
 						case "outBegIdx":
 							functionArguments[paramIndex] = outBegIdx;
@@ -341,7 +343,7 @@ namespace forexAI
 				}
 				else
 				{
-					ret = (TicTacTec.TA.Library.Core.RetCode) FunctionPointer.Invoke(null, functionArguments);
+					ret = (Core.RetCode) FunctionPointer.Invoke(null, functionArguments);
 					if (outTypeDoubleOrInt == 0)
 					{
 						resultDataInt = (int[]) functionArguments[outIndex];
@@ -375,14 +377,9 @@ namespace forexAI
 
 					logIf(reassemblyStage, $"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
-					//consolelog($"point {currentFunctionIndex} {resultDataDouble.Length} {startIdx} {fullInputSet.Length} " +
-					//	$"{nextPtr} {resultDataDouble.Length - startIdx} {functionArguments[outNumbElement]}");
 
 					Array.Copy(resultDataDouble, startIdx, fullInputSet, setNextArrayIndex, resultDataDouble.Length - startIdx);
 
-					//File.WriteAllText($"{Configuration.rootDirectory}\\in.{currentFunctionIndex}.dat",
-					//	SerializeObject(fullInputSet) + "\r\n" +
-					//	SerializeObject(resultDataDouble));
 					functionsNamesList += (functionsNamesList.Length > 0 ? "+" : "") +
 						$"[{function.Key}[{resultDataDouble.Length - startIdx}/{numFunctionDimension}]";
 				}
@@ -405,15 +402,19 @@ namespace forexAI
 
 			logIf(reassemblyStage, $"=> Reassembling [ SUCCESS ] Functions: {functionsNamesList}");
 
-			JsonSerializerSettings jsonSettings2 = new JsonSerializerSettings
-			{
-				MaxDepth = 5,
-				//Formatting = Formatting.Indented,
-				PreserveReferencesHandling = PreserveReferencesHandling.All
-			};
 
-			File.WriteAllText($"{Configuration.rootDirectory}\\unscaledset.dat", $"[Functions: {functionsNamesList}]" +
-				"\r\n\r\n" + SerializeObject(fullInputSet, jsonSettings2));
+			if (reassemblyStage)
+			{
+				JsonSerializerSettings jsonSettings2 = new JsonSerializerSettings
+				{
+					MaxDepth = 5,
+					//Formatting = Formatting.Indented,
+					PreserveReferencesHandling = PreserveReferencesHandling.All
+				};
+
+				File.WriteAllText($"{Configuration.rootDirectory}\\unscaledset.dat", $"[Functions: {functionsNamesList}]" +
+					"\r\n\r\n" + SerializeObject(fullInputSet, jsonSettings2));
+			}
 
 			//dump(ptr, "ptr", "dev");
 			/*if (trainDataOriginal == null)
