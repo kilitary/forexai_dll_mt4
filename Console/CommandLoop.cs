@@ -43,12 +43,17 @@ namespace forexAI
 
 					switch (commandParts[0])
 					{
-						case "mtstats":
-							for(var i = 0; i < 100; i++)
+						case "memstats":
+							forexAI.Helpers.ShowMemoryUsage();
+							break;
+
+						case "testerstats":
+							for (var i = 0; i < 100; i++)
 							{
 								resultString += $"{i,-4}: {App.mqlApi.TesterStatistics(i)}\r\n";
 							}
 							break;
+
 						case "clear":
 							Console.Clear();
 							break;

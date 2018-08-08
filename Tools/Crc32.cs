@@ -11,7 +11,7 @@ namespace forexAI
 		static uint[] table;
 		static bool bInitDone = false;
 
-		public static uint Checksum(string str)
+		public static uint GetCode(string str)
 		{
 			if (!bInitDone)
 				Init();

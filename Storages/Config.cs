@@ -22,6 +22,24 @@ namespace forexAI
 	{
 		private readonly Dictionary<string, string> _configRepository = null;
 
+		public void Inc(string logicName)
+		{
+			int current = 0;
+
+			int.TryParse(this[logicName], out current);
+			current++;
+			this[logicName] = current.ToString();
+		}
+
+		public void Dec(string logicName)
+		{
+			int current = 0;
+
+			int.TryParse(this[logicName], out current);
+			current--;
+			this[logicName] = current.ToString();
+		}
+
 		public bool IsEnabled(string logicName)
 		{
 			if (!Has(logicName))

@@ -659,8 +659,6 @@ namespace forexAI
 
 			dump(ConfigSettings.SharedSettings, "SharedSettings", "dev");
 
-			TextSetFont("liberation mono", 8, 0, 0);
-
 			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) (v{App.version})";
 			log(initStr);
 			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
@@ -1320,6 +1318,7 @@ namespace forexAI
 
 						if (order.stopLoss > 0)
 							newStopLoss = Low[2];
+
 						if (newStopLoss > OrderOpenPrice() || order.stopLoss == 0)
 						{
 							if (order.stopLoss == 0)
@@ -1327,7 +1326,6 @@ namespace forexAI
 
 							if (newStopLoss != order.stopLoss)
 							{
-
 								if (!OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
 									order.expiration, Color.BlueViolet))
 								{
@@ -1344,6 +1342,23 @@ namespace forexAI
 							}
 						}
 					}
+					else if(order.stopLoss == 0.0 && order.calculatedProfit > 0 && buyProbability < tradeEnterProbabilityMin)
+					{
+						newStopLoss = Bid + (2 * 3 * Point);
+						if (!OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
+									order.expiration, Color.BlueViolet))
+						{
+							int error = GetLastError();
+							result = $"FAIL: {error}: {ErrorDescription(error)}";
+						}
+						else
+						{
+							currentDayOperationsCount++;
+							result = $"OK";
+						}
+
+						consolelog($"[2] modify buy #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}: {result}", null, ConsoleColor.Yellow);
+					}
 				}
 				else if (order.type == Constants.OrderType.Sell)
 				{
@@ -1359,6 +1374,7 @@ namespace forexAI
 
 						if (order.stopLoss > 0)
 							newStopLoss = High[2];
+
 						if (newStopLoss < OrderOpenPrice() || order.stopLoss == 0)
 						{
 							if (order.stopLoss == 0)
@@ -1381,6 +1397,23 @@ namespace forexAI
 								consolelog($"modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}: {result}", null, ConsoleColor.Yellow);
 							}
 						}
+					}
+					else if (order.stopLoss == 0.0 && order.calculatedProfit > 0 && sellProbability < tradeEnterProbabilityMin)
+					{
+						newStopLoss = Ask - (2 * 3 * Point);
+						if (!OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
+									order.expiration, Color.BlueViolet))
+						{
+							int error = GetLastError();
+							result = $"FAIL: {error}: {ErrorDescription(error)}";
+						}
+						else
+						{
+							currentDayOperationsCount++;
+							result = $"OK";
+						}
+
+						consolelog($"[2] modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}: {result}", null, ConsoleColor.Yellow);
 					}
 				}
 			}
