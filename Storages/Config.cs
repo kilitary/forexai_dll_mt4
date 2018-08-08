@@ -30,13 +30,11 @@ namespace forexAI
 			return bool.Parse(this[logic]);
 		}
 
-		public void Toggle(string logic)
+		public bool Toggle(string logic)
 		{
-			if(IsEnabled(logic))
-				this[logic] = "false";
-			else
-				this[logic] = "true";
+			this[logic] = IsEnabled(logic) ? "false" : "true";
 			Save();
+			return bool.Parse(this[logic]);
 		}
 
 		public void Enable(string logic)

@@ -18,8 +18,8 @@ namespace forexAI
 	public static class Data
 	{
 		public static MysqlDatabase mysqlDatabase = null;
-		public static List<Order> ordersHistory = new List<Order>();
-		public static List<Order> ordersActive = new List<Order>();
+		public static HashSet<Order> ordersHistory = new HashSet<Order>();
+		public static HashSet<Order> ordersActive = new HashSet<Order>();
 		public static DirectoryInfo[] networksDirectories = null;
 	}
 }

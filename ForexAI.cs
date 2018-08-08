@@ -99,7 +99,6 @@ namespace forexAI
 		//  props
 		public Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 1314);
 		public Storage storage = new Storage();
-		public Config config = new Config();
 		public PerformanceCounter cpuCounter = null;
 		public NeuralNet fannNetwork = null;
 		public TrainingData trainingData = null;
@@ -178,14 +177,13 @@ namespace forexAI
 		int marketCollapsedBar = 0;
 		int slipPage = 30;
 
-
 		// computed properties
 		int ordersCount => Data.ordersActive.Count();
 		int tradeBarPeriodPass => Bars - lastTradeBar;
 		int buysCount => Data.ordersActive.Where(o => o.type == Constants.OrderType.Buy).Count();
 		int sellsCount => Data.ordersActive.Where(o => o.type == Constants.OrderType.Sell).Count();
-		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
-		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
+		double buyProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[0];
+		double sellProbability => fannNetworkOutput == null ? 0.0 : fannNetworkOutput[1];
 		double ordersProfit => buysProfit + sellsProfit;
 		double diffProbability => buyProbability + sellProbability;
 		TrendDirection collapseDirection => Low[0] - Low[1] > 0.0 ? TrendDirection.Up : TrendDirection.Down;
@@ -374,6 +372,7 @@ namespace forexAI
 				{
 					for (var i = 0; i < prevBuyProbability.Length - 1; i++)
 						prevBuyProbability[i] = prevBuyProbability[i + 1];
+
 					prevBuyProbability[prevBuyProbability.Length - 1] = buyProbability;
 				}
 
@@ -395,6 +394,7 @@ namespace forexAI
 				{
 					for (var i = 0; i < prevSellProbability.Length - 1; i++)
 						prevSellProbability[i] = prevSellProbability[i + 1];
+
 					prevSellProbability[prevSellProbability.Length - 1] = sellProbability;
 				}
 
@@ -457,7 +457,6 @@ namespace forexAI
 				ConsoleCommandReceiver.CommandReadingLoop();
 			},
 			TaskCreationOptions.LongRunning);
-
 		}
 
 		public override int start()
@@ -593,6 +592,8 @@ namespace forexAI
 			startTime = GetTickCount();
 			App.mqlApi = this;
 			networkIsGood = false;
+			Data.ordersActive.Clear();
+			Data.ordersHistory.Clear();
 
 			if (muteSound)
 				Configuration.audioEnabled = false;
@@ -652,6 +653,9 @@ namespace forexAI
 
 			InitNetwork();
 
+			Title = $"Automated MT4 trading expert debug console. Version {App.version}. Network: {networkId} "
+				+ (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
+
 			dump(ConfigSettings.SharedSettings, "SharedSettings", "dev");
 
 			TextSetFont("liberation mono", 8, 0, 0);
@@ -665,7 +669,7 @@ namespace forexAI
 
 		private void AssignCounterOrders()
 		{
-			Data.ordersActive.ForEach(order => order.FindSpendCounterOrder());
+			Helpers.Each(Data.ordersActive, (order) => order.FindSpendCounterOrder());
 		}
 
 		private void DumpInputConfig()
@@ -699,7 +703,7 @@ namespace forexAI
 			log($"Balance={AccountBalance()} Orders={OrdersTotal()} UninitializeReason={UninitializeReason()}");
 
 			//config.Set("balance", AccountBalance());
-			config.Save();
+			App.config.Save();
 			storage.SyncData();
 
 			string mins = ((((double) GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
@@ -838,7 +842,7 @@ namespace forexAI
 				}
 			}
 
-			Data.ordersActive = Data.ordersActive.Where(o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() == zeroTime).ToList();
+			Data.ordersActive = Data.ordersActive.Where(o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() == zeroTime).ToHashSet();
 
 			for (int index = 0; index < OrdersTotal(); index++)
 			{
@@ -946,9 +950,9 @@ namespace forexAI
 			if (Configuration.mysqlEnabled)
 				Data.mysqlDatabase = new MysqlDatabase();
 
-			config["process"] = currentProcess.ToString();
-			config["yrandom"] = YRandom.Next(int.MaxValue).ToString();
-			config["random"] = random.Next(int.MaxValue).ToString();
+			App.config["process"] = currentProcess.ToString();
+			App.config["yrandom"] = YRandom.Next(int.MaxValue).ToString();
+			App.config["random"] = random.Next(int.MaxValue).ToString();
 
 			console($"Init variables [stoplevel={stoplevel}] ...");
 		}
@@ -956,6 +960,9 @@ namespace forexAI
 		public double CalculateLots(OrderType type)
 		{
 			double iLots = orderLots;
+
+			if (!useOptimizedLots)
+				return iLots;
 
 			if (sellsProfit < 0 || buysProfit < 0)
 			{
@@ -1305,7 +1312,7 @@ namespace forexAI
 
 				if (order.type == Constants.OrderType.Buy)
 				{
-					if (order.stopLoss == 0 && Bid >= order.openPrice)
+					if (App.config.IsEnabled("priceApproachingSound") && order.stopLoss == 0 && Bid >= order.openPrice)
 						AudioFX.PriceComing(Math.Abs(Bid - OrderOpenPrice()));
 
 					newStopLoss = Bid - iTrailingStop * Point;
@@ -1343,7 +1350,7 @@ namespace forexAI
 				}
 				else if (order.type == Constants.OrderType.Sell)
 				{
-					if (order.stopLoss == 0 && Ask <= order.openPrice)
+					if (App.config.IsEnabled("priceApproachingSound") && order.stopLoss == 0 && Ask <= order.openPrice)
 						AudioFX.PriceComing(Math.Abs(Ask - order.openPrice));
 
 					newStopLoss = Ask + iTrailingStop * Point;
@@ -1459,9 +1466,6 @@ namespace forexAI
 			debug($"minstoplevel={minStopLevel}");
 
 			Helpers.ShowMemoryUsage();
-
-			Console.Title = $"Automated MT4 trading expert debug console. Version {App.version}. Network: {networkId} "
-				+ (Configuration.tryExperimentalFeatures ? "[XPRMNTL_ENABLED]" : ";)");
 		}
 
 		void ShowBanner()

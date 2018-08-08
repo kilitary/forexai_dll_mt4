@@ -41,6 +41,10 @@ namespace forexAI
 
 					switch (commandParts[0])
 					{
+						case "clear":
+							Console.Clear();
+							break;
+
 						case "enable":
 							App.config.Enable(commandParts[1]);
 							resultString = $"enabled {commandParts[1]}";
@@ -52,8 +56,8 @@ namespace forexAI
 							break;
 
 						case "toggle":
-							App.config.Toggle(commandParts[1]);
-							resultString = $"toggle {commandParts[1]}: {App.config.IsEnabled(commandParts[1])}";
+							bool enabled = App.config.Toggle(commandParts[1]);
+							resultString = $"toggle {commandParts[1]}: {enabled}";
 							break;
 
 						case "version":
