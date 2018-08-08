@@ -20,32 +20,32 @@ namespace forexAI
 {
 	public class Config
 	{
-		private readonly Dictionary<string, string> _config = null;
+		private readonly Dictionary<string, string> _configRepository = null;
 
-		public bool IsEnabled(string logic)
+		public bool IsEnabled(string logicName)
 		{
-			if (!Has(logic))
+			if (!Has(logicName))
 				return false;
 
-			return bool.Parse(this[logic]);
+			return bool.Parse(this[logicName]);
 		}
 
-		public bool Toggle(string logic)
+		public bool Toggle(string logicName)
 		{
-			this[logic] = IsEnabled(logic) ? "false" : "true";
+			this[logicName] = IsEnabled(logicName) ? "false" : "true";
 			Save();
-			return bool.Parse(this[logic]);
+			return bool.Parse(this[logicName]);
 		}
 
-		public void Enable(string logic)
+		public void Enable(string logicName)
 		{
-			this[logic] = "true";
+			this[logicName] = "true";
 			Save();
 		}
 
-		public void Disable(string logic)
+		public void Disable(string logicName)
 		{
-			this[logic] = "false";
+			this[logicName] = "false";
 			Save();
 		}
 
@@ -53,25 +53,27 @@ namespace forexAI
 		{
 			get
 			{
-				if (_config == null || !_config.Keys.Contains(name))
+				if (!Has(name))
 					return null;
 
-				string value;
-				_config.TryGetValue(name, out value);
+				string value = string.Empty;
 
-				return value;
+				if (_configRepository.TryGetValue(name, out value))
+					return value;
+				else
+					return null;
 			}
 			set
 			{
-				if (_config != null)
-					_config[name] = value;
+				if (_configRepository != null)
+					_configRepository[name] = value;
 				Save();
 			}
 		}
 
 		public bool Has(string name)
 		{
-			if (_config == null || !_config.Keys.Contains(name))
+			if (_configRepository == null || !_configRepository.Keys.Contains(name))
 				return false;
 
 			return true;
@@ -79,8 +81,8 @@ namespace forexAI
 
 		public void Set(string name, object obj)
 		{
-			if (_config != null)
-				_config[name] = (string) obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
+			if (_configRepository != null)
+				_configRepository[name] = (string) obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
 			Save();
 		}
 
@@ -89,17 +91,17 @@ namespace forexAI
 			if (!Has(name))
 				return def;
 
-			return _config?[name];
+			return _configRepository?[name];
 		}
 
 		public Config()
 		{
 			if (File.Exists(Configuration.configFilePath))
 			{
-				_config = new Dictionary<string, string>();
-				_config = JsonConvert.DeserializeObject<Dictionary<string, string>>
+				_configRepository = new Dictionary<string, string>();
+				_configRepository = JsonConvert.DeserializeObject<Dictionary<string, string>>
 					(File.ReadAllText(Configuration.configFilePath));
-				log($"Config()->load {_config.Count()} vars", "App.full");
+				log($"Config()->load {_configRepository.Count()} vars", "App.full");
 			}
 		}
 
@@ -107,12 +109,12 @@ namespace forexAI
 		{
 			string data = string.Empty;
 
-			if (_config == null)
+			if (_configRepository == null)
 				return -1;
 
 			try
 			{
-				data = JsonConvert.SerializeObject(_config, Formatting.Indented);
+				data = JsonConvert.SerializeObject(_configRepository, Formatting.Indented);
 				log($"Config()->saving {data.Length} bytes '{data}' to {Configuration.configFilePath}", "App.full");
 				File.WriteAllText(Configuration.configFilePath, data);
 			}
@@ -131,13 +133,13 @@ namespace forexAI
 
 		public string DumpString()
 		{
-			return Newtonsoft.Json.JsonConvert.SerializeObject(_config, Formatting.Indented);
+			return JsonConvert.SerializeObject(_configRepository, Formatting.Indented);
 		}
 
 		public void Clear()
 		{
-			if (_config != null)
-				_config.Clear();
+			if (_configRepository != null)
+				_configRepository.Clear();
 			Save();
 		}
 	}

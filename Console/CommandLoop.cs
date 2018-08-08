@@ -33,15 +33,22 @@ namespace forexAI
 				{
 					typing = ReadLine().Trim();
 					commandParts = typing.Split(' ');
+					resultString = string.Empty;
 
 					if (commandParts.Count() <= 0 || commandParts[0].Length == 0)
 						continue;
 
 					log($"command: {typing}", "dev");
-					consolelog($"=> {typing} ({commandParts.Count()})", "dev", ConsoleColor.DarkGreen);
+					consolelog($"=> {typing}", "dev", ConsoleColor.Gray);
 
 					switch (commandParts[0])
 					{
+						case "mtstats":
+							for(var i = 0; i < 100; i++)
+							{
+								resultString += $"{i,-4}: {App.mqlApi.TesterStatistics(i)}\r\n";
+							}
+							break;
 						case "clear":
 							Console.Clear();
 							break;

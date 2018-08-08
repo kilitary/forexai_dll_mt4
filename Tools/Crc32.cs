@@ -14,7 +14,7 @@ namespace forexAI
 		public static uint Checksum(string str)
 		{
 			if (!bInitDone)
-				init();
+				Init();
 
 			byte[] originalBytes = ASCIIEncoding.Default.GetBytes(str);
 			return ComputeChecksum(originalBytes);
@@ -23,7 +23,7 @@ namespace forexAI
 		public static uint ComputeChecksum(byte[] bytes)
 		{
 			if (!bInitDone)
-				init();
+				Init();
 
 			uint crc = 0xffffffff;
 			for (int i = 0; i < bytes.Length; ++i)
@@ -37,12 +37,12 @@ namespace forexAI
 		public static byte[] ComputeChecksumBytes(byte[] bytes)
 		{
 			if (!bInitDone)
-				init();
+				Init();
 
 			return BitConverter.GetBytes(ComputeChecksum(bytes));
 		}
 
-		public static void init()
+		public static void Init()
 		{
 			uint poly = 0xedb88320;
 			table = new uint[256];

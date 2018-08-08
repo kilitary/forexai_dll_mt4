@@ -63,7 +63,6 @@ namespace forexAI
 		static bool failedReassemble = false;
 		static bool reassemblyStage = true;
 		static int[] resultDataInt = null;
-		static int networkFunctionsCount = 0;
 		static int currentFunctionIndex = 0;
 		static int outBegIdx = 0;
 		static int outNumberElement = -1;
@@ -96,20 +95,18 @@ namespace forexAI
 			if (functionConfigurationHashCode != functionConfigurationString.GetHashCode())
 			{
 				log($"hashOfFunctionConfiguration ({functionConfigurationHashCode}) not match content, deserializing {functionConfigurationString.Length} bytes ...");
-				var jsonSettings = new JsonSerializerSettings
-				{
-					MetadataPropertyHandling = MetadataPropertyHandling.Ignore
-				};
-				functionsConfiguration = DeserializeObject<Dictionary<string, FunctionConfiguration>>
-					(functionConfigurationString, jsonSettings);
 
+
+				functionsConfiguration = DeserializeObject<Dictionary<string, FunctionConfiguration>>
+					(functionConfigurationString, new JsonSerializerSettings
+					{
+						MetadataPropertyHandling = MetadataPropertyHandling.Ignore
+					});
 				functionConfigurationHashCode = functionConfigurationString.GetHashCode();
 				consolelog($"hash of configuration: {functionConfigurationHashCode.ToString("x")}");
 			}
 
 			logIf(reassemblyStage, $"=> {functionsConfiguration.Count} functions with {inputDimension} input dimension");
-
-			networkFunctionsCount = functionsConfiguration.Count;
 
 			if (fullInputSet == null || fullInputSet.Length != neuralNetwork.InputCount)
 			{
@@ -451,7 +448,7 @@ namespace forexAI
 			//neuralNetwork.DescaleOutput(networkOutput);
 
 			reassemblyStage = false;
-			return (networkFunctionsCount, networkOutput);
+			return (functionsConfiguration.Count, networkOutput);
 		}
 	}
 }

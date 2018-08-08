@@ -471,7 +471,7 @@ namespace forexAI
 
 			if (!IsOptimization())
 			{
-				if (runWatch.ElapsedMilliseconds - lastDrawStatsTimestamp >= 500)
+				if (runWatch.ElapsedMilliseconds - lastDrawStatsTimestamp >= 350)
 				{
 					FillHistoryOrdersStatistics();
 					DrawStats();
@@ -587,18 +587,21 @@ namespace forexAI
 
 		public override int init()
 		{
-			Console.Clear();
+			Clear();
+
 			InitPredefinedVariables();
+
 			startTime = GetTickCount();
+
 			App.mqlApi = this;
+
 			networkIsGood = false;
+
 			Data.ordersActive.Clear();
 			Data.ordersHistory.Clear();
 
-			if (muteSound)
+			if (muteSound || IsOptimization())
 				Configuration.audioEnabled = false;
-
-		
 
 			ShowBanner();
 
@@ -607,9 +610,6 @@ namespace forexAI
 				runWatch = new Stopwatch();
 				runWatch.Start();
 			}
-
-			if (IsOptimization())
-				Configuration.audioEnabled = false;
 
 			currentDay = (int) DateTime.Now.DayOfWeek;
 			neuralNetworkBootstrapped = false;
@@ -634,7 +634,6 @@ namespace forexAI
 					consolelog($"... done with counters");
 				});
 			}
-
 
 			Core.SetCompatibility(Core.Compatibility.Metastock);
 			console($"Set Core.Compatibility.Metastock");
@@ -1477,6 +1476,9 @@ namespace forexAI
 
 		void DrawStats()
 		{
+			if (!App.config.IsEnabled("drawStats"))
+				return;
+
 			int i;
 
 			for (i = 0; i < 10; i++)
