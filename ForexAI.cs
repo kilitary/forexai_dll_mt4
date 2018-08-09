@@ -460,6 +460,13 @@ namespace forexAI
 				ConsoleCommandReceiver.CommandReadingLoop();
 			});
 
+			Task.Factory.StartNew(() =>
+			{
+				consolelog($"Accessing processor performance counters ...");
+				App.processorPerformanceCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+				consolelog($"... done with counters");
+			});
+
 			/*Task.Factory.StartNew(() =>
 			{
 				while(true)
@@ -490,6 +497,7 @@ namespace forexAI
 			CloseSpendOrders();
 			CalculateTrailSettings();
 			TrailPositions();
+			CheckForCounterOpen();
 
 			if(!IsOptimization())
 			{
@@ -498,14 +506,8 @@ namespace forexAI
 					FillHistoryOrdersStatistics();
 					DrawStats();
 
-					if(App.performanceCounter == null)
-					{
-						consolelog($"Accessing processor performance counters ...");
-						App.performanceCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-						consolelog($"... done with counters");
-					}
-					else
-						cpuCounterValue = App.performanceCounter.NextValue();
+					if(App.processorPerformanceCounter != null)
+						cpuCounterValue = App.processorPerformanceCounter.NextValue();
 
 					lastDrawStatsTimestamp = runWatch.ElapsedMilliseconds;
 				}
@@ -603,6 +605,25 @@ namespace forexAI
 			barsPerDay += 1;
 
 			return 0;
+		}
+
+		private void CheckForCounterOpen()
+		{
+			double iLots = lotsize;
+
+			if(activeLoss < 0.0 && !isTrendStable)
+			{
+				if(buysProfit < 0.0 && activeLoss < maxNegativeSpend / 5 && Bars - tradeBar >= 4)
+				{
+					consolelog($"counter buy {iLots}");
+					OpenSell(iLots);
+				}
+				else if(sellsProfit < 0.0 && activeLoss < maxNegativeSpend / 5 && Bars - tradeBar >= 4)
+				{
+					consolelog($"counter sell {iLots}");
+					OpenBuy(iLots);
+				}
+			}
 		}
 
 		private void CalculateTrailSettings()
@@ -1740,7 +1761,7 @@ namespace forexAI
 
 			if(fannNetwork != null)
 			{
-				string cpuUsage = App.performanceCounter == null ? "<accesing>" : App.performanceCounter.NextValue().ToString("0.00") + "%";
+				string cpuUsage = App.processorPerformanceCounter == null ? "<accesing>" : App.processorPerformanceCounter.NextValue().ToString("0.00") + "%";
 
 				Comment(
 					 $"Memory: {memoryUsage} MB" +

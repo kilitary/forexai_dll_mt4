@@ -34,19 +34,19 @@ namespace forexAI
 
 		public int FindSpendCounterOrder()
 		{
-			foreach (var order in Data.ordersActive)
+			foreach(var order in Data.ordersActive)
 			{
-				if (order.ticket == ticket || order.counterOrder != null)
+				if(order.ticket == ticket || order.counterOrder != null)
 					continue;
 
-				if (order.calculatedProfit < 0.0)
+				if(order.calculatedProfit < 0.0)
 				{
 					counterOrder = order;
 					break;
 				}
 			}
 
-			if (counterOrder != null)
+			if(counterOrder != null)
 				return counterOrder.ticket;
 			else
 				return 0;

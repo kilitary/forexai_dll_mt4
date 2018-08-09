@@ -35,7 +35,7 @@ namespace forexAI
 			{
 				stream = targetFileInfo.Open(FileMode.Open, FileAccess.Write, FileShare.None);
 			}
-			catch (IOException)
+			catch(IOException)
 			{
 				//the file is unavailable because it is:
 				//still being written to
@@ -45,7 +45,7 @@ namespace forexAI
 			}
 			finally
 			{
-				if (stream != null)
+				if(stream != null)
 					stream.Close();
 			}
 
@@ -54,7 +54,7 @@ namespace forexAI
 
 		public static void Each<T>(IEnumerable<T> items, Action<T> action)
 		{
-			foreach (var item in items)
+			foreach(var item in items)
 				action(item);
 		}
 
@@ -75,7 +75,7 @@ namespace forexAI
 			StringBuilder result = new StringBuilder();
 
 			// Protect the method against endless recursion
-			if (recursion < 15)
+			if(recursion < 15)
 			{
 				// Determine object type
 				Type t = obj.GetType();
@@ -83,7 +83,7 @@ namespace forexAI
 				// Get array with properties for this object
 				PropertyInfo[] properties = t.GetProperties();
 
-				foreach (PropertyInfo property in properties)
+				foreach(PropertyInfo property in properties)
 				{
 					try
 					{
@@ -96,14 +96,14 @@ namespace forexAI
 						string spaces = "|   ";
 						string trail = "|...";
 
-						if (recursion > 0)
+						if(recursion > 0)
 							indent = new StringBuilder(trail).Insert(0, spaces, recursion - 1).ToString();
 
-						if (value != null)
+						if(value != null)
 						{
 							// If the value is a string, add quotation marks
 							string displayValue = value.ToString();
-							if (value is string)
+							if(value is string)
 								displayValue = String.Concat('"', displayValue, '"');
 
 							// Add property name and value to return string
@@ -111,7 +111,7 @@ namespace forexAI
 
 							try
 							{
-								if (!(value is ICollection))
+								if(!(value is ICollection))
 								{
 									// Call var_dump() again to list child properties
 									// This throws an exception if the current property value
@@ -124,7 +124,7 @@ namespace forexAI
 									// The value is a collection (eg. it's an arraylist or generic list)
 									// so loop through its elements and dump their properties
 									int elementCount = 0;
-									foreach (object element in ((ICollection) value))
+									foreach(object element in ((ICollection) value))
 									{
 										string elementName = String.Format("{0}[{1}]", property.Name, elementCount);
 										indent = new StringBuilder(trail).Insert(0, spaces, recursion).ToString();
@@ -161,13 +161,13 @@ namespace forexAI
 
 		public static void ZeroArray(double[] input)
 		{
-			for (var i = 0; i < input.Length; i++)
+			for(var i = 0; i < input.Length; i++)
 				input[i] = 0.0;
 		}
 
 		public static void ZeroArray(int[] input)
 		{
-			for (var i = 0; i < input.Length; i++)
+			for(var i = 0; i < input.Length; i++)
 				input[i] = 0;
 		}
 	}

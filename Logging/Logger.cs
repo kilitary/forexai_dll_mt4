@@ -22,10 +22,10 @@ namespace forexAI
 
 		public static void EraseLogs(params string[] fileNames)
 		{
-			foreach (var fileName in fileNames)
+			foreach(var fileName in fileNames)
 			{
 				console($"unlink {fileName} ... ");
-				if (fileName != null && File.Exists(fileName) && !Helpers.IsFileBusy(fileName))
+				if(fileName != null && File.Exists(fileName) && !Helpers.IsFileBusy(fileName))
 					File.Delete(fileName);
 			}
 		}
@@ -36,13 +36,13 @@ namespace forexAI
 
 			foreach(var logFile in logFiles)
 			{
-				if (logFile.FullName.Contains("full"))
+				if(logFile.FullName.Contains("full"))
 				{
 					console($"skip {logFile.FullName} ...");
 					continue;
 				}
 
-				if (Helpers.IsFileBusy(logFile.FullName))
+				if(Helpers.IsFileBusy(logFile.FullName))
 					console($"busy {logFile.FullName}");
 				else
 				{
@@ -58,7 +58,7 @@ namespace forexAI
 			string dataValue;
 			string sPrefix = prefix.Length > 0 ? " " + prefix + ": \r\n" : "\r\n";
 
-			if (fileName == null)
+			if(fileName == null)
 				fileName = "debug";
 
 			JsonSerializerSettings jsonSettings = new JsonSerializerSettings
@@ -72,14 +72,14 @@ namespace forexAI
 
 			try
 			{
-				using (StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true))
+				using(StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true))
 				{
 					file.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " " +
 						Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " +
 						sPrefix + dataValue);
 				}
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
 				console($"dump() exception: {e.Message}");
 			}
@@ -98,7 +98,7 @@ namespace forexAI
 
 		public static void debug(string lines, string fileName = null)
 		{
-			if (fileName == null)
+			if(fileName == null)
 				fileName = "debug";
 			try
 			{
@@ -107,7 +107,7 @@ namespace forexAI
 					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " + lines);
 				file.Close();
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
 				console($"exception: {e.Message}");
 			}
@@ -115,7 +115,7 @@ namespace forexAI
 
 		public static void error(string lines, string fileName = null)
 		{
-			if (fileName == null)
+			if(fileName == null)
 				fileName = "error";
 			try
 			{
@@ -126,7 +126,7 @@ namespace forexAI
 					callStack.GetFileName() + ":" + callStack.GetFileLineNumber() + $" in {callStack.GetMethod().Name}(): " + lines);
 				file.Close();
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
 				console($"exception: {e.Message}");
 			}
@@ -134,7 +134,7 @@ namespace forexAI
 
 		public static void info(string lines, string fileName = null)
 		{
-			if (fileName == null)
+			if(fileName == null)
 				fileName = "info";
 			try
 			{
@@ -143,7 +143,7 @@ namespace forexAI
 					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " + lines);
 				file.Close();
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
 				console($"exception: {e.Message}");
 			}
@@ -151,11 +151,11 @@ namespace forexAI
 
 		public static void log(string lines, string fileName = null)
 		{
-			if (fileName == null)
+			if(fileName == null)
 				fileName = Configuration.logFileName;
 			try
 			{
-				if (!File.Exists(Configuration.rootDirectory + "/" + fileName + ".log"))
+				if(!File.Exists(Configuration.rootDirectory + "/" + fileName + ".log"))
 					File.AppendAllText(Configuration.rootDirectory + "/" + fileName + ".log", $"+++ {fileName} +++\r\n");
 
 				StreamWriter file = new StreamWriter(Configuration.rootDirectory + "/" + fileName + ".log", true);
@@ -163,7 +163,7 @@ namespace forexAI
 					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " + lines);
 				file.Close();
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
 				console($"exception: {e.Message}");
 			}
@@ -171,13 +171,13 @@ namespace forexAI
 
 		public static void logIf(bool ifCase, string lines, string fileName = null)
 		{
-			if (ifCase)
+			if(ifCase)
 				log(lines, fileName);
 		}
 
 		public static void consolelog(string lines, string fileName = null, ConsoleColor color = ConsoleColor.Cyan)
 		{
-			if (fileName == null)
+			if(fileName == null)
 				fileName = Configuration.logFileName;
 			try
 			{
@@ -188,7 +188,7 @@ namespace forexAI
 
 				console(lines, ConsoleColor.Black, color);
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
 				console($"exception: {e.Message}");
 			}
@@ -196,7 +196,7 @@ namespace forexAI
 
 		public static void warning(string lines, string fileName = null)
 		{
-			if (fileName == null)
+			if(fileName == null)
 				fileName = "warning";
 			try
 			{
@@ -205,7 +205,7 @@ namespace forexAI
 					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " + "warning: " + lines);
 				file.Close();
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
 				console($"exception: {e.Message}");
 			}
@@ -213,7 +213,7 @@ namespace forexAI
 
 		public static void notice(string lines, string fileName = null)
 		{
-			if (fileName == null)
+			if(fileName == null)
 				fileName = "notice";
 			try
 			{
@@ -222,7 +222,7 @@ namespace forexAI
 					Process.GetCurrentProcess().Id + ":" + GetCurrentThreadId() + " " + "warning: " + lines);
 				file.Close();
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
 				console($"exception: {e.Message}");
 			}

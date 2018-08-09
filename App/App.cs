@@ -16,7 +16,7 @@ namespace forexAI
 		public static Version version = null;
 		public static string currentNetworkId = string.Empty;
 		public static Config config = null;
-		public static PerformanceCounter performanceCounter = null;
+		public static PerformanceCounter processorPerformanceCounter = null;
 		public static object ordersHistoryLock = new object();
 
 		static App()

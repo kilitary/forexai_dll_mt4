@@ -82,17 +82,18 @@ namespace forexAI
 
 			functionsNamesList = string.Empty;
 
-			logIf(reassemblyStage, $"=> Reassembling input sequence ...");
+			if(reassemblyStage)
+				log($"=> Reassembling input sequence ...");
 
 			setNextArrayIndex = 0;
 			currentFunctionIndex = 0;
 
-			if (failedReassemble)
+			if(failedReassemble)
 				reassemblyStage = true;
 
 			failedReassemble = false;
 
-			if (functionConfigurationHashCode != functionConfigurationString.GetHashCode())
+			if(functionConfigurationHashCode != functionConfigurationString.GetHashCode())
 			{
 				log($"hashOfFunctionConfiguration ({functionConfigurationHashCode}) not match content, deserializing {functionConfigurationString.Length} bytes ...");
 
@@ -106,17 +107,19 @@ namespace forexAI
 				consolelog($"hash of configuration: {functionConfigurationHashCode.ToString("x")}");
 			}
 
-			logIf(reassemblyStage, $"=> {functionsConfiguration.Count} functions with {inputDimension} input dimension");
+			if(reassemblyStage)
+				log($"=> {functionsConfiguration.Count} functions with {inputDimension} input dimension");
 
-			if (fullInputSet == null || fullInputSet.Length != neuralNetwork.InputCount)
+			if(fullInputSet == null || fullInputSet.Length != neuralNetwork.InputCount)
 			{
 				Array.Resize<double>(ref fullInputSet, (int) neuralNetwork.InputCount);
 				Helpers.ZeroArray(fullInputSet);
 			}
 
-			logIf(reassemblyStage, $"fullInputSet.Length = {fullInputSet.Length}");
+			if(reassemblyStage)
+				log($"fullInputSet.Length = {fullInputSet.Length}");
 
-			foreach (var function in functionsConfiguration)
+			foreach(var function in functionsConfiguration)
 			{
 				string stringOut = string.Empty;
 				string[] values = new string[4];
@@ -129,7 +132,7 @@ namespace forexAI
 
 				functionArguments = new object[functionConfiguration.parameters.parametersMap.Count];
 
-				foreach (var param in functionConfiguration.parameters.parametersMap)
+				foreach(var param in functionConfiguration.parameters.parametersMap)
 				{
 					values = param.Split('|');
 					paramName = values[1];
@@ -138,7 +141,7 @@ namespace forexAI
 					comment = values[3];
 					double.TryParse(values[2], out paramValue);
 
-					switch (paramName)
+					switch(paramName)
 					{
 						case "optInVFactor":
 							functionArguments[paramIndex] = 0;
@@ -180,16 +183,16 @@ namespace forexAI
 						case "inReal1":
 						case "inReal":
 
-							if (comment.StartsWith("High"))
+							if(comment.StartsWith("High"))
 								arrayIndex = 2;
-							if (comment.StartsWith("Open"))
+							if(comment.StartsWith("Open"))
 								arrayIndex = 0;
-							if (comment.StartsWith("Close"))
+							if(comment.StartsWith("Close"))
 								arrayIndex = 1;
-							if (comment.StartsWith("Low"))
+							if(comment.StartsWith("Low"))
 								arrayIndex = 3;
 
-							switch (arrayIndex)
+							switch(arrayIndex)
 							{
 								case 0:
 									functionArguments[paramIndex] = prices.GetOpen(numFunctionDimension);
@@ -311,29 +314,30 @@ namespace forexAI
 					paramIndex++;
 				}
 
-				logIf(reassemblyStage, $"=> {functionName} arguments({functionArguments.Length})={SerializeObject(functionArguments)}");
+				if(reassemblyStage)
+					log($"=> {functionName} arguments({functionArguments.Length})={SerializeObject(functionArguments)}");
 
 				functionArguments[outIndex] = new double[inputDimension];
 
 				Type[] functionTypes = new Type[functionConfiguration.parameters.parametersMap.Count];
 				int idx = 0;
-				foreach (var arg in functionArguments)
+				foreach(var arg in functionArguments)
 				{
-					if (arg.GetType().IsByRef || arg.GetType().IsMarshalByRef)
+					if(arg.GetType().IsByRef || arg.GetType().IsMarshalByRef)
 						functionTypes[idx] = arg.GetType().MakeByRefType();
 					else
 						functionTypes[idx] = arg.GetType();
 
-					if (outNumberElement == idx)
+					if(outNumberElement == idx)
 						functionTypes[idx] = arg.GetType().MakeByRefType();
 
-					if (nOutStartIdx == idx)
+					if(nOutStartIdx == idx)
 						functionTypes[idx] = arg.GetType().MakeByRefType();
 					idx++;
 				}
 
 				MethodInfo FunctionPointer = typeof(TicTacTec.TA.Library.Core).GetMethod(functionName, functionTypes);
-				if (FunctionPointer == null)
+				if(FunctionPointer == null)
 				{
 					error($"fail to load method [{functionName}] from TICTAC");
 					failedReassemble = true;
@@ -341,38 +345,39 @@ namespace forexAI
 				else
 				{
 					ret = (Core.RetCode) FunctionPointer.Invoke(null, functionArguments);
-					if (outTypeDoubleOrInt == 0)
+					if(outTypeDoubleOrInt == 0)
 					{
 						resultDataInt = (int[]) functionArguments[outIndex];
 						Array.Resize<double>(ref resultDataDouble, (int) functionArguments[outNumberElement]);
 						Array.Copy(resultDataInt, resultDataDouble, (int) functionArguments[outNumberElement]);
 
-						for (int i = 0; i < (int) functionArguments[outNumberElement]; i++)
+						for(int i = 0; i < (int) functionArguments[outNumberElement]; i++)
 						{
-							if (resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
+							if(resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
 								warning($"fucking function {functionName} starts with zero");
-							if (resultDataDouble[i] == 0.0 && i == outNumberElement - 1 && reassemblyStage)
+							if(resultDataDouble[i] == 0.0 && i == outNumberElement - 1 && reassemblyStage)
 								warning($"fucking function {functionName} ends with zero");
 						}
 					}
 					else
 					{
 						resultDataDouble = (double[]) functionArguments[outIndex];
-						for (int i = 0; i < (int) functionArguments[outNumberElement]; i++)
+						for(int i = 0; i < (int) functionArguments[outNumberElement]; i++)
 						{
-							if (resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
+							if(resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
 								warning($"fucking function {functionName} starts with zero");
 						}
 					}
 
 					startIdx = (int) functionArguments[nOutStartIdx];
-					if (reassemblyStage && startIdx != 0)
+					if(reassemblyStage && startIdx != 0)
 					{
 						warning($"# {functionName}: startIdx = {startIdx} (outNumberElement={functionArguments[outNumberElement]}, outBegIdx={outBegIdx})");
 						dump(resultDataDouble, functionName, "warning");
 					}
 
-					logIf(reassemblyStage, $"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
+					if(reassemblyStage)
+						log($"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
 
 
 					Array.Copy(resultDataDouble, startIdx, fullInputSet, setNextArrayIndex, resultDataDouble.Length - startIdx);
@@ -386,9 +391,10 @@ namespace forexAI
 				//File.WriteAllText($"{Configuration.rootDirectory}\\{function.Key}.dat", SerializeObject(resultDataDouble));
 			}
 
-			logIf(reassemblyStage && fullInputSet != null && fullInputSet.Length > 0, $"ret={ret} entireset={SerializeObject(fullInputSet)}");
+			if(reassemblyStage && fullInputSet != null && fullInputSet.Length > 0)
+				log($"ret={ret} entireset={SerializeObject(fullInputSet)}");
 
-			if (neuralNetwork.InputCount != fullInputSet.Length)
+			if(neuralNetwork.InputCount != fullInputSet.Length)
 			{
 				error($"=> reassembler FAILED to reassemble input sequence: diff in input count of network is " +
 					$"{Math.Abs(fullInputSet.Length - neuralNetwork.InputCount)}");
@@ -397,10 +403,10 @@ namespace forexAI
 				return (0, null);
 			}
 
-			logIf(reassemblyStage, $"=> Reassembling [ SUCCESS ] Functions: {functionsNamesList}");
+			if(reassemblyStage)
+				log($"=> Reassembling [ SUCCESS ] Functions: {functionsNamesList}");
 
-
-			if (reassemblyStage)
+			if(reassemblyStage)
 			{
 				JsonSerializerSettings jsonSettings2 = new JsonSerializerSettings
 				{
