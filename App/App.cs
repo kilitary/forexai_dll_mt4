@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -15,6 +16,8 @@ namespace forexAI
 		public static Version version = null;
 		public static string currentNetworkId = string.Empty;
 		public static Config config = null;
+		public static PerformanceCounter performanceCounter = null;
+		public static object ordersHistoryLock = new object();
 
 		static App()
 		{

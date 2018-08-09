@@ -42,7 +42,7 @@ namespace forexAI
 
 		public bool IsEnabled(string logicName)
 		{
-			if (!Has(logicName))
+			if(!Has(logicName))
 				return false;
 
 			return bool.Parse(this[logicName]);
@@ -67,23 +67,32 @@ namespace forexAI
 			Save();
 		}
 
+		public void Remove(string logicName)
+		{
+			if(_configRepository != null && logicName.Length > 0)
+			{
+				_configRepository.Remove(logicName);
+				Save();
+			}
+		}
+
 		public string this[string name]
 		{
 			get
 			{
-				if (!Has(name))
+				if(!Has(name))
 					return null;
 
 				string value = string.Empty;
 
-				if (_configRepository.TryGetValue(name, out value))
+				if(_configRepository.TryGetValue(name, out value))
 					return value;
 				else
 					return null;
 			}
 			set
 			{
-				if (_configRepository != null)
+				if(_configRepository != null)
 					_configRepository[name] = value;
 				Save();
 			}
@@ -91,7 +100,7 @@ namespace forexAI
 
 		public bool Has(string name)
 		{
-			if (_configRepository == null || !_configRepository.Keys.Contains(name))
+			if(_configRepository == null || !_configRepository.Keys.Contains(name))
 				return false;
 
 			return true;
@@ -99,14 +108,14 @@ namespace forexAI
 
 		public void Set(string name, object obj)
 		{
-			if (_configRepository != null)
+			if(_configRepository != null)
 				_configRepository[name] = (string) obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
 			Save();
 		}
 
 		public object Get(string name, string def = null)
 		{
-			if (!Has(name))
+			if(!Has(name))
 				return def;
 
 			return _configRepository?[name];
@@ -114,7 +123,7 @@ namespace forexAI
 
 		public Config()
 		{
-			if (File.Exists(Configuration.configFilePath))
+			if(File.Exists(Configuration.configFilePath))
 			{
 				_configRepository = new Dictionary<string, string>();
 				_configRepository = JsonConvert.DeserializeObject<Dictionary<string, string>>
@@ -127,7 +136,7 @@ namespace forexAI
 		{
 			string data = string.Empty;
 
-			if (_configRepository == null)
+			if(_configRepository == null)
 				return -1;
 
 			try
@@ -136,7 +145,7 @@ namespace forexAI
 				log($"Config()->saving {data.Length} bytes '{data}' to {Configuration.configFilePath}", "App.full");
 				File.WriteAllText(Configuration.configFilePath, data);
 			}
-			catch (InvalidOperationException e)
+			catch(InvalidOperationException e)
 			{
 				log($"exception in save config: {e.Message}", "error");
 			}
@@ -156,7 +165,7 @@ namespace forexAI
 
 		public void Clear()
 		{
-			if (_configRepository != null)
+			if(_configRepository != null)
 				_configRepository.Clear();
 			Save();
 		}

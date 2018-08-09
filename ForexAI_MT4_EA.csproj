@@ -119,7 +119,7 @@
   <ItemGroup>
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="App\App.cs" />
-    <Compile Include="Console\CommandLoop.cs" />
+    <Compile Include="Console\CommandProcessor.cs" />
     <Compile Include="Data\Constants.cs" />
     <Compile Include="Data\Configuration.cs" />
     <Compile Include="Extensions\Extensions.cs" />
