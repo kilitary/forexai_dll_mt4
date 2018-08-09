@@ -18,7 +18,7 @@ namespace forexAI
 
 		public static void Play(string audioFileName)
 		{
-			if (!Configuration.audioEnabled)
+			if(!Configuration.audioEnabled)
 				return;
 
 			new SoundPlayer(audioFileName).Play();
@@ -60,7 +60,7 @@ namespace forexAI
 
 		public static void PriceComing(double freq)
 		{
-			if (currentlyPriceComingPlaying)
+			if(currentlyPriceComingPlaying || !App.config.IsEnabled("priceApproachingSound"))
 				return;
 
 			currentlyPriceComingPlaying = true;
@@ -69,7 +69,7 @@ namespace forexAI
 			//log($"freq aft={freq}", "dev");
 			Task.Factory.StartNew(() =>
 			{
-				for (var i = 0; i < freq % 2; i++)
+				for(var i = 0; i < freq % 2; i++)
 				{
 					Thread.Sleep((int) freq);
 					Console.Beep(776 + i * 100, 50 - i * 3);

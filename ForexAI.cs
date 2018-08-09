@@ -1372,8 +1372,7 @@ namespace forexAI
 					else if(order.stopLoss == 0.0 && order.calculatedProfit > 0
 						&& (buyProbability < tradeEnterProbabilityMin || Bars - tradeBar >= 5 || !isTrendStable))
 					{
-						if(App.config.IsEnabled("priceApproachingSound"))
-							AudioFX.PriceComing(Math.Abs(Bid - OrderOpenPrice()));
+						AudioFX.PriceComing(Math.Abs(Bid - OrderOpenPrice()));
 
 						newStopLoss = Bid + (2 * 1 * Point);
 						if(!OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
@@ -1429,8 +1428,7 @@ namespace forexAI
 					else if(order.stopLoss == 0.0 && order.calculatedProfit > 0
 						&& (sellProbability < tradeEnterProbabilityMin || Bars - tradeBar >= 5 || !isTrendStable))
 					{
-						if(App.config.IsEnabled("priceApproachingSound"))
-							AudioFX.PriceComing(Math.Abs(Bid - OrderOpenPrice()));
+						AudioFX.PriceComing(Math.Abs(Bid - OrderOpenPrice()));
 
 						newStopLoss = Ask - (2 * 1 * Point);
 						if(!OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
