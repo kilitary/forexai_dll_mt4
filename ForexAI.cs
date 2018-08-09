@@ -95,6 +95,19 @@ namespace forexAI
 		[DllImport("kernel32.dll")]
 		public static extern bool AttachConsole(int dwProcessId);
 
+		[DllImport("Kernel32")]
+		public static extern bool SetConsoleCtrlHandler(HandlerRoutine Handler, bool Add);
+		public delegate bool HandlerRoutine(CtrlTypes CtrlType);
+		public enum CtrlTypes
+		{
+			CTRL_C_EVENT = 0,
+			CTRL_BREAK_EVENT,
+			CTRL_CLOSE_EVENT,
+			CTRL_LOGOFF_EVENT = 5,
+			CTRL_SHUTDOWN_EVENT
+		}
+
+
 		private const int ATTACH_PARENT_PROCESS = -1;
 
 		//  props
@@ -452,8 +465,31 @@ namespace forexAI
 			}
 		}
 
+		private static bool ConsoleCtrlCheck(CtrlTypes ctrlType)
+		{
+			switch(ctrlType)
+			{
+				case CtrlTypes.CTRL_C_EVENT:
+					Console.WriteLine("CTRL+C received!");
+					break;
+				case CtrlTypes.CTRL_BREAK_EVENT:
+					Console.WriteLine("CTRL+BREAK received!");
+					break;
+				case CtrlTypes.CTRL_CLOSE_EVENT:
+					Console.WriteLine("Program being closed!");
+					break;
+				case CtrlTypes.CTRL_LOGOFF_EVENT:
+				case CtrlTypes.CTRL_SHUTDOWN_EVENT:
+					Console.WriteLine("User is logging off!");
+					break;
+			}
+			return true;
+		}
+
 		public ForexAI()
 		{
+			SetConsoleCtrlHandler(new HandlerRoutine(ConsoleCtrlCheck), true);
+
 			Task.Factory.StartNew(() =>
 			{
 				AttachConsole(ATTACH_PARENT_PROCESS);
@@ -611,14 +647,17 @@ namespace forexAI
 		{
 			double iLots = lotsize;
 
+			if(iLots > 0.03)
+				iLots = 0.03;
+
 			if(activeLoss < 0.0 && !isTrendStable)
 			{
-				if(buysProfit < 0.0 && activeLoss < maxNegativeSpend / 5 && Bars - tradeBar >= 4)
+				if(buysProfit < 0.0 && activeLoss < maxNegativeSpend / 3 && Bars - tradeBar >= 3)
 				{
 					consolelog($"counter buy {iLots}");
 					OpenSell(iLots);
 				}
-				else if(sellsProfit < 0.0 && activeLoss < maxNegativeSpend / 5 && Bars - tradeBar >= 4)
+				else if(sellsProfit < 0.0 && activeLoss < maxNegativeSpend / 3 && Bars - tradeBar >= 3)
 				{
 					consolelog($"counter sell {iLots}");
 					OpenBuy(iLots);
@@ -1357,7 +1396,6 @@ namespace forexAI
 						&& Bid - (iTrailingBorder * Point) > order.openPrice
 						&& order.calculatedProfit > 0)
 					{
-
 						if(order.stopLoss > 0)
 							newStopLoss = Low[2];
 
@@ -1385,7 +1423,7 @@ namespace forexAI
 						}
 					}
 					else if(order.stopLoss == 0.0 && order.calculatedProfit > 0
-						&& (buyProbability < tradeEnterProbabilityMin || Bars - tradeBar >= 5 || !isTrendStable))
+						&& (buyProbability < tradeEnterProbabilityMin || Bars == tradeBar || Bars - tradeBar >= 5 || !isTrendStable))
 					{
 						AudioFX.PriceComing(Math.Abs(Bid - OrderOpenPrice()));
 
@@ -1412,8 +1450,6 @@ namespace forexAI
 						&& Ask + (iTrailingBorder * Point) < order.openPrice
 						&& order.calculatedProfit > 0)
 					{
-
-
 						if(order.stopLoss > 0)
 							newStopLoss = High[2];
 
@@ -1441,7 +1477,7 @@ namespace forexAI
 						}
 					}
 					else if(order.stopLoss == 0.0 && order.calculatedProfit > 0
-						&& (sellProbability < tradeEnterProbabilityMin || Bars - tradeBar >= 5 || !isTrendStable))
+						&& (sellProbability < tradeEnterProbabilityMin || Bars == tradeBar || Bars - tradeBar >= 5 || !isTrendStable))
 					{
 						AudioFX.PriceComing(Math.Abs(Bid - OrderOpenPrice()));
 

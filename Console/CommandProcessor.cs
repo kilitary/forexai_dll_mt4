@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using static forexAI.Logger;
 using System.Runtime.InteropServices;
 using static System.Console;
+using System.IO;
 
 namespace forexAI
 {
@@ -43,6 +44,34 @@ namespace forexAI
 
 					switch(commandParts[0])
 					{
+						case "next":
+							if(App.currentNetworkId.Length <= 0)
+							{
+								resultString = $"empty current network dir";
+							}
+							else
+							{
+								if(Directory.Exists(Configuration.rootDirectory + $"\\{App.currentNetworkId}"))
+									Directory.Delete(Configuration.rootDirectory + "\\" + App.currentNetworkId, true);
+							}
+
+							var dirs = new DirectoryInfo(Configuration.rootDirectory + "\\NEW").GetDirectories("NET_*");
+							var rnd = forexAI.YRandom.between(0, dirs.Length - 1);
+
+							resultString = $"next dir chosen (from {dirs.Length} dirs): {dirs[rnd]}";
+
+							try
+							{
+								Directory.Move(Configuration.rootDirectory + $"\\NEW\\{dirs[rnd]}", Configuration.rootDirectory + $"\\{dirs[rnd]}");
+							}
+							catch(Exception e)
+							{
+								consolelog($"exception: {e.Message}");
+							}
+
+							Beep(1000, 20);
+							break;
+
 						case "memstats":
 							forexAI.Helpers.ShowMemoryUsage();
 							break;
