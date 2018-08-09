@@ -34,14 +34,6 @@ namespace forexAI
 			return ~crc;
 		}
 
-		public static byte[] ComputeChecksumBytes(byte[] bytes)
-		{
-			if(!bInitDone)
-				Init();
-
-			return BitConverter.GetBytes(ComputeChecksum(bytes));
-		}
-
 		public static void Init()
 		{
 			uint poly = 0xedb88320;

@@ -25,7 +25,7 @@ namespace forexAI
 		{
 			debug($"storage INIT (Configuration.useMemcached={Configuration.memcahedEnabled}, useMysql={Configuration.mysqlEnabled})");
 
-			if (Configuration.memcahedEnabled)
+			if(Configuration.memcahedEnabled)
 				InitMemcached();
 		}
 
@@ -39,10 +39,10 @@ namespace forexAI
 		{
 			get
 			{
-				if (properties.ContainsKey(name))
+				if(properties.ContainsKey(name))
 					return properties[name];
 
-				if (!Configuration.mysqlEnabled)
+				if(!Configuration.mysqlEnabled)
 					return string.Empty;
 
 				string retrievedValue = string.Empty;
@@ -56,23 +56,23 @@ namespace forexAI
 			set
 			{
 				properties[name] = value;
-				if (Configuration.memcahedEnabled)
+				if(Configuration.memcahedEnabled)
 					memcachedServer.Store(StoreMode.Set, name, value);
 			}
 		}
 
 		public void SyncData()
 		{
-			if (properties.Count <= 0)
+			if(properties.Count <= 0)
 				return;
 
 			debug($"storage: storing {properties.Count} key-value pairs.");
-			foreach (KeyValuePair<string, object> o in properties)
+			foreach(KeyValuePair<string, object> o in properties)
 			{
-				if (Configuration.mysqlEnabled)
+				if(Configuration.mysqlEnabled)
 					Data.mysqlDatabase.Set(o.Key, o.Value);
 
-				if (Configuration.memcahedEnabled)
+				if(Configuration.memcahedEnabled)
 					memcachedServer.Store(StoreMode.Set, o.Key, o.Value);
 			}
 		}
@@ -81,12 +81,12 @@ namespace forexAI
 		{
 			MemcachedClientConfiguration config = new MemcachedClientConfiguration();
 			IPEndPoint ipEndpoint = new IPEndPoint(IPAddress.Parse(Configuration.memcachedIP),
-												   Configuration.memcachedPort);
+													Configuration.memcachedPort);
 			config.Servers.Add(ipEndpoint);
 			config.Protocol = MemcachedProtocol.Text;
 			memcachedServer = new MemcachedClient(config);
 
-			if (memcachedServer != null)
+			if(memcachedServer != null)
 				debug($"memcached up [0x{memcachedServer.GetHashCode()}]");
 			else
 				debug($"fail to init memcached: {memcachedServer.ToString()}");

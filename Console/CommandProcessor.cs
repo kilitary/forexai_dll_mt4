@@ -27,7 +27,7 @@ namespace forexAI
 			Console.CursorTop = 0;
 			Console.Beep(1650, 33);
 
-			while (true)
+			while(true)
 			{
 				try
 				{
@@ -35,20 +35,20 @@ namespace forexAI
 					commandParts = typing.Split(' ');
 					resultString = string.Empty;
 
-					if (commandParts.Count() <= 0 || commandParts[0].Length == 0)
+					if(commandParts.Count() <= 0 || commandParts[0].Length == 0)
 						continue;
 
 					log($"command: {typing}", "dev");
 					consolelog($"=> {typing}", "dev", ConsoleColor.Gray);
 
-					switch (commandParts[0])
+					switch(commandParts[0])
 					{
 						case "memstats":
 							forexAI.Helpers.ShowMemoryUsage();
 							break;
 
 						case "testerstats":
-							for (var i = 0; i < 100; i++)
+							for(var i = 0; i < 100; i++)
 							{
 								resultString += $"{i,-4}: {App.mqlApi.TesterStatistics(i)}\r\n";
 							}
@@ -78,28 +78,31 @@ namespace forexAI
 							break;
 
 						case "config":
-							if (commandParts.Count() >= 1)
+							if(commandParts.Count() >= 1)
 							{
-								if (commandParts.Count() == 1)
+								if(commandParts.Count() == 1)
 									resultString = $"config: {App.config.DumpString()}";
 								else
 								{
-									switch (commandParts[1])
+									switch(commandParts[1])
 									{
 										case "-":
 											App.config.Remove(commandParts[2]);
+											resultString = $"removed {commandParts[2]}";
 											break;
 
 										case "save":
 											nBytes = App.config.Save();
 											resultString = $"config saved ({nBytes} bytes)";
 											break;
+
 										case "clear":
 											App.config.Clear();
 											resultString = $"config clear";
 											break;
+
 										default:
-											if (commandParts.Count() > 2)
+											if(commandParts.Count() > 2)
 											{
 												log($"setting {commandParts[1]} to {commandParts[2]}", "dev");
 												App.config[commandParts[1]] = commandParts[2];
@@ -125,14 +128,14 @@ namespace forexAI
 
 					}
 
-					if (resultString.Contains("unknown command"))
+					if(resultString.Contains("unknown command"))
 						Beep(190, 15);
 					else
 						Beep(1850, 55);
 
 					consolelog($"<= {resultString}", "dev", ConsoleColor.White);
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
 					log($"EXCEPTION COMMAND '{Newtonsoft.Json.JsonConvert.SerializeObject(commandParts)}: '{e.Message}: {e.StackTrace}", "error");
 				}

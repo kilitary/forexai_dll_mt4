@@ -929,33 +929,27 @@ namespace forexAI
 
 		void FillHistoryOrdersStatistics()
 		{
-			profitBuys = 0;
-			spendBuys = 0;
-			profitSells = 0;
-			spendSells = 0;
+			profitBuys = spendBuys = profitSells = spendSells = 0;
 
 			lock(App.ordersHistoryLock)
 			{
 				foreach(var order in Data.ordersHistory)
 				{
-					if(OrderSelect(order.ticket, SELECT_BY_TICKET, MODE_HISTORY))
+					if(OrderSelect(order.ticket, SELECT_BY_TICKET, MODE_HISTORY) && OrderCloseTime() != new DateTime(0))
 					{
-						if(OrderCloseTime() != new DateTime(0))
+						if(order.type == Constants.OrderType.Buy)
 						{
-							if(order.type == Constants.OrderType.Buy)
-							{
-								if(order.profit > 0)
-									profitBuys++;
-								else
-									spendBuys++;
-							}
-							else if(order.type == Constants.OrderType.Sell)
-							{
-								if(order.profit > 0)
-									profitSells++;
-								else
-									spendSells++;
-							}
+							if(order.profit > 0)
+								profitBuys++;
+							else
+								spendBuys++;
+						}
+						else if(order.type == Constants.OrderType.Sell)
+						{
+							if(order.profit > 0)
+								profitSells++;
+							else
+								spendSells++;
 						}
 					}
 				}
