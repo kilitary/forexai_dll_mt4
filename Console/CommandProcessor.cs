@@ -46,14 +46,10 @@ namespace forexAI
 					{
 						case "next":
 							if(App.currentNetworkId.Length <= 0)
-							{
 								resultString = $"empty current network dir";
-							}
 							else
-							{
 								if(Directory.Exists(Configuration.rootDirectory + $"\\{App.currentNetworkId}"))
-									Directory.Delete(Configuration.rootDirectory + "\\" + App.currentNetworkId, true);
-							}
+								Directory.Delete(Configuration.rootDirectory + "\\" + App.currentNetworkId, true);
 
 							var dirs = new DirectoryInfo(Configuration.rootDirectory + "\\NEW").GetDirectories("NET_*");
 							var rnd = forexAI.YRandom.between(0, dirs.Length - 1);

@@ -533,7 +533,7 @@ namespace forexAI
 			CloseSpendOrders();
 			CalculateTrailSettings();
 			TrailPositions();
-			CheckForCounterOpen();
+			//	CheckForCounterOpen();
 
 			if(!IsOptimization())
 			{
@@ -752,7 +752,7 @@ namespace forexAI
 
 		private void AssignCounterOrders()
 		{
-			Helpers.Each(Data.ordersActive, (order) => order.FindSpendCounterOrder());
+			Helpers.Each(Data.ordersActive, order => order.FindSpendCounterOrder());
 		}
 
 		private void DumpInputConfig()
@@ -907,7 +907,7 @@ namespace forexAI
 			var zeroTime = new DateTime(0);
 			var forexTimeCurrent = TimeCurrent();
 
-			foreach(var order in Data.ordersActive)
+			Helpers.Each(Data.ordersActive, order =>
 			{
 				if(OrderSelect(order.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() != zeroTime && order.profit > 0.0)
 				{
@@ -923,9 +923,10 @@ namespace forexAI
 					consolelog($"loss {order.type.ToString()} #{order.ticket} {OrderProfit()}$ lots {OrderLots()} " +
 						$"(total={AccountBalance().ToString("0.00")}, spends={activeLoss}, profit={activeProfit})", null, ConsoleColor.Red);
 				}
-			}
+			});
 
-			Data.ordersActive = Data.ordersActive.Where(o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() == zeroTime).ToHashSet();
+			Data.ordersActive = Data.ordersActive.Where(
+				o => OrderSelect(o.ticket, SELECT_BY_TICKET) == true && OrderCloseTime() == zeroTime).ToHashSet();
 
 			for(int index = 0; index < OrdersTotal(); index++)
 			{
@@ -1422,26 +1423,6 @@ namespace forexAI
 							}
 						}
 					}
-					else if(order.stopLoss == 0.0 && order.calculatedProfit > 0
-						&& (buyProbability < tradeEnterProbabilityMin || Bars == tradeBar || Bars - tradeBar >= 5 || !isTrendStable))
-					{
-						AudioFX.PriceComing(Math.Abs(Bid - OrderOpenPrice()));
-
-						newStopLoss = Bid + (2 * 1 * Point);
-						if(!OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
-									order.expiration, Color.BlueViolet))
-						{
-							int error = GetLastError();
-							result = $"FAIL: {error}: {ErrorDescription(error)}";
-						}
-						else
-						{
-							currentDayOperationsCount++;
-							result = $"OK";
-						}
-
-						consolelog($"[rescue] modify buy #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}: {result}", null, ConsoleColor.Yellow);
-					}
 				}
 				else if(order.type == Constants.OrderType.Sell)
 				{
@@ -1475,26 +1456,6 @@ namespace forexAI
 								consolelog($"modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}: {result}", null, ConsoleColor.Yellow);
 							}
 						}
-					}
-					else if(order.stopLoss == 0.0 && order.calculatedProfit > 0
-						&& (sellProbability < tradeEnterProbabilityMin || Bars == tradeBar || Bars - tradeBar >= 5 || !isTrendStable))
-					{
-						AudioFX.PriceComing(Math.Abs(Bid - OrderOpenPrice()));
-
-						newStopLoss = Ask - (2 * 1 * Point);
-						if(!OrderModify(order.ticket, order.openPrice, newStopLoss, order.takeProfit,
-									order.expiration, Color.BlueViolet))
-						{
-							int error = GetLastError();
-							result = $"FAIL: {error}: {ErrorDescription(error)}";
-						}
-						else
-						{
-							currentDayOperationsCount++;
-							result = $"OK";
-						}
-
-						consolelog($"[rescue] modify sell #{order.ticket} newStopLoss={newStopLoss} profit={order.profit}: {result}", null, ConsoleColor.Yellow);
 					}
 				}
 			}
