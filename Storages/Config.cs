@@ -20,7 +20,7 @@ namespace forexAI
 {
 	public class Config
 	{
-		private readonly Dictionary<string, string> _configRepository = null;
+		private readonly Dictionary<string, string> _config = null;
 
 		public void Inc(string logicName)
 		{
@@ -69,9 +69,9 @@ namespace forexAI
 
 		public void Remove(string logicName)
 		{
-			if(_configRepository != null && logicName.Length > 0)
+			if(_config != null && logicName.Length > 0)
 			{
-				_configRepository.Remove(logicName);
+				_config.Remove(logicName);
 				Save();
 			}
 		}
@@ -85,22 +85,22 @@ namespace forexAI
 
 				string value = string.Empty;
 
-				if(_configRepository.TryGetValue(name, out value))
+				if(_config.TryGetValue(name, out value))
 					return value;
 				else
 					return null;
 			}
 			set
 			{
-				if(_configRepository != null)
-					_configRepository[name] = value;
+				if(_config != null)
+					_config[name] = value;
 				Save();
 			}
 		}
 
 		public bool Has(string name)
 		{
-			if(_configRepository == null || !_configRepository.Keys.Contains(name))
+			if(_config == null || !_config.Keys.Contains(name))
 				return false;
 
 			return true;
@@ -108,8 +108,8 @@ namespace forexAI
 
 		public void Set(string name, object obj)
 		{
-			if(_configRepository != null)
-				_configRepository[name] = (string) obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
+			if(_config != null)
+				_config[name] = (string) obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
 			Save();
 		}
 
@@ -118,17 +118,17 @@ namespace forexAI
 			if(!Has(name))
 				return def;
 
-			return _configRepository?[name];
+			return _config?[name];
 		}
 
 		public Config()
 		{
 			if(File.Exists(Configuration.configFilePath))
 			{
-				_configRepository = new Dictionary<string, string>();
-				_configRepository = JsonConvert.DeserializeObject<Dictionary<string, string>>
+				_config = new Dictionary<string, string>();
+				_config = JsonConvert.DeserializeObject<Dictionary<string, string>>
 					(File.ReadAllText(Configuration.configFilePath));
-				log($"Config()->load {_configRepository.Count()} vars", "App.full");
+				log($"Config()->load {_config.Count()} vars", "App.full");
 			}
 		}
 
@@ -136,12 +136,12 @@ namespace forexAI
 		{
 			string data = string.Empty;
 
-			if(_configRepository == null)
+			if(_config == null)
 				return -1;
 
 			try
 			{
-				data = JsonConvert.SerializeObject(_configRepository, Formatting.Indented);
+				data = JsonConvert.SerializeObject(_config, Formatting.Indented);
 				log($"Config()->saving {data.Length} bytes '{data}' to {Configuration.configFilePath}", "App.full");
 				File.WriteAllText(Configuration.configFilePath, data);
 			}
@@ -160,13 +160,13 @@ namespace forexAI
 
 		public string DumpString()
 		{
-			return JsonConvert.SerializeObject(_configRepository, Formatting.Indented);
+			return JsonConvert.SerializeObject(_config, Formatting.Indented);
 		}
 
 		public void Clear()
 		{
-			if(_configRepository != null)
-				_configRepository.Clear();
+			if(_config != null)
+				_config.Clear();
 			Save();
 		}
 	}

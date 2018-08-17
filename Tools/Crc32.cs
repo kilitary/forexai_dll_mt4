@@ -11,7 +11,7 @@ namespace forexAI
 		static uint[] table;
 		static bool bInitDone = false;
 
-		public static uint Calc(string str)
+		public static uint Compute(string str)
 		{
 			if(!bInitDone)
 				Init();
@@ -45,13 +45,9 @@ namespace forexAI
 				for(int j = 8; j > 0; --j)
 				{
 					if((tempValue & 1) == 1)
-					{
 						tempValue = (uint) ((tempValue >> 1) ^ poly);
-					}
 					else
-					{
 						tempValue >>= 1;
-					}
 				}
 				table[i] = tempValue;
 			}

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Alphabetical" MembersFormat="NameAndType">
   <Class Name="forexAI.Helpers">
-    <Position X="13" Y="0.5" Width="1.25" />
+    <Position X="13.75" Y="0.5" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AACAAAAAAAAAAAAIAAAAwAAAAAAAAAAAAAAIEAAAAAA=</HashCode>
       <FileName>Tools\Helpers.cs</FileName>
@@ -10,7 +10,7 @@
   <Class Name="forexAI.Reassembler">
     <Position X="4.75" Y="2.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAQFQAAMAAAAAEQBAAICEgBDAgYEAAIAIMWAEIAAAAA=</HashCode>
+      <HashCode>AAQFQQAMAAAAAEQBAAICEgBDAgYEAAIAIIWAEIAAAAA=</HashCode>
       <FileName>Reassembler\Reassembler.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -22,21 +22,21 @@
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Configuration">
-    <Position X="7" Y="3.5" Width="2.25" />
+    <Position X="7" Y="4.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAIAQAMQgAEAAEIAAAEAAQAAIQEAAAYCAghABQIgAAA=</HashCode>
       <FileName>Data\Configuration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Config">
-    <Position X="8" Y="0.5" Width="1.25" />
+    <Position X="8.25" Y="0.5" Width="1.25" />
     <TypeIdentifier>
-      <HashCode>AAAIAIAAAAACBABACAUACAAAAAAAABAAAAAgAABAAAA=</HashCode>
+      <HashCode>AAAIAIAAAAACBADACAUADAAAAAAAABAAAAAgAABAACA=</HashCode>
       <FileName>Storages\Config.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Constants">
-    <Position X="0.5" Y="3.25" Width="1.75" />
+    <Position X="0.5" Y="3.5" Width="1.75" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -65,7 +65,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.ChartPrices">
-    <Position X="12.75" Y="2.75" Width="2" />
+    <Position X="15" Y="0.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAACAAAAAAAAAIAAAgAACAAAAAAIAAAAAAA=</HashCode>
       <FileName>Prices\Prices.cs</FileName>
@@ -93,7 +93,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Web">
-    <Position X="11.75" Y="0.5" Width="1.25" />
+    <Position X="12.25" Y="0.5" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Tools\Web.cs</FileName>
@@ -109,12 +109,12 @@
   <Class Name="forexAI.MysqlDatabase">
     <Position X="3" Y="0.5" Width="1.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAABABAAAABABAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAABABAAAABABAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Storages\Mysql.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.Data">
-    <Position X="9.5" Y="5.5" Width="3" />
+    <Position X="10.75" Y="2" Width="3" />
     <TypeIdentifier>
       <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAIAAAAA=</HashCode>
       <FileName>Storages\Data.cs</FileName>
@@ -128,23 +128,35 @@
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.NetworkPool">
-    <Position X="6.75" Y="0.5" Width="1.25" />
+    <Position X="9.75" Y="4.75" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Pool\NetworkPool.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.ForexAI" Collapsed="true">
-    <Position X="9.5" Y="7.25" Width="2.5" />
+    <Position X="11.25" Y="3.75" Width="2.5" />
+    <NestedTypes>
+      <Delegate Name="forexAI.ForexAI.HandlerRoutine" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ForexAI.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Enum Name="forexAI.ForexAI.CtrlTypes" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ForexAI.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
     <TypeIdentifier>
-      <HashCode>EzhfrQfl/TKKMAKrzEppBwMn2JuXZz7QP06nCwFikUE=</HashCode>
+      <HashCode>EzhfrQPl/TKKMAKrzEppBwM32JmXZz/QPV6nCwFikUE=</HashCode>
       <FileName>ForexAI.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.App">
-    <Position X="11" Y="2" Width="1.5" />
+    <Position X="6.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACACAAAAAAAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACACAAAAAIAAAAAAAAAAAAAAAAACAoAAAAAAAAAAA=</HashCode>
       <FileName>App\App.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -156,21 +168,21 @@
     </TypeIdentifier>
   </Class>
   <Class Name="forexAI.ConsoleCommandReceiver">
-    <Position X="11" Y="4.25" Width="1.75" />
+    <Position X="14" Y="2.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAEAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Console\CommandLoop.cs</FileName>
+      <FileName>Console\CommandProcessor.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="forexAI.FunctionConfiguration">
-    <Position X="10.5" Y="0.5" Width="1.25" />
+    <Position X="11" Y="0.5" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAA=</HashCode>
       <FileName>Reassembler\FunctionJsonConfig.cs</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="forexAI.FunctionParameters">
-    <Position X="9.25" Y="0.5" Width="1.25" />
+    <Position X="9.5" Y="0.5" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAQAAAAAAACABAAAAAAAAAAAABIAAAAAgAgBA=</HashCode>
       <FileName>Reassembler\FunctionJsonConfig.cs</FileName>

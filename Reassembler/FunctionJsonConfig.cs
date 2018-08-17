@@ -19,7 +19,7 @@ namespace forexAI
 
 	public struct FunctionParameters
 	{
-		public List<string> parametersMap;
+		public HashSet<string> parametersMap;
 		public object Arguments;
 		public int OutIndex;
 		public int OutNbElement;

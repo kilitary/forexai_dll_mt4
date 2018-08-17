@@ -32,7 +32,7 @@ namespace forexAI
 
 		public static void ClearLogs()
 		{
-			var logFiles = new DirectoryInfo(Configuration.rootDirectory).GetFiles("*.log").ToList<FileInfo>();
+			var logFiles = new DirectoryInfo(Configuration.rootDirectory).GetFiles("*.log").ToHashSet();
 
 			foreach(var logFile in logFiles)
 			{

@@ -18,7 +18,7 @@ using static forexAI.Logger;
 
 namespace forexAI
 {
-	public class MysqlDatabase : IDisposable
+	public class MysqlDatabase
 	{
 		public MySqlConnection connection = null;
 
@@ -46,13 +46,13 @@ namespace forexAI
 				log($"mysql: ServerVersion={connection.ServerVersion} idThread={connection.ServerThread} Database={connection.Database} State={connection.State}");
 				return;
 			}
-			catch (MySqlException ex)
+			catch(MySqlException ex)
 			{
 				//When handling errors, you can your application's response based on the error number.
 				//The two most common error numbers when connecting are as follows:
 				//0: Cannot connect to server.
 				//1045: Invalid user name and/or password.
-				switch (ex.Number)
+				switch(ex.Number)
 				{
 					case 0:
 						error($"Cannot connect to server.  Contact administrator [{ex.Message}]");
@@ -77,7 +77,7 @@ namespace forexAI
 				connection.Close();
 				return true;
 			}
-			catch (MySqlException ex)
+			catch(MySqlException ex)
 			{
 				error(ex.Message);
 				return false;
@@ -94,9 +94,9 @@ namespace forexAI
 			string mySelectQuery = $"SELECT value FROM settings WHERE name = '{key}'";
 			string value = "";
 
-			using (var command = new MySqlCommand(mySelectQuery, connection))
+			using(var command = new MySqlCommand(mySelectQuery, connection))
 			{
-				using (MySqlDataReader dataReader = command.ExecuteReader())
+				using(MySqlDataReader dataReader = command.ExecuteReader())
 				{
 					try
 					{
@@ -104,7 +104,7 @@ namespace forexAI
 						dataReader.Read();
 						value = (string) dataReader["value"];
 					}
-					catch (Exception e)
+					catch(Exception e)
 					{
 						error($"db exception: {e.Message}");
 						return null;
@@ -127,7 +127,7 @@ namespace forexAI
 					Connection = connection
 				}.ExecuteNonQuery();
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
 				error($"db exception: {e.Message}");
 			}

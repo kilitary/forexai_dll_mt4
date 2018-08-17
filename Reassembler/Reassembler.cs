@@ -48,7 +48,7 @@ namespace forexAI
 	public static class Reassembler
 	{
 		static Dictionary<string, FunctionConfiguration> functionsConfiguration;
-		static TicTacTec.TA.Library.Core.RetCode ret = TicTacTec.TA.Library.Core.RetCode.UnknownErr;
+		static Core.RetCode ret = Core.RetCode.UnknownErr;
 		static ChartPrices prices = new ChartPrices();
 		static Random random = new Random();
 		static int functionConfigurationHashCode = 0;
