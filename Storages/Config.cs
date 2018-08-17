@@ -20,7 +20,7 @@ namespace forexAI
 {
 	public class Config
 	{
-		private readonly Dictionary<string, string> _config = null;
+		private Dictionary<string, string> _config = new Dictionary<string, string>();
 
 		public void Inc(string logicName)
 		{
@@ -128,7 +128,6 @@ namespace forexAI
 		{
 			if(File.Exists(Configuration.configFilePath))
 			{
-				_config = new Dictionary<string, string>();
 				_config = JsonConvert.DeserializeObject<Dictionary<string, string>>
 					(File.ReadAllText(Configuration.configFilePath));
 				log($"Config()->load {_config.Count()} vars", "App.full");
@@ -137,7 +136,7 @@ namespace forexAI
 
 		public int Save()
 		{
-			string data = string.Empty;
+			var data = string.Empty;
 
 			if(_config == null)
 				return -1;

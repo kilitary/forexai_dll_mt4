@@ -134,7 +134,7 @@
       <FileName>Pool\NetworkPool.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="forexAI.ForexAI" Collapsed="true">
+  <Class Name="forexAI.ForexAI">
     <Position X="11.25" Y="3.75" Width="2.5" />
     <NestedTypes>
       <Delegate Name="forexAI.ForexAI.HandlerRoutine" Collapsed="true">
