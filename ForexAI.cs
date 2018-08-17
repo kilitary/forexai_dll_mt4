@@ -730,7 +730,6 @@ namespace forexAI
 
 		private void AssignCounterOrders()
 		{
-			//Helpers.Each(Data.ordersActive, order => order.FindSpendCounterOrder());
 			Parallel.ForEach(Data.ordersActive, (order) => order.FindSpendCounterOrder());
 		}
 
@@ -761,7 +760,6 @@ namespace forexAI
 			log("Deinitializing ...");
 			log($"Balance={AccountBalance()} Orders={OrdersTotal()} UninitializeReason={UninitializeReason()}");
 
-			//config.Set("balance", AccountBalance());
 			App.config.Save();
 			storage.SyncData();
 

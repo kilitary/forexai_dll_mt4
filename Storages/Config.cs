@@ -100,10 +100,13 @@ namespace forexAI
 
 		public bool Has(string name)
 		{
-			if(_config == null || !_config.Keys.Contains(name))
+			if(_config == null)
 				return false;
 
-			return true;
+			if(_config.Keys.Contains(name))
+				return true;
+
+			return false;
 		}
 
 		public void Set(string name, object obj)

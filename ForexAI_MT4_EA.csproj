@@ -43,6 +43,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <CodeAnalysisRuleSet>BasicDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AssemblyInfoVersionSemVerSettings>AssemblyVersion.NoneWithAutoReset.Alpha</AssemblyInfoVersionSemVerSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
