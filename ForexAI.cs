@@ -487,7 +487,7 @@ namespace forexAI
 		public ForexAI()
 		{
 			//SetConsoleCtrlHandler(new HandlerRoutine(ConsoleCtrlCheck), true);
-
+			 
 			Task.Factory.StartNew(() =>
 			{
 				AttachConsole(ATTACH_PARENT_PROCESS);
