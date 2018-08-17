@@ -190,8 +190,6 @@ namespace forexAI
 		int tradeBar = 0;
 		int marketCollapsedBar = 0;
 		int slipPage = 30;
-		Thread backgroundJobs = null;
-
 
 		// computed properties
 		int ordersCount => Data.ordersActive.Count();
@@ -488,7 +486,7 @@ namespace forexAI
 
 		public ForexAI()
 		{
-			SetConsoleCtrlHandler(new HandlerRoutine(ConsoleCtrlCheck), true);
+			//SetConsoleCtrlHandler(new HandlerRoutine(ConsoleCtrlCheck), true);
 
 			Task.Factory.StartNew(() =>
 			{
@@ -502,26 +500,6 @@ namespace forexAI
 				App.processorPerformanceCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 				consolelog($"... done with counters");
 			});
-
-			/*Task.Factory.StartNew(() =>
-			{
-				while(true)
-				{
-					Thread.Sleep(1500);
-
-					if(App.performanceCounter == null)
-					{
-						consolelog($"Accessing processor performance counters ...");
-						App.performanceCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-						consolelog($"... done with counters");
-					}
-					else
-						cpuCounterValue = App.performanceCounter.NextValue();
-
-					FillHistoryOrdersStatistics();
-				}
-			});*/
-
 		}
 
 		public override int start()
@@ -570,7 +548,7 @@ namespace forexAI
 					TryEnterCounterTrade();
 			}
 
-			if(Configuration.unlinkBadNetworksEnabled && IsBadNetwork())
+			if(Configuration.unlinkBadNetworksEnabled && networkId.Length > 0 && IsBadNetwork())
 			{
 				AudioFX.Wipe();
 
@@ -752,7 +730,8 @@ namespace forexAI
 
 		private void AssignCounterOrders()
 		{
-			Helpers.Each(Data.ordersActive, order => order.FindSpendCounterOrder());
+			//Helpers.Each(Data.ordersActive, order => order.FindSpendCounterOrder());
+			Parallel.ForEach(Data.ordersActive, (order) => order.FindSpendCounterOrder());
 		}
 
 		private void DumpInputConfig()
