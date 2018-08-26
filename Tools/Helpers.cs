@@ -28,7 +28,7 @@ namespace forexAI
 	{
 		public static void HexDump(string buffer, string message)
 		{
-			StringBuilder sw = new StringBuilder();
+			var sw = new StringBuilder();
 			byte[] originalBytes = Encoding.Default.GetBytes(buffer);
 			int i, j = originalBytes.Length;
 

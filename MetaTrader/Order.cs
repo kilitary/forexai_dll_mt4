@@ -46,10 +46,7 @@ namespace forexAI
 				}
 			}
 
-			if(counterOrder != null)
-				return counterOrder.ticket;
-			else
-				return 0;
+			return counterOrder == null ? 0 : counterOrder.ticket;
 		}
 	}
 }

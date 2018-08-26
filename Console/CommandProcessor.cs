@@ -17,12 +17,12 @@ namespace forexAI
 
 		public static void CommandReadingLoop()
 		{
-			string typing = String.Empty;
 			string[] commandLineParts = null;
+			string typing = String.Empty;
 			string resultString = string.Empty;
-			int nBytes = 0;
 			string command = string.Empty;
 			bool runCommandLineParser = true;
+			int nBytes = 0;
 
 			Console.CursorLeft = 0;
 			Console.CursorTop = 0;
@@ -42,13 +42,17 @@ namespace forexAI
 					log($"command: {typing}", "dev");
 					consolelog($"=> {typing}", "dev", ConsoleColor.Gray);
 
-					command = commandLineParts[0];
+					command = commandLineParts[0].ToLower();
 
 					switch(command)
 					{
 						case "exit":
 							consolelog($"exit called");
 							Environment.Exit(0);
+							break;
+
+						case "step":
+							App.MQLApi.ExpertRemove();
 							break;
 
 						case "next":
@@ -58,13 +62,14 @@ namespace forexAI
 								Directory.Delete(Configuration.rootDirectory + "\\" + App.currentNetworkId, true);
 
 							var dirs = new DirectoryInfo(Configuration.rootDirectory + "\\NEW").GetDirectories("NET_*");
-							var rnd = forexAI.YRandom.between(0, dirs.Length - 1);
+							var rnd = YRandom.between(0, dirs.Length - 1);
 
 							resultString = $"next dir chosen (from {dirs.Length} dirs): {dirs[rnd]}";
 
 							try
 							{
-								Directory.Move(Configuration.rootDirectory + $"\\NEW\\{dirs[rnd]}", Configuration.rootDirectory + $"\\{dirs[rnd]}");
+								Directory.Move(Configuration.rootDirectory + $"\\NEW\\{dirs[rnd]}",
+									Configuration.rootDirectory + $"\\{dirs[rnd]}");
 							}
 							catch(Exception e)
 							{
@@ -75,14 +80,12 @@ namespace forexAI
 							break;
 
 						case "memstats":
-							forexAI.Helpers.ShowMemoryUsage();
+							Helpers.ShowMemoryUsage();
 							break;
 
 						case "testerstats":
 							for(var i = 0; i < 100; i++)
-							{
 								resultString += $"{i,-4}: {App.MQLApi.TesterStatistics(i)}\r\n";
-							}
 							break;
 
 						case "clear":
@@ -118,6 +121,7 @@ namespace forexAI
 								{
 									switch(commandLineParts[1])
 									{
+										case "remove":
 										case "-":
 											App.config.Remove(commandLineParts[2]);
 											resultString = $"removed {commandLineParts[2]}";

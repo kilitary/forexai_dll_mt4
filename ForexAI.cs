@@ -107,7 +107,6 @@ namespace forexAI
 			CTRL_SHUTDOWN_EVENT
 		}
 
-
 		private const int ATTACH_PARENT_PROCESS = -1;
 
 		//  props
@@ -499,7 +498,7 @@ namespace forexAI
 			{
 				consolelog($"Accessing processor performance counters ...");
 				App.processorPerformanceCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-				consolelog($"... done with counters");
+				consolelog($"... got counters");
 			});
 		}
 
@@ -512,6 +511,7 @@ namespace forexAI
 			CloseSpendOrders();
 			CalculateTrailSettings();
 			TrailPositions();
+			
 			//	CheckForCounterOpen();
 
 			if(!IsOptimization())
@@ -531,6 +531,14 @@ namespace forexAI
 				{
 					lastMemoryStatsDumpTimesamp = runWatch.ElapsedMilliseconds;
 					Helpers.ShowMemoryUsage();
+				}
+			}
+			else
+			{
+				if(AccountBalance() <= 98.0)
+				{
+					consolelog($"FORCE DEINIT - bad params", "App.full");
+					ExpertRemove();
 				}
 			}
 
@@ -595,7 +603,7 @@ namespace forexAI
 				AudioFX.NewDay();
 			}
 
-			if(AccountBalance() <= 35.0 && !hasNoticedLowBalance)
+			if(AccountBalance() <= 35 && !hasNoticedLowBalance)
 			{
 				hasNoticedLowBalance = true;
 				console($"всё пизда, кеш весь слит нахуй, бабок: {AccountBalance()}$", ConsoleColor.Red, ConsoleColor.White);
@@ -647,12 +655,15 @@ namespace forexAI
 		private void CalculateTrailSettings()
 		{
 			spread = MarketInfo(symbol, MODE_SPREAD);
+
 			if(spread == previousSpread)
 				return;
 
 			trailingBorder = Math.Round(spread * trailingBorderFactor);
 			trailingStop = Math.Round(trailingBorder * trailingStopFactor);
+
 			log($"[spread={spread}] set trailingBorder {trailingBorder} trailingStop: {trailingStop}", "auto");
+
 			previousSpread = spread;
 		}
 
@@ -1211,8 +1222,6 @@ namespace forexAI
 
 		void CloseSpendOrders()
 		{
-			var currentTime = TimeCurrent();
-
 			foreach(var order in Data.ordersActive)
 			{
 				if(order.calculatedProfit >= maxNegativeSpend
@@ -1261,7 +1270,7 @@ namespace forexAI
 
 			var ops = 0;
 
-			log($"force closing {buysCount} buys");
+			log($"closing {buysCount} buys");
 			for(int orderIndex = OrdersTotal() - 1; orderIndex >= 0; orderIndex--)
 			{
 				if(!(OrderSelect(orderIndex, SELECT_BY_POS, MODE_TRADES)))
@@ -1287,7 +1296,7 @@ namespace forexAI
 
 			var ops = 0;
 
-			log($"force closing {sellsCount} sells");
+			log($"closing {sellsCount} sells");
 			for(int orderIndex = OrdersTotal() - 1; orderIndex >= 0; orderIndex--)
 			{
 				if(!(OrderSelect(orderIndex, SELECT_BY_POS, MODE_TRADES)))

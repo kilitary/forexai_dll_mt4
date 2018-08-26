@@ -130,7 +130,7 @@ namespace forexAI
 			{
 				_config = JsonConvert.DeserializeObject<Dictionary<string, string>>
 					(File.ReadAllText(Configuration.configFilePath));
-				log($"Config()->load {_config.Count()} vars", "App.full");
+				log($"Config()->load {_config.Count()} vars", "debug");
 			}
 		}
 
@@ -144,7 +144,7 @@ namespace forexAI
 			try
 			{
 				data = JsonConvert.SerializeObject(_config, Formatting.Indented);
-				log($"Config()->saving {data.Length} bytes '{data}' to {Configuration.configFilePath}", "App.full");
+				log($"Config()->saving {data.Length} bytes '{data}' to {Configuration.configFilePath}", "debug");
 				File.WriteAllText(Configuration.configFilePath, data);
 			}
 			catch(InvalidOperationException e)
