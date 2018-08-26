@@ -26,6 +26,34 @@ namespace forexAI
 {
 	public static class Helpers
 	{
+		public static void HexDump(string buffer, string message)
+		{
+			StringBuilder sw = new StringBuilder();
+			byte[] originalBytes = Encoding.Default.GetBytes(buffer);
+			int i, j = originalBytes.Length;
+
+			log($"HexDump {message} ->", "debug");
+
+			StringBuilder sb = new StringBuilder();
+
+			for(i = 0; i < j; i++)
+			{
+				sw.AppendFormat("{0:x2} ", originalBytes[i]);
+				if(originalBytes[i] >= 0x20 && originalBytes[i] <= 0x7E)
+					sb.Append((char) originalBytes[i]);
+				else
+					sb.Append(".");
+
+				if((i % 0x10 == 0) && (i != 0))
+				{
+					sw.AppendFormat(string.Format("\t{0}", sb.ToString()));
+					sb.Remove(0, sb.Length);
+				}
+			}
+			sw.AppendFormat(string.Format("\t{0}", sb.ToString()));
+			log($"{sw.ToString()}", "debug");
+		}
+
 		public static bool IsFileBusy(string fileName)
 		{
 			var targetFileInfo = new FileInfo(fileName);

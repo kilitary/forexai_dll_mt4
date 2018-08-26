@@ -163,6 +163,7 @@ namespace forexAI
 		bool neuralNetworkBootstrapped = false;
 		bool hasIncreasedUnstableTrendBar = false;
 		bool networkIsGood = false;
+		bool assigningCounterOrders = false;
 		int stableTrendCurrentBar = 0;
 		static int spendSells = 0;
 		static int spendBuys = 0;
@@ -487,7 +488,7 @@ namespace forexAI
 		public ForexAI()
 		{
 			//SetConsoleCtrlHandler(new HandlerRoutine(ConsoleCtrlCheck), true);
-			 
+
 			Task.Factory.StartNew(() =>
 			{
 				AttachConsole(ATTACH_PARENT_PROCESS);
@@ -659,11 +660,11 @@ namespace forexAI
 		{
 			Clear();
 
+			App.MQLApi = this;
+
 			InitPredefinedVariables();
 
 			startTime = GetTickCount();
-
-			App.mqlApi = this;
 
 			networkIsGood = false;
 

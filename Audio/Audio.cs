@@ -65,7 +65,7 @@ namespace forexAI
 
 			currentlyPriceComingPlaying = true;
 			//log($"freq bef={freq} poiunt={App.mqlApi.Point}", "dev");
-			freq = (freq) / App.mqlApi.Point / 10;
+			freq = (freq) / App.MQLApi.Point / 10;
 			//log($"freq aft={freq}", "dev");
 			Task.Factory.StartNew(() =>
 			{
