@@ -491,7 +491,7 @@ namespace forexAI
 			Task.Factory.StartNew(() =>
 			{
 				AttachConsole(ATTACH_PARENT_PROCESS);
-				ConsoleCommandReceiver.CommandReadingLoop();
+				ConsoleCommandReceiver.CommandsReadingLoop();
 			});
 
 			Task.Factory.StartNew(() =>

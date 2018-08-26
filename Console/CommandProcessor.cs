@@ -15,14 +15,14 @@ namespace forexAI
 		[DllImport("kernel32.dll")]
 		private static extern bool FreeConsole();
 
-		public static void CommandReadingLoop()
-		{
-			string[] commandLineParts = null;
-			string typing = String.Empty;
-			string resultString = string.Empty;
-			string command = string.Empty;
-			bool runCommandLineParser = true;
+		static string[] commandLineParts = null;
+		static string typing = String.Empty;
+		static string resultString = string.Empty;
+		static string command = string.Empty;
+		static bool runCommandLineParser = true;
 
+		public static void CommandsReadingLoop()
+		{
 			Console.CursorLeft = 0;
 			Console.CursorTop = 0;
 			Console.Beep(1650, 33);
@@ -50,7 +50,8 @@ namespace forexAI
 							Environment.Exit(0);
 							break;
 
-						case "step":
+						case "break":
+							consolelog($"next optimization step called");
 							App.MQLApi.ExpertRemove();
 							break;
 
@@ -118,7 +119,7 @@ namespace forexAI
 									resultString = $"config: {App.config.DumpString()}";
 								else
 								{
-									switch(commandLineParts[1])
+									switch(commandLineParts[1].ToLower())
 									{
 										case "del":
 										case "remove":
