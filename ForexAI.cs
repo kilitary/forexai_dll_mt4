@@ -511,7 +511,7 @@ namespace forexAI
 			CloseSpendOrders();
 			CalculateTrailSettings();
 			TrailPositions();
-			
+
 			//	CheckForCounterOpen();
 
 			if(!IsOptimization())
@@ -534,13 +534,7 @@ namespace forexAI
 				}
 			}
 			else
-			{
-				if(AccountBalance() <= 98.0)
-				{
-					consolelog($"FORCE DEINIT - bad params", "App.full");
-					ExpertRemove();
-				}
-			}
+				CheckUnsuccessfullOptimization();
 
 			if(Bars == previousBars)
 				return 0;
@@ -617,7 +611,7 @@ namespace forexAI
 
 			log($"=> Buy {buyProbability.ToString("0.0000").PadLeft(7)} Sell {sellProbability.ToString("0.0000").PadLeft(7)}" +
 				$" Diff {diffProbability.ToString("0.0000").PadLeft(7)} " +
-				$"{trend}", "debug");
+				$"{trend} ", "debug");
 
 			#region matters
 			if(Configuration.tryExperimentalFeatures)
@@ -628,6 +622,15 @@ namespace forexAI
 			barsPerDay += 1;
 
 			return 0;
+		}
+
+		private void CheckUnsuccessfullOptimization()
+		{
+			if(AccountBalance() <= 98.0 || (Bars > 10000 && OrdersHistoryTotal() < 3))
+			{
+				consolelog($"FORCE DEINIT - bad params [balance={AccountBalance()}, bars={Bars}, historders={OrdersHistoryTotal()}]", "App.full");
+				ExpertRemove();
+			}
 		}
 
 		private void CheckForCounterOpen()

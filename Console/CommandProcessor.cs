@@ -22,7 +22,6 @@ namespace forexAI
 			string resultString = string.Empty;
 			string command = string.Empty;
 			bool runCommandLineParser = true;
-			int nBytes = 0;
 
 			Console.CursorLeft = 0;
 			Console.CursorTop = 0;
@@ -121,6 +120,7 @@ namespace forexAI
 								{
 									switch(commandLineParts[1])
 									{
+										case "del":
 										case "remove":
 										case "-":
 											App.config.Remove(commandLineParts[2]);
@@ -128,13 +128,13 @@ namespace forexAI
 											break;
 
 										case "save":
-											nBytes = App.config.Save();
+											var nBytes = App.config.Save();
 											resultString = $"config saved ({nBytes} bytes)";
 											break;
 
 										case "clear":
 											App.config.Clear();
-											resultString = $"config clear";
+											resultString = $"config cleared";
 											break;
 
 										default:
@@ -159,7 +159,7 @@ namespace forexAI
 							break;
 
 						default:
-							resultString = $"unknown command '{commandLineParts[0]}'";
+							resultString = $"unknown command '{command}'";
 							break;
 
 					}
