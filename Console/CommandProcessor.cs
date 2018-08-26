@@ -52,10 +52,10 @@ namespace forexAI
 
 						case "break":
 							consolelog($"next optimization step called");
-							App.MQLApi.ExpertRemove();
+							App.mqlApi.ExpertRemove();
 							break;
 
-						case "next":
+						case "rotate":
 							if(App.currentNetworkId.Length <= 0)
 								resultString = $"empty current network dir";
 							else if(Directory.Exists(Configuration.rootDirectory + $"\\{App.currentNetworkId}"))
@@ -85,7 +85,7 @@ namespace forexAI
 
 						case "testerstats":
 							for(var i = 0; i < 100; i++)
-								resultString += $"{i,-4}: {App.MQLApi.TesterStatistics(i)}\r\n";
+								resultString += $"{i,-4}: {App.mqlApi.TesterStatistics(i)}\r\n";
 							break;
 
 						case "clear":
@@ -123,9 +123,10 @@ namespace forexAI
 									{
 										case "del":
 										case "remove":
+										case "unset":
 										case "-":
-											App.config.Remove(commandLineParts[2]);
-											resultString = $"removed {commandLineParts[2]}";
+											App.config.Remove(commandLineParts[2].Trim());
+											resultString = $"removed {commandLineParts[2].Trim()}";
 											break;
 
 										case "save":
@@ -133,6 +134,7 @@ namespace forexAI
 											resultString = $"config saved ({nBytes} bytes)";
 											break;
 
+										case "reset":
 										case "clear":
 											App.config.Clear();
 											resultString = $"config cleared";
@@ -141,15 +143,15 @@ namespace forexAI
 										default:
 											if(commandLineParts.Count() > 2)
 											{
-												log($"setting {commandLineParts[1]} to {commandLineParts[2]}", "dev");
-												App.config[commandLineParts[1]] = commandLineParts[2];
-												resultString = $"set {commandLineParts[1]} = {commandLineParts[2]}";
+												log($"setting {commandLineParts[1].Trim()} to {commandLineParts[2].Trim()}", "dev");
+												App.config[commandLineParts[1].Trim()] = commandLineParts[2].Trim();
+												resultString = $"set {commandLineParts[1].Trim()} = {commandLineParts[2].Trim()}";
 												App.config.Save();
 											}
 											else
 											{
-												log($"app.config[{commandLineParts[1]}", "dev");
-												resultString = $"{commandLineParts[1]} = {App.config[commandLineParts[1]]}";
+												log($"app.config[{commandLineParts[1].Trim()}", "dev");
+												resultString = $"{commandLineParts[1].Trim()} = {App.config[commandLineParts[1].Trim()]}";
 											}
 											break;
 									}

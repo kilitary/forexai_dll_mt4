@@ -609,7 +609,7 @@ namespace forexAI
 
 			var trend = stableTrendBar > 0 ? $"Stable {stableTrendBar}" : $"Unstable  {unstableTrendBar}";
 
-			log($"=> Buy {buyProbability.ToString("0.0000").PadLeft(7)} Sell {sellProbability.ToString("0.0000").PadLeft(7)}" +
+			log($"{Bars,5} => Buy {buyProbability.ToString("0.0000").PadLeft(7)} Sell {sellProbability.ToString("0.0000").PadLeft(7)}" +
 				$" Diff {diffProbability.ToString("0.0000").PadLeft(7)} " +
 				$"{trend} ", "debug");
 
@@ -626,7 +626,7 @@ namespace forexAI
 
 		private void CheckUnsuccessfullOptimization()
 		{
-			if(AccountBalance() <= 98.0 || (Bars > 10000 && OrdersHistoryTotal() < 3))
+			if(AccountBalance() <= 98.0 || (Bars > 1200 && OrdersHistoryTotal() < 2))
 			{
 				consolelog($"FORCE DEINIT - bad params [balance={AccountBalance()}, bars={Bars}, historders={OrdersHistoryTotal()}]", "App.full");
 				ExpertRemove();
@@ -674,7 +674,7 @@ namespace forexAI
 		{
 			Clear();
 
-			App.MQLApi = this;
+			App.mqlApi = this;
 
 			InitPredefinedVariables();
 

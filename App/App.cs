@@ -12,7 +12,7 @@ namespace forexAI
 	public static class App
 	{
 		// MqlApi object
-		public static MqlApi MQLApi = null;
+		public static MqlApi mqlApi = null;
 		public static Version version = null;
 		public static string currentNetworkId = string.Empty;
 		public static Config config = new Config();
@@ -21,7 +21,7 @@ namespace forexAI
 
 		static App()
 		{
-			log($"[static Core created mqlApi={MQLApi} fx=1]", "App.full");
+			log($"[static Core created mqlApi={mqlApi} fx=1]", "App.full");
 			version = Assembly.GetExecutingAssembly().GetName().Version;
 		}
 	}

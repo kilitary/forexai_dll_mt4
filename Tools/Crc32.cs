@@ -9,11 +9,11 @@ namespace forexAI
 	public static class Crc32
 	{
 		static uint[] table;
-		static bool bInitDone = false;
+		static bool bInit = false;
 
 		public static uint Compute(string str)
 		{
-			if(!bInitDone)
+			if(!bInit)
 				Init();
 
 			byte[] originalBytes = Encoding.Default.GetBytes(str);
@@ -22,10 +22,11 @@ namespace forexAI
 
 		public static uint ComputeChecksum(byte[] bytes)
 		{
-			if(!bInitDone)
-				Init();
-
 			uint crc = 0xffffffff;
+
+			if(!bInit)
+				Init();
+			
 			for(int i = 0; i < bytes.Length; ++i)
 			{
 				byte index = (byte) (((crc) & 0xff) ^ bytes[i]);
@@ -37,22 +38,24 @@ namespace forexAI
 		public static void Init()
 		{
 			uint poly = 0xedb88320;
-			table = new uint[256];
 			uint tempValue = 0;
+
+			table = new uint[256];
+
 			for(uint i = 0; i < table.Length; ++i)
 			{
 				tempValue = i;
+
 				for(int j = 8; j > 0; --j)
-				{
 					if((tempValue & 1) == 1)
 						tempValue = (uint) ((tempValue >> 1) ^ poly);
 					else
 						tempValue >>= 1;
-				}
+
 				table[i] = tempValue;
 			}
 
-			bInitDone = true;
+			bInit = true;
 		}
 	}
 }
