@@ -110,7 +110,7 @@ namespace forexAI
 		private const int ATTACH_PARENT_PROCESS = -1;
 
 		//  props
-		public Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 1314);
+		public Random random = new Random((int)DateTimeOffset.Now.ToUnixTimeMilliseconds() + 1314);
 		public Storage storage = new Storage();
 		public NeuralNet fannNetwork = null;
 		public TrainingData trainingData = null;
@@ -698,7 +698,7 @@ namespace forexAI
 				runWatch.Start();
 			}
 
-			currentDay = (int) DateTime.Now.DayOfWeek;
+			currentDay = (int)DateTime.Now.DayOfWeek;
 			neuralNetworkBootstrapped = false;
 			reassembleStageOverride = false;
 			prevBuyProbability = new double[countedMeasuredProbabilityBars];
@@ -736,7 +736,7 @@ namespace forexAI
 
 			dump(ConfigSettings.SharedSettings, "SharedSettings", "dev");
 
-			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) (v{App.version})";
+			string initStr = $"Initialized in {(((double)GetTickCount() - (double)startTime) / 1000.0).ToString("0.0")} sec(s) (v{App.version})";
 			log(initStr);
 			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
 
@@ -778,7 +778,7 @@ namespace forexAI
 			App.config.Save();
 			storage.SyncData();
 
-			string mins = ((((double) GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
+			string mins = ((((double)GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
 			log($"Uptime {mins} mins, has do {totalOperationsCount + currentDayOperationsCount} operations.");
 			console("... shutted down.", ConsoleColor.Black, ConsoleColor.Red);
 			return 0;
@@ -807,7 +807,6 @@ namespace forexAI
 					}
 
 					reassembleStageOverride = false;
-
 				}
 			}
 		}
@@ -1172,7 +1171,7 @@ namespace forexAI
 			FileInfo fi1 = new FileInfo(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
 			FileInfo fi2 = new FileInfo(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
 
-			log($" * loading {(((double) fi1.Length + fi2.Length) / 1024.0 / 1024.0).ToString("0.00")}mb of {fannNetworkDirName} data...");
+			log($" * loading {(((double)fi1.Length + fi2.Length) / 1024.0 / 1024.0).ToString("0.00")}mb of {fannNetworkDirName} data...");
 
 			trainingData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
 			testData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
@@ -1220,7 +1219,7 @@ namespace forexAI
 				curX++;
 			}
 
-			return ((double) hits / (double) inputs.Length) * 100.0;
+			return ((double)hits / (double)inputs.Length) * 100.0;
 		}
 
 		void CloseSpendOrders()
@@ -1722,7 +1721,7 @@ namespace forexAI
 			double KPD = 0.0;
 
 			if(totalSpends > 0 && totalProfits > 0)
-				KPD = (100.0 - ((100.0 / (double) totalProfits) * (double) totalSpends));
+				KPD = (100.0 - ((100.0 / (double)totalProfits) * (double)totalSpends));
 			else
 				KPD = 100.0;
 
