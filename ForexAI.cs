@@ -692,11 +692,8 @@ namespace forexAI
 
 			ShowBanner();
 
-			if(runWatch == null)
-			{
-				runWatch = new Stopwatch();
-				runWatch.Start();
-			}
+			runWatch = new Stopwatch();
+			runWatch.Start();
 
 			currentDay = (int)DateTime.Now.DayOfWeek;
 			neuralNetworkBootstrapped = false;
@@ -1771,7 +1768,7 @@ namespace forexAI
 					totalSpends +
 					"\r\n" +
 				  "Network: " +
-					networkId +
+					networkId + " | " + networkId.GetHashCode() +
 					"\r\n" +
 				  "Functions: " +
 					networkFunctionsCount +

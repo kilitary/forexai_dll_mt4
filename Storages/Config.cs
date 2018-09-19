@@ -112,7 +112,7 @@ namespace forexAI
 		public void Set(string name, object obj)
 		{
 			if(_config != null)
-				_config[name] = (string) obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
+				_config[name] = (string)obj;// JsonConvert.SerializeObject(obj, Formatting.Indented);
 			Save();
 		}
 

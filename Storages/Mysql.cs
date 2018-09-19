@@ -74,7 +74,7 @@ namespace forexAI
 		{
 			try
 			{
-				connection.Close();
+				connection.Close();`
 				return true;
 			}
 			catch(MySqlException ex)
