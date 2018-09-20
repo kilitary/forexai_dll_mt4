@@ -110,7 +110,7 @@ namespace forexAI
 		private const int ATTACH_PARENT_PROCESS = -1;
 
 		//  props
-		public Random random = new Random((int)DateTimeOffset.Now.ToUnixTimeMilliseconds() + 1314);
+		public Random random = new Random((int) DateTimeOffset.Now.ToUnixTimeMilliseconds() + 1314);
 		public Storage storage = new Storage();
 		public NeuralNet fannNetwork = null;
 		public TrainingData trainingData = null;
@@ -190,6 +190,7 @@ namespace forexAI
 		int tradeBar = 0;
 		int marketCollapsedBar = 0;
 		int slipPage = 30;
+		int doneBars = 0;
 
 		// computed properties
 		int ordersCount => Data.ordersActive.Count();
@@ -509,7 +510,7 @@ namespace forexAI
 			CheckForAutoClose();
 			CheckForMarketCollapse();
 			CloseSpendOrders();
-			CalculateTrailSettings();
+			AdjustTrailingSettings();
 			TrailPositions();
 
 			//	CheckForCounterOpen();
@@ -626,7 +627,7 @@ namespace forexAI
 
 		private void CheckUnsuccessfullOptimization()
 		{
-			if(AccountBalance() <= 98.0 || (Bars > 1200 && OrdersHistoryTotal() < 2))
+			if(AccountBalance() <= 98.0 || doneBars++ >= 1000 && OrdersHistoryTotal() < 2)
 			{
 				consolelog($"FORCE DEINIT - bad params [balance={AccountBalance()}, bars={Bars}, historders={OrdersHistoryTotal()}]", "App.full");
 				ExpertRemove();
@@ -655,14 +656,14 @@ namespace forexAI
 			}
 		}
 
-		private void CalculateTrailSettings()
+		private void AdjustTrailingSettings()
 		{
 			spread = MarketInfo(symbol, MODE_SPREAD);
 
 			if(spread == previousSpread)
 				return;
 
-			trailingBorder = Math.Round(spread * trailingBorderFactor);
+			trailingBorder = Math.Round(spread * trailingBorderFactor) - 1;
 			trailingStop = Math.Round(trailingBorder * trailingStopFactor);
 
 			log($"[spread={spread}] set trailingBorder {trailingBorder} trailingStop: {trailingStop}", "auto");
@@ -673,6 +674,8 @@ namespace forexAI
 		public override int init()
 		{
 			Clear();
+
+			doneBars = 0;
 
 			App.mqlApi = this;
 
@@ -695,7 +698,7 @@ namespace forexAI
 			runWatch = new Stopwatch();
 			runWatch.Start();
 
-			currentDay = (int)DateTime.Now.DayOfWeek;
+			currentDay = (int) DateTime.Now.DayOfWeek;
 			neuralNetworkBootstrapped = false;
 			reassembleStageOverride = false;
 			prevBuyProbability = new double[countedMeasuredProbabilityBars];
@@ -733,7 +736,7 @@ namespace forexAI
 
 			dump(ConfigSettings.SharedSettings, "SharedSettings", "dev");
 
-			string initStr = $"Initialized in {(((double)GetTickCount() - (double)startTime) / 1000.0).ToString("0.0")} sec(s) (v{App.version})";
+			string initStr = $"Initialized in {(((double) GetTickCount() - (double) startTime) / 1000.0).ToString("0.0")} sec(s) (v{App.version})";
 			log(initStr);
 			console(initStr, ConsoleColor.Black, ConsoleColor.Yellow);
 
@@ -775,7 +778,7 @@ namespace forexAI
 			App.config.Save();
 			storage.SyncData();
 
-			string mins = ((((double)GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
+			string mins = ((((double) GetTickCount() - startTime) / 1000.0 / 60.0)).ToString("0.00");
 			log($"Uptime {mins} mins, has do {totalOperationsCount + currentDayOperationsCount} operations.");
 			console("... shutted down.", ConsoleColor.Black, ConsoleColor.Red);
 			return 0;
@@ -1168,7 +1171,7 @@ namespace forexAI
 			FileInfo fi1 = new FileInfo(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
 			FileInfo fi2 = new FileInfo(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
 
-			log($" * loading {(((double)fi1.Length + fi2.Length) / 1024.0 / 1024.0).ToString("0.00")}mb of {fannNetworkDirName} data...");
+			log($" * loading {(((double) fi1.Length + fi2.Length) / 1024.0 / 1024.0).ToString("0.00")}mb of {fannNetworkDirName} data...");
 
 			trainingData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\traindata.dat");
 			testData = new TrainingData(Configuration.rootDirectory + $"\\{fannNetworkDirName}\\testdata.dat");
@@ -1216,7 +1219,7 @@ namespace forexAI
 				curX++;
 			}
 
-			return ((double)hits / (double)inputs.Length) * 100.0;
+			return ((double) hits / (double) inputs.Length) * 100.0;
 		}
 
 		void CloseSpendOrders()
@@ -1718,7 +1721,7 @@ namespace forexAI
 			double KPD = 0.0;
 
 			if(totalSpends > 0 && totalProfits > 0)
-				KPD = (100.0 - ((100.0 / (double)totalProfits) * (double)totalSpends));
+				KPD = (100.0 - ((100.0 / (double) totalProfits) * (double) totalSpends));
 			else
 				KPD = 100.0;
 
