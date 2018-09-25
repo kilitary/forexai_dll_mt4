@@ -15,61 +15,61 @@ using static Newtonsoft.Json.JsonConvert;
 
 namespace forexAI
 {
-	public class ChartPrices
-	{
-		public double[] GetOpen(int numData)
-		{
-			int Bars = App.mqlApi.Bars;
-			double[] prices = new double[(Bars >= numData ? numData : Bars)];
+   public class ChartPrices
+   {
+      public double[] GetOpen(int numData)
+      {
+         int Bars = App.mqlApi.Bars;
+         double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-				prices[i] = App.mqlApi.Open[i];
+         for(int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+            prices[i] = App.mqlApi.Open[i];
 
-			return prices;
-		}
+         return prices;
+      }
 
-		public double[] GetClose(int numData)
-		{
-			int Bars = App.mqlApi.Bars;
-			double[] prices = new double[(Bars >= numData ? numData : Bars)];
+      public double[] GetClose(int numData)
+      {
+         int Bars = App.mqlApi.Bars;
+         double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-				prices[i] = App.mqlApi.Close[i];
+         for(int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+            prices[i] = App.mqlApi.Close[i];
 
-			return prices;
-		}
+         return prices;
+      }
 
-		public double[] GetHigh(int numData)
-		{
-			int Bars = App.mqlApi.Bars;
-			double[] prices = new double[(Bars >= numData ? numData : Bars)];
+      public double[] GetHigh(int numData)
+      {
+         int Bars = App.mqlApi.Bars;
+         double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-				prices[i] = App.mqlApi.High[i];
+         for(int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+            prices[i] = App.mqlApi.High[i];
 
-			return prices;
-		}
+         return prices;
+      }
 
-		public double[] GetLow(int numData)
-		{
-			int Bars = App.mqlApi.Bars;
-			double[] prices = new double[(Bars >= numData ? numData : Bars)];
+      public double[] GetLow(int numData)
+      {
+         int Bars = App.mqlApi.Bars;
+         double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-				prices[i] = App.mqlApi.Low[i];
+         for(int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+            prices[i] = App.mqlApi.Low[i];
 
-			return prices;
-		}
+         return prices;
+      }
 
-		public double[] GetVolume(int numData)
-		{
-			int Bars = App.mqlApi.Bars;
-			double[] prices = new double[(Bars >= numData ? numData : Bars)];
+      public double[] GetVolume(int numData)
+      {
+         int Bars = App.mqlApi.Bars;
+         double[] prices = new double[(Bars >= numData ? numData : Bars)];
 
-			for (int i = 0; i < (Bars >= numData ? numData : Bars); i++)
-				prices[i] = App.mqlApi.Volume[i];
+         for(int i = 0; i < (Bars >= numData ? numData : Bars); i++)
+            prices[i] = App.mqlApi.Volume[i];
 
-			return prices;
-		}
-	}
+         return prices;
+      }
+   }
 }

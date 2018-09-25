@@ -64,17 +64,24 @@ namespace forexAI
 							var dirs = new DirectoryInfo(Configuration.rootDirectory + "\\NEW").GetDirectories("NET_*");
 							var rnd = YRandom.between(0, dirs.Length - 1);
 
-							resultString = $"next dir chosen (from {dirs.Length} dirs): {dirs[rnd]}";
+                     if(dirs.Length > 0)
+                     {
+                        resultString = $"next dir chosen (from {dirs.Length} dirs): {dirs[rnd]}";
 
-							try
-							{
-								Directory.Move(Configuration.rootDirectory + $"\\NEW\\{dirs[rnd]}",
-									Configuration.rootDirectory + $"\\{dirs[rnd]}");
-							}
-							catch(Exception e)
-							{
-								consolelog($"exception: {e.Message}");
-							}
+                        try
+                        {
+                           Directory.Move(Configuration.rootDirectory + $"\\NEW\\{dirs[rnd]}",
+                              Configuration.rootDirectory + $"\\{dirs[rnd]}");
+                        }
+                        catch(Exception e)
+                        {
+                           consolelog($"exception: {e.Message}");
+                        }
+                     }
+                     else
+                     {
+                        resultString = "no new networks";
+                     }
 
 							Beep(1000, 20);
 							break;
