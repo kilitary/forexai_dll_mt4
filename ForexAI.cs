@@ -495,12 +495,15 @@ namespace forexAI
             ConsoleCommandReceiver.CommandsReadingLoop();
          });
 
-         Task.Factory.StartNew(() =>
+         if(App.processorPerformanceCounter == null)
          {
-            consolelog($"Accessing processor performance counters ...");
-            App.processorPerformanceCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-            consolelog($"... got processor performance counters");
-         });
+            Task.Factory.StartNew(() =>
+            {
+               consolelog($"Accessing processor performance counters ...");
+               App.processorPerformanceCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+               consolelog($"... got processor performance counters");
+            });
+         }
       }
 
       public override int start()
@@ -1372,7 +1375,7 @@ namespace forexAI
 
             if(order.type == Constants.OrderType.Buy)
             {
-               newStopLoss = Bid - iTrailingStop * Point;
+               newStopLoss = NormalizeDouble(Bid - iTrailingStop * Point, Digits);
                if((order.stopLoss == 0.0 || newStopLoss > order.stopLoss)
                   && Bid - (iTrailingBorder * Point) > order.openPrice
                   && order.calculatedProfit > 0)
@@ -1383,7 +1386,7 @@ namespace forexAI
                   if(newStopLoss > OrderOpenPrice() || order.stopLoss == 0)
                   {
                      if(order.stopLoss == 0)
-                        newStopLoss = OrderOpenPrice() + (2 * iTrailingStop * Point);
+                        newStopLoss = NormalizeDouble(OrderOpenPrice() + (2 * iTrailingStop * Point), Digits);
 
                      if(newStopLoss != order.stopLoss)
                      {
@@ -1407,7 +1410,7 @@ namespace forexAI
             }
             else if(order.type == Constants.OrderType.Sell)
             {
-               newStopLoss = Ask + iTrailingStop * Point;
+               newStopLoss = NormalizeDouble(Ask + iTrailingStop * Point, Digits);
                if((order.stopLoss == 0.0 || newStopLoss < order.stopLoss)
                   && Ask + (iTrailingBorder * Point) < order.openPrice
                   && order.calculatedProfit > 0)
@@ -1418,7 +1421,7 @@ namespace forexAI
                   if(newStopLoss < OrderOpenPrice() || order.stopLoss == 0)
                   {
                      if(order.stopLoss == 0)
-                        newStopLoss = OrderOpenPrice() - (2 * iTrailingStop * Point);
+                        newStopLoss = NormalizeDouble(OrderOpenPrice() - (2 * iTrailingStop * Point), Digits);
 
                      if(newStopLoss != order.stopLoss)
                      {
@@ -1451,7 +1454,7 @@ namespace forexAI
          pos = Open[0];
          on = (pos.ToString());
          ObjectCreate(on, OBJ_TEXT, 0, iTime(symbol, 0, 0), pos);
-         ObjectSetText(on, text, 11, "liberation mono", clr);
+         ObjectSetText(on, text, 8, "liberation mono", clr);
       }
 
       void AddVerticalLabel(string text, Color clr)
