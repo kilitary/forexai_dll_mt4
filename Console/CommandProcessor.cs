@@ -80,6 +80,9 @@ namespace forexAI
 
                switch(command)
                {
+                  case "help":
+                     consolelog($"break,next,rotate,clear,enable,disable,toggle,set,config");
+                     break;
                   case "exit":
                      consolelog($"exit called");
                      Environment.Exit(0);

@@ -1362,16 +1362,16 @@ namespace forexAI
 
          foreach(var order in Data.ordersActive)
          {
-            if(order.counterOrder != null)
-            {
-               iTrailingBorder *= 2.7;
-               iTrailingStop = iTrailingBorder * 0.7;
-            }
-            else
-            {
-               iTrailingBorder = trailingBorder;
-               iTrailingStop = trailingStop;
-            }
+//             if(order.counterOrder != null)
+//             {
+//                iTrailingBorder *= 2.7;
+//                iTrailingStop = iTrailingBorder * 0.7;
+//             }
+//             else
+//             {
+//                iTrailingBorder = trailingBorder;
+//                iTrailingStop = trailingStop;
+//             }
 
             if(order.type == Constants.OrderType.Buy)
             {
@@ -1411,6 +1411,7 @@ namespace forexAI
             else if(order.type == Constants.OrderType.Sell)
             {
                newStopLoss = NormalizeDouble(Ask + iTrailingStop * Point, Digits);
+
                if((order.stopLoss == 0.0 || newStopLoss < order.stopLoss)
                   && Ask + (iTrailingBorder * Point) < order.openPrice
                   && order.calculatedProfit > 0)
