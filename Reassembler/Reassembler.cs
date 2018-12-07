@@ -83,13 +83,17 @@ namespace forexAI
          functionsNamesList = string.Empty;
 
          if(reassemblyStage)
+         {
             log($"=> Reassembling input sequence ...");
+         }
 
          setNextArrayIndex = 0;
          currentFunctionIndex = 0;
 
          if(failedReassemble)
+         {
             reassemblyStage = true;
+         }
 
          failedReassemble = false;
 
@@ -108,7 +112,9 @@ namespace forexAI
          }
 
          if(reassemblyStage)
+         {
             log($"=> {functionsConfiguration.Count} functions with {inputDimension} input dimension");
+         }
 
          if(fullInputSet == null || fullInputSet.Length != neuralNetwork.InputCount)
          {
@@ -117,7 +123,9 @@ namespace forexAI
          }
 
          if(reassemblyStage)
+         {
             log($"fullInputSet.Length = {fullInputSet.Length}");
+         }
 
          foreach(var function in functionsConfiguration)
          {
@@ -184,13 +192,24 @@ namespace forexAI
                   case "inReal":
 
                      if(comment.StartsWith("High"))
+                     {
                         arrayIndex = 2;
+                     }
+
                      if(comment.StartsWith("Open"))
+                     {
                         arrayIndex = 0;
+                     }
+
                      if(comment.StartsWith("Close"))
+                     {
                         arrayIndex = 1;
+                     }
+
                      if(comment.StartsWith("Low"))
+                     {
                         arrayIndex = 3;
+                     }
 
                      switch(arrayIndex)
                      {
@@ -315,24 +334,35 @@ namespace forexAI
             }
 
             if(reassemblyStage)
+            {
                log($"=> {functionName} arguments({functionArguments.Length})={SerializeObject(functionArguments)}");
+            }
 
             functionArguments[outIndex] = new double[inputDimension];
 
             Type[] functionTypes = new Type[functionConfiguration.parameters.parametersMap.Count];
             int idx = 0;
-            foreach(var arg in functionArguments)
+            foreach(object arg in functionArguments)
             {
                if(arg.GetType().IsByRef || arg.GetType().IsMarshalByRef)
+               {
                   functionTypes[idx] = arg.GetType().MakeByRefType();
+               }
                else
+               {
                   functionTypes[idx] = arg.GetType();
+               }
 
                if(outNumberElement == idx)
+               {
                   functionTypes[idx] = arg.GetType().MakeByRefType();
+               }
 
                if(nOutStartIdx == idx)
+               {
                   functionTypes[idx] = arg.GetType().MakeByRefType();
+               }
+
                idx++;
             }
 
@@ -354,9 +384,14 @@ namespace forexAI
                   for(int i = 0; i < (int) functionArguments[outNumberElement]; i++)
                   {
                      if(resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
+                     {
                         warning($"fucking function {functionName} starts with zero");
+                     }
+
                      if(resultDataDouble[i] == 0.0 && i == outNumberElement - 1 && reassemblyStage)
+                     {
                         warning($"fucking function {functionName} ends with zero");
+                     }
                   }
                }
                else
@@ -365,7 +400,9 @@ namespace forexAI
                   for(int i = 0; i < (int) functionArguments[outNumberElement]; i++)
                   {
                      if(resultDataDouble[i] == 0.0 && i == 0 && reassemblyStage)
+                     {
                         warning($"fucking function {functionName} starts with zero");
+                     }
                   }
                }
 
@@ -377,8 +414,9 @@ namespace forexAI
                }
 
                if(reassemblyStage)
+               {
                   log($"=> {functionName}({resultDataDouble.Length}): resultDataDouble={SerializeObject(resultDataDouble)}");
-
+               }
 
                Array.Copy(resultDataDouble, startIdx, fullInputSet, setNextArrayIndex, resultDataDouble.Length - startIdx);
 
@@ -392,7 +430,9 @@ namespace forexAI
          }
 
          if(reassemblyStage && fullInputSet != null && fullInputSet.Length > 0)
+         {
             log($"ret={ret} entireset={SerializeObject(fullInputSet)}");
+         }
 
          if(neuralNetwork.InputCount != fullInputSet.Length)
          {
@@ -404,7 +444,9 @@ namespace forexAI
          }
 
          if(reassemblyStage)
+         {
             log($"=> Reassembling [ SUCCESS ] Functions: {functionsNamesList}");
+         }
 
          if(reassemblyStage)
          {

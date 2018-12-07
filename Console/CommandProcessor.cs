@@ -23,33 +23,29 @@ namespace forexAI
 
       public static void RotateCommand(bool bSave = false)
       {
-         if(App.currentNetworkId.Length <= 0)
+         if(App.currentNetworkId.Length <= 0) {
             resultString = $"empty current network dir";
-         else if(bSave && Directory.Exists(Configuration.rootDirectory + $"\\{App.currentNetworkId}"))
+         } else if(bSave && Directory.Exists(Configuration.rootDirectory + $"\\{App.currentNetworkId}")) {
             Directory.Move(Configuration.rootDirectory + "\\" + App.currentNetworkId,
                Configuration.rootDirectory + "\\SELECTED\\" + App.currentNetworkId);
-         else if(bSave == false && Directory.Exists(Configuration.rootDirectory + $"\\{App.currentNetworkId}"))
+         } else if(bSave == false && Directory.Exists(Configuration.rootDirectory + $"\\{App.currentNetworkId}")) {
             Directory.Delete(Configuration.rootDirectory + "\\" + App.currentNetworkId, true);
+            resultString = $"Deleted {App.currentNetworkId}\r\n";
+         }
 
          var dirs = new DirectoryInfo(Configuration.rootDirectory + "\\NEW").GetDirectories("NET_*");
          var rnd = YRandom.between(0, dirs.Length - 1);
 
-         if(dirs.Length > 0)
-         {
-            resultString = $"next dir chosen (from {dirs.Length} dirs): {dirs[rnd]}";
+         if(dirs.Length > 0) {
+            resultString += $"Next network chosen {dirs[rnd]} (has {dirs.Length} total)";
 
-            try
-            {
+            try {
                Directory.Move(Configuration.rootDirectory + $"\\NEW\\{dirs[rnd]}",
                   Configuration.rootDirectory + $"\\{dirs[rnd]}");
-            }
-            catch(Exception e)
-            {
+            } catch(Exception e) {
                consolelog($"exception: {e.Message}");
             }
-         }
-         else
-         {
+         } else {
             resultString = "no new networks";
          }
 
@@ -62,24 +58,22 @@ namespace forexAI
          Console.CursorTop = 0;
          Console.Beep(1650, 33);
 
-         while(bRunCommandLineParser)
-         {
-            try
-            {
+         while(bRunCommandLineParser) {
+            try {
                typing = ReadLine().Trim();
                commandLineParts = typing.Split(' ');
                resultString = string.Empty;
 
-               if(commandLineParts.Count() <= 0 || commandLineParts[0].Length == 0)
+               if(commandLineParts.Count() <= 0 || commandLineParts[0].Length == 0) {
                   continue;
+               }
 
                log($"command: {typing}", "dev");
                consolelog($"=> {typing}", "dev", ConsoleColor.Gray);
 
                command = commandLineParts[0].ToLower();
 
-               switch(command)
-               {
+               switch(command) {
                   case "help":
                      consolelog($"break,next,rotate,clear,enable,disable,toggle,set,config");
                      break;
@@ -106,8 +100,10 @@ namespace forexAI
                      break;
 
                   case "testerstats":
-                     for(var i = 0; i < 100; i++)
+                     for(var i = 0; i < 100; i++) {
                         resultString += $"{i,-4}: {App.mqlApi.TesterStatistics(i)}\r\n";
+                     }
+
                      break;
 
                   case "clear":
@@ -135,14 +131,11 @@ namespace forexAI
 
                   case "set":
                   case "config":
-                     if(commandLineParts.Count() >= 1)
-                     {
-                        if(commandLineParts.Count() == 1)
+                     if(commandLineParts.Count() >= 1) {
+                        if(commandLineParts.Count() == 1) {
                            resultString = $"config: {App.config.DumpString()}";
-                        else
-                        {
-                           switch(commandLineParts[1].ToLower())
-                           {
+                        } else {
+                           switch(commandLineParts[1].ToLower()) {
                               case "del":
                               case "remove":
                               case "unset":
@@ -163,24 +156,22 @@ namespace forexAI
                                  break;
 
                               default:
-                                 if(commandLineParts.Count() > 2)
-                                 {
+                                 if(commandLineParts.Count() > 2) {
                                     log($"setting {commandLineParts[1].Trim()} to {commandLineParts[2].Trim()}", "dev");
                                     App.config[commandLineParts[1].Trim()] = commandLineParts[2].Trim();
                                     resultString = $"set {commandLineParts[1].Trim()} = {commandLineParts[2].Trim()}";
                                     App.config.Save();
-                                 }
-                                 else
-                                 {
+                                 } else {
                                     log($"app.config[{commandLineParts[1].Trim()}", "dev");
                                     resultString = $"{commandLineParts[1].Trim()} = {App.config[commandLineParts[1].Trim()]}";
                                  }
                                  break;
                            }
                         }
-                     }
-                     else
+                     } else {
                         resultString = $"no config cmd";
+                     }
+
                      break;
 
                   default:
@@ -189,20 +180,18 @@ namespace forexAI
 
                }
 
-               if(resultString.Trim().Contains("unknown command"))
+               if(resultString.Trim().Contains("unknown command")) {
                   Beep(190, 15);
-               else
+               } else {
                   Beep(1850, 55);
+               }
 
-               if(resultString.Trim().Length > 0)
+               if(resultString.Trim().Length > 0) {
                   consolelog($"<= {resultString.Trim()}", "dev", ConsoleColor.White);
-            }
-            catch(Exception e)
-            {
+               }
+            } catch(Exception e) {
                log($"EXCEPTION COMMAND '{Newtonsoft.Json.JsonConvert.SerializeObject(commandLineParts)}: '{e.Message}: {e.StackTrace}", "error");
-            }
-            finally
-            {
+            } finally {
                //FreeConsole();
                //log($"console freed", "dev");
             }
